@@ -783,17 +783,23 @@
 			    #+nil
 			    (format t "var = ~A :type ~A Part ~A posn ~A~%"
 				    v var-type part posn)
+			    (let ((accessor-name
+				   (intern (format nil "~A-~A" key v)))
+				  (name
+				   (intern (format nil "*~A-COMMON-BLOCK*" key))))
 			    (if arrayp
-				(push `(,(intern (format nil "~A-~A" key v))
-					 (make-array ,len :element-type ',(second var-type)
-						     :displaced-to (,(intern (format nil "~A-PART-~D" key part))
-								     ,(intern (format nil "*~A-COMMON-BLOCK*" key)))
-						     :displaced-index-offset ,posn))
-				      sym-lets)
+				(progn
+				  (push `(,accessor-name
+					  (make-array ,len :element-type ',(second var-type)
+						      :displaced-to (,(intern (format nil "~A-PART-~D" key part))
+								      ,name)
+						      :displaced-index-offset ,posn))
+					sym-lets)
+				  (push `(,v ,accessor-name) sym-mlets))
 				(push `(,v (aref (,(intern (format nil "~A-PART-~D" key part))
 						   ,block-special-name)
 						 ,posn))
-				      sym-mlets))))
+				      sym-mlets)))))
 			      
 		     (cond ((eq prev-type el-type)
 			    ;; Same block
@@ -2971,6 +2977,11 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.118  2004/08/14 04:15:56  rtoy
+;;; o GET_ARRAY_TYPE was not computing the array type in some situations.
+;;;   (I hope this is the right fix.)
+;;; o Was not counting the array lengths correctly.
+;;;
 ;;; Revision 1.117  2004/08/13 21:16:28  rtoy
 ;;; First pass at creating common blocks as arrays.  Intent is to allow
 ;;; odepack to be converted via f2cl.
