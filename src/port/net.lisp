@@ -160,7 +160,7 @@
   "Print the socket local&peer host&port to a string."
   (declare (type socket sock))
   (multiple-value-bind (ho1 po1 ho2 po2) (socket-host/port sock)
-    (format out "[local: ~a:~d] [peer: ~s:~d]" ho2 po2 ho1 po1)))
+    (format nil "[local: ~a:~d] [peer: ~s:~d]" ho2 po2 ho1 po1)))
 
 ;;;
 ;;; }}}{{{ socket-servers
