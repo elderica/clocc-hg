@@ -180,7 +180,8 @@ This is just a debugging function, to be called interactively."
           :do (mesg t *gq-error-stream* "~s~%" xx)
           :while (and xx (not (string= "" xx))))
     (mesg t *gq-error-stream* " *** data:~%")
-    (let (date res line)
+    (let ((*read-default-float-format* 'double-float)
+          date res line)
       (dolist (ti ticks (cons date res))
         (setq line (read-line sock))
         (mesg t *gq-error-stream* " * ~a~%" line)
@@ -292,7 +293,8 @@ This is just a debugging function, to be called interactively."
                   (warn "~s: date mismatch: ~s and ~s"
                         'get-quotes-xmltoday date dt))
                 (setq date dt))
-              (let* ((ask (find "ask" data :test #'equal
+              (let* ((*read-default-float-format* 'double-float)
+                     (ask (find "ask" data :test #'equal
                                 :key (lambda (xo) (xmlo-tag xo "type"))))
                      (nav (read-from-string
                            (xmlo-tag (xmlo-name-check ask "price") "value")))
