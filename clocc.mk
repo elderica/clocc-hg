@@ -80,10 +80,11 @@ $(SYSTEM).zip: $(DOCFILES) $(LISPFILES) $(MAKEFILES)
 	@$(LN) -s . $(SYSTEM);
 	@$(LN) -s . extra;
 	@$(LN) -s $(ZIPEXTRA) .;
+	@test -z "$(ZIPEXTRALINK)" || $(LN) -s $(ZIPEXTRALINK) .;
 	@echo ...updating zip file $@...;
 	@$(ZIP) $@ $(patsubst %,$(SYSTEM)/%,$^) $(ZIPEXTRANOLINK) \
 		$(patsubst %,$(SYSTEM)/extra/%,$(notdir $(ZIPEXTRA)));
-	@$(RM) $(SYSTEM) extra $(notdir $(ZIPEXTRA));
+	@$(RM) $(SYSTEM) extra $(notdir $(ZIPEXTRA)) $(notdir $(ZIPEXTRALINK));
 
 clean-all: force
 	$(RM) $(FASLFILES) core *.core *.mem *.dxl TAGS *.list
