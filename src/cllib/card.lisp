@@ -141,13 +141,11 @@
 ;;; }}}{{{ output
 ;;;
 
-(eval-when (compile load eval)  ; CMUCL
 (defstruct card-output
   (card nil :type symbol)
   (name nil :type symbol)
   (phone nil :type symbol)
   (address nil :type symbol))
-)
 
 (defcustom *card-output-type* (or null card-output) nil
   "The type of output for CARD.

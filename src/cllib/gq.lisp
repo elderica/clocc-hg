@@ -46,7 +46,6 @@
 ;;; {{{ Daily Data
 ;;;
 
-(eval-when (compile load eval)  ; CMUCL
 (defstruct (daily-data (:conc-name dd-))
   (nav 0d0 :type double-float)
   (chg 0d0 :type double-float)
@@ -57,7 +56,6 @@
   (pre 0d0 :type double-float)
   (low 0d0 :type double-float)
   (hgh 0d0 :type double-float))
-)
 
 (defun mk-daily-data (&rest args)
   "Make the DAILY-DATA structure, inferring the missing information."
@@ -413,13 +411,11 @@ See the value of `*hist-data-file-header*' for file format.")
 (defcustom *history* list nil
   "The history, to be read from `*hist-data-file*'.")
 
-(eval-when (compile load eval)  ; CMUCL
 (defstruct (pfl)
   (tick nil :type symbol)       ; TICKer
   (nums 0d0 :type double-float) ; NUMber of Shares
   (bprc 0d0 :type double-float) ; Base PRiCe
   (name "" :type string))       ; full NAME
-)
 
 (defun read-pfl (stream ra)
   "Read a PFL from the STREAM, using the read-ahead RA.
@@ -439,12 +435,10 @@ Suitable for `read-list-from-stream'."
   "Find the holding corresponding to the symbol."
   (declare (symbol sy)) (find sy *holdings* :key #'pfl-tick :test #'eq))
 
-(eval-when (compile load eval)  ; CMUCL
 (defstruct (hist)
   (date +bad-date+ :type date)
   (totl 0d0 :type double-float)
   (navs nil :type list))
-)
 
 (defmethod value ((hs hist)) (hist-totl hs))
 (defmethod date ((hs hist)) (hist-date hs))

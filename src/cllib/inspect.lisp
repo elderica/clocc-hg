@@ -62,7 +62,6 @@ See `browse-url', `*browser*', and `*browsers*'.")
 ;;; backend
 ;;;
 
-(eval-when (compile load eval)  ; CMUCL
 (defstruct (inspection (:conc-name insp-))
   self                          ; the object being inspected
   (id (fill-pointer *inspect-all*) :type fixnum) ; unique in a session
@@ -73,7 +72,6 @@ See `browse-url', `*browser*', and `*browsers*'.")
   (pos nil :type (or null fixnum)) ; pos in parent
   (nth-slot nil :type (or null (function (integer) (values t t)))) ; val & name
   (set-slot nil :type (or null (function (integer t) t)))) ; set Nth slot
-)
 
 (defun insp-check (insp)
   ;; this should always be okay, nevertheless

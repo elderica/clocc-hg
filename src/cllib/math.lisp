@@ -1147,7 +1147,6 @@ and the list of the volatilities for each year."
 
 ;;; Mean / Deviation / Length
 
-(eval-when (compile load eval)  ; CMUCL
 (defstruct (mdl)
   "MDL structure contains sample statistics.
 It is printed as follows: [mean standard-deviation max/min length[ entropy]]
@@ -1160,7 +1159,6 @@ When the distribution is not discreet, entropy is not available."
   (mi$ 0 :type index-t)             ; Min count
   (en 0 :type (or null number)) ; entropy (only when discreet)
   (le 0 :type index-t))         ; Length
-)
 
 (defconst +bad-mdl+ mdl (make-mdl) "The convenient constant for init.")
 (defmethod value ((mdl mdl)) (mdl-mn mdl))
@@ -1488,12 +1486,10 @@ Returns the probability of at least one event happening."
 ;;; Line
 ;;;
 
-(eval-when (compile load eval)  ; CMUCL
 (defstruct (line)
   "A straight line."
   (sl 0d0 :type double-float) ; slope
   (co 0d0 :type double-float)) ; constant
-)
 
 (defconst +bad-line+ line (make-line) "*The convenient constant for init.")
 

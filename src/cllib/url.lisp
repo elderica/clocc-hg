@@ -48,7 +48,6 @@
 ;;; {{{ URL handling
 ;;;
 
-(eval-when (compile load eval)  ; ACL CMUCL
 (defstruct (url)
   "URL - Uniform Resource Locator: protocol://user#password@host:port/path."
   (prot nil :type symbol)       ; protocol
@@ -57,7 +56,6 @@
   (host "" :type simple-string) ; hostname
   (port 0  :type fixnum)        ; port number
   (path "" :type simple-string)) ; pathname
-)
 
 (defconst +bad-url+ url (make-url) "*The convenient constant for init.")
 
@@ -760,7 +758,6 @@ The local file is located in directory LOC and has the same name
 ;;; }}}{{{ news
 ;;;
 
-(eval-when (compile load eval)  ; CMUCL
 (defstruct (article)
   (numb 0 :type (unsigned-byte 32)) ; article number
   (subj "" :type simple-string) ; subject
@@ -771,7 +768,6 @@ The local file is located in directory LOC and has the same name
   (bytes 0 :type file-size-t)   ; size in bytes
   (lines 0 :type index-t)       ; size in lines
   (xref nil :type list))        ; list of cross-references
-)
 
 (defmethod print-object ((art article) (out stream))
   (if *print-readably* (call-next-method)
