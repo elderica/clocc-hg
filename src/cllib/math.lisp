@@ -1,4 +1,4 @@
-;;; File: <math.lisp - 1999-01-06 Wed 23:07:11 EST sds@eho.eaglets.com>
+;;; File: <math.lisp - 1999-01-13 Wed 18:21:50 EST sds@eho.eaglets.com>
 ;;;
 ;;; Math utilities (Arithmetical / Statistical functions)
 ;;;
@@ -12,6 +12,9 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.12  1999/01/07 04:07:34  sds
+;;; Use `index-t' instead of (unsigned-byte 20).
+;;;
 ;;; Revision 1.11  1998/11/23 21:22:13  sds
 ;;; Added MDL structure.
 ;;;
@@ -446,7 +449,7 @@ and the average annual volatility for US Dollar Index."
 ;;; Mean / Deviation / Length
 
 (eval-when (load compile eval)
-(defstruct (mdl #+cmu (:print-function print-mdl))
+(defstruct (mdl #+cmu (:print-function print-struct-object))
   (mn 0.0 :type double-float)   ; Mean
   (sd 0.0 :type (double-float 0.0)) ; Deviation
   (le 0 :type index-t))         ; Length
@@ -455,15 +458,8 @@ and the average annual volatility for US Dollar Index."
 (defconst +bad-mdl+ mdl (make-mdl) "The convenient constant for init.")
 (defmethod value ((mdl mdl)) (mdl-mn mdl))
 
-#-cmu
 (defmethod print-object ((mdl mdl) (stream stream))
   (if *print-readably* (call-next-method)
-      (format stream "[~6f ~6f ~5:d]" (mdl-mn mdl) (mdl-sd mdl) (mdl-le mdl))))
-
-#+cmu
-(defun print-mdl (mdl stream depth)
-  (declare (type mdl mdl) (stream stream) (ignore depth))
-  (if *print-readably* (funcall (print-readably mdl) mdl stream)
       (format stream "[~6f ~6f ~5:d]" (mdl-mn mdl) (mdl-sd mdl) (mdl-le mdl))))
 
 (defun standard-deviation-mdl (seq &key (key #'value))
@@ -663,7 +659,7 @@ Returns the probability of at least one event happening."
 ;;;
 
 (eval-when (load compile eval)
-(defstruct (line #+cmu (:print-function print-line))
+(defstruct (line #+cmu (:print-function print-struct-object))
   "A straight line."
   (sl 0.0d0 :type double-float) ; slope
   (co 0.0d0 :type double-float)) ; constant
@@ -671,14 +667,6 @@ Returns the probability of at least one event happening."
 
 (defconst +bad-line+ line (make-line) "*The convenient constant for init.")
 
-#+cmu
-(defun print-line (ln stream depth)
-  "Print the line."
-  (declare (type line ln) (stream stream) (ignore depth))
-  (if *print-readably* (funcall (print-readably line) ln stream)
-      (format stream "{~6f ~6f}" (line-sl ln) (line-co ln))))
-
-#-cmu
 (defmethod print-object ((ln line) (stream stream))
   (if *print-readably* (call-next-method)
       (format stream "{~6f ~6f}" (line-sl ln) (line-co ln))))
