@@ -424,9 +424,10 @@ This is useful for frontends which provide an eval/modify facility."
 
 (defmethod inspect-frontend ((insp inspection) (frontend (eql :http)))
   (do ((server (let ((server (open-socket-server)))
-                 (browse-url (format nil "http://~a/0/:s"
-                                     (socket-server-string server))
-                             :browser *inspect-browser*)
+                 (browse-url
+                  (format nil "http://127.0.0.1:~d/0/:s"
+                          (nth-value 1 (socket-server-host/port server)))
+                  :browser *inspect-browser*)
                  server))
        sock id com)
       ((eq com :q) (socket-server-close server))
