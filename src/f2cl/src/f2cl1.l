@@ -1662,8 +1662,15 @@ FILENAME                 File containing Fortran code
 	 ;; don't modify it, just use the array element.  Otherwise,
 	 ;; we want a slice.
 	 (let ((n-args (length arg-list))
-	       (finfo (gethash fun-name *f2cl-function-info*))
+	       (finfo (if (member fun-name *external-function-names*)
+			  nil
+			  (gethash fun-name *f2cl-function-info*)))
 	       arg-info ret-info)
+	   #+nil
+	   (when *external-function-names*
+	     (format t "external = ~A~%" *external-function-names*)
+	     (format t "finfo = ~A~%" finfo)
+	     (format t "fun-name = ~A~%" fun-name))
 	   (cond (finfo
 		  (setf arg-info (f2cl-finfo-arg-types finfo))
 		  (setf ret-info (f2cl-finfo-return-values finfo)))
@@ -2513,6 +2520,9 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.128  2003/11/13 22:37:08  rtoy
+;;; Oops.  We want subtypep, not typep!
+;;;
 ;;; Revision 1.127  2003/11/13 22:16:59  rtoy
 ;;; Try to be smarter about generating args to functions, which is an
 ;;; issue if the arg is an element of an array.  If we know the declared
