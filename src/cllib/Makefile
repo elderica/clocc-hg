@@ -7,7 +7,7 @@ SOURCES := animals base card check clhs closio date datedl doall elisp fileio \
 	octave rpm server simple sorted stat string symb tilsla url withtype \
 	inspect autoload htmlgen xml prompt matrix getopt
 BASE = $(TOP)/clocc base auto
-NET = $(TOP)/clocc base url gq
+NET = $(TOP)/clocc base url gq rpm
 SCRIPT = $(TOP)/clocc base getopt
 SYSTEM := cllib
 ZIPEXTRA = ../defsystem-3.x/defsystem.lisp ../tools/metering/metering.lisp \
