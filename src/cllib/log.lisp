@@ -42,7 +42,7 @@ See CLtL2 p602 and <http://www.lisp.org/HyperSpec/Body/sec_22-3-7-2.html>"
 
 (defun time-diff (end beg)
   "Compute the time (in seconds) between the two given internal timestamps."
-  (declare (type integer end beg))
+  (declare (type real end beg)) ; values of LINEAR in ETA are not integer
   (/ (- end beg)
      ;; CLISP compiled files are cross-platform,
      ;; so this value must be fixed at load time, not at read time
