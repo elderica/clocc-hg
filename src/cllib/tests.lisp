@@ -80,7 +80,8 @@
               (incf num-err)
               (warn " ### FAILED: ~6:d --> ~a --> ~6:d~2%" n0 dd n1))))
     (flet ((ts (nn st)
-             (mesg :test out "~30s --> ~d --> ~a~%" st nn (dttm->string nn))
+             (mesg :test out "~30s --> ~d --> ~a~%"
+                   st nn (dttm->string nn :short))
              (unless (= nn (string->dttm st))
                (incf num-err)
                (warn " ### FAILED: ~s --> ~d, not ~d~2%"
