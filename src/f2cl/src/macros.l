@@ -400,6 +400,9 @@ is not included")
             (error "bad statement number in assigned goto"))
         (go ,i)))
 
+(defun make-label (n) 
+  (read-from-string (concatenate 'string (symbol-name :label) (princ-to-string n))))
+
 (defun assigned-goto-aux (tag-list)
   (let ((cases nil))
     (dolist (tag tag-list)
@@ -1302,6 +1305,10 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.57  2003/11/23 14:10:11  rtoy
+;;; FDO should not call function that are not in the F2CL-LIB package.
+;;; Macros.l should be self-contained.
+;;;
 ;;; Revision 1.56  2003/11/13 05:37:11  rtoy
 ;;; Add macro WITH-MULTI-ARRAY-DATA.  Basically like WITH-ARRAY-DATA, but
 ;;; takes a list of array info so we don't get deeply nested code when
