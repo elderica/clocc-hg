@@ -1639,6 +1639,7 @@ FILENAME                 File containing Fortran code
 ;; is, the array reference must be the actual arg. No arithmetic
 ;; allowed.  We assume that's true if FREF is the first element of the
 ;; arg expression.
+#+nil
 (defun maybe-convert-array-ref-to-slice (arg-list)
   (if (not *array-slicing*)
       arg-list
@@ -1649,6 +1650,49 @@ FILENAME                 File containing Fortran code
 		      `(array-slice ,(second expr) ,(lookup-vble-type (second expr)) ,@(cddr expr))
 		      expr))
 	      arg-list)))
+
+(defun maybe-convert-array-ref-to-slice (arg-list fun-name)
+  (cond (*array-slicing*
+	 ;; Look up the arg types for the function.  If we know the
+	 ;; function, we can be smarter about generating the call.
+	 ;;
+	 ;; That is, if the actual arg is an array reference, we need
+	 ;; to decide if we want just the selected element or a slice
+	 ;; of the array.  If the declared type is a scalar, and we
+	 ;; don't modify it, just use the array element.  Otherwise,
+	 ;; we want a slice.
+	 (let ((n-args (length arg-list))
+	       (finfo (gethash fun-name *f2cl-function-info*))
+	       arg-info ret-info)
+	   (cond (finfo
+		  (setf arg-info (f2cl-finfo-arg-types finfo))
+		  (setf ret-info (f2cl-finfo-return-values finfo)))
+		 (t
+		  (setf arg-info (make-list n-args))
+		  (setf ret-info (make-list n-args))))
+	   ;;(format t "calling ~A~%" fun-name)
+	   ;;(format t " finfo = ~A~%" finfo)
+	   (mapcar #'(lambda (expr a-info r-info)
+		       ;;(format t "expr = ~A~%" expr)
+		       (cond ((and (listp expr)
+				   (eq (first expr) 'fref))
+			      ;;(format t " expr = ~A~%" expr)
+			      ;;(format t "  a-info, r-info = ~A ~A~%" a-info r-info)
+			      
+			      ;; If the declared type is an array,
+			      ;; slice it.  If the arg is modified
+			      ;; (r-info is non-NIL) slice it.
+			      ;; Otherwise, grab just the element.
+			      (if (or (typep a-info 'array)
+				      r-info)
+				  `(array-slice ,(second expr) ,(lookup-vble-type (second expr)) ,@(cddr expr))
+				  expr))
+			     (t
+			      expr)))
+		   arg-list arg-info ret-info)))
+	(t
+	 arg-list)))
+
       
 ;------------------------------------------------------------------------------
 (defun parse-subroutine-call (x)
@@ -1661,7 +1705,7 @@ FILENAME                 File containing Fortran code
     (update-called-functions-list (list (second x) :subroutine) arglist)
 
     ;; Now convert array references to an array slice, as appropriate.
-    (setf arglist (maybe-convert-array-ref-to-slice arglist))
+    (setf arglist (maybe-convert-array-ref-to-slice arglist (second x)))
 
     (cond ((null arglist)
 	   ;; No args to the subroutine
@@ -2468,6 +2512,10 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.126  2003/11/13 21:06:22  rtoy
+;;; Was not correctly handling a plain SAVE statement, which means save
+;;; all locals.  Put a special token in this case to indicate that.
+;;;
 ;;; Revision 1.125  2003/11/13 05:38:15  rtoy
 ;;; Define a pretty-printer for WITH-MULTI-ARRAY-DATA.
 ;;;

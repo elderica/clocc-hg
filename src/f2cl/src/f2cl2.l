@@ -345,7 +345,7 @@ Tag being parsed:| (cadr x))))
 
        ;; Now convert array references to an array slice, as
        ;; appropriate.
-       (setf args (maybe-convert-array-ref-to-slice args))
+       (setf args (maybe-convert-array-ref-to-slice args fname))
 
        ;; Functions can modify the arguments in addition to returning
        ;; a value.  We need to handle this like a subroutine call, as
@@ -432,6 +432,13 @@ definition.| l) ))
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.31  2002/09/13 17:50:19  rtoy
+;;; From Douglas Crosher:
+;;;
+;;; o Make this work with lower-case Lisps
+;;; o Fix a few typos
+;;; o Make a safer fortran reader.
+;;;
 ;;; Revision 1.30  2002/01/06 23:28:16  rtoy
 ;;; Missed a few renamings of *intrinsic_function_names* and
 ;;; *external_function_names*.
