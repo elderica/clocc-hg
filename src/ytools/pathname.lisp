@@ -847,6 +847,7 @@
 	    (setq dirsegs
 	          (remove-if (\\ (s) (string= s ""))
 			     dirsegs))
+;;;;	    (format t "dirsegs = ~s~%" dirsegs )
 	    (let ((ytpn (mergem (strings->ytools-pathnames dirsegs pkg))))
 ;;;;	       (format t "ytpn = ~s~%" ytpn)
 	       (cond (abs

@@ -7,7 +7,7 @@
 ;;; This software is released under the terms of the Modified BSD
 ;;; License.  See file COPYING for details.
 
-(depends-on :at-run-time %ytools/ setter mapper)
+(depends-on :at-run-time %ytools/ setter mapper signal)
 
 (eval-when (:compile-toplevel :load-toplevel :execute :slurp-toplevel)
    (export '(out-to-string dbg-out dbg-out-indent

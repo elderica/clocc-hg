@@ -34,7 +34,10 @@
    (let ((curstate (Out-stream-state stream))
 	 (real-stream (Out-stream-stream stream)))
       (cond ((eq curstate 'unindented)
-	     (format real-stream "~V,0T" (Out-stream-indent stream))
+#+allegro    (format real-stream "~V,0T" (Out-stream-indent stream))
+#-allegro    (progn (fresh-line real-stream)
+		    (print-spaces (Out-stream-indent stream)
+				  real-stream))
 	     (setf (Out-stream-state stream) 'indented)))
       real-stream))
 
