@@ -60,7 +60,7 @@
             ("base" "simple" "withtype" "fileio" "log" "list"))
      (:file "matrix" :depends-on ("base" "withtype"))
      (:file "miscprint" :depends-on ("base" "simple"))
-     (:file "munkres")
+     (:file "munkres" :depends-on ("base"))
      #+clisp (:file "octave" :depends-on ("base"))
      (:file "prompt" :depends-on ("base"))
      (:file "rng" :depends-on ("base" "withtype"))

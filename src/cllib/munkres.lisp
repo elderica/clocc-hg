@@ -18,7 +18,9 @@
 ;;; $Id$
 ;;; $Source$
 
-(defpackage :cllib)
+(eval-when (compile load eval)
+  (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base")))
+
 (in-package :cllib)
 (export '(assignment))
 
