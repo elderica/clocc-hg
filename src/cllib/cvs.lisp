@@ -242,7 +242,7 @@ Suitable for `read-list-from-stream'."
   "Generate and print some statistics of the CVS repository."
   (when (char= #\/ (char path (1- (length path))))
     (with-timing ()
-      (format t "~s: ~a is a directory, running `cvs log`..."
+      (format t "~&~s: ~a is a directory, running `cvs log`..."
               'cvs-stat-log path)
       (force-output)
       (let ((old-path (default-directory)))
