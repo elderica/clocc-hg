@@ -1,9 +1,12 @@
-;;;; $ID: rng.lisp,v 1.8 1999/11/17 16:48:11 toy Exp toy $
+;;;; $Id$
 ;;;; $Source$
 ;;;;
 ;;;;  Class of Random number generators
 ;;;;
 ;;;;  $Log$
+;;;;  Revision 1.1  2001/03/14 23:29:05  sds
+;;;;  initial checkin
+;;;;
 ;;;;  Revision 1.8  1999/11/17 16:48:11  toy
 ;;;;  o Correct some typos in the name of the exponential generator
 ;;;;    algorithms. (It's Knuth Algorith S, not F.)
@@ -43,6 +46,13 @@
 ;;;;  Revision 1.1  1996/10/24 22:12:10  toy
 ;;;;  Initial revision
 ;;;;
+
+(eval-when (compile load eval)
+  (require :base (translate-logical-pathname "clocc:src;cllib;base"))
+  ;; `dfloat', `with-type'
+  (require :withtype (translate-logical-pathname "cllib:withtype")))
+
+(in-package :cllib)
 
 ;; CLOCC should not do this, IMO:
 ;; (eval-when (compile)
@@ -363,7 +373,7 @@ of zero and a variance of 1.  The PDF is
 	   prev-gauss)
 	  (t
 	   (let ((r1 (sqrt (* -2.0d0 (log (random 1.0d0 state)))))
-		 (r2 (random #.(float (* (float pi 1d0) 2.0d0) 1d0) state)))
+		 (r2 (random #.(dfloat (* (dfloat pi) 2.0d0)) state)))
 	     ;;(declare (double-float r1 r2))
 	     (setf prev-gauss (* r1 (sin r2)))
 	     (setf use-prev-gauss t)
@@ -487,7 +497,7 @@ order ORDER.
   ;; valid for all order >= 1/3.  However, its efficiency gets better
   ;; with larger orders.  Thus, we want order to be at least 1.
 
-  (let* ((s (/ #.(float 1/3 1d0) (sqrt order)))
+  (let* ((s (/ #.(dfloat 1/3) (sqrt order)))
 	 (z0 (- 1d0 (* s #.(sqrt 3d0))))
 	 (cs (- 1d0 (* s s)))
 	 (x0 (- s #.(sqrt 3d0)))
@@ -513,7 +523,7 @@ order ORDER.
 			      (* cl tt
 				 (+ 1d0 (* tt
 					   (+ 0.5d0
-					      (* #.(float 1/3 1d0) tt)))))))
+					      (* #.(dfloat 1/3) tt)))))))
 		    (>= (- cd (* cl (log (/ z z0))))
 			0d0))
 	    (return-from gen-gamma-variate-squeeze rgama)))))))
@@ -539,7 +549,7 @@ order ORDER.
   ;; valid for all order >= 1/3.  However, its efficiency gets better
   ;; with larger orders.  Thus, we want order to be at least 1.
 
-  (let* ((s (/ #.(float 1/3 1d0) (sqrt order)))
+  (let* ((s (/ #.(dfloat 1/3) (sqrt order)))
 	 (z0 (- 1d0 (* s #.(sqrt 3d0))))
 	 (cs (- 1d0 (* s s)))
 	 (x0 (- s #.(sqrt 3d0)))
@@ -568,7 +578,7 @@ order ORDER.
 				 (* cl tt
 				    (+ 1d0 (* tt
 					      (+ 0.5d0
-						 (* #.(float 1/3 1d0) tt)))))))
+						 (* #.(dfloat 1/3) tt)))))))
 		       (>= (- cd (* cl (log (/ z z0))))
 			   0d0))
 	       (return-from gen-gamma-variate-squeeze rgama)))))))
@@ -595,7 +605,7 @@ order ORDER.
 	   (optimize (speed 3)))
   ;; Ahrens and Dieter Algorithm GN for gamma variates
   (let* ((mu (- order 1d0))
-	 (sigma (sqrt (+ order (* (sqrt order) #.(sqrt (float 8/3 1d0))))))
+	 (sigma (sqrt (+ order (* (sqrt order) #.(sqrt (dfloat 8/3))))))
 	 (d (* sigma #.(sqrt 6d0)))
 	 (b (+ mu d)))
     ;;(declare (double-float mu sigma d b))
@@ -653,7 +663,7 @@ order ORDER.
 	   (optimize (speed 3)))
   ;; Ahrens and Dieter Algorithm GN for gamma variates
   (let* ((mu (- order 1d0))
-	 (sigma (sqrt (+ order (* (sqrt order) #.(sqrt (float 8/3 1d0))))))
+	 (sigma (sqrt (+ order (* (sqrt order) #.(sqrt (dfloat 8/3))))))
 	 (d (* sigma #.(sqrt 6d0)))
 	 (b (+ mu d))
 	 (x 0d0)
@@ -720,8 +730,8 @@ order ORDER.
 	 (sqrt2a-1 (sqrt (- (* 2d0 a) 1d0)))
 	 (a-1 (- a 1d0)))
     (declare (type (double-float (1.0d0)) a))
-    (do* ((y (tan (* #.(float pi 1d0) (random 1d0 state)))
-	     (tan (* #.(float pi 1d0) (random 1d0 state))))
+    (do* ((y (tan (* #.(dfloat pi) (random 1d0 state)))
+	     (tan (* #.(dfloat pi) (random 1d0 state))))
 	  (x (+ (* sqrt2a-1 y) a-1)
 	     (+ (* sqrt2a-1 y) a-1)))
 	 ((and (> x 0d0)
@@ -971,7 +981,7 @@ order ORDER.
 	   (setf x (* b (+ 1 (/ s d))))
 	   (setf u (random 1d0 state))
 	   (if (> (log u) (- (+ (* mu (+ 2 (log (/ x mu)) (- (/ x b))))
-				#.(- (log (/ (* (sqrt (* 2 (float pi 1d0)))
+				#.(- (log (/ (* (sqrt (* 2 (dfloat pi)))
                                                 +beta-algo-go+)
 					     (- 1 +beta-algo-go+)))))
 			     (+ b (log (/ (* sigma d) b)))))
@@ -998,7 +1008,7 @@ order ORDER.
 	   (alpha2 (+ (* a a a) (* 3 a a) (* 12 a) -17))
 	   (alpha (expt (+ (/ (sqrt alpha1) #.(* 3 (sqrt 3d0)))
 			   (/ alpha2 27))
-			#.(float 1/3 1d0)))
+			#.(dfloat 1/3)))
 	   (s0 (+ (/ (+ a 1) 3)
 		  alpha
 		  (/ (+ (* a a) a a -2)
@@ -1150,8 +1160,7 @@ with parameters N and p:
 	(t
 	 (let* ((a (1+ (floor ntrials 2)))
 		(b (1+ (- ntrials a)))
-		(x (gen-beta-variate (float a 1d0)
-				     (float b 1d0) state)))
+		(x (gen-beta-variate (dfloat a) (dfloat b) state)))
 	   (declare (fixnum a b)
 		    (double-float x))
 	   (if (>= x p)
@@ -1199,7 +1208,7 @@ with mean M:
 	   ;; Indirect generation
 	   (let* ((alpha #.(coerce 7/8 'double-float)) ; Suggested value
 		  (order (floor (* alpha mean)))
-		  (x (gen-gamma-variate (float order 1d0) state)))
+		  (x (gen-gamma-variate (dfloat order) state)))
 	     (declare (fixnum order))
 	     (if (< x mean)
 		 (+ order (gen-poisson-variate (- mean x) state))
@@ -1321,3 +1330,6 @@ with mean M:
 	    mean
 	    mean)))
 )
+
+(provide :rng)
+;;; file rng.lisp ends here
