@@ -194,6 +194,7 @@ Note that the Unicode characters will NOT be printed as &#nnnn;.")
 ;;; XML streams
 ;;;
 
+(eval-when (compile load eval)  ; for CMUCL
 (defclass xml-stream-in (fundamental-character-input-stream)
   ((input :initarg :stream :initarg :input :type stream :accessor xmlis-st)
    (all-streams :type list :accessor xmlis-all)
@@ -202,6 +203,7 @@ Note that the Unicode characters will NOT be printed as &#nnnn;.")
    (comment :accessor xmlis-comment :documentation
             "nil - outside comment, t - inside, 1 - inside, one `-' read"))
   (:documentation "The input stream for reading XML."))
+)
 
 (defsubst stream-length (st)
   "A safe wrap around for `file-stream'."
