@@ -20,8 +20,8 @@
   #-allegro
   (:documentation "The package for loading Emacs-Lisp code into Common Lisp")
   (:nicknames elisp el) (:use cl cllib)
-  (:shadow let let* if member delete load require defcustom defconst provide
-           ignore format /))
+  (:shadow let let* if member delete load require provide ignore format /
+           defcustom defconst autoload))
 
 (defconst +elisp-pack+ package (find-package :el)
   "The Emacs-Lisp package.")
