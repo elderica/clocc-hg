@@ -163,16 +163,16 @@ is not included")
 
 (defun find-array-data (array)
   (declare (type (array * (*)) array))
-    (let ((offset 0))
-      (declare (type fixnum offset)
-	       (optimize (speed 3) (safety 0)))
-      (loop
-	  (multiple-value-bind (displaced-to index-offset)
-	      (array-displacement array)
-	    (when (null displaced-to)
-	      (return-from find-array-data (values array offset)))
-	    (incf offset index-offset)
-	    (setf array displaced-to))))))
+  (let ((offset 0))
+    (declare (type fixnum offset)
+	     (optimize (speed 3) (safety 0)))
+    (loop
+	(multiple-value-bind (displaced-to index-offset)
+	    (array-displacement array)
+	  (when (null displaced-to)
+	    (return-from find-array-data (values array offset)))
+	  (incf offset index-offset)
+	  (setf array displaced-to)))))
 
 (defmacro with-array-data ((data-var offset-var array) &rest body)
   `(multiple-value-bind (,data-var ,offset-var)
@@ -255,10 +255,12 @@ is not included")
 	(iteration_count (gensym "CNT-")))
     `(prog* ((,step ,(third (third do_vble_clause)))
 	     (,iteration_count 
-	      (max 0 (truncate (+ (- ,(third (first predicate_clause))
-				     ,(second do_vble_clause))
-				  ,step)
-			       ,step)
+	      (max 0 (the integer4
+		       (truncate (the integer4
+				   (+ (the integer4 (- ,(third (first predicate_clause))
+						       ,(second do_vble_clause)))
+				      ,step))
+				 ,step))
 		   )))
       (declare (type integer4 ,step ,iteration_count))
       ;; initialise loop variable
@@ -319,6 +321,28 @@ is not included")
 	       (typep ,bot 'integer))
 	  (values (the integer4 (truncate ,top ,bot)))
 	  (/ ,top ,bot)))))
+
+(defmacro int-add (arg &rest more-args)
+  (if (null more-args)
+      arg
+      (if (> (length more-args) 1)
+	  `(the integer4 (+ ,arg (int-add ,@more-args)))
+	  `(the integer4 (+ ,arg ,@more-args)))))
+
+(defmacro int-sub (arg &rest more-args)
+  (if (null more-args)
+      `(the integer4 (- ,arg))
+      (if (> (length more-args) 1)
+	  `(the integer4 (- ,arg (int-sub ,@more-args)))
+	  `(the integer4 (- ,arg ,@more-args)))))
+
+(defmacro int-mul (arg &rest more-args)
+  (if (null more-args)
+      arg
+      (if (> (length more-args) 1)
+	  `(the integer4 (* ,arg (int-mul ,@more-args)))
+	  `(the integer4 (* ,arg ,@more-args)))))
+
 
 ;; macro for a lisp equivalent of Fortran arithmetic IFs
 (defmacro arithmetic-if (pred s1 s2 s3)
@@ -386,13 +410,15 @@ is not included")
     (integer
      (the integer4 x))
     (single-float
-     (truncate (the (single-float #.(float (- (ash 1 31)))
-				  #.(float (1- (ash 1 31))))
-		 x)))
+     (the integer4
+       (truncate (the (single-float #.(float (- (ash 1 31)))
+				    #.(float (1- (ash 1 31))))
+		   x))))
     (double-float
-     (truncate (the (double-float #.(float (- (ash 1 31)) 1d0)
-				  #.(float (1- (ash 1 31)) 1d0))
-		 x)))))
+     (the integer4
+       (truncate (the (double-float #.(float (- (ash 1 31)) 1d0)
+				    #.(float (1- (ash 1 31)) 1d0))
+		   x))))))
   
 (defun ifix (x)
   (int x))
@@ -1140,6 +1166,11 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.43  2002/03/06 23:07:19  rtoy
+;;; o Make INT return an integer4 type, not integer.
+;;; o log10 was thinking it could generate complex result, but that's not
+;;;   true.  Declare the arg correctly so the compiler knows it can't.
+;;;
 ;;; Revision 1.42  2002/03/06 03:21:16  rtoy
 ;;; o Speed up FIND-ARRAY-DATA a little by declaring the offset to be a
 ;;;   fixnum, which it has to be since it's an index to an array.
