@@ -36,7 +36,7 @@
 
 (export '(url make-url url-p url-ask url-eta protocol-rfc
           url-prot url-user url-pass url-host url-port url-path
-          url-get-host url-get-port url-path-parse
+          url-get-host url-get-port url-string-p url-path-parse
           url-path-dir url-path-file url-path-args
           open-socket-retry open-url with-open-url
           ftp-list url-send-mail url-get-news url-time
@@ -109,6 +109,14 @@ guess from the protocol; save the guessed value."
                   (error 'code :proc 'url-get-port :args (list url)
                          :mesg "Cannot guess the port for ~s"))))
       (url-port url)))
+
+(defun url-string-p (string)
+  "Check whether the string looks like URL and return the protocol."
+  (let ((non-alpha (position-if-not #'alpha-char-p string)) host)
+    (and non-alpha (char= #\: (char string non-alpha)) ; "[a-zA-Z]*:"
+         (setq host (nstring-upcase (subseq string 0 non-alpha)))
+         (null (port:logical-host-p host))
+         (kwd host))))
 
 (defcustom *nntp-server* simple-string
   (or (getenv "NNTPSERVER") "localhost")
