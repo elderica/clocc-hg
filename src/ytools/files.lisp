@@ -383,7 +383,9 @@
 	 ;; If supporter out of date, "don't recompile" means "load object if
 	 ;; possible"; if file itself out of date, "don't recompile" requires
 	 ;; further questioning.
-	 (cond ((eq why ':supporter-out-of-date)
+	 (cond ((eq why ':no-object)
+		':source)
+	       ((eq why ':supporter-out-of-date)
 		(setf (Load-progress-rec-when-reached lprec)
 		      (let ((time (Load-progress-rec-when-reached lprec)))
 			 (dolist (cs changed-supporters)

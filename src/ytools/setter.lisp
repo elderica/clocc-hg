@@ -395,6 +395,8 @@
 	       (t
 		(multi-match-codes 'or items dat-name))))))
 
+(datafun match-code :|| :\|)
+
 ;;;;(datafun match-code \?or \|)
 
 ;;; Handle ?(!! ...), which executes ... and succeeds if the value is true.
