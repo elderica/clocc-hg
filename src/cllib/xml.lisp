@@ -139,10 +139,15 @@ See <http://www.w3.org/TR/WD-html40-970708/sgml/entities.html>.")
   "*Set to non-NIL to print XML-OBJ for future parsing.
 Note that the Unicode characters will NOT be printed as &#nnnn;.
 If this is `:sgml', use maximum SGML compatibility.
-If this is `:readably', print for Lisp reader.")
+If this is `:readably', print for the Lisp reader
+  (you must also set `*print-circle*' to non-nil).")
 
 (defsubst xml-print-readably-p ()
-  (or *print-readably* (eq :readably *xml-print-xml*)))
+  (or *print-readably*
+      (and (eq :readably *xml-print-xml*)
+           (or *print-circle*
+               (error "~s is set to ~s, but ~s is ~s"
+                      '*xml-print-xml* :readably '*print-circle* nil)))))
 
 (defmethod print-object ((xm xml-misc) (out stream))
   (cond ((xml-print-readably-p) (call-next-method))
