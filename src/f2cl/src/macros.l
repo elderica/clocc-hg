@@ -1058,7 +1058,9 @@ causing all pending operations to be flushed"
 ;;
 (defun d1mach (i)
   (ecase i
-    (1 least-positive-normalized-double-float)
+    (1
+     #-gcl least-positive-normalized-double-float
+     #+gcl least-positive-double-float)
     (2 most-positive-double-float)
     (3 double-float-epsilon)
     (4 (scale-float double-float-epsilon 1))
@@ -1066,7 +1068,9 @@ causing all pending operations to be flushed"
 
 (defun r1mach (i)
   (ecase i
-    (1 least-positive-normalized-single-float)
+    (1
+     #-gcl least-positive-normalized-single-float
+     #+gcl least-positive-single-float)
     (2 most-positive-single-float)
     (3 single-float-epsilon)
     (4 (scale-float single-float-epsilon 1))
@@ -1186,6 +1190,10 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.47  2002/05/03 17:44:36  rtoy
+;;; Replace row-major-aref with just aref because we don't need it and
+;;; because gcl doesn't have it.
+;;;
 ;;; Revision 1.46  2002/03/19 02:23:09  rtoy
 ;;; According to the rules of Fortran, the initializers in a DATA
 ;;; statement are supposed to be converted to match the type of the
