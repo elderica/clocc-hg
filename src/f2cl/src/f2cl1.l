@@ -1987,12 +1987,21 @@ FILENAME                 File containing Fortran code
 	  (t
 	   ;;(format t "parse-data1 else: v, l = ~S ~S~%" v l)
 	   ;;(format t "parse-data1 else:  v is array:  ~A~%" (vble-is-array-p (check-reserved-lisp-names (first v))))
-	   (if (and (vble-is-array-p (check-reserved-lisp-names (first v)))
-		    (null (rest v)))
-	       `(replace ,(check-reserved-lisp-names (first v))
-		         ',(mapcar #'fix-up-negative-number l))
-	       `(setq ,(check-reserved-lisp-names (first v))
-		      ,(fix-up-negative-number l)))))))
+	   (cond ((subtypep (lookup-vble-type (check-reserved-lisp-names (first v)))
+			    'string)
+		  ;; Need to initialize a string carefully.
+		  ;;
+		  ;; FIXME: We should probably do this when we declare
+		  ;; the array instead.
+		  `(replace ,(check-reserved-lisp-names (first v))
+		            ,(first l)))
+		 ((and (vble-is-array-p (check-reserved-lisp-names (first v)))
+			(null (rest v)))
+		  `(replace ,(check-reserved-lisp-names (first v))
+		         ',(mapcar #'fix-up-negative-number l)))
+		 (t
+		  `(setq ,(check-reserved-lisp-names (first v))
+		      ,(fix-up-negative-number l))))))))
 
 ; parse EXTERNAL f1, f2, ...
 ; by adding the function names to *external-function-names*
@@ -2373,6 +2382,13 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.119  2002/09/13 17:50:18  rtoy
+;;; From Douglas Crosher:
+;;;
+;;; o Make this work with lower-case Lisps
+;;; o Fix a few typos
+;;; o Make a safer fortran reader.
+;;;
 ;;; Revision 1.118  2002/07/02 21:33:24  rtoy
 ;;; Always start output on a newline when printing the name of the source
 ;;; and output files.
