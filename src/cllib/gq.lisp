@@ -24,7 +24,7 @@
 
 (in-package :cllib)
 
-(export '(update-quotes))
+(export '(update-quotes *hist-data-file*))
 
 ;;;
 ;;;
