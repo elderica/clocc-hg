@@ -285,6 +285,32 @@ Returns a socket stream or NIL."
   (error 'not-implemented :proc (list 'socket-server-host/port server)))
 
 ;;;
+;;; }}}{{{ for CLX
+;;;
+
+(defun wait-for-stream (stream &optional timeout)
+  "Sleep until there is input on the STREAM, or for TIMEOUT seconds,
+whichever comes first. If there was a timeout, return NIL."
+  #+clisp (multiple-value-bind (sec usec) (floor (or timeout 0))
+            (#+lisp=cl ext:socket-status #-lisp=cl lisp:socket-status
+                       stream (and timeout sec) (round usec 1d-6)))
+  #+cmu (#+mp mp:process-wait-until-fd-usable #-mp sys:wait-until-fd-usable
+              (system:fd-stream-fd stream)
+              :input timeout)
+  #-(or clisp cmu)
+  (error 'not-implemented :proc (list 'wait-for-stream stream timeout)))
+
+(defun open-unix-socket (path &optional (kind :stream) bin)
+  "Opens a unix socket. Path is the location.
+Kind can be :stream or :datagram."
+  (declare (simple-string path))
+  #+cmu (sys:make-fd-stream (ext:connect-to-unix-socket path kind)
+                            :input t :output t :element-type
+                            (if bin '(unsigned-byte 8) 'character))
+  #-(or cmu)
+  (error 'not-implemented :proc (list 'open-unix-socket path kind bin)))
+
+;;;
 ;;; }}}{{{ conditions
 ;;;
 
