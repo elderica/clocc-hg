@@ -11,6 +11,9 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.6  2000/03/08 20:51:40  sds
+;;; (socket-server-host, socket-server-port): exported
+;;;
 ;;; Revision 1.5  2000/03/07 20:28:00  sds
 ;;; (socket-server-host, socket-server-port): new functions
 ;;; (socket-host, socket-accept): fixed for CMUCL
@@ -91,7 +94,7 @@
     (make-hostent :name (posix::hostent-name he)
                   :aliases (posix::hostent-aliases he)
                   :addr-list (posix::hostent-addr-list he)
-                  :addr-type (posix::hostent-addr-type he)))
+                  :addr-type (posix::hostent-addrtype he)))
   #+cmu
   (let ((he (ext:lookup-host-entry host)))
     (make-hostent :name (ext:host-entry-name he)
