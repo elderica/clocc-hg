@@ -14,6 +14,8 @@
 
 (in-package :cllib)
 
+(export '(package-short-name set-cllib-prompt))
+
 ;; CLISP defines but does not export this function
 ;; #+clisp (import 'sys::package-short-name)
 ;; #-clisp
@@ -31,28 +33,27 @@
       (:capitalize (string-capitalize name))
       (t name))))
 
-#+cmu
-(defvar sys::*command-index* 0
-  "The number of commands issued so far.")
-
-(flet ((beg-end ()              ; beg-bold beg-it end-all
-         (let ((term (getenv "TERM")))
-           (if (or (null term)
-                   (string-equal term "dumb")
-                   (string-equal term "emacs"))
-               (values "" "" "")
-               (values "[1m" "[7m" "[m")))))
-  #+(or cmu clisp)
-  (setq lisp::*prompt*
-        (lambda ()
-          (multiple-value-bind (bb ib ee) (beg-end)
-            (format nil "~a~a~a~a[~:d]:~a " ib
+(defun set-cllib-prompt ()
+  "Reset the prompt according to CLLIB."
+  #+(or allegro clisp cmu)
+  (let* ((cmd-idx 0)
+         (fontp (let ((term (getenv "TERM")))
+                  (or (null term)
+                      (string-equal term "dumb")
+                      (string-equal term "emacs"))))
+         (beg-bold (if fontp "" "[1m"))
+         #-allegro (beg-it   (if fontp "" "[7m"))
+         (end-all  (if fontp "" "[m")))
+    #+(or cmu clisp)
+    (setq lisp::*prompt*
+          (lambda ()
+            (format nil "~a~a~a~a[~:d]:~a " beg-it
                     (package-short-name *package*)
-                    ee bb (incf sys::*command-index*) ee))))
-  #+allegro
-  (multiple-value-bind (bb ib ee) (beg-end)
-    (declare (ignore ib))
-    (setq tpl:*prompt* (concatenate 'string bb tpl:*prompt* ee))))
+                    end-all beg-bold (incf cmd-idx) end-all)))
+    #+allegro
+    (setq tpl:*prompt* (concatenate 'string beg-bold tpl:*prompt* end-all)))
+  #-(or allegro clisp cmu)
+  (error 'not-implemented :proc 'set-cllib-prompt))
 
 (provide :prompt)
 ;; prompt.lisp ends here
