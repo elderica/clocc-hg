@@ -14,7 +14,8 @@
 (defpackage "CLLIB"
   (:use "COMMON-LISP" "PORT")
   (:nicknames "ORG.CONS.CLOCC/SDS/CLLIB")
-  (:export "VALUE" "CODE"))
+  (:export "VALUE" "CODE"
+           "*DATADIR*" "*MAIL-HOST-ADDRESS*" "*USER-MAIL-ADDRESS*"))
 
 (in-package :cllib)
 
