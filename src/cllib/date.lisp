@@ -499,7 +499,7 @@ I.e., (tomorrow (today) -1) is yesterday."
   (declare (type date date) (type days-t skip))
   (tomorrow date (days-to-next-working-day date skip)))
 
-(defsubst previous-working-day (&optional (date (today)) (skip -1))
+(defsubst previous-working-day (&optional (date (today)) (skip 1))
   "Return the previous working day, ignoring holidays."
   (declare (type date date) (type days-t skip))
   (tomorrow date (days-to-next-working-day date (- skip))))
