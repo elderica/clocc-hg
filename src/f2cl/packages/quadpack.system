@@ -5,6 +5,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.2  2000/07/21 17:48:29  rtoy
+;;; Add some support for :compiler-options if MK defsystem supports it.
+;;;
 ;;; Revision 1.1  2000/07/20 15:42:18  rtoy
 ;;; Initial revision
 ;;;
@@ -25,7 +28,7 @@
 
 
 ;; Convert a Fortran file to Lisp and compile the Lisp file.
-(defun f2cl-compile (filename &key output-file error-file array-slicing (array-type 'array))
+(defun f2cl-compile (filename &key output-file error-file (array-slicing t) (array-type 'array))
   (compile-file (f2cl filename :array-slicing array-slicing
 		      :array-type array-type)
 		:output-file output-file :error-file error-file))
