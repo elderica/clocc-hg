@@ -956,7 +956,7 @@ This is mostly a debugging function, to be called interactively."
   "Read everything from the HTTP socket SOCK, until a blank line."
   (loop :for line = (read-line sock nil nil)
         :while (and line (plusp (length line))
-                    #+cmu (not (string= line (string #\Return))))
+                    (not (string= line #.(string #\Return))))
         :collect line))
 
 ;;;###autoload
