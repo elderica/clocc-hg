@@ -9,8 +9,8 @@ SOURCES := animals base card check clhs closio date datedl doall elisp fileio \
 BASE = base auto
 NET = base url gq
 SYSTEM := cllib
+DOCFILES = $(SYSTEM).html
 include $(TOP)/clocc.mk
-DOCFILES += $(SYSTEM).html
 
 image:		$(addsuffix .fas,$(BASE))
 	$(TOP)/bin/run-lisp $(patsubst %,-i %,$^) -d image
