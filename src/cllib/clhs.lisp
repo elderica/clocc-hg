@@ -214,6 +214,7 @@
 
 (defun clhs-write-entities (file)
   "Write the CLHS entities into the file."
+  (unless *clhs-alist* (clhs-init))
   (with-timing ()
     (with-open-file (str file :direction :output :if-exists :supersede)
       (format t "~s: writing ~s..." 'clhs-write-entities file)
