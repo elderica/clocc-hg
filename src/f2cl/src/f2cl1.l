@@ -767,6 +767,13 @@ FILENAME                 File containing Fortran code
      
      ;; (return (list '----> (check_new_vbles x)))
 
+     (when (or (eq (car x) 'block)
+	       (eq (car x) 'blockdata))
+       ;; A block data subprogram.  We cheat and pretend it's a
+       ;; subroutine with the special name /blockdata/
+       (setq bindings (id-definition-sub '(subroutine /blockdata/)))
+       (return (parse-subr-definition bindings)))
+
      ;;fall out the bottom:
      (return (list (list 'quote (concatenate ' string  "****NOT TRANSLATED: " 
 					       (write-to-string (check_new_vbles x))))))
@@ -2058,6 +2065,10 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.86  2002/02/08 03:35:30  rtoy
+;;; We need to also fix up the names for any initialization stuff, so add
+;;; new function FIXUP-F2CL-LIB to do it.
+;;;
 ;;; Revision 1.85  2002/01/13 16:27:56  rtoy
 ;;; o Move the intrinsic function names from macros.l to here.  Include a
 ;;;   copy of the deftypes in macros.l here as well.  (Be sure to keep
