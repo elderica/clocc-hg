@@ -20,19 +20,7 @@
  '(*closio-method* +clos-readtable+ make-clos-readtable macroexpand-r))
 
 ;;;
-;;; {{{ print structure in CMUCL via `print-object'
-;;;
-
-#+cmu
-(progn
-  (defmethod print-object ((xx structure-object) (out stream))
-    (kernel:default-structure-print xx out 1))
-  (defun print-struct-object (xx out depth)
-    (declare (ignore depth))
-    (print-object xx out)))
-
-;;;
-;;; }}}{{{ read CLOS objects
+;;; {{{ read CLOS objects
 ;;;
 
 (defcustom *closio-method* symbol nil

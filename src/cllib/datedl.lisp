@@ -31,7 +31,7 @@
 ;;;
 
 (eval-when (compile load eval)  ; CMUCL
-(defstruct (dated-list #+cmu (:print-function print-struct-object))
+(defstruct (dated-list)
   "A dated list of records."
   (code nil :type symbol)       ; the code (usually, a 2 letter symbol)
   (name "??" :type simple-string) ; the name of the data
@@ -577,7 +577,7 @@ Must not assume that the list is properly ordered!"
 ;;;
 
 (eval-when (compile load eval)  ; CMUCL
-(defstruct (change #+cmu (:print-function print-struct-object))
+(defstruct (change)
   "Change structure - for computing difference derivatives."
   (date +bad-date+ :type date)
   (val 0d0 :type double-float)  ; value
@@ -640,7 +640,7 @@ ch[bf], and dl-extrema will not be idempotent."
 ;;;
 
 (eval-when (compile load eval)  ; CMUCL
-(defstruct (diff #+cmu (:print-function print-struct-object))
+(defstruct (diff)
   "A dated diff."
   (date +bad-date+ :type date)
   (di 0d0 :type real)           ; difference

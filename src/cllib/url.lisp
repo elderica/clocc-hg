@@ -49,7 +49,7 @@
 ;;;
 
 (eval-when (compile load eval)  ; ACL CMUCL
-(defstruct (url #+cmu (:print-function print-struct-object))
+(defstruct (url)
   "URL - Uniform Resource Locator: protocol://user#password@host:port/path."
   (prot nil :type symbol)       ; protocol
   (get-request-type nil :type symbol) ; proxy: "GET http://..."
@@ -751,7 +751,7 @@ The local file is located in directory LOC and has the same name
 ;;;
 
 (eval-when (compile load eval)  ; CMUCL
-(defstruct (article #+cmu (:print-function print-struct-object))
+(defstruct (article)
   (numb 0 :type (unsigned-byte 32)) ; article number
   (subj "" :type simple-string) ; subject
   (auth "" :type simple-string) ; author

@@ -24,8 +24,7 @@
 ;;;
 
 (eval-when (compile load eval)  ; CMUCL
-(defstruct (download-data (:conc-name dld-)
-                          #+cmu (:print-function print-struct-object))
+(defstruct (download-data (:conc-name dld-))
   (url +bad-url+ :type url)     ; location
   (err nil :type (or null error)) ; was there an error?
   (all nil :type list)          ; all files at the location
@@ -106,7 +105,7 @@ If nil, retry ad infinitum, otherwise a positive fixnum.")
 ;;;
 
 (eval-when (compile load eval)  ; CMUCL
-(defstruct (rpm #+cmu (:print-function print-struct-object))
+(defstruct (rpm)
   (name "name?" :type simple-string)
   (vers "vers?" :type simple-string)
   (rels "rels?" :type simple-string)

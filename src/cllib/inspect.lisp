@@ -63,8 +63,7 @@ See `browse-url', `*browser*', and `*browsers*'.")
 ;;;
 
 (eval-when (compile load eval)  ; CMUCL
-(defstruct (inspection (:conc-name insp-)
-                       #+cmu (:print-function print-struct-object))
+(defstruct (inspection (:conc-name insp-))
   self                          ; the object being inspected
   (id (fill-pointer *inspect-all*) :type fixnum) ; unique in a session
   (title "" :type string)       ; the short description of the object

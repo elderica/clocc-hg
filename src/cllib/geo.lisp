@@ -72,8 +72,7 @@ type \"48:51:00N 2:20:00E\". Return 2 values - latitude and longitude."
 ;;;
 
 (eval-when (compile load eval)  ; CMUCL
-(defstruct (geo-data (:conc-name geod-)
-                     #+cmu (:print-function print-struct-object))
+(defstruct (geo-data (:conc-name geod-))
   (name "??" :type string)	; the name of the place
   (pop 0 :type (real 0))	; population
   (crd #C(0d0 0d0) :type (complex double-float)) ; coordinates
@@ -159,7 +158,7 @@ and return a list of geo-data."
 ;;;
 
 (eval-when (compile load eval)  ; CMUCL
-(defstruct (country #+cmu (:print-function print-struct-object))
+(defstruct (country)
   "The country structure - all the data about a country you can think of."
   (name "" :type simple-string)	; name
   (fips nil :type symbol)	; FIPS PUB 10-4 code (US Dept of State)
