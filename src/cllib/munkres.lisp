@@ -2,6 +2,7 @@
 ;;; <http://www.public.iastate.edu/~ddoty/HungarianAlgorithm.html>
 ;;; <http://216.249.163.93/bob.pilgrim/445/munkres.html>
 ;;; <http://www.math.uwo.ca/~mdawes/courses/344/kuhn-munkres.html>
+;;; <http://netlib.bell-labs.com/netlib/toms/548.gz>
 ;;; Handbook Of Graph Theory, Algorithm 11.3.2, p. 1110
 ;;;
 ;;; Copyright (C) 2004 by Sam Steingold
