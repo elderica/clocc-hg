@@ -1,5 +1,3 @@
-;;; File: <withtype.lisp - 2000-02-18 Fri 11:01:49 EST sds@ksp.com>
-;;;
 ;;; Stuff for Type-optimizations and declarations
 ;;;
 ;;; Copyright (C) 1997-2000 by Sam Steingold
@@ -8,17 +6,30 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  (require :base (translate-logical-pathname "clocc:src;cllib;base")))
+  (require :base (translate-logical-pathname "clocc:src;cllib;base"))
+  ;; `mk-arr' [:ext is already required by :base anyway]
+  (require :ext (translate-logical-pathname "port:ext")))
 
 (in-package :cllib)
 
 (eval-when (load compile eval)
   (declaim (optimize (speed 3) (space 0) (safety 3) (debug 3))))
 
-(export '(index-t map-vec dfloat with-type))
+(export '(index-t map-vec dfloat with-type +whitespace+ whitespace-char-p))
 
 ;;;
+;;; White space
 ;;;
+
+(defconst +whitespace+ (simple-array character (*))
+  (mk-arr 'character '(#\Space #\Newline #\Tab #\Linefeed #\Return #\Page))
+  "*The whitespace characters.")
+
+(defsubst whitespace-char-p (char)
+   (find char +whitespace+ :test #'char=))
+
+;;;
+;;; Misc
 ;;;
 
 (defmacro map-vec (type len &rest args)
