@@ -1007,8 +1007,8 @@ main-loop
 				   (id-expression expr)))
 			     (list-split '|,| (check_new_vbles (third x))))
 		     nil)))
-    ;; Note that this is not a variable.
-    (update-called-functions-list (second x) arglist)
+    ;; Note that this is not a variable and is, in fact, a subroutine.
+    (update-called-functions-list (list (second x) :subroutine) arglist)
     (cond ((null arglist)
 	   ;; No args to the subroutine
 	   `((,(second x))))
@@ -1778,6 +1778,13 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.41  2000/07/14 16:45:54  rtoy
+;;; o Allow the user to specify what package the resulting file should be
+;;;   in and any declaims he wants.
+;;; o Print out some additional information in the result like the f2cl
+;;;   version and the compilation options.
+;;; o Added *f2cl-version*
+;;;
 ;;; Revision 1.40  2000/07/14 15:44:46  rtoy
 ;;; o Added keyword :array-slicing to f2cl to support array slicing.
 ;;; o Preliminary support for array slicing.  That is,
