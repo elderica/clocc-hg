@@ -16,6 +16,7 @@
   (:nicknames "ORG.CONS.CLOCC/SDS/PORT")
   (:export
    "CODE" "CASE-ERROR" "NOT-IMPLEMENTED" ; conditions
+   "CODE-PROC" "CODE-MESG" "CODE-ARGS"   ; slot accessors
    "DEFSUBST" "DEFCUSTOM" "DEFCONST"
    "MK-ARR" "MAP-IN" "WITH-GENSYMS"
    "GC" "QUIT"
