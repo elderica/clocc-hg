@@ -12,10 +12,16 @@
 
 (let (tbc)                      ; To Be Compiled
 
+(setq mk:*central-registry*
+      (nconc (list (translate-logical-pathname "clocc:src;port;")
+                   (translate-logical-pathname "clocc:src;tools;metering;"))
+             mk:*central-registry*))
+
 (mk:defsystem cllib
     :source-pathname (translate-logical-pathname "clocc:src;cllib;")
     ;; :package :cllib
     :source-extension "lisp"
+    :depends-on (port metering)
     :components
     ((:file "animals" :depends-on
             ("base" "string" "miscprint" "fileio" "closio" "symb"))
