@@ -495,6 +495,11 @@
 		 '*simple (car v)
 		 (list (make-Rep-var-prop
 			  'init (cadr v) 1))))
+	 ((equal (cddr v) '(:then :again))
+	  (make-Rep-var
+	     '*each-iter (car v)
+	     (list (make-Rep-var-prop 'init (cadr v) 1)
+		   (make-Rep-var-prop 'iterfcnvar (gensym) -1))))
 	 (t
 	  (make-Rep-var
 	       '*reset (car v)
