@@ -210,7 +210,7 @@ If NIL, read once and return the object read;
 if a number, read that many times and return a list of objects read,
 if T, read until end of file and return a list of objects read."
   (declare (type (or simple-string pathname) file))
-  (with-timing (:done t)
+  (with-timing (:done t :out out)
     (with-open-file (str file :direction :input)
       (format out "~&Reading `~a' [~:d bytes]..." file (file-length str))
       (force-output)
