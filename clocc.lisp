@@ -54,7 +54,8 @@
           (remf (cddr excl:arglist) :key)
           (setf (second excl:arglist)
                 (map 'vector key (second excl:arglist)))))))
-  #+clisp (setq clos::*warn-if-gf-already-called* nil)
+  #+clisp (setq clos::*warn-if-gf-already-called* nil
+                clos::*gf-warn-on-replacing-method* nil)
   #+cmu (progn
           (pushnew 'compile pcl::*defclass-times*)
           (pushnew 'compile pcl::*defgeneric-times*)
