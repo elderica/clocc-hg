@@ -523,7 +523,7 @@
     ((or null card32) time)))
 
 (defun grab-button (window button event-mask
-		    &key (modifiers 0)
+		    &key (modifiers :any)
 			 owner-p sync-pointer-p sync-keyboard-p confine-to cursor)
   (declare (type window window)
 	   (type (or (member :any) card8) button)
@@ -543,7 +543,7 @@
     (pad8 1)
     (card16 (encode-modifier-mask modifiers))))
 
-(defun ungrab-button (window button &key (modifiers 0))
+(defun ungrab-button (window button &key (modifiers :any ))
   (declare (type window window)
 	   (type (or (member :any) card8) button)
 	   (type modifier-mask modifiers))
