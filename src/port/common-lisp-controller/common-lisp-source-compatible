@@ -18,6 +18,10 @@ This function will set the package's autobuild to "no" for
 all known implementations except for the implementations supplied
 on the command line.
 
+This command also accepts these "virtual" implementation names
+  cmucl    (equivalent to "cmucl-normal cmucl-safe cmucl-safe")
+  allegro  (equivalent to "acl alisp alisp8 mlisp mlisp8")
+
 Options: 
   -h                  Print this short help message
 END
@@ -46,6 +50,8 @@ while [ $# != 0 ]; do
 	    arg=$1
 	    if [ "$arg" = "cmucl" ]; then
 		$arg="cmucl-normal lcmucl-safe cmucl-small"
+	    elif [ "$arg" = "allegro" ]; then
+		$arg="acl alisp alisp8 mlisp mlisp8"
 	    fi
 	    compatible_impl="$arg $compatible_impl"
 	    ;;
