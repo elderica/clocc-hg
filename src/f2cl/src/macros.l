@@ -95,6 +95,8 @@
     `(array integer4 (*)))
 (deftype array-single-float ()
     `(array single-float (*)))
+(deftype array-strings ()
+  `(array string (*)))
 
 (defconstant %false% nil)
 (defconstant %true% t)
@@ -922,6 +924,12 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.27  2000/08/03 13:45:53  rtoy
+;;; Make FFORMAT1 handle lists that we get from implied do loops.
+;;;
+;;; The whole FFORMAT stuff needs to be rethought if we really want to
+;;; support Fortran output.
+;;;
 ;;; Revision 1.26  2000/08/01 22:10:41  rtoy
 ;;; o Try to make the Fortran functions to convert to integers work the
 ;;;   way Fortran says they should.
