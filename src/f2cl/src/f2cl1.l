@@ -897,6 +897,9 @@ FILENAME                 File containing Fortran code
 (defun parse-declaration (x)		; x is the line
   (setq *declared_vbles*
 	(append (mapcar #'(lambda (v)
+			    (when (member (first v) *intrinsic-function-names*)
+			      (warn "~A is being declared but is also the name of an intrinsic function"
+				    (first v)))
 			    (check-reserved-lisp-names (car v)))
 			(list-split '|,|
 			 (if (eq (cadr x) '*)
@@ -905,6 +908,12 @@ FILENAME                 File containing Fortran code
 		*declared_vbles*))
   ;; If we declared an intrinsic function name, remove that from the
   ;; list of declared variables.
+
+  ;; I don't think this is right.  Let the user declare the variable
+  ;; and let us hope that the declaration wasn't for the intrinsic
+  ;; function.  I'll need to check the Fortran 77 standard to see what
+  ;; is supposed to happen here.
+  #+nil
   (setf *declared_vbles*
 	(set-difference *declared_vbles* *intrinsic-function-names*))
   (let ((type (find (first x) '((integer integer4)
@@ -1958,6 +1967,10 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.81  2002/01/06 23:28:16  rtoy
+;;; Missed a few renamings of *intrinsic_function_names* and
+;;; *external_function_names*.
+;;;
 ;;; Revision 1.80  2002/01/06 23:10:11  rtoy
 ;;; Rename *intrinsic_function_names*, *external_function_names* and
 ;;; *subprog_stmt_fns* to use dashes.
