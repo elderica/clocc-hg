@@ -323,7 +323,10 @@ If the first argument is a date, fix the year."
 ;;;
 
 (defcustom *hist-data-file* pathname
-  (merge-pathnames "text/invest.txt" (user-homedir-pathname))
+  (merge-pathnames (make-pathname :directory '(:relative "text")
+                                  :name "invest" :type "txt"
+                                  :defaults nil)
+                   (user-homedir-pathname))
   "*The file with the historical data.")
 (defcustom *hist-data-file-header* simple-string
   ";*GetQuote portfolio*
@@ -588,7 +591,10 @@ previous day:~15t~{~7,2f~}~%Added an extra record~%~5t~{~a~}~%"
 ;;;
 
 (defcustom *gq-log* pathname
-  (merge-pathnames "text/getquote.log" (user-homedir-pathname))
+  (merge-pathnames (make-pathname :directory '(:relative "text")
+                                  :name "getquote" :type "log"
+                                  :defaults nil)
+                   (user-homedir-pathname))
   "The log file for the batch processing.")
 
 ;;;###autoload
