@@ -108,9 +108,9 @@ The vector contains the counts in the Ith bin."
          (min (mdl-mi mdl)) (max (mdl-ma mdl)))
     (mesg :log out "~&~S: ~S~%" 'histogram mdl)
     (assert (/= min max) (min max) "~S: min=max=~A" 'histogram min)
-    (let ((width (/ nbins (- max min))) (last (1- nbins))
+    (let ((width (/ (- max min) nbins)) (last (1- nbins))
           (vec (make-array nbins :initial-element 0)))
-      (loop :for x :in list :for v = (floor (* width (- (funcall key x) min)))
+      (loop :for x :in list :for v = (floor (- (funcall key x) min) width)
         :do (incf (aref vec (min v last))))
       (loop :for s :across vec :minimize s :into i :maximize s :into a
         :finally (mesg :log out "~S: bin size from ~:D to ~:D~%"
