@@ -31,15 +31,6 @@ presumed to be of the same size."
   #+win32 "c:/bin/octave.exe" #+unix "/usr/local/bin/octave"
   "*The octave executable.")
 
-(defun flush-stream (in-str &optional (out-str t))
-  "Flush the stream IN-STR, dumping the stuff to the stream OUT-STR."
-  (if out-str
-      (do ((nn 0 (1+ nn))) ((null (listen in-str)))
-        (declare (fixnum nn))
-	(format out-str "octave -~2d-> ~a~%" nn (read-line in-str)))
-      (do () ((null (listen in-str)))
-	(read-line in-str))))
-
 (defun solve-lin (mx vec &optional dump)
   "Given a matrix N x N and an N vector, return the solution of the system.
 Send the data to Octave, get the answer."
