@@ -11,6 +11,10 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.5  2000/03/07 20:28:00  sds
+;;; (socket-server-host, socket-server-port): new functions
+;;; (socket-host, socket-accept): fixed for CMUCL
+;;;
 ;;; Revision 1.4  2000/03/03 22:01:03  sds
 ;;; fixed provide statements
 ;;;
@@ -37,7 +41,7 @@
  '(resolve-host-ipaddr ipaddr-to-dotted dotted-to-ipaddr hostent
    socket open-socket socket-host socket-port socket-server
    socket-accept open-socket-server socket-server-close
-   socket-service-port
+   socket-service-port socket-server-host socket-server-port
    network timeout login))
 
 ;;;
@@ -222,7 +226,7 @@
 (defun socket-server-port (server)
   "Return the local port on which the server is running."
   #+allegro (socket:local-port server)
-  #+clisp (lisp:socket-server-host server)
+  #+clisp (lisp:socket-server-port server)
   #+cmu server
   #-(or allegro clisp cmu)
   (error 'not-implemented :proc (list 'socket-server-port server)))
