@@ -140,7 +140,8 @@ only when needed. ")
 			package
 			declaim
 			declare-common
-			(float-format *read-default-float-format*))
+			(float-format *read-default-float-format*)
+			&allow-other-keys)
   "Fortran to Common Lisp converter
 
 INPUT-FILE               File containing Fortran code
@@ -251,7 +252,8 @@ INPUT-FILE               File containing Fortran code
 			      package
 			      declaim
 			      declare-common
-			      (float-format *read-default-float-format*))
+			      (float-format *read-default-float-format*)
+			      &allow-other-keys)
   "Convert the Fortran to Common Lisp and compile the resulting Lisp file
 
 FILENAME                 File containing Fortran code
@@ -2276,6 +2278,14 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.107  2002/04/18 13:05:19  rtoy
+;;; Added :FLOAT-FORMAT option to F2CL and F2CL-COMPILE so that the user
+;;; can specify how to print out numbers in case the user is going to
+;;; read/compile the file using some other setting for
+;;; *READ-DEFAULT-FLOAT-FORMAT*.  (This is a simple hack to get around the
+;;; problem of not having a portable way to specify all numbers should be
+;;; printed with an exponent marker.)
+;;;
 ;;; Revision 1.106  2002/03/22 23:00:12  rtoy
 ;;; When generating the call to a routine, we don't have to have a setter
 ;;; if the same arg is used multiple times in the arglist.  This is
