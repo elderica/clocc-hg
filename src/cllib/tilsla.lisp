@@ -28,7 +28,7 @@
   "Commify a number into a string.
 The two optional arguments are the number of digits
 after and before the decimal point."
-  (declare (fixnum dd di) (number num) (values simple-string))
+  (declare (fixnum dd di) (number num))
   (setq num (dfloat num))
   (multiple-value-bind (inum dnum) (truncate num)
     (declare (integer inum))

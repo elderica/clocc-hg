@@ -166,8 +166,9 @@ and Capital/Income ratio K-Y-0 to the Golden Rate steady state."
 ;;; Lognormal distribution
 ;;;
 
+(declaim (ftype (function (double-float) (values double-float)) lognormal))
 (defun lognormal (xx)
-  (declare (double-float xx) (values double-float))
+  (declare (double-float xx))
   (if (plusp xx)
       (/ (exp (let ((ll (log xx))) (* ll ll -0.5)))
          (dfloat (sqrt (* 2 pi))) xx)

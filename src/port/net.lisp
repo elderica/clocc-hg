@@ -28,18 +28,22 @@
 ;;; {{{ name resulution
 ;;;
 
+(declaim (ftype (function ((unsigned-byte 32)) (values simple-string))
+                ipaddr-to-dotted))
 (defun ipaddr-to-dotted (ipaddr)
   "Number --> string."
-  (declare (type (unsigned-byte 32) ipaddr) (values simple-string))
+  (declare (type (unsigned-byte 32) ipaddr))
   #+allegro (socket:ipaddr-to-dotted ipaddr)
   #-allegro
   (format nil "~d.~d.~d.~d"
           (logand #xff (ash ipaddr -24)) (logand #xff (ash ipaddr -16))
           (logand #xff (ash ipaddr -8)) (logand #xff ipaddr)))
 
+(declaim (ftype (function (string) (values (unsigned-byte 32)))
+                dotted-to-ipaddr))
 (defun dotted-to-ipaddr (dotted)
   "String --> number."
-  (declare (string dotted) (values (unsigned-byte 32)))
+  (declare (string dotted))
   #+allegro (socket:dotted-to-ipaddr dotted)
   #-allegro
   (let ((ll (string-tokens (substitute #\Space #\. dotted))))
@@ -154,7 +158,7 @@
 
 (defun open-socket-server (&optional port)
   "Open a `generic' socket server."
-  (declare (type (or null integer socket) port) (values socket-server))
+  (declare (type (or null integer socket) port))
   #+allegro (socket:make-socket :connect :passive :local-port
                                 (when (integerp port) port))
   #+clisp (lisp:socket-server port)
@@ -176,8 +180,13 @@ Keyword arguments are:
  WAIT - wait for the connection this many seconds
         (the default is NIL - wait forever).
 Returns a socket stream or NIL."
-  (declare (type socket-server serv) (values (or null socket)))
-  #+allegro (let ((sock (socket:accept-connection serv :wait (not wait))))
+  (declare (type socket-server serv))
+  #+allegro (let ((sock (if wait
+                            (if (plusp wait)
+                                (mp:with-timeout (wait)
+                                  (socket:accept-connection serv :wait t))
+                                (socket:accept-connection serv :wait nil))
+                            (socket:accept-connection serv :wait t))))
               (when sock
                 (socket:set-socket-format sock (if bin :binary :text))
                 sock))

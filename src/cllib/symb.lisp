@@ -27,20 +27,21 @@
 
 (defconst +kwd+ package (find-package :keyword) "The KEYWORD package.")
 
+(declaim (ftype (function ((or symbol string)) (values keyword)) kwd))
 (defsubst kwd (sy-st)
   "Convert the argument, symbol or string, to a keyword."
-  (declare (type (or symbol string) sy-st) (values keyword))
+  (declare (type (or symbol string) sy-st))
   (when (symbolp sy-st) (unintern sy-st) (setq sy-st (symbol-name sy-st)))
   (intern sy-st +kwd+))
 
 (defsubst keyword-concat (&rest args)
   "Concatenate objects into a keyword."
-  (declare (values keyword))
   (kwd (apply #'concatenate 'string (mapcar #'string args))))
 
+(declaim (ftype (function (stream) (values keyword)) read-key))
 (defsubst read-key (stream)
   "Read the symbol and make it a keyword."
-  (declare (stream stream) (values keyword))
+  (declare (stream stream))
   (let ((*package* +kwd+)) (read stream)))
 
 (defun keyword= (key1 key2 &key (suffix1 nil suff1p) (suffix2 nil suff2p))

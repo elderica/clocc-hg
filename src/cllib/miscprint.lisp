@@ -48,9 +48,10 @@
 
 (defun print-package (pp &optional (out *standard-output*) verbose)
   "Print the package information.
-Return 2 values: the number of accessible symbols and that of external ones."
-  (declare (type (or symbol string package) pp) (stream out)
-           (values index-t index-t index-t))
+Return 3 values: the number of accessible symbols,
+the number of external symbols, and
+the number of symbols without any bindings."
+  (declare (type (or symbol string package) pp) (stream out))
   (let ((pa (if (packagep pp) pp
                 (or (find-package pp)
                     (find-package (string-upcase (string pp))))))

@@ -28,13 +28,15 @@
 ;;;
 ;;;
 
+;(declaim (ftype (function (??) (values (simple-array double-float (*))
+;                                       double-float (double-float 0.0d0 1.0d0)
+;                                       (double-float 0.0d0)))
+;                regress-n))
 (defun regress-n (yy xx nx &key (func #'aref))
   "Returns: vector [b1 ... bn], free term, Rmult, Ftest."
   (declare (type (simple-array double-float (*)) yy)
            (type simple-array xx) (fixnum nx)
-           (type (function (array fixnum fixnum) double-float) func)
-           (values (simple-array double-float (*)) double-float
-                   (double-float 0.0d0 1.0d0) (double-float 0.0d0)))
+           (type (function (array fixnum fixnum) double-float) func))
   (let ((mx (make-array (list nx nx) :element-type 'double-float
                         :initial-element 0.0d0))
         (cfs (make-array nx :element-type 'double-float ; coeffs

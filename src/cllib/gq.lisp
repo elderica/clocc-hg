@@ -73,9 +73,9 @@ change:~15t~7,2f~35thigh:~45t~7,2f
               (dd-nav dd) (dd-bid dd) (dd-pre dd) (dd-ask dd)
               (dd-chg dd) (dd-hgh dd) (dd-prc dd) (dd-low dd))))
 
+(declaim (ftype (function () (values date)) gq-guess-date))
 (defun gq-guess-date ()
   "Guess the date: the last date when the quote could be available."
-  (declare (values date))
   (multiple-value-bind (se mi ho da mo ye wd) (get-decoded-time)
     (declare (ignore se mi) (fixnum ho da mo ye wd))
     (let ((td (mk-date :ye ye :mo mo :da da)))

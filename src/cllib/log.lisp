@@ -35,17 +35,16 @@ Taken from CLtL2 p602."
 ;;; {{{ progress reporting
 ;;;
 
+;;(declaim (ftype (function (t) (values (double-float 0.0d0))) get-float-time))
 (defun get-float-time (&optional (run t))
   "Return the run (or real) time counter, as a double float."
-  (declare (values (double-float 0.0d0)))
   (dfloat (if run (get-internal-run-time) (get-internal-real-time))))
 
 (defun elapsed (bt run &optional fmt)
   "Return the time in seconds elapsed since BT,
 previously set using `get-float-time'.
 If FMT is non-NIL, return the corresponding string too."
-  (declare (type (double-float 0.0d0) bt)
-           (values (double-float 0.0d0) (or null simple-string)))
+  (declare (type (double-float 0.0d0) bt))
   (let ((nn (with-type double-float
               (/ (- (get-float-time run) bt)
                  (dfloat internal-time-units-per-second)))))

@@ -250,7 +250,7 @@ is a float, such as the GDP, VALUE is a cons with the range.
 
 (defun str-core (rr)
   "Get the substring of the string from the first `>' to the last `<'."
-  (declare (simple-string rr) (values (or null simple-string)))
+  (declare (simple-string rr))
   (let ((cc (subseq rr (1+ (position #\> rr))
 		    (position #\< rr :from-end t :start 2))))
     (cond ((string= "-" cc) "NIL") ((string= "<BR>" cc) nil)
@@ -258,7 +258,7 @@ is a float, such as the GDP, VALUE is a cons with the range.
 
 (defun read-some-lines (st)
   "Read some lines from tag to tag."
-  (declare (stream st) (values (or null simple-string)))
+  (declare (stream st))
   (do* ((rr (read-line st) (read-line st))
 	(cp (position #\< rr :from-end t :start 2) (position #\< rr))
 	(cc (subseq rr (1+ (position #\> rr)) cp)
