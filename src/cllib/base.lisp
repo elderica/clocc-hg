@@ -1,4 +1,4 @@
-;;; File: <base.lisp - 1999-04-15 Thu 15:53:01 EDT sds@eho.eaglets.com>
+;;; File: <base.lisp - 1999-04-18 Sun 01:09:28 EDT sds@eho.eaglets.com>
 ;;;
 ;;; Basis functionality, required everywhere
 ;;;
@@ -12,6 +12,9 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.16  1999/04/15 19:53:35  sds
+;;; (current-time): print `tz->string' with ~a.
+;;;
 ;;; Revision 1.15  1999/04/12 21:34:26  sds
 ;;; (tz->string): new function: print the TimeZone to a string like "-0400"
 ;;; (current-time): use it.
@@ -77,8 +80,10 @@
            #+(or clisp gcl) (declaration values))
   (setq *read-default-float-format* 'double-float *print-case* :downcase
         *print-array* t)
-  #+cmu (setq *gc-verbose* nil *bytes-consed-between-gcs* 32000000
-              *efficiency-note-cost-threshold* 20)
+  #+cmu (setf *gc-verbose* nil *bytes-consed-between-gcs* 32000000
+              *efficiency-note-cost-threshold* 20
+              (alien:extern-alien "pointer_filter_verbose" alien:unsigned) 0
+              (alien:extern-alien "gencgc_verbose" alien:unsigned) 0)
   ;; (lisp::fd-stream-buffering system:*stdout*) :none
   ;; (lisp::fd-stream-buffering system:*tty*) :none)
   ;; #+cmu (pushnew "x86f" make::*standard-binary-file-types* :test #'equal)
