@@ -1,4 +1,4 @@
-;;; File: <gnuplot.lisp - 1998-11-17 Tue 16:16:10 EST sds@eho.eaglets.com>
+;;; File: <gnuplot.lisp - 1999-01-06 Wed 22:59:06 EST sds@eho.eaglets.com>
 ;;;
 ;;; Gnuplot interface
 ;;;
@@ -12,6 +12,10 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.22  1998/11/17 21:20:01  sds
+;;; Reset output with "set output" after printing to flush the buffers, so
+;;; that the printing takes effect immediately.
+;;;
 ;;; Revision 1.21  1998/11/13 21:38:06  sds
 ;;; Added option `lines' to `plot-dated-lists'.
 ;;;
@@ -102,7 +106,7 @@
 (defcustom *gnuplot-path-console* simple-string "c:/bin/cgnuplot.exe"
   "*The path to the console gnuplot executable.")
 (defcustom *gnuplot-printer* simple-string
-  (format nil #+win32 "\\\\server1\\~a" #+unix "|lpr -h -P~a"
+  (format nil #+win32 "\\\\server1\\~a" #+unix "|lpr -h~@[ -P~a~]"
           (getenv "SDSPRT"))
   "*The printer to print the plots.")
 #+unix
@@ -143,15 +147,14 @@ PLOT means:
                                 (pipe-output *gnuplot-path*))))))
       (declare (stream ,str))
       (unwind-protect (progn (apply #'plot-header ,str ,plot ,@header) ,@body)
-        (force-output ,str)
-        #+win32 (close ,str)
+        #+win32 (close-pipe ,str)
         #+win32
         (ecase ,plot
           ((t :plot)
            (fresh-line *gnuplot-msg-stream*)
            (princ "Starting gnuplot..." *gnuplot-msg-stream*)
            (force-output *gnuplot-msg-stream*)
-           (close (pipe-output *gnuplot-path* "/noend" *gnuplot-file*))
+           (close-pipe (pipe-output *gnuplot-path* "/noend" *gnuplot-file*))
            (format *gnuplot-msg-stream* "done.~%"))
           (:wait
            (fresh-line *gnuplot-msg-stream*)
@@ -177,7 +180,8 @@ Type \"load '~a'\" at the gnuplot prompt.~%"
                   (format ,str "set output~%"))
           (:file (format *gnuplot-msg-stream* "~&Wrote `~a'.
 Type \"load '~a'\" at the gnuplot prompt.~%"
-                         *gnuplot-file* *gnuplot-file*)))))))
+                         *gnuplot-file* *gnuplot-file*)))
+        #+unix (force-output ,str)))))
 
 (defun plot-header (str plot &key (xlabel "x") (ylabel "y") data-style
                     timefmt xb xe (title "plot") legend (xtics t) (ytics t)
@@ -384,14 +388,14 @@ Most of the keys are the gnuplot options (see the documentation
 for `plot-header' and `with-plot-stream' for details.)
 FNL is a list of (name . function).
 E.g.: (plot-functions  (list (cons 'sine #'sin)) 0 pi 100)"
-  (declare (list fnl) (real xmin xmax) (type (unsigned-byte 20) numpts))
+  (declare (list fnl) (real xmin xmax) (type index-t numpts))
   (remf opts :plot)
   (with-plot-stream (str plot :xb xmin :xe xmax :title title
                      :data-style (or data-style (plot-data-style numpts)) opts)
     (format str "plot~{ '-' using 1:2 title \"~a\"~^,~}~%" (mapcar #'car fnl))
     (dolist (fn fnl)
       (dotimes (ii (1+ numpts) (format str "e~%"))
-        (declare (type (unsigned-byte 20) ii))
+        (declare (type index-t ii))
         (let ((xx (dfloat (/ (+ (* ii xmax) (* (- numpts ii) xmin)) numpts))))
           (format str "~f~20t~f~%" xx (funcall (cdr fn) xx)))))))
 
