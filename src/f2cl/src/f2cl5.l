@@ -1760,18 +1760,18 @@
 
 
 (defun get-implicit-type (vble)
-   (do ((decls *implicit_vble_decls* (cdr decls))
-        (vble-str (string vble)))
-       ((null decls) nil)
-       (if
-        (do ((vble-ranges (cdar decls) (cdr vble-ranges)))
-           ((null vble-ranges) nil)
-           (if (or (and (cdar vble-ranges)
-                        (string>= vble-str (string (caar vble-ranges)))
-                        (string<= vble-str (string (cadar vble-ranges))))
-                   (string= vble-str (string (caar vble-ranges))))
-               (return t)))
-        (return (caar decls)))))
+  (do ((decls *implicit_vble_decls* (cdr decls))
+       (vble-str (aref (string vble) 0)))
+      ((null decls) nil)
+    (if
+     (do ((vble-ranges (cdar decls) (cdr vble-ranges)))
+	 ((null vble-ranges) nil)
+       (if (or (and (cdar vble-ranges)
+		    (string>= vble-str (string (caar vble-ranges)))
+		    (string<= vble-str (string (cadar vble-ranges))))
+	       (string= vble-str (string (caar vble-ranges))))
+	   (return t)))
+     (return (caar decls)))))
 
 
 (defun get_array_type (decl vble-is-formal-arg) 
@@ -2618,6 +2618,13 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.93  2002/03/18 23:34:16  rtoy
+;;; Was not correctly handling some implied do loops containing multiple
+;;; variables in the loop in data statements.  Fix that and clean up some
+;;; of the processing.  (Should probably do this kind of work in the f2cl
+;;; compiler instead of at runtime, but it's only done once at runtime, so
+;;; it's not a big deal.)
+;;;
 ;;; Revision 1.92  2002/03/16 14:27:34  rtoy
 ;;; Remove some print statements that were left in.
 ;;;
