@@ -121,11 +121,11 @@ but there is a TYPE slot, move TYPE into NAME."
   "Like TRUENAME, but handle non-existing files.
 Note that the directory must exist."
   (or (ignore-errors (truename path))
-      (let ((dir (make-pathname :name nil :type nil :version nil
-                                :defaults path)))
-        (make-pathname :name (pathname-name path) :type (pathname-type path)
-                       :version (pathname-version path)
-                       :defaults (or (truename dir) dir)))))
+      (make-pathname :name (pathname-name path) :type (pathname-type path)
+                     :version (pathname-version path)
+                     :defaults (truename (make-pathname
+                                          :name nil :type nil :version nil
+                                          :defaults path)))))
 
 ;;;
 ;;; logical pathnames
