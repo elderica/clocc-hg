@@ -98,7 +98,9 @@
 ;; When using CLISP, you need version 2000-03-06 or newer. The older version
 ;; 1999-07-22 had serious bugs with logical pathnames.
 
-(defvar *clocc-root* "/usr/local/src/clocc/"
+(defvar *clocc-root*
+  #-(or win32 windows) "/usr/local/src/clocc/"
+  #+(or win32 windows) "c:/gnu/clocc/"
   "*The root CLOCC directory.")
 
 (setf (logical-pathname-translations "clocc")
