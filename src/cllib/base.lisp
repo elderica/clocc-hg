@@ -1,4 +1,4 @@
-;;; File: <base.lisp - 1999-06-03 Thu 13:24:42 EDT sds@goems.com>
+;;; File: <base.lisp - 1999-06-03 Thu 13:30:40 EDT sds@goems.com>
 ;;;
 ;;; Basis functionality, required everywhere
 ;;;
@@ -12,6 +12,11 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.22  1999/06/03 17:26:37  sds
+;;; (with-gensyms): new macro.
+;;; (map-in): use it.
+;;; (compose): treat quoted symbols properly.
+;;;
 ;;; Revision 1.21  1999/05/24 19:47:04  sds
 ;;; (package-short-name): made public.
 ;;; (quit): made public.
@@ -615,7 +620,10 @@ E.g., (compose abs (dl-val zz) 'key) ==>
   (lambda (yy) (abs (funcall (dl-val zz) (funcall key yy))))"
   (labels ((rec (xx yy)
              (let ((rr (list (car xx) (if (cdr xx) (rec (cdr xx) yy) yy))))
-               (if (consp (car xx)) (cons 'funcall rr) rr))))
+               (if (consp (car xx))
+                   (cons 'funcall (if (eq (caar xx) 'quote)
+                                      (cons (cadar xx) (cdr rr)) rr))
+                   rr))))
     (with-gensyms ("COMPOSE-" arg)
       (let ((ff (rec functions arg)))
         `(lambda (,arg) ,ff)))))
