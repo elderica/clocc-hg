@@ -129,7 +129,7 @@ STYLE can be either :CMU or :ALLEGRO."
          (unless done (setq done (string-equal ho host)))
          (when verbose (format t ";;   host ~s~%" ho))
          (setf (logical-pathname-translations ho) (eval (read fi))))))
-    (:cmucl
+    (:cmu
      (with-open-file (fi file :if-does-not-exist nil)
        (unless fi (return-from load-logical-host-def nil))
        (when verbose
