@@ -783,7 +783,11 @@
 	     (nreverse v)))
 	 (select-vars (k n vlist)
 	   (append (list (elt vlist k))
-		   (subseq vlist n))))
+		   (subseq vlist n)))
+	 (make-ignore (k n vlist)
+	   (append (subseq vlist 0 k)
+		   (subseq vlist (1+ k) n)))
+	   )
     (let* ((count 0)
 	   (n-entries (1+ (length *entry-points*)))
 	   (n-returns (+ n-entries (length args)))
@@ -791,6 +795,7 @@
       (cons `(defun ,main ,args
 	      (multiple-value-bind ,vlist
 		  (,entry ',main ,@args)
+		(declare (ignore ,@(make-ignore 0 n-entries vlist)))
 		(values ,@(select-vars 0 n-entries vlist))))
 	    (mapcar #'(lambda (x)
 			(let ((vlist (make-vars n-returns)))
@@ -798,6 +803,7 @@
 			  `(defun ,(first x) ,@(rest x)
 			    (multiple-value-bind ,vlist
 				(,entry ',(first x) ,@(second x))
+			      (declare (ignore ,@(make-ignore count n-entries vlist)))
 			      (values ,@(select-vars count n-entries vlist))))
 			  ))
 		    *entry-points*)))))
@@ -1123,12 +1129,22 @@
      ;;(format t "all-decls = ~A~%" all-decls)
 
      (when *entry-points*
+       ;; First make sure the entry points are consistent in name and
+       ;; number of arguments.  We don't support anything else (yet?)
+       (unless (every #'(lambda (f)
+			  (let ((result (equalp (second f) arglist)))
+			    (unless result
+			      (warn "ENTRY ~A doesn't match the expected arg list: ~A~%" f arglist))
+			    result))
+		      *entry-points*)
+	 (warn "Some ENTRY points don't match the expected signature ~A~%"
+	       arglist))
        (setf entry-points
 	     (mapcar #'(lambda (x)
 			 (let ((name (first x)))
 			 `(if (eq %name% ',name) (go ,name))))
 		     *entry-points*)))
-     (format t "entry-points = ~A~%" entry-points)
+     ;;(format t "entry-points = ~A~%" entry-points)
        
      (setq prog-bit
 	   (if (or *save_vbles* *auto-save-data*)
@@ -2681,6 +2697,10 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.97  2002/03/19 06:03:14  rtoy
+;;; First pass at adding support for ENTRY statements (multiple entry
+;;; points into a routine).  See NOTES for description of technique.
+;;;
 ;;; Revision 1.96  2002/03/19 04:11:46  rtoy
 ;;; GET-UPGRADED-FUN-ARG-TYPE wasn't correctly returning the type of a
 ;;; function call.  Didn't matter before, but with the recent coercion
