@@ -244,7 +244,7 @@
         (setf (default-directory) path)
         (setq path (merge-pathnames "cvs.log" path))
         (unwind-protect
-            (with-open-pipe (pipe (pipe-input "cvs" "log"))
+            (with-open-pipe (pipe (pipe-input "cvs" "-q" "log"))
               (with-open-file (log path :direction :output
                                    :if-exists :supersede)
                 (loop :for line = (read-line pipe nil nil)
