@@ -27,7 +27,7 @@
 
 (defun list-format (item-fmt)
   "Return the format string for list printing, printing the item as ITEM-FMT.
-Taken from CLtL2 p602."
+See CLtL2 p602 and <http://www.lisp.org/HyperSpec/Body/sec_22-3-7-2.html>"
   (format nil "~~#[ none~~; ~a~~; ~a and ~a~~:;~~@{~~#[~~; and~~] ~a~~^,~~}~~]"
           item-fmt item-fmt item-fmt item-fmt))
 
