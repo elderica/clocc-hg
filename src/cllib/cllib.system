@@ -45,7 +45,7 @@
      #+clisp (:file "octave" :depends-on ("base"))
      (:file "prompt" :depends-on ("base"))
      (:file "rpm" :depends-on ("base" "url"))
-     (:file "server" :depends-on ("base" "log"))
+     (:file "server" :depends-on ("base" "log" "prompt"))
      (:file "simple" :depends-on ("base"))
      (:file "sorted" :depends-on ("base" "tilsla" "math"))
      (:file "stat" :depends-on ("base" "math" "withtype"))

@@ -11,6 +11,8 @@
   (require :base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `list-format'
   (require :log (translate-logical-pathname "cllib:log"))
+  ;; `package-short-name'
+  (require :prompt (translate-logical-pathname "cllib:prompt"))
   (require :net (translate-logical-pathname "port:net")))
 
 (in-package :cllib)
