@@ -3,6 +3,10 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.2  2000/07/21 21:18:32  rtoy
+;;; If besj0 and dgamma functions exist, use them in the solutions so we
+;;; can compute the absolute error.
+;;;
 ;;; Revision 1.1  2000/07/20 15:28:25  rtoy
 ;;; Initial revision
 ;;;
@@ -1577,3 +1581,8 @@ Expect no non-zero error codes
       (do ((alpha 0.0d0 (+ alpha 1d0)))
 	  ((> alpha 10d0))
 	(quad alpha)))))
+
+(defun do-tests ()
+  (loop for k from 1 upto 17
+	do
+	(funcall (intern (format nil "TST~D" k)))))
