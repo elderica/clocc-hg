@@ -701,7 +701,6 @@ The local file is located in directory LOC and has the same name
  as the remote one."
   (declare (type url url))
   (mesg :log *url-output* "~& *** getting `~a'...~%" url)
-  (remf opts :max-retry) (remf opts :timestamp)
   (with-open-url (sock url)
     (if (and timestamp
              (> timestamp
@@ -709,7 +708,8 @@ The local file is located in directory LOC and has the same name
                     (get-universal-time))))
         (mesg :log *url-output* " --- ignored: file too old~%")
         (multiple-value-bind (tot el st)
-            (apply #'ftp-get-file sock (url-path-file url) loc opts)
+            (apply #'ftp-get-file sock (url-path-file url) loc
+                   (remove-plist opts :max-retry :timestamp))
           (mesg :log *url-output* " *** done [~:d bytes, ~a, ~:d bytes/sec]~%"
                 tot st (round tot el))))))
 
@@ -993,13 +993,12 @@ Keywords: `timeout', `max-retry', `out', `err'."
   (let* ((str-address (string address))
          (pos (position #\@ str-address :test #'char=)))
     (declare (simple-string str-address) (type (unsigned-byte 10) pos))
-    (remf keys :gnu)
     (apply #'dump-url
            (make-url :prot (if gnu :cfinger :finger)
                      :host (subseq str-address (1+ pos))
                      :path (concatenate 'string "/"
                                         (subseq str-address 0 pos)))
-           :fmt "~*~a~%" keys)))
+           :fmt "~*~a~%" (remove-plist keys :gnu))))
 
 (provide :cllib-url)
 ;;; }}} url.lisp ends here
