@@ -12,6 +12,7 @@
     ((:file "ext")
      (:file "gray" :depends-on ("ext"))
      (:file "net" :depends-on ("ext" "sys"))
+     (:file "path" :depends-on ("ext"))
      (:file "proc" :depends-on ("ext"))
      (:file "shell" :depends-on ("ext"))
      (:file "sys" :depends-on ("ext")))
