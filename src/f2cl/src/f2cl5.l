@@ -784,6 +784,7 @@
 				      (flatten-helper (cdr x) r))))))
     (flatten-helper x nil)))
 
+#+nil
 (defun entry-functions (entry main args)
   (flet ((make-vars (n)
 	   (let ((v '()))
@@ -815,6 +816,36 @@
 			      (declare (ignore ,@(make-ignore count n-entries vlist)))
 			      (values ,@(select-vars count n-entries vlist))))
 			  ))
+		    *entry-points*)))))
+
+(defun entry-functions (entry main args)
+  (flet ((make-vars (n)
+	   (let ((v '()))
+	     (dotimes (k n)
+	       (push (intern (format nil "V~D" k)) v))
+	     (nreverse v)))
+	 (select-vars (k n vlist)
+	   (append (list (elt vlist k))
+		   (subseq vlist n)))
+	 (make-ignore (k n vlist)
+	   (append (subseq vlist 0 k)
+		   (subseq vlist (1+ k) n)))
+	   )
+    (let* ((count 0)
+	   (n-entries 1)
+	   (n-returns (length args))
+	   (vlist (make-vars n-returns)))
+      (cons `(defun ,main ,args
+	      (multiple-value-bind ,vlist
+		  (,entry ',main ,@args)
+		(values ,@vlist)))
+	    (mapcar #'(lambda (x)
+			(let ((vlist (make-vars n-returns)))
+			  (incf count)
+			  `(defun ,(first x) ,@(rest x)
+			    (multiple-value-bind ,vlist
+				(,entry ',(first x) ,@(second x))
+			      (values ,@vlist)))))
 		    *entry-points*)))))
 
 (defun insert-declarations (fort-fun) 
@@ -995,7 +1026,7 @@
 		       (second (second setter)))
 		      ((eq 'data-implied-do (first setter))
 		       (third setter))))))
-       (when (and *auto-save-data* *data-init*)
+       (when (and *auto-save-data* *data-init* (not (eq *save_vbles* '%save-all-locals%)))
 	 (setf *save_vbles*
 	       (remove-duplicates
 		(append *save_vbles*
@@ -1019,6 +1050,11 @@
 			      (member v *external-function-names*)))
 		      *undeclared_vbles*))
 
+     (when (eq *save_vbles* '%save-all-locals%)
+       ;; If *save_vbles* is the magic '%save-all-locals%, we want to
+       ;; save all local variables.
+       (setf *save_vbles* (concatenate 'list *declared_vbles* *undeclared_vbles*)))
+       
      ;;(format t "*key_params* = ~S~%" *key_params*)
      ;;(format t "key-params = ~S~%" key-params)
 
@@ -2767,6 +2803,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.112  2003/11/13 05:39:09  rtoy
+;;; Generate code to use the new macro WITH-MULTI-ARRAY-DATA.
+;;;
 ;;; Revision 1.111  2003/11/12 05:32:49  rtoy
 ;;; The test for matching arglist for ENTRY points was wrong.  Fix it.
 ;;;
