@@ -1,4 +1,4 @@
-;;; File: <octave.lisp - 1998-02-12 Thu 16:43:06 EST sds@mute.eaglets.com>
+;;; File: <octave.lisp - 1998-04-21 Tue 14:27:13 EDT sds@mute.eaglets.com>
 ;;;
 ;;; Octave interface
 ;;;
@@ -12,6 +12,9 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.4  1998/02/12 21:43:09  sds
+;;; Switched to `defgeneric' and `require'.
+;;;
 ;;; Revision 1.3  1997/10/08 15:46:16  sds
 ;;; Moved make-dx-mx here.
 ;;;
@@ -19,8 +22,10 @@
 ;;; flush-stream is not used anymore.
 ;;;
 
+(in-package "CL-USER")
+
 (eval-when (load compile eval)
-  (sds-require 'util) (sds-require 'date) (sds-require 'currency))
+  (sds-require "base") (sds-require "date") (sds-require "currency"))
 
 (defun dot0 (l0 l1 &key (key #'value) key0 key1)
   "Compute the dot-product of the two sequences,
@@ -31,7 +36,9 @@ presumed to be of the same size."
 			   (* (funcall key0 r0) (funcall key1 r1))) l0 l1)
 	  :initial-value 0.0))
 
-(defvar *octave-program* "c:/bin/octave.exe" "*The octave executable.")
+(defcustom *octave-program* simple-string
+  #+win32 "c:/bin/octave.exe" #+unix "/usr/local/bin/octave"
+  "*The octave executable.")
 
 (defun flush-stream (in-str &optional (out-str t))
   "Flush the stream IN-STR, dumping the stuff to the stream OUT-STR."
@@ -77,13 +84,14 @@ output_precision = 20~%AA=[")
     (close oc-io)
     ans))
 
-(defvar *dx-matrix* nil "The matrix of the currencies' dot products.")
-(defvar *dx-vector* nil "The vector of the currencies' dot products.")
-(defvar *dx-weights* nil "*The new weights.")
+(defcustom *dx-matrix* array (make-array nil)
+  "The matrix of the currencies' dot products.")
+(defcustom *dx-vector* array (make-array nil)
+  "The vector of the currencies' dot products.")
 
 (defun make-dx-mx ()
   "Make the matrix for DX."
-  (let (hists (dim 0) (dx-h (currency-hist (get-currency 'dx))))
+  (let (hists (dim 0) (dx-h (currency-hist (find-currency 'dx))))
     (dolist (cr *currencies-table*)
       (unless (zerop (currency-wt cr))
 	(push (currency-hist cr) hists)
