@@ -55,7 +55,7 @@
      (:file "iter" :depends-on ("base" "simple" "withtype" "log" "math"))
      (:file "laser" :depends-on ("base" "log"))
      (:file "list" :depends-on ("base" "simple"))
-     (:file "log" :depends-on ("base" "withtype" "tilsla"))
+     (:file "log" :depends-on ("base" "withtype" "tilsla" "simple"))
      (:file "math" :depends-on
             ("base" "simple" "withtype" "fileio" "log" "list"))
      (:file "matrix" :depends-on ("base" "withtype"))
