@@ -12,7 +12,7 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  #-(or allegro clisp cmu lispworks sbcl)
+  #-(or allegro clisp cmu lispworks openmcl sbcl scl)
   (error 'not-implemented :proc "Gray streams")
   (require :port-ext (translate-logical-pathname "clocc:src;port;ext"))
   #+cmu
@@ -22,8 +22,9 @@
 (in-package #+allegro :excl
             #+(and clisp      lisp=cl)  :ext
             #+(and clisp (not lisp=cl)) :lisp
-            #+cmu :ext
+            #+(or cmu scl) :ext
             #+lispworks :stream
+            #+openmcl :ccl
             #+sbcl :sb-gray)
 
 (let ((cl-user::gray-symbols
