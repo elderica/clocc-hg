@@ -1,6 +1,6 @@
 ;;; -*- Lisp -*-
 ;;;
-;;; CLLIB - a Library of useful utilities
+;;; CLLIB - a library of useful utilities
 ;;;
 ;;; $Id$
 ;;; $Source$
@@ -11,7 +11,7 @@
     :source-extension "lisp"
     :components
     ((:file "animals" :depends-on
-            ("base" "string" "miscprint" "fileio" "symb"))
+            ("base" "string" "miscprint" "fileio" "closio" "symb"))
      (:file "autoload" :depends-on ("base" "fileio"))
      (:file "base")
      (:file "card" :depends-on
