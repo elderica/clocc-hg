@@ -15,7 +15,7 @@ NET = $(TOP)/clocc base url gq rpm
 SCRIPT = $(TOP)/clocc base getopt
 SYSTEM := cllib
 ZIPEXTRA = ../defsystem-3.x/defsystem.lisp ../tools/metering/metering.lisp \
-	$(TOP)/etc/GNU-GPL
+	$(TOP)/etc/GNU-GPL $(TOP)/bin/run-lisp
 DOCFILES = $(SYSTEM).html entities.xml
 include $(TOP)/clocc.mk
 
