@@ -10,20 +10,6 @@
 ;;;
 ;;; $Id$
 ;;; $Source$
-;;; $Log$
-;;; Revision 1.4  2000/03/22 23:54:05  sds
-;;; use package prefixes for CMU CL and GCL
-;;;
-;;; Revision 1.3  2000/03/03 22:01:03  sds
-;;; fixed provide statements
-;;;
-;;; Revision 1.2  2000/02/18 21:16:45  sds
-;;; in-package :port now; make system works
-;;;
-;;; Revision 1.1  1999/11/24 17:07:09  sds
-;;; Cross-implementation Portability System
-;;;
-;;;
 
 (eval-when (compile load eval)
   (require :ext (translate-logical-pathname "clocc:src;port;ext")))
@@ -45,8 +31,9 @@
   #+clisp (apply #'lisp:run-program prog :arguments args opts)
   #+cmu (ext:run-program prog args :wait wait)
   #+gcl (apply #'si:run-process prog args)
+  #+liquid (apply #'lcl:run-program prog args)
   #+lispworks (sys::call-system (format nil "~a~{ ~a~}" prog args))
-  #-(or allegro clisp cmu gcl lispworks)
+  #-(or allegro clisp cmu gcl liquid lispworks)
   (error 'not-implemented :proc (list 'run-prog prog opts)))
 
 (defun pipe-output (prog &rest args)
@@ -58,7 +45,7 @@
                                             :output t :wait nil))
   #+gcl (si::fp-input-stream (apply #'si:run-process prog args))
   #+lispworks (sys::open-pipe (format nil "~a~{ ~a~}" prog args)
-                              :directory :output)
+                              :direction :output)
   #-(or allegro clisp cmu gcl lispworks)
   (error 'not-implemented :proc (list 'pipe-output prog args)))
 
@@ -71,7 +58,7 @@
                                              :input t :wait nil))
   #+gcl (si::fp-output-stream (apply #'si:run-process prog args))
   #+lispworks (sys::open-pipe (format nil "~a~{ ~a~}" prog args)
-                              :directory :input)
+                              :direction :input)
   #-(or allegro clisp cmu gcl lispworks)
   (error 'not-implemented :proc (list 'pipe-input prog args)))
 
