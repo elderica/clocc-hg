@@ -245,7 +245,8 @@
         (setq path (merge-pathnames "cvs.log" path))
         (unwind-protect
             (with-open-pipe (pipe (pipe-input "cvs" "log"))
-              (with-open-file (log path :direction :output)
+              (with-open-file (log path :direction :output
+                                   :if-exists :supersede)
                 (loop :for line = (read-line pipe nil nil)
                       :while line :do (write-line line log))
                 (format t "done [~:d byte~:p]" (file-length log))))
