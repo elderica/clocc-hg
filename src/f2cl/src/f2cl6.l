@@ -589,7 +589,9 @@
 		 ;; was read.  Because of skip-spaces above, this CHAR
 		 ;; is not necessarily the last character read anymore.
 		 ;; We have to modify the stream directly now.
-		 (let ((p (peek-char nil *inp* nil 'eof t)))
+		 ;;
+		 ;; Do we want recursive-p to be T here or not?
+		 (let ((p (peek-char nil *inp* nil 'eof #+nil t)))
 		   (if (equal p 'eof)
 		       (setq *inp* (make-string-input-stream (string char)))
 		       (setq *inp* 
@@ -605,6 +607,12 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.37  2003/09/20 13:56:55  rtoy
+;;; [ 807859 ] translate-pathname strangeness in f2cl6.l
+;;;
+;;; Use merge-pathnames instead of translate-pathnames to compute the name
+;;; of the output file.
+;;;
 ;;; Revision 1.36  2003/07/12 18:44:04  rtoy
 ;;; Include directory and name when computing the name of the output file.
 ;;;
