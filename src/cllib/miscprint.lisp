@@ -132,10 +132,12 @@ The inverse is `hash-table->alist'."
 
 ;;; beware that some lisps (e.g., CLISP and CMUCL) will not use this
 ;;; method for hash-tables.  it does work with Allegro though.
+(unlock-package :common-lisp)
 (defmethod print-object ((ht hash-table) (out stream))
   (if *print-readably*
       (format out "#h~s" (hash-table->alist ht))
       (call-next-method)))
+(restore-package-lock :common-lisp)
 
 ;;;
 ;;; property lists
