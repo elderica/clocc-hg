@@ -486,7 +486,7 @@ Return a string (with whitespace compressed with `compress-whitespace'
 if the keyword argument `clean' is non-NIL, which is the default, and
 the unicode entities &#nnnn; replaced with the appropriate characters
 base the keyword argument BASE, when it is non-NIL, default - NIL)
-TERM can be a predicate, a chacacter or a sequence of chacacters."
+TERM can be a predicate, a character or a sequence of characters."
   (loop :with endp = (etypecase term
                        (function term)
                        (character (lambda (ch) (char= ch term)))
