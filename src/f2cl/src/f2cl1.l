@@ -284,7 +284,7 @@ INPUT-FILE               File containing Fortran code
       (values output-file))))
 
 (defun f2cl-compile (filename &key
-			      (output-file t)
+			      (output-file (compile-file-pathname filename))
 			      error-file prune-labels include-comments
 			      (auto-save t) (relaxed-array-decls t)
 			      (coerce-assigns :as-needed)
@@ -1370,10 +1370,11 @@ FILENAME                 File containing Fortran code
 	   ;; from the expression.  This function replaces that
 	   ;; expression with the actual negative number if the
 	   ;; expression is, in fact, a number.
-	   (if (and (eq '- (first expr))
-		    (numberp (second expr)))
-	       (list (- (second expr)))
-	       expr)))
+	   (cond ((and (eq '- (first expr))
+		       (numberp (second expr)))
+		  (list (- (second expr))))
+		 (t
+		  expr))))
     (let ((fixed-up-bds (mapcar #'fixup-negative (list-split '|:| bds))))
       ;; If a bound is "*", just return "*".
       (if (null (cdr fixed-up-bds))
@@ -1937,8 +1938,20 @@ FILENAME                 File containing Fortran code
 				   ((null vbles) nil)
 				 (if (and (eq (car nlist) (caar vbles))
 					  (cdar vbles))
-				     (update_cm_array_dims (car nlist)
-							   (cdar vbles))))))
+				     ;; Array has been dimensioned
+				     ;; elsewhere.  Update the
+				     ;; dimensions.  The dimensions
+				     ;; have already been parsed, so
+				     ;; "unparse" them by putting a :
+				     ;; between the dimensions.
+				     ;; FIXME: This is really gross!
+				     (update_cm_array_dims
+				      (car nlist)
+				      (car (mapcar #'(lambda (v)
+						       (list (first v)
+							     '|:|
+							     (second v)))
+						   (cdar vbles))))))))
 			    )))))
     ;;(format t "*common_array_dims* = ~A~%" *common_array_dims*)
     nil))
@@ -2307,6 +2320,8 @@ Senac syntax:... | op '| ...|)))
   (let ((subseq3 (subsequence x 0 3)))
     (cond ((equalp (subsequence x 0 2) '(double precision))
 	   (remove 'precision x))
+	  ((equalp subseq3 '(real * 4))
+	   (append '(real) (subsequence x 3)))
 	  ((equalp subseq3 '(real * 8))
 	   (append '(double) (subsequence x 3)))
 	  ((equalp subseq3 '(complex * 16))
@@ -2556,6 +2571,9 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.136  2004/08/17 16:09:01  rtoy
+;;; Reinstate make-label here.  This really needs to be cleaned up.
+;;;
 ;;; Revision 1.135  2004/08/14 13:44:37  rtoy
 ;;; Add support for ASSIGN statement.
 ;;;
