@@ -56,10 +56,11 @@ If FMT is non-NIL, return the corresponding string too."
   (with-gensyms ("TIMING-" bt bt1)
     `(let ((,bt (get-float-time)) (,bt1 (get-float-time nil)))
       (unwind-protect (progn ,@body)
-        (when ,done (princ "done" ,out))
-        (when ,run (format ,out " [run: ~/pr-secs/]" (elapsed ,bt t)))
-        (when ,real (format ,out " [real: ~/pr-secs/]" (elapsed ,bt1 nil)))
-        (when ,terpri (terpri ,out))))))
+        (when ,out
+          (when ,done (princ "done" ,out))
+          (when ,run (format ,out " [run: ~/pr-secs/]" (elapsed ,bt t)))
+          (when ,real (format ,out " [real: ~/pr-secs/]" (elapsed ,bt1 nil)))
+          (when ,terpri (terpri ,out)))))))
 
 ;;;
 ;;; }}}{{{ logging
