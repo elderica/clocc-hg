@@ -108,9 +108,17 @@
 		 (write-char ch out)
 		 (incf k)))))))
   
-(defun preprocess (file &key (outfile-name "prep.tmp"))
+(defun preprocess (file &key (outfile-name nil))
   (when *verbose*
     (format t "~&preprocessing begins ...~%"))
+  (unless outfile-name
+    ;; Pick some suitable default based on FILE.
+    (let ((compiled-path (compile-file-pathname file)))
+      (setf outfile-name
+	    (translate-pathname compiled-path
+				(make-pathname :type (pathname-type compiled-path))
+				(make-pathname :type "p")))))
+  (format t "outfile-name = ~A~%" outfile-name)
   (with-open-file (inport file :direction :input)
     (with-open-file (outport outfile-name
 			     :direction :output
@@ -583,6 +591,18 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.29  2002/02/07 20:14:12  rtoy
+;;; f2cl was incorrectly parsing
+;;;
+;;; 	character*10 dig
+;;;
+;;; as
+;;;
+;;; 	character * 10d ig
+;;;
+;;; because we weren't handling the case where the exponent character
+;;; wasn't really an exponent character.
+;;;
 ;;; Revision 1.28  2002/01/05 18:28:34  rtoy
 ;;; Was still erroneously doing an unread-char.  (Caught by Clisp.)
 ;;; Works with Clisp and CMUCL now, and probably others.
