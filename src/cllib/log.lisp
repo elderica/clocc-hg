@@ -19,7 +19,7 @@
 (eval-when (load compile eval)
   (declaim (optimize (speed 3) (space 0) (safety 3) (debug 3))))
 
-(export '(get-float-time elapsed elapsed-1 *print-log* mesg list-format))
+(export '(get-float-time elapsed with-timing *print-log* mesg list-format))
 
 ;;;
 ;;;
@@ -52,10 +52,17 @@ If FMT is non-NIL, return the corresponding string too."
     (declare (double-float nn))
     (if fmt (values nn (format nil "~:/pr-secs/" nn)) nn)))
 
-(defsubst elapsed-1 (bt run)
-  "Return just the string for `elapsed'."
-  (declare (double-float bt) (values simple-string))
-  (nth-value 1 (elapsed bt run t)))
+(defmacro with-timing ((&key (terpri t) (done nil) (run t) (real t))
+                       &body body)
+  "Evaluate the body, then print the timing."
+  (with-gensyms ("TIMING-" bt bt1)
+    `(let ((,bt (get-float-time)) (,bt1 (get-float-time nil)))
+      (unwind-protect (progn ,@body)
+        (when ,done (princ "done")) (princ " [")
+        (when ,run (format t "run: ~:/pr-secs/" (elapsed ,bt t)))
+        (when (and ,run ,real) (princ "/"))
+        (when ,real (format t "real: ~:/pr-secs/" (elapsed ,bt1 nil)))
+        (princ "]") (when ,terpri (terpri))))))
 
 ;;;
 ;;; }}}{{{ logging
