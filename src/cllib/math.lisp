@@ -1,4 +1,4 @@
-;;; File: <math.lisp - 1999-02-24 Wed 23:40:09 EST sds@eho.eaglets.com>
+;;; File: <math.lisp - 1999-02-25 Thu 12:33:23 EST sds@eho.eaglets.com>
 ;;;
 ;;; Math utilities (Arithmetical / Statistical functions)
 ;;;
@@ -12,6 +12,9 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.15  1999/02/25 04:40:36  sds
+;;; `volatility': swapped return values.
+;;;
 ;;; Revision 1.14  1999/02/22 22:56:10  sds
 ;;; Use `:min-len' key in the `call-on-split' call in `volatility'.
 ;;;
@@ -842,6 +845,11 @@ The accessor keys XKEY and YKEY default to CAR and CDR respectively."
                               (type (simple-array double-float (* *)) xx))
                      (expt (aref xx ii 0) (1+ jj))))
       (concatenate 'simple-vector (nreverse vec) (list free)))))
+
+(defsubst lincom (c0 x0 c1 x1)
+  "Compute c0*x0+c1*x1."
+  (declare (double-float c0 x0 c1 x1) (values double-float))
+  (with-type double-float (+ (* c0 x0) (* c1 x1))))
 
 (provide "math")
 ;;; math.lisp ends here
