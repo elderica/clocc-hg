@@ -94,7 +94,7 @@
 (defparameter *protocol-major-version* 11.)
 (defparameter *protocol-minor-version* 0)
 
-(defparameter *x-tcp-port* 6000) ;; add display number
+(defparameter *x-tcp-port*+ 6000) ;; add display number
 
 (defparameter *protocol-families*
   '(;; X11/X.h, Family*

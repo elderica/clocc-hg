@@ -2796,7 +2796,7 @@ If there are no regions given, return a very large region."
 (deftype bitmap () '(array bit (* *)))
 (deftype pixarray () '(array pixel (* *)))
 
-(defconstant *lisp-byte-lsb-first-p* #+lispm t #-lispm nil
+(defconstant +lisp-byte-lsb-first-p+ #+lispm t #-lispm nil
 	     "Byte order in pixel arrays")
 
 (defstruct image
