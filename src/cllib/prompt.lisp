@@ -17,7 +17,7 @@
 #+(and clisp lisp=cl)
 (eval-when (compile load eval) (import 'ext:package-short-name :cllib))
 
-(export '(ext:package-short-name set-cllib-prompt))
+(export '(package-short-name set-cllib-prompt))
 
 #-(and clisp lisp=cl)
 (defun package-short-name (pkg)
