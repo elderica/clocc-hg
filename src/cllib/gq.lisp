@@ -89,7 +89,7 @@ change:~15t~7,2f~35thigh:~45t~7,2f
           (yesterday td (if (= wd 5) 1 2))))))
 
 (defmacro with-url-xml ((var url &key (err '*error-output*)
-                             (max-retry '*url-default-max-retry*)
+                             (max-retry '*url-max-retry*)
                              (timeout '*gq-timeout*))
                         &body body)
   "Open the URL as an XML stream."
