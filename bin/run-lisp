@@ -1,4 +1,4 @@
-c#! /bin/sh
+#! /bin/sh
 # -----------------------------------------------------------------------------
 #     Title: A script to invoke the various CL implementations in a uniform way
 #   Created: 1999-01-16 16:41
