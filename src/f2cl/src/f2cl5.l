@@ -518,7 +518,7 @@
 	 (let ((fun (if (every #'(lambda (e)
 				   (eq e 'integer4))
 			       (mapcar #'(lambda (arg)
-					   (let ((res (get-fun-arg-type (list arg))))
+					   (let ((res (get-fun-arg-type arg)))
 					     ;;(format t "arg = type ~A: ~A~%" res arg)
 					     res))
 				       (rest p)))
@@ -2703,6 +2703,11 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.100  2002/03/19 23:45:47  rtoy
+;;; When calling a function, it's sometimes (fun args) or (funcall fun
+;;; args), so we need to check before we look up the type of the function
+;;; call.
+;;;
 ;;; Revision 1.99  2002/03/19 23:08:24  rtoy
 ;;; Oops.  The array type should default to whatever *array-type* is, not
 ;;; simple-array!
