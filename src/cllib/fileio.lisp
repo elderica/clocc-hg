@@ -25,7 +25,7 @@
           count-sexps code-complexity
           write-list-to-stream write-list-to-file
           read-list-from-stream read-list-from-file
-          write-to-file read-from-file append-to-file
+          pr write-to-file read-from-file append-to-file
           read-trim skip-to-line skip-search skip-blanks read-non-blanks))
 
 ;;;
@@ -164,6 +164,18 @@ EOF defaults to `+eof+'.
 ;;;
 ;;; }}}{{{ Read/Write object
 ;;;
+
+;;;###autoload
+(defun pr (obj &optional (str *standard-output*) (nice t))
+  "Print the OBJECT readably to the STREAM (default `*standard-output*').
+Set `*print-circle*' and `*print-pretty*' to the third argument
+NICE (default T).  Uses `with-standard-io-syntax'."
+  (declare (stream str))
+  (with-standard-io-syntax
+    (let (#+clisp (lisp:*print-indent-lists* 1)
+          #+clisp (lisp:*print-rpars* nil))
+      (write obj :stream str :case :downcase :circle nice :pretty nice)))
+  (values))
 
 ;;;###autoload
 (defun write-to-file (obj file &optional (nice t) &rest comments)

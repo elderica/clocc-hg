@@ -17,26 +17,10 @@
 (eval-when (load compile eval)
   (declaim (optimize (speed 3) (space 0) (safety 3) (debug 3))))
 
-(export '(pr *clos-readtable* make-clos-readtable macroexpand-r))
+(export '(*clos-readtable* make-clos-readtable macroexpand-r))
 
 ;;;
-;;; {{{ print the object readably
-;;;
-
-;;;###autoload
-(defun pr (obj &optional (str *standard-output*) (nice t))
-  "Print the OBJECT readably to the STREAM (default `*standard-output*').
-Set `*print-circle*' and `*print-pretty*' to the third argument
-NICE (default T).  Uses `with-standard-io-syntax'."
-  (declare (stream str))
-  (with-standard-io-syntax
-    (let (#+clisp (lisp:*print-indent-lists* 1)
-          #+clisp (lisp:*print-rpars* nil))
-      (write obj :stream str :case :downcase :circle nice :pretty nice)))
-  (values))
-
-;;;
-;;; }}}{{{ print structure in CMUCL via `print-object'
+;;; {{{ print structure in CMUCL via `print-object'
 ;;;
 
 #+cmu
