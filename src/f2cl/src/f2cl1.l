@@ -2430,16 +2430,54 @@ loop2
       (write (pprint-pop) :stream stream)
       (pprint-exit-if-list-exhausted)
       (write-char #\space stream)
-      (pprint-newline :linear stream))))
-	
+       (pprint-newline :linear stream))))
+
+(defun pprint-with-multi-array-data (stream list)
+  ;; Print with-array-data like so:
+  ;;
+  ;; (f2cl-lib:with-array-data ((data-var offset-var array))
+  ;;   body)
+  (pprint-logical-block (stream list :prefix "(" :suffix ")")
+    (write (pprint-pop) :stream stream)
+    ;;(write-char #\space stream)
+    (pprint-indent :block 3 stream)
+    (pprint-newline :mandatory stream)
+    (write (pprint-pop) :stream stream)
+    (pprint-indent :block 1 stream)
+    (pprint-newline :mandatory stream)
+    (loop
+      (write (pprint-pop) :stream stream)
+      (pprint-exit-if-list-exhausted)
+      (write-char #\space stream)
+       (pprint-newline :linear stream))))
+
 (set-pprint-dispatch '(cons (member f2cl-lib:fdo)) #'pprint-fdo)
 (set-pprint-dispatch '(cons (member f2cl-lib:with-array-data)) #'pprint-with-array-data)
+(set-pprint-dispatch '(cons (member f2cl-lib:with-multi-array-data))
+		     #'pprint-with-multi-array-data)
 
 ;;;-----------------------------------------------------------------------------
 ;;; end of f2cl1.l
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.124  2003/11/12 05:32:03  rtoy
+;;; Many changes to make assigned gotos work
+;;;
+;;; o Add *statement-labels* to hold a list of statement labels found in s
+;;;   subprogram.  (Needed so we can branch to the correct label in
+;;;   assigned goto statements.)
+;;; o Use *statement-labels* in various places.
+;;; o Unify the parsing of computed GOTOs.
+;;; o Make assigned gotos work.
+;;; o Add support for the ASSIGN statement (which was missing).
+;;;
+;;; Fixups for ENTRY points:
+;;; o Fix up parsing of ENTRY points.  We weren't setting up
+;;;   *entry-points* correctly, and did not handle the arglist correctly.
+;;; o Parse entry points similarly to subroutine calls, using two new
+;;;   functions:  ID-DEFINITION-ENTRY, PARSE-ENTRY-DEFINITION
+;;;
 ;;; Revision 1.123  2003/07/13 18:58:30  rtoy
 ;;; Be more careful in generate-call-to-routine when the routine is
 ;;; actually funcalling a routine.
