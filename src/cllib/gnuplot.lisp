@@ -120,10 +120,10 @@ according to the given backend")
   (format out " '~A' ~D" (pltm-font-family pt) (pltm-font-size pt))
   (terpri out)
   (let ((target (pltm-target pt)))
-    (typecase target
+    (etypecase target
       (null (format out "set output~%"))
       (symbol (format out "set output '~a'~%" (symbol-value target)))
-      ((string pathname)
+      ((or string pathname)
        (format out "set output '~a'~%"
                (make-pathname :type (if (string= "postscript"
                                                  (pltm-terminal pt))
