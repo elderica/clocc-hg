@@ -1,4 +1,4 @@
-; -*- Mode: lisp; package: CL-USER -*-
+; -*- Mode: lisp; package: F2CL -*-
 ; f2cl5.l
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;Copyright (c) University of Waikato;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -92,8 +92,12 @@
 	       (t
 		(pushnew (check-reserved-lisp-names exprs) *undeclared_vbles*))))
 	((listp exprs)
-	 (mapc #'check_new_vbles exprs)
-	 )
+	 ;; Function calls get turned into a MULTIPLE-VALUE-BIND, so
+	 ;; the only possible place for variables is the arg list for
+	 ;; the function.
+	 (if (eq (first exprs) 'multiple-value-bind)
+	     (mapc #'check_new_vbles (cddr (third exprs)))
+	     (mapc #'check_new_vbles exprs)))
 	(t
 	 (Error "What happened?")))
   exprs)
@@ -2099,6 +2103,12 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.54  2000/07/28 17:05:01  rtoy
+;;; o We are in the f2cl package now.
+;;; o We convert // to f2cl-//, even in format statements so fix
+;;;   FIX-SLASHES to handle this case by replacing f2cl-// with 2 slashes,
+;;;   as appropriate.
+;;;
 ;;; Revision 1.53  2000/07/27 16:42:01  rtoy
 ;;; o We want to be in the CL-USER package, not the USER package.
 ;;; o Use (typep x 'integer) instead of (fixnump x) in GET-FUN-ARG-TYPE.
