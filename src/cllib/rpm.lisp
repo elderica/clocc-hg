@@ -566,7 +566,7 @@ Then generate the list to download."
   (let ((bt (get-int-time nil)) (glob 0)
         #+clisp (#+lisp=cl  ext:*pprint-first-newline*
                  #-lisp=cl lisp:*pprint-first-newline* nil))
-    (declare (double-float bt) (type file-size-t glob))
+    (declare (type (integer 0) bt) (type file-size-t glob))
     (dolist (dld *rpm-locations*)
       (declare (type download-data dld))
       (cond ((dld-fls dld)
