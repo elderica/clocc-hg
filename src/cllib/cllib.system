@@ -87,7 +87,8 @@
     (when tbc
       (in-package :cllib)
       (when (member "tests" tbc :test #'string= :key #'pathname-name)
-        (funcall (intern "TEST-ALL" :cllib)))
+        (funcall (intern "TEST-ALL" :cllib) :what
+                 (mapcar #'pathname-name tbc)))
       (let ((auto (translate-logical-pathname "clocc:src;cllib;auto.lisp")))
         (funcall (intern "AUTOLOAD-GENERATE" :cllib)
                  (mk:files-in-system :cllib) auto)
