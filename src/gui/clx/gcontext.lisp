@@ -82,9 +82,9 @@
 	      `(within-definition (def-gc-internals ,name)
 		 ,@(nreverse macros)
 		 (eval-when (eval compile load)
-		   (defconstant *gcontext-data-length* ,index)
-		   (defconstant *gcontext-indexes* ',indexes)
-		   (defconstant *gcontext-masks*
+		   (defparameter *gcontext-data-length* ,index)
+		   (defparameter *gcontext-indexes* ',indexes)
+		   (defparameter *gcontext-masks*
 				',(coerce (nreverse masks) 'simple-vector)))))))
   (def-gc-internals ignore
     (:clip :clip-mask) (:dash :dashes) (:font-obj :font) (:timestamp)))

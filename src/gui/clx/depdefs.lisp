@@ -73,7 +73,7 @@
 ;;; useful for much beyond xatoms and windows (since almost nothing else
 ;;; ever comes back in events).
 ;;;--------------------------------------------------------------------------
-(defconstant *clx-cached-types*
+(defparameter *clx-cached-types*
 	     '( drawable
 		window
 		pixmap
