@@ -11,6 +11,9 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.5  2000/03/22 23:51:52  sds
+;;; (quit): optional error code argument
+;;;
 ;;; Revision 1.4  2000/03/03 22:01:03  sds
 ;;; fixed provide statements
 ;;;
@@ -40,7 +43,7 @@
    defsubst defcustom defconst
    mk-arr map-in with-gensyms
    gc quit
-   +eof+ string-tokens
+   +eof+ eof-p string-tokens
    compose compose-f compose-all))
 
 ;;;
@@ -125,6 +128,11 @@ Inspired by Paul Graham, <On Lisp>, p. 145."
 (defconst +eof+ cons (cons nil nil)
   "*The end-of-file object.
 To be passed as the third arg to `read' and checked against using `eq'.")
+
+(defun eof-p (stream)
+  "Return T if the stream has no more data in it."
+  (let ((cc (read-char stream nil nil)))
+    (if cc (unread-char cc stream) t)))
 
 (defun string-tokens (string &key (start 0) max)
   "Read from STRING repeatedly, starting with START, up to MAX tokens.
