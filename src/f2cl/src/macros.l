@@ -366,7 +366,7 @@ is not included")
   ;; here as well.
   (etypecase x
     (integer
-     x)
+     (the integer4 x))
     (single-float
      (truncate (the (single-float #.(float most-negative-fixnum)
 				  #.(float most-positive-fixnum))
@@ -384,7 +384,7 @@ is not included")
   ;; code was wrong.
   (etypecase x
     (integer
-     x)
+     (the integer4 x))
     (single-float
      (truncate (the (single-float #.(float (- (ash 1 31)))
 				  #.(float (1- (ash 1 31))))
@@ -689,9 +689,9 @@ is not included")
 (defun log10 (x)
   (typecase x
     (single-float
-     (log (the (or (single-float 0.0f0) (member 0f0)) x) 10f0))
+     (log (the (or (single-float (0.0f0)) (member 0f0)) x) 10f0))
     (double-float
-     (log (the (or (double-float 0.0d0) (member 0d0)) x) 10d0))
+     (log (the (or (double-float (0.0d0)) (member 0d0)) x) 10d0))
     (t
      (/ (log x)
 	(typecase x
@@ -1140,6 +1140,14 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.42  2002/03/06 03:21:16  rtoy
+;;; o Speed up FIND-ARRAY-DATA a little by declaring the offset to be a
+;;;   fixnum, which it has to be since it's an index to an array.
+;;; o Remove the truncate/ftruncate-towards-zero functions.
+;;; o For INT, AINT, and friends, TRUNCATE and FTRUNCATE are the right
+;;;   functions we want to use.  (Stupid me!)
+;;; o Update/correct some random comments.
+;;;
 ;;; Revision 1.41  2002/02/17 15:55:29  rtoy
 ;;; o For all array accessors, wrap the offset calculations with (the
 ;;;   fixnum ...) since they have to be anyway.  Speeds up calculations
