@@ -11,16 +11,16 @@
 ;;; $Id$
 ;;; $Source$
 
-(defpackage port
+(defpackage :port
   (:use "COMMON-LISP")
   (:nicknames "ORG.CONS.CLOCC/SDS/PORT")
   (:export
-   code case-error not-implemented ; conditions
-   defsubst defcustom defconst
-   mk-arr map-in with-gensyms
-   gc quit
-   +eof+ eof-p string-tokens
-   compose compose-f compose-all))
+   "CODE" "CASE-ERROR" "NOT-IMPLEMENTED" ; conditions
+   "DEFSUBST" "DEFCUSTOM" "DEFCONST"
+   "MK-ARR" "MAP-IN" "WITH-GENSYMS"
+   "GC" "QUIT"
+   "+EOF+" "EOF-P" "STRING-TOKENS"
+   "COMPOSE" "COMPOSE-F" "COMPOSE-ALL"))
 
 (in-package :port)
 
