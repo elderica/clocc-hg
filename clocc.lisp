@@ -84,9 +84,7 @@
   (pushnew 'compile pcl::*defgeneric-times*)
   (pushnew 'compile pcl::*defmethod-times*))
 
-#+gcl (defmacro lambda (bvl &body forms) `#'(lambda ,bvl ,@forms))
-
-(eval-when (:compile-toplevel :execute)
+(eval-when (compile eval)
   (let (x y)
     (handler-case
         (progn
@@ -111,8 +109,8 @@
 ;;;
 
 (defvar *clocc-root*
-  #-(or win32 mswindows) "/usr/local/src/clocc/"
-  #+(or win32 mswindows) "c:/gnu/clocc/"
+  #-(or win32 winnt mswindows) "/usr/local/src/clocc/"
+  #+(or win32 winnt mswindows) "d:/gnu/clocc/"
   "*The root CLOCC directory.")
 
 (setf (logical-pathname-translations "clocc")
