@@ -182,7 +182,7 @@ This is just a debugging function, to be called interactively."
     (mesg t *gq-error-stream* " *** data:~%")
     (let ((*read-default-float-format* 'double-float)
           date res line)
-      (dolist (ti ticks (cons date res))
+      (dolist (ti ticks (cons date (nreverse res)))
         (setq line (read-line sock))
         (mesg t *gq-error-stream* " * ~a~%" line)
         (multiple-value-bind (name nav dt time chg)
@@ -302,7 +302,7 @@ This is just a debugging function, to be called interactively."
                      (chg (read-from-string (car (xmlo-data cha)))))
                 (push (mk-daily-data :nav nav :chg chg) res))))
           ticks (xmlo-data xo))
-    (cons date res)))
+    (cons date (nreverse res))))
 
 (defcustom *get-quote-url-list* list
   (list (list (make-url :prot :http :port 80 :host "finance.yahoo.com"
