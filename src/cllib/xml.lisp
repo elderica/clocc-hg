@@ -747,9 +747,10 @@ The first character to be read is #\T."
 
 ;;;###autoload
 (defun xml-read-from-file (file &key (repeat t) (reset-ent *xml-read-entities*)
-                           (resolve-namespaces *xml-read-balanced*))
+                           (resolve-namespaces *xml-read-balanced*)
+                           (out *standard-output*))
   "Read all XML objects from the file."
-  (let ((obj (with-xml-file (str file :reset-ent reset-ent)
+  (let ((obj (with-xml-file (str file :reset-ent reset-ent :out out)
                (read-from-stream str :repeat repeat))))
     (if resolve-namespaces
         (xml-resolve-namespaces obj)
