@@ -14,7 +14,7 @@
 (defpackage cllib
   (:use "COMMON-LISP" "PORT")
   (:nicknames "ORG.CONS.CLOCC/SDS/CLLIB")
-  (:export value code))
+  (:export "VALUE" "CODE"))
 
 (in-package :cllib)
 
