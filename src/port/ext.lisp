@@ -1,6 +1,6 @@
-;;; Basic extensions: conditions &c
+;;; Basic extensions: conditions, compositions &c
 ;;;
-;;; Copyright (C) 1999 by Sam Steingold
+;;; Copyright (C) 1999-2001 by Sam Steingold
 ;;; This is open-source software.
 ;;; GNU Lesser General Public License (LGPL) is applicable:
 ;;; No warranty; you may copy/modify/redistribute under the same
