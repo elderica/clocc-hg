@@ -13,6 +13,7 @@
 
 (eval-when (compile load eval)
   (require :port-ext (translate-logical-pathname "clocc:src;port;ext"))
+  (require :port-path (translate-logical-pathname "port:path"))
   #+(and allegro mswindows)
   (require :ole))
 
