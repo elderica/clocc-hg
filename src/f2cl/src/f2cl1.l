@@ -517,7 +517,23 @@ FILENAME                 File containing Fortran code
     (unless (null extended-do-label-stack)
       (warn "Extended DO statement without matching ENDDO statement?"))
     result))
-  
+
+;; Now look through the tree of code and replace every symbol in the
+;; f2cl library with the symbol actually from the library.  (This is
+;; currently quite expensive because we look through the entire tree
+;; for every symbol.  We should traverse the tree just once and look
+;; at each symbol to see if it needs replacing.  Should profile this
+;; to see if this really matters.)
+
+(defun fixup-f2cl-lib (tree)
+  (do-external-symbols (lib-sym "F2CL-LIB")
+    (setf tree (subst lib-sym lib-sym tree
+		      :test #'(lambda (a b)
+				(and (symbolp a)
+				     (symbolp b)
+				     (string-equal a b))))))
+  tree)
+
 ;------------------------------------------------------------------------------
 ; prog-list of form ((margin line) (margin line) ...)
 
@@ -572,9 +588,11 @@ FILENAME                 File containing Fortran code
        (when spec-proc
 	 (mapc #'(lambda (s-proc s-decl)
 		   (unless (find (caadr s-proc) *common-block-initialized*)
+		     (setf s-proc (fixup-f2cl-lib s-proc))
 		     (special-print s-proc outport)
 		     (terpri outport)
 		     (format outport "~%~%")
+		     (setf s-decl (fixup-f2cl-lib s-decl))
 		     (special-print s-decl outport)
 		     (terpri outport)
 		     (format outport "~%~%")
@@ -583,19 +601,7 @@ FILENAME                 File containing Fortran code
 	       spec-decl)
 	 (terpri outport))
 
-       ;; Now look through the tree of code and replace every symbol
-       ;; in the f2cl library with the symbol actually from the
-       ;; library.  (This is currently quite expensive because we look
-       ;; through the entire tree for every symbol.  We should
-       ;; traverse the tree just once and look at each symbol to see
-       ;; if it needs replacing.  Should profile this to see if this
-       ;; really matters.)
-       (do-external-symbols (lib-sym "F2CL-LIB")
-	 (setf fun (subst lib-sym lib-sym fun
-			  :test #'(lambda (a b)
-				    (and (symbolp a)
-					 (symbolp b)
-					 (string-equal a b))))))
+       (setf fun (fixup-f2cl-lib fun))
 
        (special-print fun outport))
      (print (cadr fort-fun))		;indicate which subprogram is being translated
@@ -2052,6 +2058,17 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.85  2002/01/13 16:27:56  rtoy
+;;; o Move the intrinsic function names from macros.l to here.  Include a
+;;;   copy of the deftypes in macros.l here as well.  (Be sure to keep
+;;;   them in sync!  I wish I knew a better way....)
+;;; o Do not print out (use-package :f2cl) in the output file anymore.
+;;; o In the generated code, we know look through the code and any symbol
+;;;   that is string-= to a exported symbol in f2cl-lib is replaced by the
+;;;   corresponding symbol from f2cl-lib.  That we the generated code can
+;;;   reference the f2cl-lib without clashing with whatever other packages
+;;;   the code might be used in.
+;;;
 ;;; Revision 1.84  2002/01/08 20:53:48  rtoy
 ;;; PARSE-PARAMETER was incorrectly parsing parameter statements like
 ;;; parameter (k2prim = K2 - K1*MW/MD) because it never expected the rhs
