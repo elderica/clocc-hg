@@ -77,7 +77,7 @@ Return 3 values:
            (loop :with ,vec :and ,cols = ,columns :and ,pro1-count = 0
              :for ,ln = (read-line ,in nil nil) :while ,ln
              ,@(when limit
-                 `(:when (= ,len ,lim)
+                 `(:when (and ,lim (= ,len ,lim))
                     :do (warn "reached the limit of ~:D record~:P ~
                                at ~:D byte~:P (~4F%), aborted~%"
                               ,len (file-position ,in)
