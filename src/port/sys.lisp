@@ -36,7 +36,7 @@
 (defun getenv (var)
   "Return the value of the environment variable."
   #+allegro (sys::getenv (string var))
-  #+clisp (sys::getenv (string var))
+  #+clisp (ext:getenv (string var))
   #+(or cmu scl)
   (cdr (assoc (string var) ext:*environment-list* :test #'equalp
               :key #'string))
@@ -51,7 +51,7 @@
 (defun (setf getenv) (val var)
   "Set an environment variable."
   #+allegro (setf (sys::getenv (string var)) (string val))
-  #+clisp (setf (sys::getenv (string var)) (string val))
+  #+clisp (setf (ext:getenv (string var)) (string val))
   #+(or cmu scl)
   (let ((cell (assoc (string var) ext:*environment-list* :test #'equalp
                      :key #'string)))
