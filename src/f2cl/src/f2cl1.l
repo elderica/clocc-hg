@@ -14,7 +14,8 @@
 (in-package :f2cl)
 (defvar *verbose* nil)
 (defvar *comments* nil)
-(defparameter *f2cl-version* "2.0 beta 2002-05-06")
+(defparameter *f2cl-version*
+  (remove #\$ "2.0 beta $Date$"))
 
 (defvar *intrinsic-function-names*
   '(int ifix idint real float sngl dble cmplx ichar char aint dint
@@ -2537,6 +2538,10 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.132  2003/11/18 19:33:47  rtoy
+;;; Push the function name onto the calls list, not a list of the function
+;;; name.
+;;;
 ;;; Revision 1.131  2003/11/14 06:45:41  rtoy
 ;;; Actually, if the declared arg type is an array, we always want to
 ;;; slice.  Otherwise, we just want the single element.
