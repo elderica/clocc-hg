@@ -14,7 +14,7 @@
 
 (in-package :cllib)
 
-(export '(commas pr-secs pr-arr print-seqs))
+(export '(commas pr-secs pr-arr print-seqs *seconds-long-threshold*))
 (import '(comma pr-secs pr-arr) :cl-user)
 
 ;;;
