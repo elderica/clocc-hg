@@ -8,14 +8,9 @@
 ;;; License.  See file COPYING for details.
 
 (eval-when (:load-toplevel)
-<<<<<<< datafun.lisp
    (export '(datafun
 	     datafun-table datafun-alist datafun-from-plist
 	     attach-datafun datafun-on-plist)))
-=======
-   (export '(datafun attach-datafun
-	     datafun-table datafun-alist datafun-from-plist)))
->>>>>>> 1.5
 
 ; (DATAFUN master sym def) defines a new procedure and puts it
 ; on the property list of sym under the indicator master.
