@@ -700,7 +700,8 @@ The local file is located in directory LOC and has the same name
   (with-open-url (sock url :err err)
     (url-ask sock err :smtp-helo "helo ~a" helo) ; 250
     (url-ask sock err :mail-from "mail from: ~a" from) ; 250
-    (url-ask sock err :rcpt-to "rcpt to: ~a" (url-user url)) ; 250
+    (url-ask sock err :rcpt-to "rcpt to: ~a@~a" ; 250
+             (url-user url) (url-host url))
     (url-ask sock err :smtp-data "data") ; 354
     (url-ask sock err :smtp-data "~a~%." text))) ; 250
 
