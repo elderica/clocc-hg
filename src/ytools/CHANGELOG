@@ -1,5 +1,8 @@
 $Id$
 	
+2004-10-05: One more tweak to logic of 'compilable' in
+            lprec-check-compile. (Version 1.4.8.3)
+
 2004-10-04: Fixed bugs introduced by fixes of 10-02. (Version 1.4.8.1)
 
 2004-10-02: Replaced 'lisp:' with 'cl:' in a couple of files.
