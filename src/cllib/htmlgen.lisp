@@ -54,6 +54,9 @@
                                   base comment (title "untitled") (footer t)
                                   head)
                             &body body)
+  "Create an `html-stream-out' stream out of STREAM, bind it to VAR.
+Two local macros are defined inside this one - `with-tag' and `with-tagl'.
+Both print a tag but the second one does not do a `terpri' afterwards."
   (with-gensyms ("HTML-" raw mailto)
     `(let ((,raw ,stream)
            (,mailto (concatenate 'string "mailto:" *user-mail-address*)))
@@ -81,13 +84,14 @@
               (with-tag (:title) (princ ,title ,var)))
             (with-tag (:body)
               ,@body
-              (when ,footer
-                (with-tag (:p)
-                  (with-tag (:hr))
-                  (with-tag (:address)
-                    (with-tag (:a :href ,mailto)
-                      (princ *user-mail-address* ,var)))
-                  (with-tagl (:strong) (current-time ,var)))))))))))
+              ,(when footer
+                     `(when ,footer
+                       (with-tag (:p)
+                         (with-tag (:hr))
+                         (with-tag (:address)
+                           (with-tag (:a :href ,mailto)
+                             (princ *user-mail-address* ,var)))
+                         (with-tagl (:strong) (current-time ,var))))))))))))
 
 ;;;
 ;;; this is an example on how to use `with-open-html' and `with-tag'.
