@@ -151,7 +151,7 @@ and return a list of geo-data."
   (setf (url-path url) (format nil "/~a//x" code))
   (with-open-url (sock url)
     (do (rr)
-	((eq +eof+ (setq rr (read-line sock nil +eof+))))
+	((null (setq rr (read-line sock nil nil))))
       (format out "~a~%" rr))))
 
 ;;;
