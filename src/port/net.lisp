@@ -159,8 +159,10 @@
 (defun socket-string (sock)
   "Print the socket local&peer host&port to a string."
   (declare (type socket sock))
-  (multiple-value-bind (ho1 po1 ho2 po2) (socket-host/port sock)
-    (format nil "[local: ~a:~d] [peer: ~s:~d]" ho2 po2 ho1 po1)))
+  (with-output-to-string (stream)
+    (print-unreadable-object (sock stream :type t :identity t)
+      (multiple-value-bind (ho1 po1 ho2 po2) (socket-host/port sock)
+        (format stream "[local: ~a:~d] [peer: ~s:~d]" ho2 po2 ho1 po1)))))
 
 ;;;
 ;;; }}}{{{ socket-servers
