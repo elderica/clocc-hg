@@ -252,7 +252,8 @@ Passes REPEAT (default NIL) keyword argument to `read-from-stream'."
       (with-standard-io-syntax
         (let ((*readtable* readtable) (*package* package)
               (*read-default-float-format* float))
-          (read-from-stream str :repeat repeat))))))
+          (values (read-from-stream str :repeat repeat)
+                  file-length))))))
 
 (defun append-to-file (file fmt &rest fmt-args)
   "Append to the file the formatted output."
