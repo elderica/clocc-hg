@@ -28,7 +28,7 @@ presumed to be of the same size."
 	  :initial-value 0))
 
 (defcustom *octave-program* simple-string
-  #+win32 "c:/bin/octave.exe" #+unix "/usr/local/bin/octave"
+  #+(or win32 mswindows) "c:/bin/octave.exe" #+unix "/usr/local/bin/octave"
   "*The octave executable.")
 
 (defun solve-lin (mx vec &optional dump)

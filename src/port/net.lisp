@@ -318,7 +318,7 @@ When SERVICE is NIL, return the list of all services."
                      (string-downcase (string (third tok))))))
          (mkse (na al po pr)
            (make-servent :name na :aliases al :port po :proto pr)))
-    (with-open-file (fl #+unix "/etc/services" #+win32
+    (with-open-file (fl #+unix "/etc/services" #+(or win32 mswindows)
                         (concatenate 'string (getenv "windir")
                                      "/system32/drivers/etc/services")
                         :direction :input)
