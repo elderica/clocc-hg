@@ -19,7 +19,6 @@
 		     (os-program-error-reason cnd))))
   )
 
-
 (defgeneric run-os-program (program
 			    &key
 			    (arguments ())

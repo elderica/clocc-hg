@@ -16,8 +16,7 @@
 ;;;
 ;;; Copyright (c) 2001-2002 Marco Antoniotti
 
-(defpackage "CL.UTILITIES.AMBLER" 
-  (:use "COMMON-LISP")
+(defpackage "CL.UTILITIES.AMBLER" (:use "COMMON-LISP")
   (:nicknames "AMBLER" "ambler")
 
   (:export #:standard-ambling-context
