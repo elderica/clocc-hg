@@ -1992,7 +1992,8 @@
   '(sin cos tan
     asin acos atan
     sinh cosh tanh
-    exp sign max min))
+    exp sign max min 
+    mod))
 
 ;; Check if the Fortran name would collide with Lisp names like T, PI,
 ;; NIL, FUNCALL, PROG, etc.  If it does, replace it a new name with a
@@ -2771,6 +2772,13 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.109  2003/07/12 04:27:02  rtoy
+;;; o Make +reserved-lisp-names+ be T, PI, and NIL.
+;;; o Add +allowed-lisp-names+ to be a list of names which can be used as
+;;;   is because the Fortran usage matches the Lisp usage.  This prevents
+;;;   spurious variables with names like ABS$ from being created.
+;;; o Use +allowed-lisp-names+ when checking for reserved lisp names.
+;;;
 ;;; Revision 1.108  2003/01/08 18:41:47  rtoy
 ;;; Reference symbols in the common-lisp package with "common-lisp:",
 ;;; instead of "lisp:".
