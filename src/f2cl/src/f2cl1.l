@@ -1647,10 +1647,10 @@ FILENAME                 File containing Fortran code
 		      nil))))
     (cond ((and (listp (car l))
 		(eq (second (car l)) '*))
-	   ;;(format t "parse-data1 1~%")
+	   ;;(format t "parse-data1 1 l = ~A~%" l)
 	   `(fill ,(check-reserved-lisp-names (first v))
 	          ,(fix-up-negative-number (cddar l))
-	          :end ,(1- (first (car l)))))
+	          :end ,(first (car l))))
 	  ((and (listp v) (listp l)
 		(listp (second v))
 		(numberp (first (second v))))
@@ -2065,6 +2065,9 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.87  2002/02/08 04:24:38  rtoy
+;;; Add support for BLOCK DATA subprograms.
+;;;
 ;;; Revision 1.86  2002/02/08 03:35:30  rtoy
 ;;; We need to also fix up the names for any initialization stuff, so add
 ;;; new function FIXUP-F2CL-LIB to do it.
