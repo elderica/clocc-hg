@@ -74,7 +74,7 @@ If the second optional argument ALL is non-NIL (default),
 all slots are returned, otherwise only the slots with
 :allocation type :instance are returned."
   #-(or allegro clisp cmu cormanlisp lispworks)
-  (error 'not-implemented :proc 'class-slot-list)
+  (error 'not-implemented :proc (list 'class-slot-list class))
   #+(or allegro clisp cmu cormanlisp lispworks)
   (macrolet ((class-slots* (class)
                #+allegro `(clos:class-slots ,class)
