@@ -130,7 +130,7 @@ or does not contain valid compiled code."
     (typecase f
       (STANDARD-GENERIC-FUNCTION (sb-pcl:generic-function-lambda-list f))
       #+(or) (EVAL:INTERPRETED-FUNCTION (eval:interpreted-function-arglist f))
-      (FUNCTION (values (read-from-string (sb-kernel:%simple-fun-arglist f))))))
+      (FUNCTION (sb-kernel:%simple-fun-arglist f))))
   #-(or allegro clisp cmu cormanlisp gcl lispworks lucid sbcl scl)
   (error 'not-implemented :proc (list 'arglist fn)))
 
