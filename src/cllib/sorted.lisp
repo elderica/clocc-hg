@@ -285,6 +285,7 @@ Like member, but orders of magnitude faster when test and key
 are expensive compared with `nthcdr'."
   (declare (list ls) (type (function (t) t) key)
            (type (function (t t) t) test))
+  (unless ls (return-from binary-member ls))
   (when (funcall test el (funcall key (car ls)))
     (return-from binary-member ls))
   (unless (funcall test el (funcall key (car (last ls))))
