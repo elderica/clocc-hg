@@ -275,13 +275,21 @@ When `DRY-RUN' is non-NIL, no actual changes are done."
                                     :external-format :unix
                                     :if-exists :supersede)
                  (write-line line out))))))
-    (when (probe-directory (merge-pathnames "CVS/" root))
-      (change-one-line (merge-pathnames "CVS/Repository" root) substitutions)
-      (change-one-line (merge-pathnames "CVS/Root" root) substitutions))
-    ;; CMUCL's `directory' is buggy - won't work!
-    (dolist (dir (directory (merge-pathnames "*/" root)))
-      (unless (string-equal "CVS" (car (last (pathname-directory dir))))
-        (cvs-change-root dir substitutions :dry-run dry-run :log log)))))
+    (let ((root-cvs (merge-pathnames
+                     (make-pathname :directory '(:relative "CVS")
+                                    :name nil :defaults nil)
+                     root))
+          (root-subdirs (merge-pathnames
+                         (make-pathname :directory '(:relative "*")
+                                        :name nil :defaults nil)
+                         root)))
+      (when (probe-directory root-cvs)
+        (change-one-line (merge-pathnames "Repository" root-cvs) substitutions)
+        (change-one-line (merge-pathnames "Root" root-cvs) substitutions))
+      ;; CMUCL's `directory' is buggy - won't work!
+      (dolist (dir (directory root-subdirs))
+        (unless (string-equal "CVS" (car (last (pathname-directory dir))))
+          (cvs-change-root dir substitutions :dry-run dry-run :log log))))))
 
 (provide :cllib-cvs)
 ;;; file cvs.lisp ends here
