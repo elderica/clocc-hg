@@ -32,6 +32,9 @@
 ;;;
 ;;; CVS diff ---> patch
 ;;;
+;; Bruno Haible originally wrote this in 1996 as a filter.
+;; Sam Steingold fixed some bugs in 1998 and
+;; converted to the generic function in 2000.
 
 (eval-when (compile load eval) (fmakunbound 'cvs-diff2patch))
 ;;;###autoload
