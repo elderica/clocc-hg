@@ -80,12 +80,14 @@
             ("base" "string" "withtype" "closio" "log" "fileio")))
     :initially-do
     (progn (mk:system-source-size :cllib :all)
-           (setq tbc (mk:system-source-size
-                      :cllib :new-source-and-dependents)))
+           (mk:system-source-size :cllib :new-source-and-dependents)
+           (setq tbc (mk:files-in-system :cllib :new-source-and-dependents
+                                         :source)))
     :finally-do
-    (unless (zerop tbc)
+    (when tbc
       (in-package :cllib)
-      (funcall (intern "TEST-ALL" :cllib))
+      (when (member "tests" tbc :test #'string= :key #'pathname-name)
+        (funcall (intern "TEST-ALL" :cllib)))
       (let ((auto (translate-logical-pathname "clocc:src;cllib;auto.lisp")))
         (funcall (intern "AUTOLOAD-GENERATE" :cllib)
                  (mk:files-in-system :cllib) auto)
