@@ -22,7 +22,7 @@
 ;	      or returns nil if an ai is missing - this could be used to
 ;	      produce a syntax error.
 ;-----------------------------------------------------------------------------
-(in-package :user)
+(in-package :cl-user)
 
 ;(declare (localf atomcar atomcdr))
 
@@ -162,4 +162,8 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.2  2000/07/13 16:55:34  rtoy
+;;; To satisfy the Copyright statement, we have placed the RCS logs in
+;;; each source file in f2cl.  (Hope this satisfies the copyright.)
+;;;
 ;;;-----------------------------------------------------------------------------

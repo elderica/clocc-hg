@@ -3,7 +3,7 @@
 ;;;;;;;;Copyright (c) University of Waikato;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;Hamilton, New Zeland 1992-95 - all rights reserved;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(in-package :user)
+(in-package :cl-user)
 (eval-when (compile load eval)
   (export '(do1 do! map-defvar double-cdr double-mapcar push 
 	    fexport fproclaim fuse-package fin-package fdo arithmetic-if
@@ -834,6 +834,12 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.22  2000/07/20 13:44:38  rtoy
+;;; o Remove old fref macro
+;;; o Add some comments
+;;; o Add macro ARRAY-INITIALIZE to handle creating the appropriate for to
+;;;   give to make-array :initial-contents.
+;;;
 ;;; Revision 1.21  2000/07/19 13:54:27  rtoy
 ;;; o Add the types ARRAY-DOUBLE-FLOAT, ARRAY-SINGLE-FLOAT, and
 ;;;   ARRAY-INTEGER4.

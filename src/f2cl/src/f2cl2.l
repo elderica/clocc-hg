@@ -20,7 +20,7 @@
 ;	id-array-store - check args eval to integers in range at eval time
 ;	restore-negative-numbers
 ;------------------------------------------------------------------------------
-(in-package :user)
+(in-package :cl-user)
 (eval-when (compile load eval)
   (proclaim '(optimize (speed 3) (safety 1)))
 
@@ -444,6 +444,12 @@ definition.| l) ))
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.21  2000/07/19 13:50:11  rtoy
+;;; o Use the macro ARRAY-SLICE to slice the array instead of inline as we
+;;;   were doing it.
+;;; o All arrays are 1-D now to support proper Fortran array slicing, so
+;;;   FREF needs to know the array dimensions.
+;;;
 ;;; Revision 1.20  2000/07/18 14:04:33  rtoy
 ;;; Changes for UPDATE-CALLED-FUNCTIONS-LIST:
 ;;;

@@ -24,7 +24,7 @@
 ;     parse-number
 ;	write-comment-line
 ;--------------------------------------------------------------------------
-(in-package :user)
+(in-package :cl-user)
 (eval-when (compile load eval) (proclaim '(special *verbose* *comments*)))
 ;--------------------------------------------------------------------------  
 ; global stream input for parse-number:
@@ -279,6 +279,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.14  2000/07/21 21:15:17  rtoy
+;;; Fix a typo in the punctuation list and add "/" to the list.
+;;;
 ;;; Revision 1.13  2000/07/21 17:43:17  rtoy
 ;;; Need to be more careful about continuation lines.  We now leave a
 ;;; space between lines when concatenating them, except when the previous
