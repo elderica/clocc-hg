@@ -1,4 +1,4 @@
-;;; File: <geo.lisp - 2000-02-18 Fri 14:21:50 EST sds@ksp.com>
+;;; File: <geo.lisp - 2000-03-03 Fri 17:49:06 EST sds@ksp.com>
 ;;;
 ;;; Geo.lisp - geographical data processing
 ;;;
@@ -321,7 +321,7 @@ is a float, such as the GDP, VALUE is a cons with the range.
 (defun view-country (&rest find-args)
   (let ((ntn (if (country-p (car find-args)) (car find-args)
 		 (car (apply #'find-country find-args)))))
-    (view-url (url (format nil *geo-info-template* (country-fips ntn))))))
+    (browse-url (url (format nil *geo-info-template* (country-fips ntn))))))
 
 (defmacro dump-find-country ((&rest find-args)
                              (&rest dump-args &key (out *standard-output*)
