@@ -52,10 +52,10 @@ See <http://www.w3.org/TR/WD-html40-970708/sgml/entities.html>.")
 (defcustom *xml-keep-comments* boolean nil
   "*When non-nil, keep the comments inside the XML-OBJ structure.")
 
-(defun xml-init-entities ()
+(defun xml-init-entities (&key (out *standard-output*))
   "Clear both `*xml-amp*' and `*xml-per*' and then read `*xml-ent-file*'."
   (clrhash *xml-amp*) (clrhash *xml-per*)
-  (xml-read-from-file *xml-ent-file* :reset-ent nil))
+  (xml-read-from-file *xml-ent-file* :reset-ent nil :out out))
 
 (defun xml-read-entity (stream)
   "read <!ENTITY ....>"
@@ -769,7 +769,7 @@ The first character to be read is #\T."
   "Open the XML stream to file."
   (with-gensyms ("WXF-" ff)
     `(with-timing (:out ,out)
-      (when ,reset-ent (xml-init-entities))
+      (when ,reset-ent (xml-init-entities :out ,out))
       (let ((,ff ,file))
         (with-xml-input (,var (open ,ff :direction :input))
           (mesg :xml ,out "~&[~s]~% * [~a ~:d bytes]..." 'with-xml-file
