@@ -220,10 +220,9 @@ Tag being parsed:| (cadr x))))
     ((stringp l) l)
     ;; x.xE%x (scientific notation) number - % is used to represent a minus sign:
     ((and (symbolp l)
-	  (string-equal 
-	   (string-trim '(#\0 #\1 #\2 #\3 #\4 #\5 #\6 #\7 #\8 #\9 #\.) 
-			(string l))
-	   "E%"))
+	  (let ((suffix (string-trim '(#\0 #\1 #\2 #\3 #\4 #\5 #\6 #\7 #\8 #\9 #\.) 
+				     (string l))))
+	    (or (string-equal suffix "E%") (string-equal suffix "e%"))))
      (setq l
 	   (read-from-string
 	    (concatenate 'string
@@ -232,14 +231,13 @@ Tag being parsed:| (cadr x))))
 			 "-"
 			 (string-left-trim '(#\%)
 					   (string-left-trim 
-					    '(#\0 #\1 #\2 #\3 #\4 #\5 #\6 #\7 #\8 #\9 #\. #\E) l)))))
+					    '(#\0 #\1 #\2 #\3 #\4 #\5 #\6 #\7 #\8 #\9 #\. #\E #\e) l)))))
      l)
     ;; x.xD%x, like above
     ((and (symbolp l)
-	  (string-equal 
-	   (string-trim '(#\0 #\1 #\2 #\3 #\4 #\5 #\6 #\7 #\8 #\9 #\.) 
-			(string l))
-	   "D%"))
+	  (let ((suffix (string-trim '(#\0 #\1 #\2 #\3 #\4 #\5 #\6 #\7 #\8 #\9 #\.) 
+				     (string l))))
+	    (or (string-equal suffix "D%") (string-equal suffix "d%"))))
      (setq l
 	   (read-from-string
 	    (concatenate 'string
@@ -248,9 +246,9 @@ Tag being parsed:| (cadr x))))
 			 "-"
 			 (string-left-trim '(#\%)
 					   (string-left-trim 
-					    '(#\0 #\1 #\2 #\3 #\4 #\5 #\6 #\7 #\8 #\9 #\. #\D) l)))))
+					    '(#\0 #\1 #\2 #\3 #\4 #\5 #\6 #\7 #\8 #\9 #\. #\D #\d) l)))))
      l)
-
+    
 					; symbol:
     ((symbolp l)
      (check-reserved-lisp-names l))
@@ -270,7 +268,7 @@ Tag being parsed:| (cadr x))))
      (list (car l)))
 
 					; boolean expression
-    ((intersection l '(NOT EQUAL AND OR < > <= >= ><))
+    ((intersection l '(not equal and or < > <= >= ><))
      (id-logical l))
 
 					; intrinsic function call:
@@ -434,6 +432,10 @@ definition.| l) ))
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.30  2002/01/06 23:28:16  rtoy
+;;; Missed a few renamings of *intrinsic_function_names* and
+;;; *external_function_names*.
+;;;
 ;;; Revision 1.29  2002/01/06 23:10:12  rtoy
 ;;; Rename *intrinsic_function_names*, *external_function_names* and
 ;;; *subprog_stmt_fns* to use dashes.

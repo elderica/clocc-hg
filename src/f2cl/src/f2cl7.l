@@ -44,7 +44,9 @@
      (t (+ (count-go-end (car x))
            (count-go-end (cdr x))))))
 ;-----------------------------------------------------------------------
-(defun labelp (x) (and (symbolp x) (eq 5 (string-lessp "LABEL" (string x)))))
+(defun labelp (x)
+  (and (symbolp x)
+       (eq 5 (string-lessp (symbol-name :label) (string x)))))
 ;------------------------------------------------------------------------
 (defun find-all-labels (x)
   (cond
@@ -99,6 +101,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.5  2000/07/28 17:07:34  rtoy
+;;; o We are in the f2cl package now.
+;;;
 ;;; Revision 1.4  2000/07/27 16:39:17  rtoy
 ;;; We want to be in the CL-USER package, not the USER package.
 ;;;
