@@ -94,8 +94,8 @@ Both print a tag but the second one does not do a `terpri' afterwards."
                              (princ *user-mail-address* ,var)))
                          (with-tagl (:strong) (current-time ,var))))))))))))
 
-(defmacro with-http-output ((var socket &key keep-alive
-                             &rest opts &allow-other-keys)
+(defmacro with-http-output ((var socket &rest opts &key keep-alive
+                             &allow-other-keys)
                             &body body)
   "Write some HTML to an http client on SOCKET.
 Supplies some HTTP/1.0 headers and calls `with-html-output'.
@@ -107,11 +107,10 @@ Returns the lines flushed from the socket."
             (,string (with-output-to-string (,stream)
                        (with-html-output (,var ,stream ,@opts) ,@body))))
       (format ,sock "HTTP/1.0 200 OK~%Content-type: text/html
-Content-length: %d~%Connection: ~:[Close~;Keep-Alive]~2%"
+Content-length: %d~%Connection: ~:[Close~;Keep-Alive~]~2%"
        (length ,string) ,keep-alive)
       (write-string ,string ,sock)
-      (unless keep-alive
-        (close ,sock))
+      (unless ,keep-alive (close ,sock))
       ,flush)))
 
 ;;;
