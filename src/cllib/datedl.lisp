@@ -23,7 +23,7 @@
 
 (in-package :cllib)
 
-(export '(dated-list dl-nth-date dated-list-name dl-nth-slot dl-shift
+(export '(dated-list mk-dl dl-nth-date dated-list-name dl-nth-slot dl-shift
           copy-dated-list dl-endp dl-len dl-ll dl-date))
 
 ;;;
