@@ -974,7 +974,7 @@
   #+clisp (let ((s (machine-instance))) (subseq s 0 (position #\Space s)))
   ;; resources-pathname was using short-site-name for this purpose
   #+excl (short-site-name)
-  #-(or excl cmu sbcl) (error "get-host-name not implemented"))
+  #-(or cmu sbcl clisp excl) (error "get-host-name not implemented"))
 
 (defun homedir-file-pathname (name)
   (and #-(or unix mach) (search "Unix" (software-type) :test #'char-equal)
