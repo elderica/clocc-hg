@@ -13,6 +13,7 @@
   (require :url (translate-logical-pathname "cllib:url"))
   ;; `with-open-pipe', `pipe-input'
   (require :shell (translate-logical-pathname "port:shell")))
+
 (in-package :cllib)
 
 (export '(*rpm-locations* rpm show-rpms rpm-to-be-installed rpm-get-list
