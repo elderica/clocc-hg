@@ -284,7 +284,7 @@ When `DRY-RUN' is non-NIL, no actual changes are done."
              (mesg :log log " * ~s~%" line)
              (unless dry-run
                (with-open-file (out file :direction :output
-                                    :external-format :unix
+                                    #+clisp :external-format #+clisp :unix
                                     :if-exists :supersede)
                  (write-line line out))))))
     (let ((root-cvs (mk-path root :directory '(:relative "CVS")))
