@@ -36,6 +36,7 @@
   ((proc :reader code-proc :initarg :proc)
    (mesg :type simple-string :reader code-mesg :initarg :mesg)
    (args :type list :reader code-args :initarg :args))
+  (:documentation "An error in the user code.")
   (:report (lambda (cc out)
              (declare (stream out))
              (format out "[~s]~@[ ~?~]" (code-proc cc)
@@ -44,13 +45,16 @@
 
 (define-condition case-error (code)
   ((mesg :type simple-string :reader code-mesg :initform
-         "`~s' evaluated to `~s', not one of [~@{`~s'~^ ~}]")))
+         "`~s' evaluated to `~s', not one of [~@{`~s'~^ ~}]"))
+  (:documentation "An error in a case statement.
+This carries the function name which makes the error message more useful."))
 
 (define-condition not-implemented (code)
   ((mesg :type simple-string :reader code-mesg :initform
          "not implemented for ~a [~a]")
    (args :type list :reader code-args :initform
-         (list (lisp-implementation-type) (lisp-implementation-version)))))
+         (list (lisp-implementation-type) (lisp-implementation-version))))
+  (:documentation "Your implementation does not support this functionality."))
 
 ;;;
 ;;; Extensions
