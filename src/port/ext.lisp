@@ -95,7 +95,7 @@ Inspired by Paul Graham, <On Lisp>, p. 145."
 (defun gc ()
   "Invoke the garbage collector."
   #+allegro (excl:gc)
-  #+clisp (lisp:gc)
+  #+clisp (#+lisp=cl ext:gc #-lisp=cl lisp:gc)
   #+cmu (ext:gc)
   #+cormanlisp (cl::gc)
   #+gcl (si::gbc)
@@ -106,7 +106,7 @@ Inspired by Paul Graham, <On Lisp>, p. 145."
 
 (defun quit (&optional code)
   #+allegro (excl:exit code)
-  #+clisp (lisp:quit code)
+  #+clisp (#+lisp=cl ext:quit #-lisp=cl lisp:quit code)
   #+cmu (ext:quit code)
   #+cormanlisp (win32:exitprocess code)
   #+gcl (lisp:bye code)

@@ -17,7 +17,8 @@
   (require :ext (translate-logical-pathname "clocc:src;port;ext")))
 
 (in-package #+allegro :excl
-            #+clisp :lisp
+            #+(and clisp      lisp=cl)  :ext
+            #+(and clisp (not lisp=cl)) :lisp
             #+cmu :ext
             #+lispworks :stream)
 

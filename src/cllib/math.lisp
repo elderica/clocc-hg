@@ -96,7 +96,7 @@
 (defun ! (nn)
   "Compute the factorial: n! = n * (n-1) * (n-2) * ..."
   (declare (integer nn))
-  #+clisp (lisp:! nn)           ; CLISP has a built-in fast factorial
+  #+clisp (#+lisp=cl ext:! #-lisp=cl lisp:! nn) ; CLISP has built-in factorial
   #-clisp (product-from-to 1 nn))
 
 (defun !! (nn)

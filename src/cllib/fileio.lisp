@@ -182,9 +182,7 @@ Set `*print-circle*' and `*print-pretty*' to the third argument
 NICE (default T).  Uses `with-standard-io-syntax'."
   (declare (stream str))
   (with-standard-io-syntax
-    (let (#+clisp (lisp:*print-indent-lists* 1)
-          #+clisp (lisp:*print-rpars* nil))
-      (write obj :stream str :case :downcase :circle nice :pretty nice)))
+    (write obj :stream str :case :downcase :circle nice :pretty nice))
   (values))
 
 ;;;###autoload
