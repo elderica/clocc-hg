@@ -110,12 +110,11 @@ Both print a tag but the second one does not do a `terpri' afterwards."
   "Write some HTML to an http client on socket stream RAW.
 Supplies some HTTP/1.0 headers and calls `with-html-output'."
   (with-gensyms ("HTTP-" string stream sock header line dbg alive)
-    (remf opts :keep-alive) (remf opts :debug)
-    (remf opts :return-code) (remf opts :return-name)
     `(let* ((,sock ,raw)
             (,dbg ,debug) (,alive ,keep-alive)
             (,string (with-output-to-string (,stream)
-                       (with-html-output (,var ,stream ,@opts) ,@body)))
+                       (with-html-output (,var ,stream ,@(remove-plist opts :keep-alive :debug :return-code :return-name))
+                         ,@body)))
             (,header (list (format nil "HTTP/1.0 ~d ~a"
                                    ,return-code ,return-name)
                            "Content-type: text/html"
