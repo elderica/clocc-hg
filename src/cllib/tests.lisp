@@ -1,6 +1,6 @@
 ;;; Regression Testing
 ;;;
-;;; Copyright (C) 1999-2004 by Sam Steingold
+;;; Copyright (C) 1999-2005 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
@@ -197,7 +197,7 @@
                  (incf num-err)))))
       (mesg :test out " ** ~s...~%" 'test-xml)
       (ts *xml-ent-file* 284)
-      (ts (translate-logical-pathname "clocc:etc;cl-ent.xml") 1208))
+      (ts (translate-logical-pathname "clocc:etc;cl-ent.xml") 1604))
     (mesg :test out " ** ~s: ~:d error~:p~2%" 'test-xml num-err)
     num-err))
 
