@@ -28,7 +28,7 @@
    product-from-to binomial *primes* *primes-file*
    make-primes-list number-sum-split all-num-split
    vector-shuffle permutation with-permutations-shuffle
-   with-permutations-swap with-permutations-lex permutations-list
+   with-permutations-swap with-permutations-lex permutations-list subsets
    eval-cont-fract fract-approx
    *num-tolerance* *relative-tolerance* *absolute-tolerance*
    dot poly1 poly erf cndf norm normalize rel-dist
@@ -402,6 +402,17 @@ The order in which the permutations are listed is either
                 (coll tv))))
       (:shuffle (with-permutations-shuffle (vv vec) (coll (copy-seq vv))))
       (:swap (with-permutations-swap (vv vec) (coll (copy-seq vv)))))))
+
+(defun subsets (set)
+  "return a list of all subsets of the given set (represented as a list)"
+  (let ((first (first set)) (rest (rest set)))
+    (if rest
+        (let ((others (subsets rest)))
+          (nconc others
+                 (mapcar (lambda (subset)
+                           (cons first subset))
+                         others)))
+        (list nil (list first)))))
 
 ;;;
 ;;; Ratios
