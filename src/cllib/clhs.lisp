@@ -1,4 +1,4 @@
-;;; File: <clhs.lisp - 1999-01-15 Fri 15:39:03 EST sds@eho.eaglets.com>
+;;; File: <clhs.lisp - 1999-11-24 Wed 12:28:21 EST sds@ksp.com>
 ;;;
 ;;; HyperSpec handling
 ;;;
@@ -7,15 +7,20 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.1  1999/01/15 20:41:34  sds
+;;; Initial revision
+;;;
 ;;;
 
 (in-package :cl-user)
 
 (eval-when (load compile eval)
   (sds-require "base") (sds-require "url")
+  #+nil(unless (find-package "GTK")
+    (load "/usr/src/clisp/cl-gtk/bin/gtk.fas"))
   (declaim (optimize (speed 3) (space 0) (safety 3) (debug 3))))
 
-(load "/usr/src/clisp/cl-gtk/bin/gtk.fas")
+#+nil
 (setq gtki::*gtkd-executable* "/usr/src/clisp/cl-gtk/bin/gtkd")
 
 ;;;
@@ -46,12 +51,10 @@ optional argument SPACE is non-nil."
                   (setq beg (or (position #\; str :start beg) len))))))
       (t (push (char str beg) res)))))
 
-(defcustom *clhs-root* url
-  (url "/usr/doc/lisp/HyperSpec/")
+(defcustom *clhs-root* url (url "/usr/doc/lisp/HyperSpec/")
   "The root of the HyperSpec tree.")
 
-(defun clhs-snarf-examples (&key (root *hyperspec-root*)
-                            (out *standard-output*))
+(defun clhs-snarf-examples (&key (root *clhs-root*) (out *standard-output*))
   "Get the examples from the HyperSpec."
   (declare (pathname root) (stream out))
   (format t " *** processing `~a'~%" root)
@@ -64,7 +67,7 @@ optional argument SPACE is non-nil."
             ((or (eq st +eof+) (string= st "</PRE>")))
           (princ (html-translate-specials st) out) (terpri out)))))
   (dolist (dir (directory (merge-pathnames "*/" root)))
-    (hyperspec-snarf-examples :root dir :out out)))
+    (clhs-snarf-examples :root dir :out out)))
 
 (defconst +clhs-hashtable+ hash-table
   (let ((ht (make-hash-table :test #'eq :size 1000)))
@@ -1072,7 +1075,7 @@ optional argument SPACE is non-nil."
             (concatenate 'string (url-path *clhs-root*) "Body/" pp))
       (dump-url url :fmt "~*~a~%" :out out :proc #'html-translate-specials))))
 
-
+#|
 (defun hw ()
   (gtk:with-connection ()
     (let ((w (gtk:window-new :toplevel))
@@ -1089,7 +1092,7 @@ optional argument SPACE is non-nil."
       (print (gtk:widget-style w))
       (gtk:event-loop))))
 
-(export '(gtk::signal-connect) :gtk)
+(eval-when (load compile eval) (export '(gtk::signal-connect) :gtk))
 
 (defun gtk:signal-connect (widget signal-name fun &optional (bla 0) (blu 0))
   (gtk:signal-connect-full
@@ -1106,23 +1109,95 @@ optional argument SPACE is non-nil."
   (dolist (s (reverse strings)) (gtk:clist-insert clist 0 (list s)))
   (gtk:clist-thaw clist))
 
+(defun make-menu (items)
+  (let ((menu (gtk:menu-new)))
+    (dolist (x items menu)
+      (if (eq x '-)
+          (let ((i (gtk:menu-item-new)))
+            (let ((a (gtk:hseparator-new)))
+              (gtk:widget-show a)
+              (gtk:container-add i a))
+            (gtk:widget-set-sensitive i nil)
+            (gtk:widget-show i)
+            (gtk:menu-append menu i))
+          (destructuring-bind (name &optional action doc) x
+            (declare (ignorable doc))
+            (let ((a (gtk:menu-item-new-with-label name)))
+              (when action
+                (gtk:signal-connect-full a "activate" action 0 0))
+              (when (string-equal name "Save As")
+                (gtk:widget-set-sensitive a nil))
+              ;;(when docu
+              ;;  (gtk:tooltips-set-tip tooltips a docu ""))
+              (gtk:menu-append menu a)
+              (gtk:widget-show a)))))))
+
+(defun make-menu-bar (items)
+  (let ((menu-bar (gtk:menu-bar-new)))
+    (dolist (x items menu-bar)
+      (destructuring-bind (name menu) x
+        (let ((root-menu (gtk:menu-item-new))
+              (label (gtk:label-new name)))
+          (gtk:container-add root-menu label)
+          (gtk:widget-show label)
+          (gtk:menu-item-set-submenu root-menu menu)
+          (gtk:menu-bar-append menu-bar root-menu)
+          (gtk:widget-show root-menu)
+          (gtk:widget-show menu))))))
+
 (defun doc-window ()
   (gtk:with-connection ()
-    (let ((window (gtk:window-new :toplevel))
-          (vbox   (gtk:vbox-new nil 0))
-          (hpane  (gtk:hpaned-new))
-          (vpane  (gtk:vpaned-new))
-          (sw     (gtk:scrolled-window-new nil nil))
-          (lst    (gtk:clist-new 1))
-          (entry  (gtk:entry-new))
-          (vbox2  (gtk:vbox-new nil 0))
-          (vbox3  (gtk:vbox-new nil 0))
-          (vbox4  (gtk:vbox-new nil 0))
-          (txt    (gtk:text-new nil nil))
-          (label1 (gtk:label-new "Description"))
-          (label2 (gtk:label-new "Options")) )
+    (let* ((window (gtk:window-new :toplevel))
+           (vbox   (gtk:vbox-new nil 0))
+           (hpane  (gtk:hpaned-new))
+           (vpane  (gtk:vpaned-new))
+           (sw     (gtk:scrolled-window-new nil nil))
+           (lst    (gtk:clist-new 1))
+           (entry  (gtk:entry-new))
+           (vbox2  (gtk:vbox-new nil 0))
+           (vbox3  (gtk:vbox-new nil 0))
+           (vbox4  (gtk:vbox-new nil 0))
+           (txt    (gtk:text-new nil nil))
+           (label1 (gtk:label-new "Description"))
+           (label2 (gtk:label-new "Options"))
+           (wholine (gtk:hbox-new nil 0))
+           (stat (gtk:label-new "Status Line"))
+           (menu (make-menu-bar
+                  (list (list "File"
+                              (make-menu
+                               (list (list "Open"
+                                           (lambda ()
+                                             (gtk:label-set stat "Open")))
+                                     (list "Save"
+                                           (lambda ()
+                                             (gtk:label-set stat "Save")))
+                                     '("Quit"))))))))
+
+      (gtk:signal-connect window "expose-event"
+                          (lambda (&rest x) (print x)))
+      (gtk:signal-connect window "configure-event"
+                          (lambda (&rest x) (print x)))
+      (gtk:signal-connect window "button-press-event"
+                          (lambda (&rest x) (print x)))
+      (gtk:signal-connect window "button-release-event"
+                          (lambda (&rest x) (print x)))
+      (gtk:signal-connect window "key-press-event"
+                          (lambda (&rest x) (print x)))
+      (gtk:widget-set-events
+       window '(:button-press-mask :button-release-mask :key-press-mask))
+      (gtk:widget-set-usize menu 200 40)
+      (gtk:fixed-put window menu 100 100)
+      (gtk:widget-show menu)
+      (gtk:widget-set-usize window 800 300)
 
       (gtk:window-set-title window "Lisp Documentation")
+
+      (gtk:widget-show wholine)
+      (gtk:box-pack-end vbox wholine nil nil 0)
+      ;; das hier geht nicht ;-(
+      ;;(gtk:label-set-justify stat :left)
+      (gtk:widget-show stat)
+      (gtk:box-pack-start wholine stat t t 0)
 
       (gtk:scrolled-window-add-with-viewport sw lst)
       (gtk:box-pack-start vbox2 entry nil t 0)
@@ -1145,13 +1220,11 @@ optional argument SPACE is non-nil."
             (list window vbox hpane sw lst entry vbox2
                   txt vpane vbox3 label1 vbox4 label2))
 
-      ;;;
-
       (let ((syms nil))
         (labels ((new-syms (new-syms)
                    (setq syms new-syms)
                    (let ((*print-case* :downcase))
-                     (set-clist-contents lst (mapcar #'prin1-to-string syms))))
+                     (set-clist-contents lst (mapcar #'symbol-name syms))))
                  (describe-sym (sym)
                    (gtk:text-freeze txt)
                    (gtk:text-set-point txt 0)
@@ -1159,6 +1232,7 @@ optional argument SPACE is non-nil."
                    (text-insert
                     txt (with-output-to-string (sink)
                           (format sink " *** Symbol: `~a':~2%" sym)
+                          (gtk:label-set stat (symbol-name sym))
                           (describe sym sink)
                           (dolist (ty '(compiler-macro setf structure
                                         type variable function))
@@ -1175,7 +1249,7 @@ optional argument SPACE is non-nil."
                           (when (symbol-plist sym)
                             (format sink "~& *** Plist: ~s~%"
                                     (symbol-plist sym)))
-                          (ignore-errors (clhs-doc sym))))
+                          (ignore-errors (clhs-doc sym sink))))
                    (gtk:text-thaw txt)))
 
           (gtk:signal-connect lst :select-row
@@ -1187,7 +1261,8 @@ optional argument SPACE is non-nil."
                               (lambda ()
                                 (new-syms (apropos-list
                                            (string-upcase (gtk:entry-get-text
-                                                           entry))))))))
+                                                           entry))))))
+          ))
 
       (gtk:event-loop))))
 
@@ -1208,7 +1283,7 @@ optional argument SPACE is non-nil."
       (gtk:widget-show window))
     (gtk:event-loop)))
 
-#||
+# | |
 #+CMU
 (defun foo2 ()
   (mp:make-process (lambda () (foo)) :name "gtk demo")
@@ -1218,51 +1293,8 @@ optional argument SPACE is non-nil."
     (setq *ping* nil)))
 
 (compile 'foo2)
-||#
+| | #
 
-(defun make-menu (items)
-  (let ((menu (gtk:menu-new)))
-    (mapc (lambda (x)
-            (cond ((eq x '-)
-                   (let ((i (gtk:menu-item-new)))
-                     (let ((a (gtk:hseparator-new)))
-                       (gtk:widget-show a)
-                       (gtk:container-add i a))
-                     (gtk:widget-set-sensitive i nil)
-
-                     (gtk:widget-show i)
-                     (gtk:menu-append menu i)))
-
-                  (t
-                   (destructuring-bind (name &optional action docu) x
-                     docu
-                     (let ((a (gtk:menu-item-new-with-label name)))
-                       (when action
-                         (gtk:signal-connect-full a "activate" action 0 0))
-                       (when (string-equal name "Save As")
-                         (gtk:widget-set-sensitive a nil))
-                       '(when docu
-                         (gtk:tooltips-set-tip tooltips a docu ""))
-                       (gtk:menu-append menu a)
-                       (gtk:widget-show a))))))
-          items)
-    menu))
-
-(defun make-menu-bar (items)
-  (let ((menu-bar (gtk:menu-bar-new)))
-    (mapc (lambda (x)
-            (destructuring-bind (name menu) x
-              (let ((root-menu (gtk:menu-item-new))
-                    (label (gtk:label-new "foo")))
-                (gtk:container-add root-menu label)
-                (gtk:widget-show label)
-                (setq ll label)
-                (gtk:menu-item-set-submenu root-menu menu)
-                (gtk:menu-bar-append menu-bar root-menu)
-                (gtk:widget-show root-menu)
-                (gtk:widget-show menu))))
-          items)
-    menu-bar))
 
 (defun bar ()
   (gtk:with-connection ()
@@ -1307,6 +1339,6 @@ optional argument SPACE is non-nil."
 
       (mapc #'gtk:widget-show (list window sw canvas)))
     (gtk:event-loop)))
-
+|#
 (provide "clhs")
 ;;; file clhs.lisp ends here
