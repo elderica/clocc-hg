@@ -56,7 +56,7 @@
                (incf num-err)
                (format t " ### FAILED: ~s --> ~d, not ~d~2%"
                        st (string->dttm st) nn))))
-      (ts 3126896578 "Mon Feb  1 17:22:58 1999 EST")
+      (ts 3126878578 "1999/02/01 17:22:58")
       (ts 3126896578 "Mon Feb  1 17:22:58 1999 EST")
       (ts 3126878578 "Feb  1 Mon 17:22:58 1999 GMT")
       (ts 3126878578 "Feb  1 Mon 17:22:58 1999")
