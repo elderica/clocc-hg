@@ -333,15 +333,18 @@ Print the appropriate message MESG to *URL-OUTPUT*."
         :do (sleep-mesg "Error")))
 
 (defun socket-send (sock messages finish-p)
+  "Send the message to the socket.
+MESSAGES is a list of strings, each will be terminater with a CRLF.
+When FINISH-P is non-NIL, a final CRLF is also issued."
   (let ((fin #.(make-array 2 :element-type 'character :initial-contents
                            '(#\Return #\Linefeed))))
     (dolist (mesg messages)
-      (mesg :log *url-output* "[~s]~a~%" *url-caller* mesg)
+      (mesg :log *url-output* "~&[~S]~A~%" *url-caller* mesg)
       (write-string mesg sock)
       (write-string fin sock))
     (when finish-p
       (write-string fin sock)
-      (mesg :log *url-output* "[~s]<terpri>~%" *url-caller*))
+      (mesg :log *url-output* "~&[~S]<terpri>~%" *url-caller*))
     (finish-output sock)))
 
 (defun open-url (url &key ((:err *url-error*) *url-error*)
@@ -486,7 +489,7 @@ otherwise, return the hash-table of headers."
     (let ((ret (make-hash-table :test 'equal)))
       (loop (let ((line (read-line sock)))
               (when (zerop (length line)) (return ret))
-              (mesg :log *url-output* "[~s]~s~%" *url-caller* line)
+              (mesg :log *url-output* "~&[~S]~S~%" *url-caller* line)
               (let ((pos (position #\: line)))
                 (if pos
                     (setf (gethash (subseq line 0 pos) ret)
