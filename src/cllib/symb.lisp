@@ -12,7 +12,8 @@
 
 (in-package :cllib)
 
-(export '(symbol-concat +kwd+ kwd keyword-concat read-key keyword= kill-symbol))
+(export '(symbol-concat +kwd+ kwd keyword-concat read-key keyword= kill-symbol
+          reset-package))
 
 ;;(defmacro symbol-concat (&rest args)
 ;;  (let ((lst (mapcar (lambda (zz) (if (stringp zz) zz `(string ,zz))) args)))
@@ -53,7 +54,23 @@
   (fmakunbound id)
   (setf (symbol-plist id) nil)
   (let ((p (symbol-package id)))
-    (if p (unintern id p) (warn "~S: Killing dead symbol ~S" 'kill-id id))))
+    (if p
+        (unintern id p)
+        (warn "~S: Killing dead symbol ~S" 'kill-symbol id))))
+
+(defun reset-package (package &key (out *standard-output*) delete (terpri t))
+  "Kill all symbols in the package with KILL-SYMBOL."
+  (let ((count 0))
+    (when out (format out "~&;; Cleaning ~A..." package) (force-output out))
+    (do-symbols (s package)
+      (when (eq package (symbol-package s))
+        (kill-symbol s) (incf count)))
+    (when delete
+      (delete-package package))
+    (when out
+      (format out "done (~:D symbol~:P killed)" count)
+      (when terpri (terpri out)))
+    count))
 
 (provide :cllib-symb)
 ;;; file symb.lisp ends here
