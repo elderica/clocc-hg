@@ -1,4 +1,4 @@
-;;; File: <elisp.lisp - 1999-02-22 Mon 13:15:27 EST sds@eho.eaglets.com>
+;;; File: <elisp.lisp - 1999-04-20 Tue 13:33:32 EDT sds@eho.eaglets.com>
 ;;;
 ;;; Load Emacs-Lisp files into Common Lisp
 ;;;
@@ -7,6 +7,9 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.2  1999/02/22 18:20:12  sds
+;;; Works now.
+;;;
 ;;; Revision 1.1  1999/02/20 19:15:30  sds
 ;;; Initial revision
 ;;;
@@ -58,22 +61,33 @@
   (declare (stream stream) (character char))
   (ecase char
     (#\[ (coerce (read-delimited-list #\] stream t) 'vector))
-    (#\?
-     (loop :for cc :of-type character = (read-char stream t nil t)
-           :collect (if (char/= cc #\\) cc
-                        (ecase (read-char stream t nil t)
-                          (#\C (read-char stream t nil t) :control)
-                          (#\^ :control)
-                          (#\S (read-char stream t nil t) :shift)
-                          (#\M (read-char stream t nil t) :meta)
-                          (#\s (read-char stream t nil t) :super)
-                          (#\H (read-char stream t nil t) :hyper)
-                          (#\n (setq cc #\Null) #\Newline)
-                          (#\t (setq cc #\Null) #\Tab)
-                          (#\r (setq cc #\Null) #\Return)))
-           :into res
-           :finally (return (if (characterp (car res)) (car res) res))
-           :while (char= cc #\\)))))
+    (#\" (coerce
+          (loop :with char-to-add :and next-char
+                :for this-char = (read-char stream t nil t)
+                :until (char= this-char #\")
+                :if (char= this-char #\\)
+                :do  (setq char-to-add
+                           (case (setq next-char (read-char stream t nil t))
+                             (#\n #\Newline) (#\r #\Return) (#\f #\Page)
+                             (#\t #\Tab) (#\v #\Linefeed) (t next-char)))
+                :else :do (setq char-to-add this-char)
+                :collect char-to-add)
+          'string))
+    (#\? (loop :for cc :of-type character = (read-char stream t nil t)
+               :collect (if (char/= cc #\\) cc
+                            (ecase (read-char stream t nil t)
+                              (#\C (read-char stream t nil t) :control)
+                              (#\^ :control)
+                              (#\S (read-char stream t nil t) :shift)
+                              (#\M (read-char stream t nil t) :meta)
+                              (#\s (read-char stream t nil t) :super)
+                              (#\H (read-char stream t nil t) :hyper)
+                              (#\n (setq cc #\Null) #\Newline)
+                              (#\t (setq cc #\Null) #\Tab)
+                              (#\r (setq cc #\Null) #\Return)))
+               :into res
+               :finally (return (if (characterp (car res)) (car res) res))
+               :while (char= cc #\\)))))
 
 (defun el::make-elisp-readtable ()
   "Make the readtable for Emacs-Lisp parsing."
@@ -82,7 +96,8 @@
     (set-syntax-from-char #\] #\) rt)
     (set-macro-character #\? #'el::read-elisp-special nil rt)
     (set-macro-character #\[ #'el::read-elisp-special nil rt)
-    (set-macro-character #\] (get-macro-character #\) *readtable*) nil rt)
+    (set-macro-character #\" #'el::read-elisp-special nil rt)
+    (set-macro-character #\] (get-macro-character #\) rt) nil rt)
     ;; (setf (readtable-case rt) :downcase)
     rt))
 
@@ -286,7 +301,7 @@
   (dolist (path el::load-path)
     (let ((dir (to-directory path)))
       (let ((ff (merge-pathnames file dir)))
-        (when (and (probe-file ff) (not (probe-directory ff)))
+        (when (and (ignore-errors (probe-file ff)) (not (probe-directory ff)))
           (return-from locate-file ff)))
       (unless source-only
         (let ((ff (merge-pathnames (concatenate 'string file *fas-ext*) dir)))
