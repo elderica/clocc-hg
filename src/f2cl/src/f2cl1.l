@@ -136,7 +136,7 @@ correctly. If the database is incorrect, the function call will be
 incorrect, so use caution.")
 
 (defstruct f2cl-finfo
-  arg-types return-values)
+  arg-types return-values calls)
 
 ;; Hash table of all known converted functions.  
 (defvar *f2cl-function-info*
@@ -1441,8 +1441,16 @@ FILENAME                 File containing Fortran code
 
 (defun generate-call-to-routine (routine arglist &optional return)
   (let ((finfo (gethash (first routine) *f2cl-function-info*)))
-    (unless finfo
-      (warn "Generating call to unknown function ~A.  Check generated call!" routine))
+    (if (and finfo (f2cl-finfo-return-values finfo))
+	(let ((this (gethash *subprog_name* *f2cl-function-info*)))
+	  (unless this
+	    (setf (gethash *subprog_name* *f2cl-function-info*)
+		  (make-f2cl-finfo)))
+	  ;; Add this function to the list of called functions
+	  (pushnew (first routine)
+		   (f2cl-finfo-calls (gethash *subprog_name*
+					      *f2cl-function-info*))))
+	(warn "Generating call to unknown function ~A.  Check generated call!" routine))
     
     (setf finfo (if (and *use-function-info* finfo)
 		    (f2cl-finfo-return-values finfo)
@@ -2371,6 +2379,15 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.116  2002/05/07 03:56:07  rtoy
+;;; o In TRANSLATE_LINT, change how output when *verbose* is set so we can
+;;;   see better what f2cl is really reading.  (Was hard to differentiate
+;;;   between strings and symbols, before, for example.)
+;;; o In PARSE_UPPER_AND_LOWER_BOUNDS, we were returning T for unknown
+;;;   array bounds.  This caused an extraneous Fortran variable T to be
+;;;   introduced.  Return '* instead so we don't get the extraneous
+;;;   variable anymore.
+;;;
 ;;; Revision 1.115  2002/05/07 03:26:10  rtoy
 ;;; o With the function info changes, we were incorrectly saying a
 ;;;   variable was set when it might not have been.  Fix it.
