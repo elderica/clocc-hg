@@ -214,8 +214,8 @@ See constants `+card-output-bbdb+', `+card-output-vcard+',
             (slot-val cc 'urll) (dttm->string (card-created cc) :format :date)
             (dttm->string (card-timestamp cc) :format :date))))
 
-(defconstant +card-vcard-begin+ "BEGIN:VCARD")
-(defconstant +card-vcard-end+ "END:VCARD")
+(defconst +card-vcard-begin+ string "BEGIN:VCARD" "VCARD start marker")
+(defconst +card-vcard-end+ string "END:VCARD" "VCARD end marker")
 
 (defun card-print-as-vcard (cc out)
   (declare (type card cc) (stream out))
