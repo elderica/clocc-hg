@@ -14,7 +14,7 @@
 
 (in-package :cllib)
 
-(export '(autoload autoload-generate))
+(export '(autoload autoload-generate *autoload-cookie*))
 
 ;;;
 ;;; autoload
@@ -74,7 +74,7 @@
   "Generate the autoloads, indicated by `*autoload-cookie*'."
   (with-open-file (outs out :direction :output :if-exists :supersede
                         :if-does-not-exist :create)
-    (format outs ";;; autoloads generated on ~s~%;;; by ~a [~a]~2%~
+    (format outs ";;; autoloads generated on ~a~%;;; by ~a [~a]~2%~
                   (in-package :cllib)~2%~s~2%"
             (timestamp) (lisp-implementation-type)
             (lisp-implementation-version) *autoload-defun*)
