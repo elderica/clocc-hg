@@ -895,7 +895,7 @@ causing all pending operations to be flushed"
 	       (when (and (streamp val) (not (member key '(5 6 t))))
 		 (format t "Closing unit ~A: ~A~%" key val)
 		 (close val)))
-	       *lun-hash*)))
+	       *lun-hash*))
 
 (declaim (ftype (function (t) stream) lun->stream))
 
@@ -1199,6 +1199,10 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.49  2002/05/05 23:38:47  rtoy
+;;; The int-sub macro didn't handle things like (- 3 m m) correctly.  It
+;;; was returning (- 3 (- m m)) instead of (- (- 3 m) m)!
+;;;
 ;;; Revision 1.48  2002/05/03 17:48:06  rtoy
 ;;; GCL doesn't have least-positive-normalized-{single/double}-float, so
 ;;; use just least-positive-{single/double}-float.
