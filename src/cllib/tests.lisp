@@ -148,6 +148,9 @@
           (make-url :prot :ftp :user "user" :pass "password" :host
                     "host.domain" :port 0 :path "/path/to/file")
           "ftp://user#password@host.domain/path/to/file")
+      (ts "mailto:sds@gnu.org"
+          (make-url :prot :mailto :user "sds" :host "gnu.org")
+          "mailto:sds@gnu.org")
       (ts "www.gnu.org/gpl.html"
           (make-url :prot :http :user "" :pass "" :host "www.gnu.org" :port 0
                     :path "/gpl.html")
