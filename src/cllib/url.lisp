@@ -35,6 +35,8 @@
 (in-package :cllib)
 
 (export '(url url-ask url-eta protocol-rfc
+          url-prot url-user url-pass url-host url-port url-path
+          url-get-host url-get-port url-path-dir url-path-file
           open-socket-retry open-url with-open-url
           ftp-list url-send-mail url-get-news url-time
           browse-url *browsers* *browser*
