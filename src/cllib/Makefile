@@ -10,20 +10,7 @@ BASE = base auto
 NET = base url gq
 SYSTEM := cllib
 include $(TOP)/clocc.mk
-RM  = /bin/rm -f
-LN  = /bin/ln
-ZIP = /usr/local/bin/zip -9uD
-
-cllib.zip:	$(LISPFILES) manifest README.html Makefile ChangeLog
-	@${RM} cllib
-	@$(LN) -s . cllib
-	@echo ...updating zip file $@...;
-	@$(ZIP) $@ $(patsubst %,cllib/%,$^)
-	@$(RM) cllib
-
-manifest:	$(LISPFILES)
-	etags $^
-	sed "s?^/.*/\([^/]*\),?\1?" TAGS | cut -d" " -f2 > $@
+DOCFILES += $(SYSTEM).html
 
 image:		$(addsuffix .fas,$(BASE))
 	$(TOP)/bin/run-lisp $(patsubst %,-i %,$^) -d image
