@@ -211,15 +211,16 @@ Returns the number of seconds since the epoch (1900-01-01)."
   (declare (type (unsigned-byte 32) nn))
   (time2date (+ nn +unix-epoch+)))
 
-(defun dttm->string (dttm &key (format :long) (tz 0))
+(defun dttm->string (dttm &key (format :long) (tz 0) (dst nil dst-p))
   "Print the date/time as returned by `encode-universal-time'.
 DTTM is the universal time (GMT).
 FORMAT is passed to DATE-FORMATTER.
-TZ is the time zone in which the time is printed, NIL means local."
+TZ is the time zone in which the time is printed, NIL means local.
+DST is Daylight Saving Time indicator."
   (declare (type (integer 0) dttm))
-  (multiple-value-bind (se mi ho da mo ye dd dst zo)
+  (multiple-value-bind (se mi ho da mo ye dd dst1 tz1)
       (decode-universal-time dttm tz)
-    (date-formatter format se mi ho da mo ye dd dst zo)))
+    (date-formatter format se mi ho da mo ye dd (if dst-p dst dst1) tz1)))
 
 (defgeneric date-formatter (format se mi ho da mo ye dd dst tz)
   (:documentation "Format the decoded time using the given format spec.
