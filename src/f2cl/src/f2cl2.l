@@ -346,17 +346,24 @@ Tag being parsed:| (cadr x))))
        (update-called-functions-list (list fname) args)
        ;; Functions can modify the arguments in addition to returning
        ;; a value.  We need to handle this like a subroutine call, as
-       ;; done in PARSE-SUBROUTINE-CALL.
-       (first (generate-call-to-routine
-	       (cond ((member fname *subprog-arglist*)
-		      ;; We want to use funcall only if the external function
-		      ;; was passed in as a parameter.  If not, then we don't
-		      ;; need to funcall it.  The user was just telling us that
-		      ;; it was external function instead an intrinsic.
-		      `(funcall ,fname)) 
-		     (t 
-		      `(,fname)))
-	       args t))
+       ;; done in PARSE-SUBROUTINE-CALL.  If this function call is on
+       ;; the LHS of an assignment, it's not really a function call
+       ;; but the definition of a statement function.  Return it as
+       ;; is.  If it's on the RHS, it's a real function call so call
+       ;; it correctly.
+       (if (or *parsing-lhs*
+	       (member fname *subprog_stmt_fns*))
+	   `(,fname ,@args)
+	   (first (generate-call-to-routine
+		   (cond ((member fname *subprog-arglist*)
+			  ;; We want to use funcall only if the external function
+			  ;; was passed in as a parameter.  If not, then we don't
+			  ;; need to funcall it.  The user was just telling us that
+			  ;; it was external function instead an intrinsic.
+			  `(funcall ,fname)) 
+			 (t 
+			  `(,fname)))
+		   args t)))
        ))
 
 					; expression:
@@ -422,6 +429,9 @@ definition.| l) ))
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.25  2000/07/31 04:21:28  rtoy
+;;; Remove some unused functions.
+;;;
 ;;; Revision 1.24  2000/07/30 05:56:26  rtoy
 ;;; Function calls need to be handled like subroutine calls because
 ;;; functions can modify their parameters.
