@@ -23,7 +23,7 @@
 #+cmu
 (progn
   (defmethod print-object ((xx structure-object) (out stream))
-      (kernel:default-structure-print xx out 1))
+    (kernel:default-structure-print xx out 1))
   (defun print-struct-object (xx out depth)
     (declare (ignore depth))
     (print-object xx out)))
@@ -67,6 +67,7 @@
 ;;; }}}{{{ macroexpand-r
 ;;;
 
+;;;###autoload
 (defun macroexpand-r (form)
   "Recursive macroexpand - unreliable because of `macrolet' &c."
   (if (atom form) form
