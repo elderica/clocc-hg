@@ -17,7 +17,12 @@
   (require :port-ext (translate-logical-pathname "clocc:src;port;ext"))
   #+cmu
   (unless (ignore-errors (find-class 'ext:fundamental-input-stream))
-    (load "library:subsystems/gray-streams-library")))
+    ;; If CMUCL has WITHOUT-PACKAGE-LOCKS, it's better to REQUIRE Gray
+    ;; streams because it does the necessary magic to load it without
+    ;; package-lock errors.
+    (if (find-symbol "WITHOUT-PACKAGE-LOCKS" "EXT")
+	(require 'gray-streams)
+	(load "library:subsystems/gray-streams-library"))))
 
 (in-package #+allegro :excl
             #+(and clisp      lisp=cl)  :ext
