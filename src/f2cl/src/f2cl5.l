@@ -165,7 +165,14 @@
 			    `(string ,(second v-type))
 			    'string))
 		       (t
-			v-type)))
+			;; If type is NIL, use implicit type
+			(if (null v-type)
+			    (cond ((get-implicit-type vble))
+				  ((default-int-p vble)
+				   'integer4)
+				  (t
+				   'single-float))
+			    v-type))))
 	       ;;(format t  "type-clause = ~S~%" type-clauses)
 	       )))
 	(t
@@ -2112,6 +2119,14 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.74  2002/01/09 15:31:08  rtoy
+;;; o In GET-FUN-ARG-TYPE, we weren't correctly handling the case of unary
+;;;   + and -.
+;;; o When looking up the type of a variable, we need to check for the
+;;;   variable in *subprog-arglist* as well as *declared_vbles*!
+;;;
+;;; Thanks to Mike Koerber for sending sample code where this fails.
+;;;
 ;;; Revision 1.73  2002/01/08 03:24:44  rtoy
 ;;; o Correct the previous change about looking up the type of array
 ;;;   references.  If we have an fref, it can't be an array slice because
