@@ -285,14 +285,15 @@ Current time:~25t" (/ internal-time-units-per-second) *gensym-counter*)
     (0 "BST" . "GMT") (-2 "MET DST" . "MET"))
   "*The string representations of the time zones.")
 
-(defun tz->string (tz dst)
+(defun tz->string (tz dst &optional (long t))
   "Convert the CL timezone (rational [-24;24], multiple of 3600) to a string."
   (declare (type rational tz))
   (multiple-value-bind (hr mm) (floor (abs (- (if dst 1 0) tz)))
     (let ((mi (floor (* 60 mm)))
           (zo (assoc tz +time-zones+)))
-      (format nil "~:[+~;-~]~2,'0d~2,'0d~@[ (~a)~]" (minusp tz) hr mi
-              (if dst (cadr zo) (cddr zo))))))
+      (format nil "~:[+~;-~]~2,'0d~:[:~;~]~2,'0d~@[ (~a)~]"
+              (minusp tz) hr long mi
+              (and long (if dst (cadr zo) (cddr zo)))))))
 
 (defun string->tz (obj)
   "Find the OBJ (symbol or string) in +TIME-ZONES+."
