@@ -11,7 +11,7 @@
 ;;; $Id$
 ;;; $Source$
 
-(defpackage :port
+(defpackage "PORT"
   (:use "COMMON-LISP")
   (:nicknames "ORG.CONS.CLOCC/SDS/PORT")
   (:export
