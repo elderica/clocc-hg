@@ -125,4 +125,6 @@
         ("**;*" ,(concatenate 'string *clocc-root* "**/*"))
         ("**;*.*" ,(concatenate 'string *clocc-root* "**/*.*"))))
 
+(provide :clocc-top)
+
 ;;; clocc.lisp ends here
