@@ -1050,7 +1050,7 @@
         (ent-tab '((">=" . "-geq") ("<=" . "-leq") ("/=" . "-neq")
                    ("=" . "-eq") (">" . "-grt") ("<" . "-lst")))
         (smb-tab'((">=" . "&gt;=") ("<=" . "&lt;=")
-                  (">" . "&gt") ("<" . "&lt"))))
+                  (">" . "&gt;") ("<" . "&lt;"))))
     (dolist (re ent-tab)
       (setq ent (substitute-subseq ent (car re) (cdr re) :test #'char=)))
     (dolist (re smb-tab)
