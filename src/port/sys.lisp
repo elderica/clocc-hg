@@ -12,7 +12,7 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  (require :ext (translate-logical-pathname "clocc:src;port;ext"))
+  (require :port-ext (translate-logical-pathname "clocc:src;port;ext"))
   #+(and allegro mswindows)
   (require :ole))
 
@@ -385,5 +385,5 @@ Current time:~25t" (/ internal-time-units-per-second) *gensym-counter*)
             ye mo da (aref +week-days+ dw) ho mi se
             (tz->string tz dst))))
 
-(provide :sys)
+(provide :port-sys)
 ;;; file sys.lisp ends here

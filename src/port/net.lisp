@@ -12,9 +12,9 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  (require :ext (translate-logical-pathname "clocc:src;port;ext"))
+  (require :port-ext (translate-logical-pathname "clocc:src;port;ext"))
   ;; `getenv'
-  (require :sys (translate-logical-pathname "port:sys"))
+  (require :port-sys (translate-logical-pathname "port:sys"))
   #+cormanlisp (require :winsock)
   #+lispworks (require "comm"))
 
@@ -420,5 +420,5 @@ When SERVICE is NIL, return the list of all services."
 
 ;;; }}}
 
-(provide :net)
+(provide :port-net)
 ;;; file net.lisp ends here

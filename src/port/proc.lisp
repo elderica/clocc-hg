@@ -52,7 +52,7 @@
 ;;; WITH-LOCK ((lock) &rest body)
 
 (eval-when (compile load eval)
-  (require :ext (translate-logical-pathname "clocc:src;port;ext"))
+  (require :port-ext (translate-logical-pathname "clocc:src;port;ext"))
   #+CormanLisp (require 'THREADS))
 
 (in-package :port)
@@ -438,5 +438,5 @@ and reapply its initial function to its arguments."
   #+MCL        `(ccl:with-process-enqueued (,lock) ,@body)
   #-threads    `(progn ,@body))
 
-(provide :proc)
+(provide :port-proc)
 ;;; proc.lisp end here

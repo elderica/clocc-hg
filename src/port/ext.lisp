@@ -192,5 +192,5 @@ All the values from nth function are fed to the n-1th."
             (lambda (&rest args) (multiple-value-call f0 (apply f1 args))))
           functions :initial-value #'identity))
 
-(provide :ext)
+(provide :port-ext)
 ;;; file ext.lisp ends here

@@ -14,7 +14,7 @@
 (eval-when (compile load eval)
   #-(or allegro clisp cmu lispworks sbcl)
   (error 'not-implemented :proc "Gray streams")
-  (require :ext (translate-logical-pathname "clocc:src;port;ext"))
+  (require :port-ext (translate-logical-pathname "clocc:src;port;ext"))
   #+cmu
   (unless (ignore-errors (find-class 'ext:fundamental-input-stream))
     (load "library:subsystems/gray-streams-library")))
@@ -45,5 +45,5 @@
   (import gray-symbols :port)
   (export gray-symbols :port))
 
-(provide :gray)
+(provide :port-gray)
 ;;; file gray.lisp ends here

@@ -12,7 +12,7 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  (require :ext (translate-logical-pathname "clocc:src;port;ext")))
+  (require :port-ext (translate-logical-pathname "clocc:src;port;ext")))
 
 (in-package :port)
 
@@ -100,5 +100,5 @@
     (unwind-protect (progn ,@body)
       (close-pipe ,pipe))))
 
-(provide :shell)
+(provide :port-shell)
 ;;; file shell.lisp ends here
