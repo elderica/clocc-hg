@@ -176,7 +176,7 @@ according to the given backend")
   (tics t :type boolean)
   (fmt "%g" :type string)
   (time-p nil :type boolean)
-  (logscale nil :type (or null (eq t) (real (1))))
+  (logscale nil :type (or null (eql t) (real (1))))
   (range nil :type (or null cons)))
 
 (defstruct (plot-spec (:conc-name plsp-))
