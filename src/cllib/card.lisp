@@ -29,7 +29,7 @@
 
 (in-package :cllib)
 
-;; what should I export? (export '())
+(export '(*user-bbdb-file* *user-vcard-file* *user-native-file*))
 
 ;;;
 ;;; {{{ definitions
@@ -156,17 +156,19 @@ See constants `+card-output-bbdb+', `+card-output-vcard+',
 `+card-output-pretty+'.")
 
 (defcustom *user-bbdb-file* pathname
-  (merge-pathnames (make-pathname :name ".bbdb") (user-homedir-pathname))
+  (merge-pathnames (make-pathname :name ".bbdb" :defaults nil)
+                   (user-homedir-pathname))
   "*The path to the user's BBDB file.")
 
 (defcustom *user-vcard-file* pathname
   (merge-pathnames (make-pathname :directory '(:relative ".gnome")
-                                  :name "GnomeCard.gcrd")
+                                  :name "GnomeCard.gcrd"
+                                  :defaults nil)
                    (user-homedir-pathname))
   "*The path to the user's VCARD file.")
 
 (defcustom *user-native-file* pathname
-  (merge-pathnames (make-pathname :name ".rolodex")
+  (merge-pathnames (make-pathname :name ".rolodex" :defaults nil)
                    (user-homedir-pathname))
   "*The path to the user's native data file.")
 
