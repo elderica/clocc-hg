@@ -1,4 +1,4 @@
-;;; File: <url.lisp - 2000-01-19 Wed 13:06:43 EST sds@ksp.com>
+;;; File: <url.lisp - 2000-01-24 Mon 19:01:12 EST sds@ksp.com>
 ;;;
 ;;; Url.lisp - handle url's and parse HTTP
 ;;;
@@ -12,6 +12,9 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.33  2000/01/19 18:08:47  sds
+;;; (resolve-host-ipaddr): fixed for CLISP/syscalls
+;;;
 ;;; Revision 1.32  1999/10/19 18:47:57  sds
 ;;; (ts-skip-scripts): new function.
 ;;;
@@ -1203,9 +1206,10 @@ Return the new buffer or NIL on EOF."
     (when kill
       (dolist (ch (to-list kill))
         (setq str (nsubstitute #\Space ch str))))
+    ;; ' .. ' is an error and
     ;; (nsubstitute #\space #\. str) breaks floats, so we have to be smart
     (do ((beg -1) (len (1- (length str))))
-        ((or (= beg len)
+        ((or (>= beg len)
              (null (setq beg (position #\. str :start (1+ beg))))))
       (declare (type (signed-byte 21) beg len))
       (if (or (and (plusp beg) (alphanumericp (schar str (1- beg))))
@@ -1251,13 +1255,14 @@ Return the new buffer or NIL on EOF."
     (dotimes (ii num)
       (declare (type index-t ii))
       (do () ((not (html-tag-p (setq tt (read-next ts :errorp t :kill kill))))
-              (mesg :log t "~d token: ~s~%" ii tt))
+              (mesg :log t "~d token (~s): ~s~%" ii (type-of tt) tt))
         (mesg :log t "tag: ~s~%" tt)))
     (if (and type (not (typep tt type))) dflt tt)))
 
 (defun next-number (ts &key (num 1) (kill *ts-kill*))
   "Get the next NUM-th number from the HTML stream TS."
   (declare (type text-stream ts) (type index-t num))
+  (pushnew #\% kill :test #'char=)
   (let (tt)
     (dotimes (ii num)
       (declare (type index-t ii))
