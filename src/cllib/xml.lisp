@@ -1,6 +1,6 @@
 ;;; XML parsing
 ;;;
-;;; Copyright (C) 2000-2002 by Sam Steingold
+;;; Copyright (C) 2000-2005 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
