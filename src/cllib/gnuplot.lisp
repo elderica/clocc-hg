@@ -43,9 +43,9 @@
   #+(or win32 mswindows)
   "c:/gnu/gp371w32/wgnupl32.exe"
   ;; "c:/bin/gnuplot/wgnuplot.exe"
-  #+unix (if (string-equal (machine-type) "linux")
-             "/usr/bin/gnuplot" "/usr/local/bin/gnuplot")
-  "*The path to the windows gnuplot executable.")
+  #+unix "gnuplot"
+  "*The path to the graphics-capable gnuplot executable.
+This must be either a full path or a name of an executable in your PATH.")
 (defconst +gnuplot-epoch+ integer (encode-universal-time 0 0 0 1 1 2000 0)
   "*The gnuplot epoch - 2000-1-1.")
 #+(or win32 mswindows)
