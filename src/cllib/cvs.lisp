@@ -127,8 +127,10 @@
 (defun cvs-read-file (in ra)
   "Read a CVS-FILE from a stream.  Suitable for `read-list-from-stream'."
   (declare (stream in) (symbol ra))
+  (loop :while (eq ra :cvs) :do (read-line in) (setq ra (read in)))
   (unless (eq ra :rcs)
-    (error "~s: read-ahead is `~s' (`~s' expected)" 'cvs-read-file ra :rcs))
+    (error "~s: read-ahead is `~s' (`~s' or `~s' expected)"
+           'cvs-read-file ra :rcs :cvs))
   (flet ((from-colon (line)
            (subseq line (+ 2 (position #\: line :test #'char=)))))
     (let* ((rcs (from-colon (read-line in)))
