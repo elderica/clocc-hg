@@ -307,7 +307,7 @@ Do not use it!!!  Use the generic function `rpm' instead!!!"
             (prog1 (map-in (lambda (rr) (setf (rpm-note rr) (list url)) rr)
                            (rpm-read data))
               (url-ask sock err :list))))) ; 226
-    ((or path login) (co)
+    ((or net-path login) (co)
       (mesg :log err " * rpm-available [~a]: Cannot login:~% - ~a~%" url co)
       (error co))
     (network (co)
