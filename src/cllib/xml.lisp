@@ -651,6 +651,7 @@ The first character to be read is #\T."
 
 (defun read-xml (stream char)
   (ecase char
+    (#\/ 'xml-tags::/)
     (#\<                        ; read tag
      (let ((ch (read-char stream t nil t)) (*package* *xml-pack*))
        (case ch
@@ -718,6 +719,7 @@ The first character to be read is #\T."
   "Return a readtable for reading XML."
   (set-macro-character #\< #'read-xml nil rt)
   (set-macro-character #\[ #'read-xml nil rt)
+  (set-macro-character #\/ #'read-xml nil rt)
   (cond (*xml-read-entities*
          (set-macro-character #\& #'read-xml nil rt)
          (set-macro-character #\% #'read-xml nil rt))
