@@ -77,13 +77,14 @@ AKA `remove-if-not':
 determined by the FUNCTIONS"
   (labels ((l (fl)
              (let ((first (first fl)) (rest (rest fl)))
+               (setq first (if (symbolp first) `(,first) `(funcall ,first)))
                (if rest
                    (let ((x1 (gensym "X")) (y1 (gensym "Y")))
-                     `(let ((,x1 (,first x)) (,y1 (,first y)))
+                     `(let ((,x1 (,@first x)) (,y1 (,@first y)))
                         (or (,gt ,x1 ,y1)
                             (and (,eq ,x1 ,y1)
                                  ,(l rest)))))
-                   `(,ge (,first x) (,first y))))))
+                   `(,ge (,@first x) (,@first y))))))
     `(lambda (x y) ,(l functions))))
 
 ;;;
