@@ -52,7 +52,7 @@ $(SYSTEM).zip: $(DOCFILES) $(LISPFILES) $(MAKEFILES)
 	@$(LN) -s . extra;
 	@$(LN) -s $(ZIPEXTRA) .;
 	@echo ...updating zip file $@...;
-	@$(ZIP) $@ $(patsubst %,$(SYSTEM)/%,$^) \
+	@$(ZIP) $@ $(patsubst %,$(SYSTEM)/%,$^) $(ZIPEXTRANOLINK) \
 		$(patsubst %,$(SYSTEM)/extra/%,$(notdir $(ZIPEXTRA)));
 	@$(RM) $(SYSTEM) extra $(notdir $(ZIPEXTRA));
 
