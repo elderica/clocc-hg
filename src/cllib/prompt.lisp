@@ -15,7 +15,15 @@
 (in-package :cllib)
 
 #+(and clisp lisp=cl)
-(eval-when (compile load eval) (import 'ext:package-short-name :cllib))
+(eval-when (compile load eval)
+  (let (s)
+    (cond ((setq s (find-symbol "PACKAGE-SHORT-NAME" "EXT"))
+           (import s "CLLIB"))
+          ((setq s (find-symbol "PACKAGE-SHORTEST-NAME" "EXT"))
+           (setf (fdefinition (intern "PACKAGE-SHORT-NAME" "CLLIB"))
+                 (fdefinition s)))
+          (t (error "update ~S for your version of ~S"
+                    *load-truename* (lisp-implementation-version))))))
 
 (export '(package-short-name set-cllib-prompt))
 
@@ -23,16 +31,8 @@
 (defun package-short-name (pkg)
   "Return the shortest (nick)name of the package."
   (declare (type package pkg))
-  (let ((name (reduce (lambda (st0 st1)
-                        (declare (simple-string st0 st1))
-                        (if (> (length st0) (length st1)) st1 st0))
-                      (package-nicknames pkg) :initial-value
-                      (package-name pkg))))
-    (case *print-case*
-      (:upcase (string-upcase name))
-      (:downcase (string-downcase name))
-      (:capitalize (string-capitalize name))
-      (t name))))
+  (reduce (lambda (st0 st1) (if (> (length st0) (length st1)) st1 st0))
+          (package-nicknames pkg) :initial-value (package-name pkg)))
 
 (defun set-cllib-prompt ()
   "Reset the prompt according to CLLIB."
