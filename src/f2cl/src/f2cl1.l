@@ -770,8 +770,8 @@ FILENAME                 File containing Fortran code
      ;; Handle Fortran comments that were converted by the
      ;; preprocessor to be (fortran_comment "comment string").
      ;;
-     ;; Convert it to just a quoted string possible.  Otherwise just
-     ;; leave it as is.
+     ;; Convert it to just a quoted string if possible.  Otherwise
+     ;; just leave it as is.
      (when (eq (car x) 'fortran_comment)
        (return (if (cddr x)
 		   (list x)
@@ -782,9 +782,13 @@ FILENAME                 File containing Fortran code
      (when (or (eq (car x) 'block)
 	       (eq (car x) 'blockdata))
        ;; A block data subprogram.  We cheat and pretend it's a
-       ;; subroutine with the special name /blockdata/
-       (setq bindings (id-definition-sub '(subroutine /blockdata/)))
-       (return (parse-subr-definition bindings)))
+       ;; subroutine with a special name. If a name is given, use that
+       ;; as part of the special name.
+       (let ((name (if (second x)
+		       (intern (concatenate 'string "/BLOCKDATA-" (string (second x)) "/"))
+		       '/blockdata/)))
+	 (setq bindings (id-definition-sub `(subroutine ,name)))
+	 (return (parse-subr-definition bindings))))
 
      ;;fall out the bottom:
      (return (list (list 'quote (concatenate ' string  "****NOT TRANSLATED: " 
@@ -2122,6 +2126,9 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.92  2002/03/01 02:41:54  rtoy
+;;; Add some pretty-printers so the resulting code looks a bit neater.
+;;;
 ;;; Revision 1.91  2002/02/17 15:51:19  rtoy
 ;;; With the new array-slicing method, the default array type can be
 ;;; simple-array again.
