@@ -768,7 +768,7 @@ The first character to be read is #\T."
                          &body body)
   "Open the XML stream to file."
   (with-gensyms ("WXF-" ff)
-    `(with-timing (:out ,out)
+    `(with-timing (:out ,out :type :xml)
       (when ,reset-ent (xml-init-entities :out ,out))
       (let ((,ff ,file))
         (with-xml-input (,var (open ,ff :direction :input))
