@@ -188,7 +188,9 @@ defaults to `read' and is called with 3 arguments - STREAM, NIL and EOF.
 Set `*print-pretty*' to the third argument NICE (default T).
 Uses `with-standard-io-syntax'."
   (declare (stream str))
-  (with-standard-io-syntax (write obj :stream str :pretty nice))
+  (with-standard-io-syntax
+    (let ((*package* #.(make-package "FORCE-PACKAGE-PREFIXES" :use NIL)))
+      (write obj :stream str :pretty nice)))
   (values))
 
 ;;;###autoload
@@ -203,7 +205,7 @@ Return the size of the file."
       (declare (stream str))
       (format str ";; File: <~a - " file) (current-time str)
       (format str " ~a>~%;; Created by: ~a [~a]
-;; *print-circle* = *print-pretty* = ~:[false~;true~]~%~{~a~}~2%"
+;; *print-pretty* = ~:[false~;true~]~%~{~a~}~2%"
               (getenv "USER") (lisp-implementation-type)
               (lisp-implementation-version) nice comments)
       (pr obj str nice)
