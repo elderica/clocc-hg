@@ -467,6 +467,7 @@ so that (poly 10 '(1 2 3 4 5)) ==> 12345."
 The same as
   (+ 0.5d0 (/ (integrate-simpson (lambda (tt) (exp (* tt tt -0.5d0))) 0 xx)
               (sqrt (* 2 pi))))
+i.e., the comulative normal distribution function.
 Return the value and the derivative, suitable for `newton'."
   (declare (double-float xx))
   (let* ((der (/ (exp (* -0.5d0 (expt xx 2))) (dfloat (sqrt (* 2 pi)))))
