@@ -18,7 +18,7 @@
 
 (in-package :cllib)
 
-(export '(with-html-output directory-index html-stream-out))
+(export '(with-html-output with-tag directory-index html-stream-out))
 
 ;;;
 ;;; preparation
@@ -88,8 +88,7 @@
                        (with-tag (:address)
                          (with-tag (:a :href ,mailto)
                            (princ *user-mail-address* ,var)))
-                       (with-tagl (:strong)
-                         (princ (current-time nil) ,var)))))))
+                       (with-tagl (:strong) (current-time ,var)))))))
           (when ,raw (close ,raw)))))))
 
 ;;;
