@@ -140,7 +140,7 @@ so that the bare symbols are read as keywords."
 
 #+cmu (progn
         (import '(ext:required-argument) :port)
-        (export '(required-argument) :port))
+        (export '(ext:required-argument) :port))
 #-cmu (progn
         (proclaim '(ftype (function () nil) required-argument))
         (defun required-argument ()
