@@ -17,6 +17,8 @@
   (require :xml (translate-logical-pathname "cllib:xml"))
   ;; `make-url'
   (require :url (translate-logical-pathname "cllib:url"))
+  ;; `next-token', `next-number', `text-stream'
+  (require :html (translate-logical-pathname "cllib:html"))
   ;; `plot-dated-lists'
   (require :gnuplot (translate-logical-pathname "cllib:gnuplot")))
 
@@ -254,10 +256,7 @@ This is just a debugging function, to be called interactively."
             (car ti) (car res)))))
 
 (defcustom *get-quote-url-list* list
-  (list (list (make-url :prot :http :port 80 :host "qs.secapl.com"
-                        :path "/cgi-bin/qs?ticks=")
-              'get-quotes-apl "APL")
-        (list (make-url :prot :http :port 80 :host "quote.yahoo.com"
+  (list (list (make-url :prot :http :port 80 :host "quote.yahoo.com"
                         :path "/q?s=")
               'get-quotes-yahoo "Yahoo")
         (list (make-url :prot :http :port 80 :host "www.stockmaster.com"
@@ -268,7 +267,12 @@ This is just a debugging function, to be called interactively."
               'get-quotes-pf "PathFinder")
         (list (make-url :prot :http :port 80 :host "qs.cnnfn.com"
                         :path "/tq/stockquote?symbols=")
-              'get-quotes-cnn "CNN"))
+              'get-quotes-cnn "CNN")
+        ;; SecAPL appears to be dead
+        ;; (list (make-url :prot :http :port 80 :host "qs.secapl.com"
+        ;;                :path "/cgi-bin/qs?ticks=")
+        ;;      'get-quotes-apl "APL")
+        )
   "*The list of known URL templates for getting quotes.")
 
 (defun get-quotes (server &rest ticks)
