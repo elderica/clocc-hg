@@ -815,7 +815,7 @@ This is mostly a debugging function, to be called interactively."
   (format out "Opening URL: `~a'...~%" url)
   (with-open-url (sock url :err err :timeout timeout :max-retry max-retry)
     (loop :for ii :of-type index-t :from  1
-          :and rr = (read-line sock nil +eof+) :until (eq +eof+ rr)
+          :and rr = (read-line sock nil nil) :until (null rr)
           :do (format out fmt ii
                       (funcall proc (string-right-trim +whitespace+ rr))))))
 
