@@ -42,8 +42,10 @@
                       (string-equal term "dumb")
                       (string-equal term "emacs"))))
          (beg-bold (if fontp "" "[1m"))
-         #-allegro (beg-it   (if fontp "" "[7m"))
+         #-allegro
+         (beg-it   (if fontp "" "[7m"))
          (end-all  (if fontp "" "[m")))
+    #+allegro (declare (ignore cmd-idx))
     #+(or cmu clisp)
     (setq lisp::*prompt*
           (lambda ()
