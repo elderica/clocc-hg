@@ -72,11 +72,12 @@
   (:method ((in t) (out string)) (cvs-diff2patch in (pathname out)))
   (:method ((in pathname) (out t))
     (with-open-file (istream in :direction :input)
-      (format t "~&~s: reading: ~s [~:d bytes]~%" in)
+      (format t "~&~s: reading: ~s [~:d byte~:p]~%"
+              'cvs-diff2patch in (file-length istream))
       (cvs-diff2patch istream out)))
   (:method ((in t) (out pathname))
     (with-open-file (ostream out :direction :output)
-      (format t "~&~s: writing: ~s~%" out)
+      (format t "~&~s: writing: ~s~%" 'cvs-diff2patch out)
       (cvs-diff2patch in ostream))))
 
 ;;;
