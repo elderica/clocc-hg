@@ -304,17 +304,27 @@ INPUT-FILE               File containing Fortran code
     t))
 ;-----------------------------------------------------------------------------
 (defun readsubprog-extract-format-stmts (inport)
- (prog (input-list output-list (margin nil) (multiple-line-flag nil)
+  (prog (input-list output-list (margin nil) (multiple-line-flag nil)
         current-line *current_label*)
-    (if *verbose* (format t "~&extracting format statements ...~%"))
-main-loop 
+     (if *verbose* (format t "~&extracting format statements ...~%"))
 
-   ; label
-   (if (not multiple-line-flag)
-       (setq *current_label* 
-            (if (integerp (read-from-string (coerce margin 'string) nil))
-                (read-from-string (coerce margin 'string) nil)
-                nil)))
+MAIN-LOOP 
+
+    (cond ((not (eq (peek-char nil inport nil 'EOF) 'EOF))
+	   (setq margin (read-six-chars inport))
+	   ;; Don't need this anymore because preprocess handles line
+	   ;; continuations.
+	   #+nil
+	   (when (not (char-equal (nth 5 margin) #\space)) ;line continuation
+	     (setq multiple-line-flag t)
+	     (go main-loop)))
+	  (t (setq margin nil)))   
+   ;; Check for a label on the line
+   (when (not multiple-line-flag)
+     (setq *current_label* 
+	   (if (integerp (read-from-string (coerce margin 'string) nil))
+	       (read-from-string (coerce margin 'string) nil)
+	       nil)))
 
    ;; Make sure we aren't hosed if we break out of this!
    (unwind-protect
@@ -335,6 +345,7 @@ main-loop
      (setlispread))
    ;; read the next margin
    ;;(format t "read next margin~%")
+   #+nil
    (cond ((not (eq (peek-char nil inport nil 'EOF) 'EOF))
           (setq margin (read-six-chars inport))
           (when (not (char-equal (nth 5 margin) #\space)) ;line continuation
@@ -422,7 +433,8 @@ main-loop
 			       ;; A function.  Return the value of the
 			       ;; function, the value of the variable
 			       ;; with the same name as the function.
-			       `(end_label (return ,(cadr fort-fun))))
+			       `(end_label (return (values ,(cadr fort-fun)
+							   ,@(caddr fort-fun)))))
 			      ((or *program-flag*
 				   (not (eq (car fort-fun) 'defun)))
 			       ;; Return nil if this is the main
@@ -1829,6 +1841,10 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.51  2000/07/28 22:08:31  rtoy
+;;; Take out the pprint-logical-block if we're using Clisp since it
+;;; doesn't have it.
+;;;
 ;;; Revision 1.50  2000/07/28 16:59:27  rtoy
 ;;; o We are in the f2cl package now.
 ;;; o Read the preprocessed file in the f2cl package instead of the user
