@@ -62,6 +62,8 @@
    "LGE" "LGT" "FLOG" "LOG10" "LT" "MAX" "MAX0"
    "MAX1" "MIN0" "MIN1" "NINT" "FREAL"
    "SIGN" "SNGL" "FSQRT"
+   ;; Other functions
+   "D1MACH" "R1MACH"
    ))
 
 ;;;-------------------------------------------------------------------------
@@ -69,6 +71,10 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.7  2001/02/26 15:38:22  rtoy
+;;; Move *check-array-bounds* from f2cl1.l to macros.l since the generated
+;;; code refers to it.  Export this variable too.
+;;;
 ;;; Revision 1.6  2000/09/01 13:51:20  rtoy
 ;;; AMAX1 and DIM were repeated.
 ;;;
