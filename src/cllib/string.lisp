@@ -13,7 +13,9 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  (require :base (translate-logical-pathname "clocc:src;cllib;base")))
+  (require :base (translate-logical-pathname "clocc:src;cllib;base"))
+  ;; `index-t'
+  (require :withtype (translate-logical-pathname "cllib:withtype")))
 
 (in-package :cllib)
 
