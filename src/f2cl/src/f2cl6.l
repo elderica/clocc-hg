@@ -80,6 +80,7 @@
 		      ;; Not continuation.  Print out the buffered line, if
 		      ;; any, and save this line for later.
 		      (when prev-line
+			(format t "~S~%" (adjust_nrs (replace_logl_ops prev-line)))
 			(write-line (adjust_nrs (replace_logl_ops prev-line)) outport))
 		      (setf prev-line (copy-seq line))
 		      ;; Print out the collected comments, if any
@@ -126,6 +127,7 @@
               (go loop)))))
 ;--------------------------------------------------------------------------
 
+#+nil
 (defun adjust_nrs (line)
    (prog (outport char prev-char)
      (setq prev-char '#\space
@@ -156,6 +158,43 @@
                   (setq prev-char char))
               (go loop)))
      (return (get-output-stream-string outport))))
+
+(defun adjust_nrs (line)
+  (let ((prev-char #\Space)
+	(*inp* (make-string-input-stream line))
+	(outport (make-string-output-stream)))
+    ;; Read the first 6 characters and write them out.
+    ;; (Don't want PARSE-NUMBER to mangle the spacing.)
+    (let ((maybe-line-number (read-six-chars *inp*)))
+      (dolist (char maybe-line-number)
+	(when (not (eq char 'EOF))
+	  (write-char char outport)))
+      (when (member 'EOF maybe-line-number)
+	(return-from adjust_nrs (get-output-stream-string outport))))
+    (loop
+	(let ((char (read-char *inp* nil 'EOF t)))
+	  (cond ((eql char 'EOF)
+		 (return-from adjust_nrs (get-output-stream-string outport)))
+
+		;; check for single quote and pass over all char until next one
+		((char= char #\')
+		 (setq prev-char #\space)
+		 (write-char #\" outport)
+		 (do ((char (read-char *inp* nil 'EOF t)
+			    (read-char *inp* nil 'EOF t)))
+		     ((char= char #\')
+		      (write-char #\" outport))
+		   (write-char char outport)))
+
+		;; check for non-complex number 
+		((parse-number prev-char char outport)
+		 (setq prev-char '#\space))
+
+		(t
+		 (write-char char outport)
+		 (if (digit-char-p char)
+		     (setq prev-char '#\?)
+		     (setq prev-char char))))))))
 ;------------------------------------------------------------------------------
 
 (defun parse-logl-op (inport outport)
@@ -424,6 +463,11 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.18  2000/08/13 04:18:44  rtoy
+;;; Make PARSE-NUMBER handle sapces within numbers, which is perfectly
+;;; acceptable Fortran.  (May be a bit buggy still; probably should
+;;; rewrite PARSE-NUMBER.)
+;;;
 ;;; Revision 1.17  2000/08/01 23:02:36  rtoy
 ;;; We were messing up the printing of comments after we changed
 ;;; PREPROCESS to handle continuation lines.  We need to accumulate
