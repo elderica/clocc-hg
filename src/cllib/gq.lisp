@@ -567,8 +567,8 @@ previous day:~15t~{~7,2f~}~%Added an extra record~%~5t~{~a~}~%"
                      "Total Value" :misc 'hist-totl)
               (nreverse res))
         :rel t :slot 'misc :grid t
-        :title "Portfolio History" :data-style "linespoints"
-        :ylabel "Relative Value" :plot plot :legend "top left box"))
+        :title "Portfolio History" :data-style :linespoints
+        :ylabel "Relative Value" :plot plot :legend '(:top :left :box)))
     (declare (fixnum ii))
     (push (mk-dl (list (cons :all hist)) :date 'hist-date
                  :name (pfl-name (car hl))
