@@ -29,6 +29,7 @@
 (export '(*gnuplot-path* *gnuplot-printer* *gnuplot-default-directive*
           #+(or win32 mswindows) *gnuplot-path-console*
           plot-output +plot-term-screen+ +plot-term-printer+ +plot-term-file+
+          plot-term make-plot-term
           +plot-timestamp+ directive-term make-plot-stream
           with-plot-stream plot-dated-lists plot-dated-lists-depth
           plot-lists plot-lists-arg plot-error-bars plot-functions))
