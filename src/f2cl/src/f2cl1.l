@@ -126,7 +126,7 @@ only when needed. ")
 			(coerce-assigns :as-needed)
 			(extension (or *default-lisp-extension* "lisp"))
 			keep-temp-file
-			(array-type :simple-array array-type-p)
+			(array-type :array array-type-p)
 			(array-slicing t)
 			package
 			declaim
@@ -229,7 +229,7 @@ INPUT-FILE               File containing Fortran code
 			      (auto-save t) (relaxed-array-decls t)
 			      (coerce-assigns :as-needed)
 			      (keep-lisp-file t)
-			      (array-type :simple-array)
+			      (array-type :array)
 			      (array-slicing t)
 			      package
 			      declaim
@@ -2077,6 +2077,12 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.89  2002/02/09 16:10:45  rtoy
+;;; o Add new var *DECLARE-COMMON-BLOCKS*
+;;; o F2CL and F2CL-COMPILE take a new arg :declare-common, defaulting to
+;;;   NIL, which allows the user to specify if the structures for the
+;;;   common blocks in this file should be declared in this file.
+;;;
 ;;; Revision 1.88  2002/02/08 23:28:26  rtoy
 ;;; Off-by-one error in initializing an array with FILL.  We didn't fill
 ;;; the last element!
