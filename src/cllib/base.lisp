@@ -1,4 +1,4 @@
-;;; File: <base.lisp - 1999-10-12 Tue 11:12:05 EDT sds@ksp.com>
+;;; File: <base.lisp - 2000-01-19 Wed 13:24:38 EST sds@ksp.com>
 ;;;
 ;;; Basis functionality, required everywhere
 ;;;
@@ -12,6 +12,11 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.24  1999/10/12 15:27:56  sds
+;;; Autodetect the compiled extension (`*fas-ext*').
+;;; Treat TERM "emacs" as "dumb" for `lisp::*prompt*'.
+;;; Purged Eagle proprietary modules.
+;;;
 ;;; Revision 1.23  1999/06/03 17:33:55  sds
 ;;; (compose): partially reverted the previous patch.
 ;;;
@@ -101,9 +106,6 @@
 ;;; Initial revision
 ;;;
 
-;;(defpackage finance
-;;  (:size 1000) (:nicknames "EAGLE" "FIN") (:use "CL" "LISP")
-;;  (:shadowing-import-from "CL" "FLET" "MAKE-PACKAGE" "MACROLET" "LABELS"))
 (in-package :cl-user)
 
 (eval-when (load compile eval)
@@ -285,20 +287,22 @@
 (defcustom sys::*command-index* index-t 0
   "The number of commands issued so far.")
 
-#+(or cmu clisp)
-(setq lisp::*prompt*
-      (lambda ()
-        (let* ((term (getenv "TERM"))
-               (dumb (or (null term)
-                         (string-equal term "dumb")
-                         (string-equal term "emacs")))
-               (bb (if dumb "" "[1m"))
-               (ib (if dumb "" "[7m"))
-               (ee (if dumb "" "[m" )))
-          (declare (simple-string bb ib ee))
+(let* ((term (getenv "TERM"))
+       (dumb (or (null term)
+                 (string-equal term "dumb")
+                 (string-equal term "emacs")))
+       (bb (if dumb "" "[1m"))
+       (ib (if dumb "" "[7m"))
+       (ee (if dumb "" "[m" )))
+  (declare (simple-string bb ib ee))
+  #+(or cmu clisp)
+  (setq lisp::*prompt*
+        (lambda ()
           (format nil "~a~a~a~a[~:d]:~a " ib
                   (package-short-name *package*)
-                  ee bb (incf sys::*command-index*) ee))))
+                  ee bb (incf sys::*command-index*) ee)))
+  #+allegro
+  (setq TPL:*PROMPT* (concatenate 'string bb TPL:*PROMPT* ee)))
 
 ;;;
 ;;; Shell interface
