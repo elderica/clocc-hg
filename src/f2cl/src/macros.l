@@ -748,6 +748,22 @@ is not included")
 		    :direction :output
 		    :if-exists :rename)))))
 
+(defun init-fortran-io ()
+  "Initialize the F2CL Fortran I/O subsystem to sensible defaults"
+  (clrhash *lun-hash*)
+  (setf (gethash 6 *lun-hash*) *standard-output*)
+  (setf (gethash 5 *lun-hash*) *standard-input*)
+  (setf (gethash t *lun-hash*) *standard-output*))
+
+(defun close-fortran-io ()
+  "Close all F2CL Fortran units (except for standard output and input)
+causing all pending operations to be flushed"
+  (maphash #'(lambda (key val)
+	       (when (and (streamp val) (not (member key '(5 6 t))))
+		 (format t "Closing unit ~A: ~A~%" key val)
+		 (close val)))
+	       *lun-hash*)))
+
 (declaim (ftype (function (t) stream) lun->stream))
 
 (defmacro fformat (dest-lun format-cilist &rest args)
@@ -1044,6 +1060,10 @@ is not included")
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.36  2002/02/04 03:23:46  rtoy
+;;; o Make *lun-hash* a defparameter instead of a defvar.
+;;; o Fix up i1mach so that the unit numbers match *lun-hash*.
+;;;
 ;;; Revision 1.35  2002/01/13 16:29:00  rtoy
 ;;; o This file is in the f2cl-lib package now
 ;;; o Deleted some unused code.
