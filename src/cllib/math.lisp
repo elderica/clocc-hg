@@ -33,7 +33,8 @@
    dot poly1 poly erf cndf norm normalize rel-dist
    mean mean-cx mean-weighted mean-geometric mean-geometric-weighted mean-some
    standard-deviation standard-deviation-cx standard-deviation-weighted
-   standard-deviation-relative standard-deviation-mdl mdl
+   standard-deviation-relative standard-deviation-mdl
+   mdl make-mdl +bad-mdl+ mdl-mn mdl-sd mdl-le mdl-mi mdl-ma
    kurtosis-skewness kurtosis-skewness-weighted
    covariation covariation1 cov volatility
    below-p linear safe-fun safe-fun1 safe-/ s/ d/
@@ -921,10 +922,16 @@ The mean and the length can be pre-computed for speed."
   (declare (sequence seq) (fixnum len) (double-float mean)
            (type (function (t) double-float) key))
   (when (<= len 1) (return-from standard-deviation (values 0d0 mean len)))
-  (values
-   (sqrt (/ (reduce #'+ seq :key (lambda (yy) (sqr (- (funcall key yy) mean))))
-            (1- len)))
-   mean len))
+  (let (min max)
+    (values
+     (sqrt (/ (reduce #'+ seq :key
+                      (lambda (yy)
+                        (let ((val (funcall key yy)))
+                          (when (or (null min) (< val min)) (setq min val))
+                          (when (or (null max) (> val max)) (setq max val))
+                          (sqr (- val mean)))))
+              (1- len)))
+     mean len min max)))
 
 (defun standard-deviation-weighted (seq wts &key
                                     (value #'value) (weight #'value))
@@ -1063,6 +1070,8 @@ and the list of the volatilities for each year."
 (defstruct (mdl)
   (mn 0d0 :type double-float)   ; Mean
   (sd 0d0 :type (double-float 0d0)) ; Deviation
+  (ma 0d0 :type double-float)       ; Max
+  (mi 0d0 :type double-float)       ; Min
   (le 0 :type index-t))         ; Length
 )
 
@@ -1071,15 +1080,16 @@ and the list of the volatilities for each year."
 
 (defmethod print-object ((mdl mdl) (out stream))
   (if *print-readably* (call-next-method)
-      (format out "[~6f ~6f ~5:d]" (mdl-mn mdl) (mdl-sd mdl) (mdl-le mdl))))
+      (format out "[~6f ~6f ~f/~f ~5:d]" (mdl-mn mdl) (mdl-sd mdl)
+              (mdl-ma mdl) (mdl-mi mdl) (mdl-le mdl))))
 
 (defun standard-deviation-mdl (seq &key (key #'value))
   "Compute an MDL from the SEQ."
   (let ((len (length seq)))
     (if (zerop len) +bad-mdl+
-        (multiple-value-bind (std mean)
+        (multiple-value-bind (std mean len min max)
             (standard-deviation seq :len len :key key)
-          (make-mdl :sd std :mn mean :le len)))))
+          (make-mdl :sd std :mn mean :le len :mi min :ma max)))))
 
 ;;;
 ;;; Misc
