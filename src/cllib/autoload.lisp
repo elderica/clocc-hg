@@ -1,8 +1,8 @@
-;;; File: <autoload.lisp - 2000-03-03 Fri 12:31:55 EST sds@ksp.com>
-;;;
 ;;; generate and use autoloads
 ;;;
 ;;; Copyright (C) 2000 by Sam Steingold
+;;; This is Free Software, covered by the GNU GPL (v2)
+;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
 ;;; $Id$
 ;;; $Source$

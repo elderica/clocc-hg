@@ -1,5 +1,3 @@
-;;; File: <card.lisp - 2000-02-18 Fri 11:05:47 EST sds@ksp.com>
-;;;
 ;;; Personal Database - Rolodex (BBDB, VCARD)
 ;;; Relevant URLs:
 ;;;  http://pweb.netcom.com/~simmonmt/bbdb/index.html
@@ -8,11 +6,8 @@
 ;;;  http://www.imc.org/pdi
 ;;;
 ;;; Copyright (C) 1999-2000 by Sam Steingold
-;;; This is open-source software.
-;;; GNU General Public License v.2 (GPL2) is applicable:
-;;; No warranty; you may copy/modify/redistribute under the same
-;;; conditions with the source code. See <URL:http://www.gnu.org>
-;;; for details and the precise copyright document.
+;;; This is Free Software, covered by the GNU GPL (v2)
+;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
 ;;; $Id$
 ;;; $Source$

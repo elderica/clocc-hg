@@ -1,13 +1,8 @@
-;;; File: <geo.lisp - 2000-03-03 Fri 17:49:06 EST sds@ksp.com>
-;;;
 ;;; Geo.lisp - geographical data processing
 ;;;
 ;;; Copyright (C) 1998-2000 by Sam Steingold.
-;;; This is open-source software.
-;;; GNU General Public License v.2 (GPL2) is applicable:
-;;; No warranty; you may copy/modify/redistribute under the same
-;;; conditions with the source code. See <URL:http://www.gnu.org>
-;;; for details and the precise copyright document.
+;;; This is Free Software, covered by the GNU GPL (v2)
+;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
 ;;; $Id$
 ;;; $Source$

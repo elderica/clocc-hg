@@ -1,8 +1,8 @@
-;;; File: <iter.lisp - 2000-02-17 Thu 19:35:19 EST sds@ksp.com>
-;;;
 ;;; itaration: collecting and multi-dim
 ;;;
 ;;; Copyright (C) 1997-2000 by Sam Steingold
+;;; This is Free Software, covered by the GNU GPL (v2)
+;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
 ;;; $Id$
 ;;; $Source$

@@ -1,8 +1,8 @@
-;;; File: <sorted.lisp - 2000-02-18 Fri 13:11:42 EST sds@ksp.com>
-;;;
 ;;; stuff for working with sorted (and not so sorted) lists
 ;;;
 ;;; Copyright (C) 1997-2000 by Sam Steingold
+;;; This is Free Software, covered by the GNU GPL (v2)
+;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
 ;;; $Id$
 ;;; $Source$

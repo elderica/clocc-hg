@@ -1,8 +1,8 @@
-;;; File: <simple.lisp - 2000-03-02 Thu 21:01:41 EST sds@ksp.com>
-;;;
 ;;; simple operations
 ;;;
 ;;; Copyright (C) 2000 by Sam Steingold
+;;; This is Free Software, covered by the GNU GPL (v2)
+;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
 ;;; $Id$
 ;;; $Source$

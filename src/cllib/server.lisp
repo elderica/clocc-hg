@@ -1,8 +1,8 @@
-;;; File: <server.lisp - 2000-02-18 Fri 13:08:07 EST sds@ksp.com>
-;;;
 ;;; CL server - not yet fully implemented
 ;;;
 ;;; Copyright (C) 1997-2000 by Sam Steingold
+;;; This is Free Software, covered by the GNU GPL (v2)
+;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
 ;;; $Id$
 ;;; $Source$

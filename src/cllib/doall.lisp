@@ -1,9 +1,9 @@
-;;; File: <doall.lisp - 2000-02-18 Fri 11:43:39 EST sds@ksp.com>
-;;;
 ;;; run a function, answering questions in a pre-defined way,
 ;;; possibly under monitor.
 ;;;
 ;;; Copyright (C) 1997-2000 by Sam Steingold
+;;; This is Free Software, covered by the GNU GPL (v2)
+;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
 ;;; $Id$
 ;;; $Source$
