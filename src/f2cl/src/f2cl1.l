@@ -352,7 +352,7 @@ FILENAME                 File containing Fortran code
 	     (introduce-continue (readsubprog-extract-format-stmts inport)) 
 	     outport)))
         ))
-    t))
+    t)
 ;-----------------------------------------------------------------------------
 (defun readsubprog-extract-format-stmts (inport)
   (let (input-list output-list margin *current_label*)
@@ -1633,7 +1633,6 @@ FILENAME                 File containing Fortran code
                  ,@(list-split sym (head-chop sym lis))) ops))))))
 
 
-#+cmu
 (defun concat (&rest syms)
   (cond ((null syms)
 	 "")
@@ -1971,6 +1970,10 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.71  2001/04/30 15:37:34  rtoy
+;;; Add in-package statement, just like the comments say instead of trying
+;;; to compile everything in the given package.
+;;;
 ;;; Revision 1.70  2001/02/26 15:38:23  rtoy
 ;;; Move *check-array-bounds* from f2cl1.l to macros.l since the generated
 ;;; code refers to it.  Export this variable too.
