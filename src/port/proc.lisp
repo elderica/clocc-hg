@@ -407,7 +407,7 @@ and reapply its initial function to its arguments."
 (defun get-lock (lock)
   "Claims a lock, blocking until the current process can get it."
   #+Allegro    (mp:process-lock lock)
-  #+CMU        (mp::lock-wait lock)
+  #+CMU        (mp::lock-wait lock (mp:process-whostate mp:*current-process*))
   #+CormanLisp FIXME
   #+Genera     FIXME
   #+LispWorks  (mp:claim-lock lock)
