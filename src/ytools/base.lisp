@@ -256,7 +256,8 @@
 (subr-synonym is-String stringp)
 
 (cl:defun memq (x l) (member x l :test #'eq))
-(cl:defun assq (k al) (assoc k al :test #'eq)   )
+(cl:defun assq (k al) (assoc k al :test #'eq))
+(cl:defun assoc= (test k al) (assoc k al :test test))
 
 (defun nodup (l &key (test #'eql))
    (declare (type list l))
@@ -416,7 +417,7 @@
 	    (xvar (gensym)) (newvar (gensym)) (lvar (gensym))
             (storevar (car lstores)))
          (values `(,xvar ,@ltemps ,lvar ,entry-var)
-                 `(,x ,@lvals ,lacc (assoc ,xvar ,lvar :test #'eq))
+                 `(,x ,@lvals ,lacc (assq ,xvar ,lvar))
                  `(,newvar)
                  `(progn
                      (cond ((not ,entry-var)
@@ -442,7 +443,7 @@
 			     `(,(cadr acc^) ,entry-var))
 			    (t
 			     `(funcall ,acc^ ,entry-var)))))
-	 `(let ((,entry-var (assoc ,key^ ,alist^ :test ,test^)))
+	 `(let ((,entry-var (assoc= ,test^ ,key^ ,alist^)))
 	     (cond (,entry-var ,acc-form)
 		   (t ,default^))))))
 
@@ -464,7 +465,7 @@
 	    (values `(,key-var ,@altemps ,alist-var
 			       ,entry-var)
 		    `(,key^ ,@alvals ,alist-acc
-			    (assoc ,key-var ,alist-var :test ,test^))
+			    (assoc= ,test^ ,key-var ,alist-var))
 		    `(,new-var)
 		    `(progn
 		         (cond ((not ,entry-var)

@@ -14,7 +14,7 @@
 (eval-when (:compile-toplevel :load-toplevel)
    (export '(repeat forall exists 
 	     one-collect list-collect empty-Collector Collector-elements
-	     collector-clear)))
+	     collector-clear keyword-args->alist)))
 
 (defmacro forall (&rest stuff)
    (multiple-value-let (vars lists body) (for-analyze stuff)

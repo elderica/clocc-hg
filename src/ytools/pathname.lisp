@@ -893,16 +893,34 @@
 	 (t
 	  ;; Convert to directory component
 	  (let ((nanal (string-case-analyze name)))
-	     (let ((trim-sym
-		      (intern (cond ((and (eq lisp-preferred-case* ':upper)
-					  (eq nanal ':lower))
-				     (string-upcase name))
-				    ((and (eq lisp-preferred-case* ':lower)
-					  (eq nanal ':upper))
-				     (string-downcase name))
-				    (t name))
-			      (or spkg *package*))))
-		trim-sym)))))
+	     (let ((trim-string
+		      (cond ((and (eq lisp-preferred-case* ':upper)
+				  (eq nanal ':lower))
+			     (string-upcase name))
+			    ((and (eq lisp-preferred-case* ':lower)
+				  (eq nanal ':upper))
+			     (string-downcase name))
+			    (t name))))
+		(let ((colon-pos (position '#\: trim-string)))
+		   (cond (colon-pos
+			  (let ((after-colon
+				   (cond ((char= (elt trim-string (+ colon-pos 1))
+						 '#\:)
+					  (+ colon-pos 2))
+					 (t (+ colon-pos 1)))))
+			     (setq spkg (find-package (subseq trim-string
+							    0 colon-pos)))
+			     (cond ((not spkg)
+				    (error "Package '~s' undefined in YTools ~
+                                            logical name ~s"
+					   (subseq trim-string 0 colon-pos)
+					   name)))
+			     (setq trim-string
+			           (subseq trim-string after-colon)))))
+		   (let ((trim-sym
+			    (intern trim-string
+				    (or spkg *package*))))
+		      trim-sym)))))))
 
 #|
 ;;; This doesn't care what the value of the logical name is, it just

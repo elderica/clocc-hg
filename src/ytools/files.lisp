@@ -315,7 +315,8 @@
 	       (cond (src-version
 		      (cond ((and (not must-ask)
 				  (or (memq why '(:just-do-it :no-reason))
-				      (cond ((eq whether-compile ':ask)
+				      (cond ((or (not whether-compile)
+						 (eq whether-compile ':ask))
 					     false)
 					    ((eq whether-compile ':unknown)
 					     (not (eq fload-compile* ':ask)))
