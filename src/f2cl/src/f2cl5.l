@@ -1290,7 +1290,8 @@
 	   ;; scalar, length spec.
 	   ;;(format t "scalar, length spec = ~A~%" decl)
 	   (error "shouldn't happen!")
-	   `(declare (type (simple-array base-char (,(cadr decl))) ,(car decl))))
+	   ;;`(declare (type (simple-array base-char (,(cadr decl))) ,(car decl)))
+	   )
 	  ((equal (cadr decl) '(*))
 	   ;; unspecified length spec
 	   ;;(format t "unspecified length spec = ~A~%" decl)
@@ -1312,7 +1313,8 @@
 	 `(make-array '(,(cadr type)) :element-type 'base-char :initial-element #\Space))
 	((atom (cadr decl))		; scalar, length spec.
 	 (error "shouldn't happen!")
-	 `(make-array '(,(cadr decl)) :element-type 'base-char :initial-element #\Space))
+	 ;;`(make-array '(,(cadr decl)) :element-type 'base-char :initial-element #\Space)
+	 )
 	(t				; array, no length spec.
 	 ;;(format t "make-char-init array, no length spec~%")
 	 (let ((dims (mapcar #'(lambda (bounds)
@@ -2162,6 +2164,12 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.59  2000/08/04 14:20:31  rtoy
+;;; Add very rudimentary support for Fortran READ statements.  This means
+;;; we just basically call read and assign the result to the (simple)
+;;; variable.  We don't even bother to look at the format number or check
+;;; the variable type.
+;;;
 ;;; Revision 1.58  2000/08/03 03:39:49  rtoy
 ;;; The string passed to PARSE-FORMAT-DESCRIPTOR-H can be a character,
 ;;; digit, or symbol.  These all need to be converted to character.  Make
