@@ -31,14 +31,15 @@
 Returns the total cost and two assignment vectors: X->Y and Y->X."
   (loop :with x-count = (array-dimension cost-mx 0)
     :and y-count = (array-dimension cost-mx 1)
-    :with x-tlv = (make-array x-count) ; tentative least weight ("D label")
-    :and y-tlv = (make-array y-count) ; ditto
-    :and x-matching = (make-array x-count)
-    :and y-matching = (make-array y-count)
+    ;; tentative least weights ("D label"):
+    :with x-tlv = (make-array x-count :initial-element nil)
+    :and y-tlv = (make-array y-count :initial-element nil)
+    :and x-matching = (make-array x-count :initial-element nil)
+    :and y-matching = (make-array y-count :initial-element nil)
     :and s-x = (make-array x-count :element-type 'bit)
     :and s-y = (make-array y-count :element-type 'bit)
-    :and x-next = (make-array x-count)
-    :and y-next = (make-array y-count)
+    :and x-next = (make-array x-count :initial-element nil)
+    :and y-next = (make-array y-count :initial-element nil)
     :and cost = 0
     ;;:and eps = (loop :with min :and max :for i :from 0 :to (1- x-count) :do
     ;;             (loop :for j :from 0 :to (1- y-count)
