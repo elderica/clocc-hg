@@ -68,8 +68,10 @@
         (setf (second excl:arglist)
               (map 'vector key (second excl:arglist)))))))
 
-#+clisp (setq clos::*warn-if-gf-already-called* nil
-              clos::*gf-warn-on-replacing-method* nil)
+#+clisp
+(without-package-lock ("CLOS")
+  (setq clos::*warn-if-gf-already-called* nil
+        clos::*gf-warn-on-replacing-method* nil))
 
 #+cmu
 (progn
