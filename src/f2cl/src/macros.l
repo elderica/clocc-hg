@@ -375,12 +375,25 @@ is not included")
     ,@(computed-goto-aux tag-lst)))
 
 ;; macro for a lisp equivalent of Fortran assigned GOTOs
+#+nil
 (defmacro assigned-goto (i &optional tag-lst)
    `(if ,tag-lst
         (if (member ,i ,tag-lst) 
             (go ,i)
             (error "bad statement number in assigned goto"))
         (go ,i)))
+
+(defun assigned-goto-aux (tag-list)
+  (let ((cases nil))
+    (dolist (tag tag-list)
+      (push `(,tag (go ,(make-label tag)))
+	    cases))
+    (push `(t (error "Unknown label for assigned goto")) cases)
+    (nreverse cases)))
+
+(defmacro assigned-goto (var tag-list)
+  `(case ,var
+     ,@(assigned-goto-aux tag-list)))
 
 ;;-----------------------------------------------------------------------------
 ;;
@@ -1272,6 +1285,9 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.54  2003/09/25 03:43:43  rtoy
+;;; Need to check for reserved names in the fdo macro.  (I think.)
+;;;
 ;;; Revision 1.53  2003/01/07 18:44:52  rtoy
 ;;; Add new implementations of aint.  Speeds up mpnorm by a factor of 5 on
 ;;; CMUCL/sparc!
