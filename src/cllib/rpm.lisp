@@ -351,7 +351,7 @@ Then generate the list to download."
             (> (- (get-universal-time) (get '*rpm-locations* 'updated))
                *rpm-locations-timeout*))
     (format out " *** Getting the list of new packages...~%")
-    (with-timing ()
+    (with-timing (:out out)
       (let ((na 0) (le 0)
             #+clisp (lisp:*pprint-first-newline* nil)
             (*url-default-timeout* *rpm-timeout*)
@@ -362,7 +362,7 @@ Then generate the list to download."
           (dld-reset dld)
           (format out " *** processing `~a'...~%" dld)
           (handler-case
-              (with-timing ()
+              (with-timing (:out out)
                 (setf (dld-all dld) (rpm-available (dld-url dld)
                                                    :out out :err err)
                       (dld-fls dld) (rpm-prune-list (dld-all dld))
@@ -437,7 +437,7 @@ Then generate the list to download."
   "Make sure `*rpm-present*' is initialized."
   (declare (type (or null stream) out))
   (when (or force (zerop (length *rpm-present*)))
-    (with-timing ()
+    (with-timing (:out out)
       (mesg t out " * Finding the RPMs...")
       (setq *rpm-present* (rpm-present))
       (mesg t out "done [~d package~:p]" (length *rpm-present*)))))
