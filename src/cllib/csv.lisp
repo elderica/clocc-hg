@@ -8,11 +8,11 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  (require :base (translate-logical-pathname "clocc:src;cllib;base"))
+  (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `with-collect'
-  (require :simple (translate-logical-pathname "cllib:simple"))
+  (require :cllib-simple (translate-logical-pathname "cllib:simple"))
   ;; `with-timing', `log'
-  (require :log (translate-logical-pathname "cllib:log")))
+  (require :cllib-log (translate-logical-pathname "cllib:log")))
 
 (in-package :cllib)
 
