@@ -26,6 +26,8 @@
 
 (export '(test-all))
 
+(defparameter *network-dependent-tests* '(test-cvs))
+
 (defun test-string (&key (out *standard-output*))
   (mesg :test out " ** ~s...~%" 'test-string)
   (let ((num-err 0))
@@ -259,6 +261,7 @@
     num-err))
 
 (defun test-all (&key (out *standard-output*)
+                 (disable-network-dependent-tests t)
                  (what '(string math date rpm url elisp xml munkres cvs)))
   (mesg :test out "~& *** ~s: regression testing...~%" 'test-all)
   (let* ((num-test 0)
@@ -267,10 +270,12 @@
                             (let ((sy (intern (concatenate 'string "TEST-"
                                                            (string-upcase w))
                                               "CLLIB")))
-                              (if (fboundp sy)
-                                  (progn (incf num-test)
-                                         (funcall sy :out out))
-                                  0))))))
+                              (if (or (not (fboundp sy))
+                                      (and disable-network-dependent-tests
+                                           (member
+                                            sy *network-dependent-tests*)))
+                                  0 (progn (incf num-test)
+                                           (funcall sy :out out))))))))
     (mesg :test out " *** ~s: ~:d error~:p in ~:d test~:p~2%"
           'test-all num-err num-test)))
 
