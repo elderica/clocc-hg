@@ -24,7 +24,9 @@
         ("**;*.*" ,(logical-pathname "clocc:src;cllib;**;*.*"))))
 
 (defcustom *datadir* pathname
-  (merge-pathnames "data/" (user-homedir-pathname))
+  (merge-pathnames (make-pathname :directory '(:relative "data")
+                                  :defaults nil)
+                   (user-homedir-pathname))
   "The directory where the data file are created by default.")
 (defcustom *mail-host-address* simple-string
   (let ((st (machine-instance))) (subseq st 0 (position #\Space st)))
