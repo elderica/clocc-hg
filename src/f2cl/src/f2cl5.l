@@ -1177,9 +1177,9 @@
        ;; First make sure the entry points are consistent in name and
        ;; number of arguments.  We don't support anything else (yet?)
        (unless (every #'(lambda (f)
-			  (let ((result (equalp (second f) arglist)))
+			  (let ((result (equal (second f) arglist)))
 			    (unless result
-			      (warn "ENTRY ~A doesn't match the expected arg list: ~A~%" f arglist))
+			      (warn "ENTRY ~A doesn't match the expected arg list: ~A~%" (second f) arglist))
 			    result))
 		      *entry-points*)
 	 (warn "Some ENTRY points don't match the expected signature ~A~%"
@@ -2772,6 +2772,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.110  2003/07/13 18:54:51  rtoy
+;;; Add mod to +allowed-lisp-names+.
+;;;
 ;;; Revision 1.109  2003/07/12 04:27:02  rtoy
 ;;; o Make +reserved-lisp-names+ be T, PI, and NIL.
 ;;; o Add +allowed-lisp-names+ to be a list of names which can be used as
