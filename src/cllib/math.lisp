@@ -1187,7 +1187,9 @@ When the distribution is not discreet, entropy is not available."
           (make-mdl :sd (dfloat std) :mn (dfloat mean) :le len
                     :mi min :ma max :mi$ mi$ :ma$ ma$
                     :en (when discreet
-                          (entropy-sequence seq :key key :weight weight)))))))
+                          (if (= min max) 0
+                              (entropy-sequence seq :key key
+                                                :weight weight))))))))
 
 (declaim (inline mdl-normalize mdl-denormalize mdl-normalize-function))
 (defun mdl-normalize (value mdl)   (/ (- value (mdl-mn mdl)) (mdl-sd mdl)))
