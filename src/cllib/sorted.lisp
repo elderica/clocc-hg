@@ -17,7 +17,7 @@
 (in-package :cllib)
 
 (export '(map-sorted reduce-sorted sorted-map delete-duplicate-entries
-          top-bottom top-bottom-ui top-bottom-fl
+          multi-union top-bottom top-bottom-ui top-bottom-fl
           binary-pos binary-member))
 
 ;;;
@@ -239,6 +239,19 @@ Keeps the last entry, or the first if KEEP-FIRST non-nil."
     (if (funcall test kk (setq k1 (funcall key (second ls))))
         (setf (car ls) (if keep-first (car ls) (cadr ls)) (cdr ls) (cddr ls))
         (setq ls (cdr ls)))))
+
+(defun multi-union (pred ckey &rest lists)
+  "Return the union of multisets.
+Each of LISTS is a multiset - an alist of (ELEMENT . MULTIPLE).
+The lists are ordered according to PRED applied to CKEY of ELEMENT."
+  (declare (function pred) (type (or function null) ckey))
+  (apply #'sorted-map 'list
+         (lambda (&rest args)
+           (let* ((tail (member-if-not #'null args))
+                  (ret (cons (caar tail) (cdar tail))))
+             (dolist (co (cdr tail) ret)
+               (when co (incf (cdr ret) (cdr co))))))
+         pred nil (if ckey (compose 'ckey car) #'car) nil lists))
 
 ;;;
 ;;; }}}{{{ binary search
