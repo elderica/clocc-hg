@@ -176,9 +176,9 @@ so that the bare symbols are read as keywords."
            (ext:package-lock ,pack) nil))
   #+lispworks (declare (ignore pack))
   #+lispworks
-  `(eval-when (:compile-toplevel)
+  `(eval-when (:compile-toplevel :load-toplevel)
      (setf *lock-package-saved-value* lw:*handle-warn-on-redefinition*
-           lw:*handle-warn-on-redefinition*nil))
+           lw:*handle-warn-on-redefinition* nil))
   #-(or allegro clisp lispworks)
   ;; nothing to be done
   (declare (ignore pack)))
@@ -195,7 +195,7 @@ so that the bare symbols are read as keywords."
      (makunbound '*lock-package-saved-value*))
   #+lispworks (declare (ignore pack))
   #+lispworks
-  `(eval-when (:compile-toplevel)
+  `(eval-when (:compile-toplevel :load-toplevel)
      (setf lw:*handle-warn-on-redefinition* *lock-package-saved-value*)
      (makunbound '*lock-package-saved-value*))
   #-(or allegro clisp lispworks)
