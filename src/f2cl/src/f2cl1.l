@@ -162,7 +162,7 @@ INPUT-FILE               File containing Fortran code
 			      error-file prune-labels include-comments
 			      (auto-save t) (relaxed-array-decls t)
 			      (coerce-assigns :as-needed)
-			      keep-lisp-file
+			      (keep-lisp-file t)
 			      (array-type 'simple-array)
 			      (array-slicing t)
 			      package
@@ -1862,6 +1862,24 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.59  2000/08/05 19:16:46  rtoy
+;;; o Add special var *PARSING-LHS*
+;;; o Add function F2CL-COMPILE to compile a Fortran file to object code
+;;;   so the user doesn't have to call compile-file himself.
+;;; o In PARSE-ASSIGNMENT, call PARSE-EXPRESSION appropriately if we're
+;;;   parsing the LHS or RHS of an assignment.  (Prevents mangling of
+;;;   statement function definitions into multiple-value-bind's of the
+;;;   function.)
+;;; o Changes to GENERATE-CALL-TO-ROUTINE:
+;;;     o Revert back to just naming the variables sequentially.  The
+;;;       problem is if the same variable is used more than once in the
+;;;       parameter list.  (We may want to add this back in eventually.)
+;;;     o Don't try to assign to constants like %TRUE% and %FALSE%.
+;;;     o Only try to assign a new value to the parameter if the function
+;;;       actually returned a new (non-NIL) value.  This allows for
+;;;       functions that don't return extra parameters (like intrinsics)
+;;;       to still be used without f2cl knowing exactly the calling sequence.
+;;;
 ;;; Revision 1.58  2000/08/04 14:20:31  rtoy
 ;;; Add very rudimentary support for Fortran READ statements.  This means
 ;;; we just basically call read and assign the result to the (simple)
