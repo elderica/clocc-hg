@@ -105,7 +105,8 @@ Inspired by Paul Graham, <On Lisp>, p. 145."
   #+gcl (si::gbc)
   #+lispworks (hcl:normal-gc)
   #+lucid (lcl:gc)
-  #-(or allegro clisp cmu cormanlisp gcl lispworks lucid)
+  #+sbcl (sb-ext:gc)
+  #-(or allegro clisp cmu cormanlisp gcl lispworks lucid sbcl)
   (error 'not-implemented :proc (list 'gc)))
 
 (defun quit (&optional code)
@@ -116,7 +117,8 @@ Inspired by Paul Graham, <On Lisp>, p. 145."
   #+gcl (lisp:bye code)
   #+lispworks (lw:quit :status code)
   #+lucid (lcl:quit code)
-  #-(or allegro clisp cmu cormanlisp gcl lispworks lucid)
+  #+sbcl (sb-ext:quit :unix-code (typecase code (number code) (null 0) (t 1)))
+  #-(or allegro clisp cmu cormanlisp gcl lispworks lucid sbcl)
   (error 'not-implemented :proc (list 'quit code)))
 
 (defconst +eof+ cons (cons nil nil)
