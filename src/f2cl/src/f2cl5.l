@@ -1384,10 +1384,15 @@
 				     ,result))))
 		      result))))
 	 ;;(format t "formal-arg-decls = ~A~%" formal-arg-decls)
-	 (setf prog-bit (grovel-frefs prog-bit))
-	 ;;(format t "new-prog-bit = ~A~%" prog-bit)
-	 
-	 (setf prog-bit (generate-with-array array-args prog-bit))
+
+	 ;; If array-slicing is not used and the array-type is
+	 ;; :simple-array, we don't need the with-array-data stuff
+	 ;; because we couldn't have sliced the array.
+	 (when (eq *array-type* 'lisp:array)
+	   (setf prog-bit (grovel-frefs prog-bit))
+	   ;;(format t "new-prog-bit = ~A~%" prog-bit)
+
+	   (setf prog-bit (generate-with-array array-args prog-bit)))
 	 ;;(format t "new-prog-bit = ~A~%" prog-bit)
 		 
 	 ))
@@ -2706,6 +2711,14 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.102  2002/04/19 18:40:26  rtoy
+;;; o Forgot to add FREAL as one of the intrinsics functions we skip over
+;;;   when checking for new variables.
+;;; o GET-FUN-ARG-TYPE:  was incorrectly handling MULTIPLE-VALUE-BIND
+;;;   forms and erroneously returning INTEGER as the type.  We really need
+;;;   to look at the function that is being called to get the type instead
+;;;   of just looking at MULTIPLE-VALUE-BIND as function name!
+;;;
 ;;; Revision 1.101  2002/03/20 15:50:41  rtoy
 ;;; Fix typo in getting the argument type in optimize-integer-arithmetic.
 ;;;
