@@ -53,7 +53,7 @@ If FMT is non-NIL, return the corresponding string too."
 ;;; }}}{{{ logging
 ;;;
 
-(defcustom *print-log* 'simple-vector
+(defcustom *print-log* simple-vector
   '#(:log :logv :date :plot :head :res :opt :err :test :xml)
   "The list of message types which are being printed.")
 
