@@ -153,7 +153,7 @@ so that the bare symbols are read as keywords."
         (import 'ext:required-argument :port)
         (export 'ext:required-argument :port))
 #-cmu (progn
-        (proclaim '(ftype (function () nil) required-argument))
+        (proclaim '(ftype (function () null) required-argument))
         (defun required-argument ()
           "A useful default for required arguments and DEFSTRUCT slots."
           (error "A required argument was not supplied.")))
