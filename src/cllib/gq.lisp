@@ -279,9 +279,10 @@ If the first argument is a date, fix the year."
   "Read a PFL from the STREAM, using the read-ahead RA.
 Suitable for `read-list-from-stream'."
   (declare (stream stream))
-  (values (make-pfl :tick ra :nums (read stream) :bprc (read stream)
-                    :name (read stream))
-          (read stream nil +eof+)))
+  (let ((*read-default-float-format* 'double-float))
+    (values (make-pfl :tick ra :nums (read stream) :bprc (read stream)
+                      :name (read stream))
+            (read stream nil +eof+))))
 
 (defmethod print-object ((pfl pfl) (out stream))
   (if *print-readably* (call-next-method)
@@ -305,10 +306,11 @@ Suitable for `read-list-from-stream'."
   "Read a HIST from the STREAM, using the read-ahead RA.
 Suitable for `read-list-from-stream'."
   (declare (stream stream))
-  (do ((hist (make-hist :date (date ra) :totl (read stream))) rr
-       (vl (read stream) (read stream nil +eof+)))
-      ((not (numberp vl)) (setf (hist-navs hist) (nreverse rr))
-       (values hist vl))
+  (do* ((*read-default-float-format* 'double-float)
+        (hist (make-hist :date (date ra) :totl (read stream))) rr
+        (vl (read stream) (read stream nil +eof+)))
+       ((not (numberp vl)) (setf (hist-navs hist) (nreverse rr))
+        (values hist vl))
     (push vl rr)))
 
 (defmethod print-object ((hist hist) (out stream))
