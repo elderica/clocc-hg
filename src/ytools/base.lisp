@@ -456,7 +456,7 @@
 	    (xvar (gensym)) (newvar (gensym)) (lvar (gensym))
             (storevar (car lstores)))
          (values `(,xvar ,@ltemps ,lvar ,entry-var)
-                 `(,x ,@lvals ,lacc (assoc ,xvar ,lvar :test #'eq))
+                 `(,x ,@lvals ,lacc (assq ,xvar ,lvar))
                  `(,newvar)
                  `(progn
                      (cond ((not ,entry-var)
