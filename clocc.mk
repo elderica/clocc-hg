@@ -30,7 +30,7 @@ MAKEFILES = Makefile $(SYSTEM).system
 ZIPEXTRA += $(TOP)/clocc.mk $(TOP)/clocc.lisp
 RM  = /bin/rm -f
 LN  = /bin/ln
-ZIP = /usr/local/bin/zip -9uD
+ZIP = zip -9uD
 
 ifneq ($(DO_DUMP),)
 CLOCC_TOP =  -I $(TOP)/clocc-top
