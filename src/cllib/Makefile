@@ -5,12 +5,12 @@ LISPEXT := lisp
 SOURCES := animals base card check clhs closio date datedl doall elisp fileio \
 	fin geo gnuplot gq h2lisp html iter laser list log math miscprint \
 	octave rpm server simple sorted stat string symb tilsla url withtype \
-	inspect autoload
+	inspect autoload htmlgen
 BASE = base auto
 NET = base url gq
 SYSTEM := cllib
 ZIPEXTRA = ../defsystem-3.x/defsystem.lisp ../tools/metering/metering.lisp \
-	math/clmath/matrix.lisp
+	../math/clmath/matrix.lisp
 DOCFILES = $(SYSTEM).html
 include $(TOP)/clocc.mk
 
