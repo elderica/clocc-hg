@@ -1006,7 +1006,7 @@ causing all pending operations to be flushed"
 			      :element-type `(simple-array base-char (,',@len))
 			      :initial-element (make-string ,@len))))
        (dotimes (k (array-total-size ,init))
-	 (setf (row-major-aref ,init k)
+	 (setf (aref ,init k)
 	       (make-string ,@len :initial-element #\Space)))
        ,init)))
 
@@ -1186,6 +1186,13 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.46  2002/03/19 02:23:09  rtoy
+;;; According to the rules of Fortran, the initializers in a DATA
+;;; statement are supposed to be converted to match the type of the
+;;; variable that is being initialized.  Make it so by passing the
+;;; variable type to the macro DATA-IMPLIED-DO so that the conversion can
+;;; be done.
+;;;
 ;;; Revision 1.45  2002/03/18 23:34:16  rtoy
 ;;; Was not correctly handling some implied do loops containing multiple
 ;;; variables in the loop in data statements.  Fix that and clean up some
