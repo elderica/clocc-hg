@@ -348,7 +348,7 @@ Current time:~25t" (/ internal-time-units-per-second) *gensym-counter*)
 
 (defconst +time-zones+ list
   '((5 "EDT" . "EST") (6 "CDT" . "CST") (7 "MDT" . "MST") (8 "PDT" . "PST")
-    (0 "GMT" . "GDT") (-2 "MET" . "MET DST"))
+    (0 "GMT" . "BST") (-2 "MET" . "MET DST"))
   "*The string representations of the time zones.")
 
 (defun tz->string (tz)
