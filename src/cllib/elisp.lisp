@@ -1,4 +1,4 @@
-;;; File: <elisp.lisp - 1999-04-22 Thu 15:22:43 EDT sds@eho.eaglets.com>
+;;; File: <elisp.lisp - 1999-10-25 Mon 13:40:54 EDT sds@ksp.com>
 ;;;
 ;;; Load Emacs-Lisp files into Common Lisp
 ;;;
@@ -7,17 +7,21 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
-;;; Revision 1.3  1999/04/20 17:34:46  sds
-;;; (el::make-elisp-readtable): redefine macro #\".
-;;; (el::read-elisp-special): handle #\": \n, \r, \f, \t, \v.
-;;;
-;;; Revision 1.2  1999/02/22 18:20:12  sds
-;;; Works now.
-;;;
-;;; Revision 1.1  1999/02/20 19:15:30  sds
-;;; Initial revision
-;;;
-;;;
+;; Revision 1.4  1999/04/22 19:25:31  sds
+;; (el::make-elisp-readtable): call `make-object-readtable'.
+;; (*elisp-readtable*): a constant now.
+;;
+;; Revision 1.3  1999/04/20 17:34:46  sds
+;; (el::make-elisp-readtable): redefine macro #\".
+;; (el::read-elisp-special): handle #\": \n, \r, \f, \t, \v.
+;;
+;; Revision 1.2  1999/02/22 18:20:12  sds
+;; Works now.
+;;
+;; Revision 1.1  1999/02/20 19:15:30  sds
+;; Initial revision
+;;
+;;
 
 (in-package :cl-user)
 
@@ -96,7 +100,7 @@
 
 (defun el::make-elisp-readtable ()
   "Make the readtable for Emacs-Lisp parsing."
-  (let ((rt (make-object-readtable)))
+  (let ((rt (make-clos-readtable)))
     (set-macro-character #\? #'el::read-elisp-special nil rt)
     (set-macro-character #\[ #'el::read-elisp-special nil rt)
     (set-macro-character #\" #'el::read-elisp-special nil rt)
@@ -299,6 +303,8 @@
 #+allegro (pushnew "el" sys:*source-file-types* :test #'equal)
 #+cmu (pushnew "el" ext::*load-source-types* :test #'equal)
 #+clisp (pushnew #p".el" sys::*source-file-types* :test #'equalp)
+#+lispworks (pushnew "el" system:*text-file-types* :test #'equal)
+#+gcl (error 'not-implemented :proc 'file-types)
 
 (defun locate-file (file &optional source-only)
   (dolist (path el::load-path)
