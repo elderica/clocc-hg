@@ -53,9 +53,7 @@
 	(when (char-equal (aref line k) #\')
 	  ;; End of string or quoted quote character?
 	  (if (and (< k len) (char-equal (aref line (1+ k)) #\'))
-	      (progn
-		(write-char #\' out)
-		(incf k))
+	      (incf k)
 	      (return)))
 	(when (>= k len)
 	  (return))
@@ -573,6 +571,10 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.26  2001/09/10 16:21:39  rtoy
+;;; Handle Fortran-style strings better by handling quoted quotes.  (In
+;;; Fortran 'It''s time' is the string "It's time".)
+;;;
 ;;; Revision 1.25  2001/09/09 21:05:50  rtoy
 ;;; Undo rev 1.23.  This one should work better.
 ;;;
