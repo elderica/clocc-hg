@@ -301,7 +301,7 @@ Tag being parsed:| (cadr x))))
      (update-called-functions-list (list (car l)) nil)
      (list (car l)))
 
-					; boolean expression:
+					; boolean expression
     ((intersection l '(NOT EQUAL AND OR < > <= >= ><))
      (id-logical l))
 
@@ -376,14 +376,20 @@ Tag being parsed:| (cadr x))))
        ;; parameter, if we really want to.
 
        (update-called-functions-list (list fname) args)
-       (cond ((member fname *subprog-arglist*)
-	      ;; We want to use funcall only if the external function
-	      ;; was passed in as a parameter.  If not, then we don't
-	      ;; need to funcall it.  The user was just telling us that
-	      ;; it was external function instead an intrinsic.
-	      `(funcall ,fname ,@args)) 
-	     (t 
-	      `(,fname ,@args)))))
+       ;; Functions can modify the arguments in addition to returning
+       ;; a value.  We need to handle this like a subroutine call, as
+       ;; done in PARSE-SUBROUTINE-CALL.
+       (first (generate-call-to-routine
+	       (cond ((member fname *subprog-arglist*)
+		      ;; We want to use funcall only if the external function
+		      ;; was passed in as a parameter.  If not, then we don't
+		      ;; need to funcall it.  The user was just telling us that
+		      ;; it was external function instead an intrinsic.
+		      `(funcall ,fname)) 
+		     (t 
+		      `(,fname)))
+	       args t))
+       ))
 
 					; expression:
     ((and (listp (car l)) (null (cdr l)))
@@ -447,6 +453,14 @@ definition.| l) ))
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.23  2000/07/28 17:01:28  rtoy
+;;; o We are in the f2cl package now.
+;;; o The Fortran string concatenation operator, //, is now f2cl-//.
+;;;   (Prevents conflicts with the lisp variable //.)  Handle
+;;;   appropriately.
+;;; o Change the name of the Fortran routine from REAL to FREAL.  Prevents
+;;;   conflicts with the lisp type REAL.
+;;;
 ;;; Revision 1.22  2000/07/27 16:39:17  rtoy
 ;;; We want to be in the CL-USER package, not the USER package.
 ;;;
