@@ -156,6 +156,7 @@ set xdata~@[ time~%set timefmt '~a'~]~%" timefmt)
            ;; the body is here!
            (funcall body-function plot-str))
       ;; clean up
+      (fresh-line plot-str)
       #+(or win32 mswindows) (close-pipe plot-str)
       #+(or win32 mswindows)
       (ecase plot
