@@ -218,6 +218,9 @@
 	   (cond ((eq 'make-array fun)
 		  ;; Some array slicing here.
 		  (second (second (member :element-type arg))))
+		 ((eq 'funcall fun)
+		  ;; Look up function type
+		  (get-fun-arg-type (second arg)))
 		 ((eq 'fref fun)
 		  ;; Look up array references
 		  (get-fun-arg-type (second arg)))
@@ -1433,8 +1436,14 @@
                                           (fix-do exprs labels)))
                     ((and (eq (caar exprs) 'go)
                           (label-matches-dolabel-p (cadar exprs) do-label))
-                     (setq subclause '(return)
-                           exprs (cdr exprs)))
+		     ;; Why do we treat a go to to the continue
+		     ;; statement of the do loop differently?  Why
+		     ;; "(return)" instead of "(go label)"
+                     #+nil
+		     (setq subclause '(return)
+                           exprs (cdr exprs))
+		     (setq subclause (car exprs)
+			   exprs (cdr exprs)))
                     (t (setq subclause (car exprs)
                              exprs (cdr exprs)))))
             ((eq (car exprs) 'continue_place_holder)
@@ -1997,6 +2006,12 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.46  2000/07/14 15:50:25  rtoy
+;;; o When getting the type of an arg, handle the case when the arg is
+;;;   actually a call to make-array for array slicing.  Get the type form
+;;;   the :element-type.
+;;; o If the arg has type fixnum, return integer4 instead.
+;;;
 ;;; Revision 1.45  2000/07/14 14:08:26  rtoy
 ;;; Honor the user's choice of declaring arrays as array or simple-array.
 ;;; Except we leave Fortran character strings still declared as
