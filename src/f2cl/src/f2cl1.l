@@ -796,7 +796,9 @@ FILENAME                 File containing Fortran code
      ;; reduce any DOUBLE PRECSION, REAL*8 etc to one word data types
      (when (member (car x) '(double real integer complex)) 
        (setq x (reduce-data-type x)))
-     (when *verbose* (format t "~a~%" (string-downcase (princ-to-string x))))
+     (when *verbose*
+       (write x :case :downcase)
+       (terpri))
 
      ;;return
      (when (id-return x)
@@ -1261,13 +1263,16 @@ FILENAME                 File containing Fortran code
 	       (list (- (second expr)))
 	       expr)))
     (let ((fixed-up-bds (mapcar #'fixup-negative (list-split '|:| bds))))
-      ;; If a bound is "*", just return T instead.
+      ;; If a bound is "*", just return "*".
       (if (null (cdr fixed-up-bds))
-	  (list 1 (or (eq (caar fixed-up-bds) '*)
+	  (list 1 (if (eq (caar fixed-up-bds) '*)
+		      '*
 		      (id-expression (car fixed-up-bds))))
-	  (list (or (eq (caar fixed-up-bds) '*)
+	  (list (if (eq (caar fixed-up-bds) '*)
+		    '*
 		    (id-expression (car fixed-up-bds)))
-		(or (eq (caadr fixed-up-bds) '*)
+		(if (eq (caadr fixed-up-bds) '*)
+		    '*
 		    (id-expression (cdr fixed-up-bds))))))))
 
 ;-----------------------------------------------------------------------------
@@ -2366,6 +2371,11 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.115  2002/05/07 03:26:10  rtoy
+;;; o With the function info changes, we were incorrectly saying a
+;;;   variable was set when it might not have been.  Fix it.
+;;; o Clean up/add a few comments
+;;;
 ;;; Revision 1.114  2002/05/07 03:06:17  rtoy
 ;;; o Include a date on the version string.
 ;;; o Don't print out the date in the generated file.
