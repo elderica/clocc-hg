@@ -106,6 +106,24 @@ Tag being parsed:| (cadr x))))
      (cond ((eq (car l) '+) (setq l (cdr l)))
            ((eq (car l) '-) (setq l (cons 0 l))))
 
+     ;; This is a hack.  Let's try to identify some logical
+     ;; operations.  If we find them we rewrite the expression with
+     ;; parentheses and parse it normally.  Thus, x .le. y*z is
+     ;; written as (x) .le. (y*z).
+     (dolist (log-op '(<= < >= > equal ><))
+       (let ((split (list-split-multi log-op l)))
+	 (when (cdr split)
+	   ;; The expression was split into parts for the given
+	   ;; logical op.  Rewrite the expression with appropropriate
+	   ;; parens.
+	   (let ((rewrite nil))
+	     (dolist (s split)
+	       (push s rewrite)
+	       (push log-op rewrite))
+	     ;; The first element of rewrite is the operator.  Need to
+	     ;; remove it.
+	     (setf l (nreverse (cdr rewrite)))))))
+	       
      (setq x (list-split-multi '+ l))
      (setq x (list x (extract '(+ -) l)))
      (setq y (list-itp (mapcar #'id-term (car x)) 
@@ -115,14 +133,15 @@ Tag being parsed:| (cadr x))))
 ;-----------------------------------------------------------------------------
 
 (defun id-term (l)
- (prog (x)
-     (setq x (apply #'append (mapcar #'(lambda (x) (list-split-bin '/ x))
-                                    (list-split-multi '* l))))
+  (prog (x)
+     (setq x (apply #'append (mapcar #'(lambda (x)
+					 (list-split-bin '/ x))
+				     (list-split-multi '* l))))
      (setq x (list x (extract '(* /) l)))
      (if (and (equal (caar x) '(-1)) (equal (cadr x) '(*)))
          (return `(- ,(id-factor1 (cadar x)))))
      (return (list-itp (mapcar #'id-factor1 (car x)) 
-                      (cadr x)))))
+		       (cadr x)))))
 
 ;-----------------------------------------------------------------------------
 (defun id-factor1 (l)
@@ -432,6 +451,12 @@ definition.| l) ))
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.32  2003/11/13 22:16:59  rtoy
+;;; Try to be smarter about generating args to functions, which is an
+;;; issue if the arg is an element of an array.  If we know the declared
+;;; types of the function, try to generate the appropriate arg, meaning
+;;; either a single element of the array or a slice of the array.
+;;;
 ;;; Revision 1.31  2002/09/13 17:50:19  rtoy
 ;;; From Douglas Crosher:
 ;;;
