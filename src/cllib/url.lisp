@@ -399,8 +399,8 @@ the error `timeout' is signaled."
 (makunbound '*url-opening-time*)
 
 (defmacro with-open-url ((socket url &key (rt '*readtable*) err
-                                 (max-retry '*url-default-max-retry*)
-                                 (timeout '*url-default-timeout*)
+                                 (max-retry '*url-max-retry*)
+                                 (timeout '*url-timeout*)
                                  (init '*url-open-init*))
                          &body body)
   "Execute BODY, binding SOCK to the socket corresponding to the URL.
