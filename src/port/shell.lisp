@@ -68,7 +68,7 @@
            #-lisp=cl lisp:make-pipe-input-stream
                      (format nil "~a~{ ~a~}" prog args))
   #+cmu (ext:process-output (ext:run-program prog args :output :stream
-                                             :input t :wait nil))
+                                             :error t :input t :wait nil))
   #+gcl (si::fp-output-stream (apply #'si:run-process prog args))
   #+lispworks (sys::open-pipe (format nil "~a~{ ~a~}" prog args)
                               :direction :input)
