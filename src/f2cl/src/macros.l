@@ -889,7 +889,7 @@ is not included")
   (declare (type double-float x))
   (atan x))
 (defun atan2 (x y)
-  (declare (type double-float x))
+  (declare (type single-float x))
   (atan x y))
 (defun datan2 (x y)
   (declare (type double-float x y))
@@ -1311,6 +1311,9 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.59  2004/08/14 22:29:16  marcoxa
+;;; Added an EVAL-WHEN to silence the LW compiler.
+;;;
 ;;; Revision 1.58  2004/08/14 04:17:45  rtoy
 ;;; Need a definition for MAKE-LABEL.
 ;;;
