@@ -82,7 +82,6 @@ optional argument SPACE is non-nil."
   "Skip through the HTML markup. CHAR=`<'"
   (declare (stream stream) (character char))
   (ecase char
-    (#\; #\;) (#\, #\,) (#\: #\:)
     (#\< (let ((obj (read stream t nil t)))
            (make-html-tag
             :data (if (eq :!-- obj) (xml-read-comment stream)
@@ -103,12 +102,12 @@ optional argument SPACE is non-nil."
   (set-macro-character #\& #'read-html-markup nil rt)
   (set-macro-character #\> (get-macro-character #\)) nil rt)
   (set-syntax-from-char #\; #\a rt)
-  ;;(set-macro-character #\; #'read-html-markup nil rt)
+  ;;(set-macro-character #\; #'read-standalone-char nil rt)
   (set-syntax-from-char #\# #\a rt)
   (set-syntax-from-char #\: #\a rt)
-  (set-macro-character #\: #'read-html-markup nil rt)
+  (set-macro-character #\: #'read-standalone-char nil rt)
   (set-syntax-from-char #\, #\a rt)
-  (set-macro-character #\, #'read-html-markup nil rt)
+  (set-macro-character #\, #'read-standalone-char nil rt)
   rt)
 
 (defcustom *html-readtable* readtable (make-html-readtable)
