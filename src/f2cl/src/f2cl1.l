@@ -423,8 +423,7 @@ FILENAME                 File containing Fortran code
 	      )
 	    (translate-and-write-subprog 
 	     (introduce-continue
-	      (handle-extended-do
-	       (readsubprog-extract-format-stmts inport)))
+	      (readsubprog-extract-format-stmts inport))
 	     outport)))
         ))
     t)
@@ -2207,6 +2206,16 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.97  2002/03/07 19:00:39  rtoy
+;;; o Merge the extended DO handling with the
+;;;   write-statement-with-format-string handling into one place.
+;;;   Reorderd the code a bit too.
+;;; o Instead of using truncate to convert a float to an int for
+;;;   assignement, use the Fortran INT.
+;;; o When coercing a integer type to a float for assignment, declare the
+;;;   int to be an INTEGER4 to help the coercion use a single
+;;;   instruction.
+;;;
 ;;; Revision 1.96  2002/03/07 05:19:59  rtoy
 ;;; o Comment out some debugging print statements.
 ;;; o Wasn't rewriting the write statement correctly.  This works much
