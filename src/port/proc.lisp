@@ -392,7 +392,7 @@ and reapply its initial function to its arguments."
 (defun giveup-lock (lock)
   "Gives up possession of a lock."
   #+Allegro   (mp:process-unlock lock)
-  #+CMU       FIXME
+  #+CMU       (setf (mp::lock-process lock) nil)
   #+Genera    FIXME
   #+LispWorks (mp:release-lock lock)
   #+Lucid     FIXME
