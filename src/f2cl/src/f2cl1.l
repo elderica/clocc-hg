@@ -135,11 +135,13 @@ INPUT-FILE               File containing Fortran code
       
     (unless output-file
       (let ((input-path (pathname input-file)))
-	(setf output-file (make-pathname :host (pathname-host input-path)
-					 :device (pathname-device input-path)
-					 :directory (pathname-directory input-path)
-					 :name (pathname-name input-path)
-					 :type extension))))
+	(setf output-file (merge-pathnames
+			   (make-pathname :host (pathname-host input-path)
+					  :device (pathname-device input-path)
+					  :directory (pathname-directory input-path)
+					  :name (pathname-name input-path)
+					  )
+			   (make-pathname :type extension)))))
     (format t ";; ~S -> ~S~%" input-file output-file)
     (let ((processed-file (preprocess input-file)))
       (fortran-to-lisp processed-file output-file
@@ -1951,6 +1953,10 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.76  2001/06/04 17:20:10  rtoy
+;;; CONVERT-DATA-TYPE was incorrectly returning T instead of '(LOGICAL)
+;;; for LOGICAL Fortran types.
+;;;
 ;;; Revision 1.75  2001/06/04 17:14:38  rtoy
 ;;; Handle IMPLICIT NONE by putting ":NONE (A-Z)" as the type for
 ;;; *implicit_vble_decls*.
