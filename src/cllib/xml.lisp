@@ -31,7 +31,7 @@
 
 (export
  '(*xml-readtable* *xml-print-xml* *xml-read-balanced* *xml-read-entities*
-   xml-xhtml-tidy xml-purge-data
+   xml-xhtml-tidy xml-purge-data xmlize-string
    with-xml-input with-xml-file xml-read-from-file read-standalone-char
    xml-obj xml-obj-p xmlo-args xmlo-name xmlo-data
    xmlo-name-check xmlo-nm xmlo-tag
@@ -128,6 +128,14 @@ See <http://www.w3.org/TR/WD-html40-970708/sgml/entities.html>.")
      (xml-entity (subseq seq (1+ beg) (1- fin)) *xml-amp* #\&
                  :proc 'xml-expand-entities :string t))
    :start start :end end))
+
+(defun xmlize-string (string)
+  "Replace XML-special characters, like &<>, with entities."
+  (dolist (re '(("&" . "&amp;") ; & must come first!
+                (">=" . "&gt;=") ("<=" . "&lt;=")
+                (">" . "&gt;") ("<" . "&lt;")) string)
+    (setq string (substitute-subseq string (car re) (cdr re)
+                                    :test #'char=))))
 
 ;;;
 ;;; XML objects
