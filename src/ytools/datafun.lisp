@@ -79,7 +79,7 @@
 
 (defmacro datafun-table (name ind &key (size 100))
   `(eval-when  (:compile-toplevel :load-toplevel :execute :slurp-toplevel)
-      (defvar ,name (make-eq-hash-table :size ',size))
+      (defvar ,name (make-hash-table :size ',size :test #'eq))
       (datafun attach-datafun ,ind
          (defun :^ (ind sym fname)
 	    (ignore ind)

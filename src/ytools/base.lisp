@@ -22,8 +22,8 @@
 	     Array-dimension Array-dimensions
 	     is-Vector is-Array is-Symbol Symbol-name Symbol-plist
 	     is-Keyword is-String memq assq nodup =<
-	     is-Pair is-cons list-copy
-	     tuple pair head tail nthrest left right
+	     is-Pair is-cons list-copy is-list
+	     tuple pair head tail nthrest nthtail left right
 	     ;;;; one two three four five six seven eight nine ten
 	     is-Char is-Integer is-Number
 	     is-Float is-Single-float is-Double-float
@@ -289,6 +289,8 @@
 
 (subr-synonym is-String stringp)
 
+(subr-synonym list-copy copy-list)
+
 (cl:defun memq (x l) (member x l :test #'eq))
 (cl:defun assq (k al) (assoc k al :test #'eq))
 (cl:defun assoc= (test k al) (assoc k al :test test))
@@ -315,7 +317,7 @@
 (subr-synonym is-Vector vectorp)
 (subr-synonym is-cons consp)
 (subr-synonym is-sublist subsetp)
-(subr-synonym list-copy copy-list)
+(subr-synonym is-list listp)
 
 (subr-synonym tuple list)
 (subr-synonym pair cons)
@@ -329,6 +331,7 @@
 (subr-synonym right cdr t)
 
 (subr-synonym nthrest nthcdr nil)
+(subr-synonym nthtail nthcdr nil)
 
 ;;;;(subr-synonym one first)
 ;;;;(subr-synonym two second t)
