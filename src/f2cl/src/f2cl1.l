@@ -1201,7 +1201,6 @@ FILENAME                 File containing Fortran code
                  (princ-to-string (variable-value '%label bindings))) 
             nil))) )
 ;------------------------------------------------------------------------------
-#+nil
 (defun make-label (n) 
   (read-from-string (concatenate 'string (symbol-name :label) (princ-to-string n))))
 
@@ -2557,6 +2556,9 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.135  2004/08/14 13:44:37  rtoy
+;;; Add support for ASSIGN statement.
+;;;
 ;;; Revision 1.134  2004/08/13 21:16:27  rtoy
 ;;; First pass at creating common blocks as arrays.  Intent is to allow
 ;;; odepack to be converted via f2cl.
