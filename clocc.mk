@@ -49,7 +49,7 @@ default: force
 	@echo " + $(SYSTEM).zip - the archive of SOURCES, DOCFILES ($(DOCFILES)), MAKEFILES ($(MAKEFILES)) and ZIPEXTRA ($(ZIPEXTRA))"
 
 system: $(SYSTEM).system
-	$(RUNLISP) $(CLOCC_TOP) \
+	$(RUNLISP) $(CLOCC_TOP) -i $^ \
 		-x '(funcall (intern "COMPILE-SYSTEM" :mk) "$(SYSTEM)")'
 
 all: $(addsuffix .$(FASLEXT),$(SOURCES))
