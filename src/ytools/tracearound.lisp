@@ -65,7 +65,7 @@
 	       (t
 		(bind ((*print-level* 3))
 		   (out (:to *error-output*) "Trace: " args :%))))
-	 (letrec ()
+	 (let-fun ()
 	    `(progn
 
 		(bind ((trace-around-level* (+ trace-around-level* 1)))
