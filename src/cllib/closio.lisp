@@ -56,12 +56,14 @@
 ;;;
 
 (defmethod print-object ((obj standard-object) (out stream))
-  (let ((cl (class-of obj)))
-    (format out "#[~s" (class-name cl))
-    (dolist (slot (class-slot-list cl nil))
-      (when (slot-boundp obj slot)
-        (format out " ~s ~s" slot (slot-value obj slot))))
-    (write-string "]" out)))
+  (if *print-readably*
+      (let ((cl (class-of obj)))
+        (format out "#[~s" (class-name cl))
+        (dolist (slot (class-slot-list cl nil))
+          (when (slot-boundp obj slot)
+            (format out " ~s ~s" slot (slot-value obj slot))))
+        (write-string "]" out))
+      (call-next-method)))
 
 ;;;
 ;;; }}}{{{ macroexpand-r
