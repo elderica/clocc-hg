@@ -70,8 +70,8 @@ See <http://www.w3.org/TR/WD-html40-970708/sgml/entities.html>.")
                               (open (merge-pathnames data (xml-path stream))
                                     :direction :input)
                             (error (err)
-                              (mesg :err t "cannot open file [~s]/[~s]~%"
-                                    data (xml-path stream t))
+                              (mesg :err t "~s: cannot open file [~s]/[~s]~%"
+                                    'xml-read-entity data (xml-path stream t))
                               (error err)))))
                  (mesg :log t "~& * [~a ~:d bytes]..." data (file-length str))
                  str)))
@@ -398,7 +398,8 @@ the second is `file size' (including tags)."
 (defun stream-length (st)
   "A wrap around for `file-stream'."
   (etypecase st
-    (file-stream (file-length st))
+    ((or file-stream #+allegro excl:file-simple-stream)
+     (file-length st))
     (list (reduce #'+ st :key #'stream-length))
     (concatenated-stream (stream-length (concatenated-stream-streams st)))
     (string-stream 0)           ; can we do any better than this?
@@ -437,7 +438,8 @@ the second is `file size' (including tags)."
     (format t "~& * All streams:~{~%~s~}~% * Pending:~{~%~s~}~%"
             (xmlis-all str) (concatenated-stream-streams (xmlis-st str))))
   (dolist (st (concatenated-stream-streams (xmlis-st str)))
-    (when (typep st 'file-stream)
+    (when (or (typep st 'file-stream)
+              #+allegro (typep st 'excl:file-simple-stream))
       (when debug-p (format t " == ~s -> ~s~%" st (truename st)))
       (return (truename st)))))
 
