@@ -215,11 +215,12 @@ Returns the number of seconds since the epoch (1900-01-01)."
   (declare (type (unsigned-byte 32) nn))
   (time2date (+ nn +unix-epoch+)))
 
-(defun dttm->string (dttm &optional (format :long))
+(defun dttm->string (dttm &key (format :long) (tz 0))
   "Print the date/time as returned by `encode-universal-time'.
-The date is interpreted as GMT (universal time)."
+The date is interpreted in the time zone TZ (defaults to GMT --
+universal time) and printed using DATE-FORMATTER with FORMAT."
   (declare (type (integer 0) dttm))
-  (multiple-value-bind (se mi ho da mo ye dd) (decode-universal-time dttm 0)
+  (multiple-value-bind (se mi ho da mo ye dd) (decode-universal-time dttm tz)
     (date-formatter format se mi ho da mo ye dd)))
 
 (defgeneric date-formatter (format se mi ho da mo ye dd)
