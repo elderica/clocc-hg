@@ -769,7 +769,8 @@ For additional servers see http://www.eecis.udel.edu/~mills/ntp/servers.htm")
 ;;;
 
 (defcustom *browsers* list
-  '((:netscape "netscape" "-remote" "openURL(~a,new-window)")
+  '((:netscape "netscape" "~a")
+    (:netscape-remote "netscape" "-remote" "openURL(~a,new-window)")
     (:lynx "xterm" "-e" "lynx" "~a")
     (:mmm "mmm" "-external" "~a")
     (:mosaic "xmosaic" "~a")
