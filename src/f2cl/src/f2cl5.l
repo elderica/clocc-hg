@@ -176,8 +176,22 @@
 	       (t
 		'single-float)))))
 
+;; A simple implementation of Fortran contagion.
+;;
+;; Coerce 0 to the types T1 and T2 and add the result.  The type of
+;; the sum is the desired type.  However, we convert some of the types
+;; to one's that f2cl understands.
 (defun fortran-contagion (t1 t2)
-  (type-of (+ (coerce 0 t1) (coerce 0 t2))))
+  (let ((sum (+ (coerce 0 t1) (coerce 0 t2))))
+    (typecase sum
+      ((complex double-float)
+       'complex16)
+      ((complex single-float)
+       'complex8)
+      (integer
+       'integer4)
+      (t
+       (type-of sum)))))
 
 (defun get-fun-arg-type (arg)
   (cond ((symbolp arg)
@@ -2069,6 +2083,11 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.67  2000/08/30 16:56:24  rtoy
+;;; In PARSE-FORMAT1, if there's no repetition factor for a group, then
+;;; the group is supposed to be repeated forever until all the data has
+;;; been printed.  (I think)
+;;;
 ;;; Revision 1.66  2000/08/29 15:55:04  rtoy
 ;;; o In GET-ARG-DECL, return type INTEGER4 if the arg is a subtype of
 ;;;   INTEGER4. (So fixnum args are treated as INTEGER4 args for
