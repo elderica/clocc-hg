@@ -525,7 +525,7 @@ See RFC959 (FTP) &c.")
         (string-right-trim +whitespace+ (read-line sock))
         :for len :of-type index-t = (length ln)
         :and code :of-type (or null (unsigned-byte 10)) = nil
-        :do (mesg :log *url-errors* "~&url-ask[~s]: ~a~%" end ln)
+        :do (mesg :log *url-error* "~&url-ask[~s]: ~a~%" end ln)
         :while (or (< len 3) (and (> len 3) (char/= #\Space (schar ln 3)))
                    (null (setq code (parse-integer ln :end 3 :junk-allowed t)))
                    (and (< code 400) endl (not (member code endl :test #'=))))
