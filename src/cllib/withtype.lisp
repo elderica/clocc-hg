@@ -39,7 +39,7 @@
   "Coerce to double float."
   `(float ,num 1d0))
 
-(deftype index-t () '(unsigned-byte 20))
+(deftype index-t () '(unsigned-byte 28))
 
 (defmacro with-type (type expr)
   "Evaluate the arithmetic expression in TYPE.
