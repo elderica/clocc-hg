@@ -578,7 +578,6 @@ MAIN-LOOP
        (return (parse-assignment x)))
      ;;subroutine call
      (when (id-subroutine-call x) 
-	
        (return (parse-subroutine-call x)))
      ;;pause
      (when (id-pause x)
@@ -1033,6 +1032,58 @@ MAIN-LOOP
 (defun parse-pause (x) 
    `((error ,(cadr x))))
 
+;; Subroutines and functions can modify the values of input
+;; parameters.  We handle this in Lisp by returning the input
+;; parameters to the caller as multiple values.  This function
+;; generates a multiple-value-bind to get the returned values and
+;; assigns them to the input parameters if we can.
+;;
+;; If RETURN is T, we are generating a call to a function which
+;; returns the value of the function in addition to the parameters.
+(defun generate-call-to-routine (routine arglist &optional return)
+  (let* ((vnames (let ((v '()))
+		   ;; Make up some variable names.  These contain
+		   ;; dashes, which cannot be valid Fortran names, so
+		   ;; we don't have to worry about variable capture.
+		   (dotimes (k (length arglist))
+		     (push (intern (format nil "VAR-~D" k)) v))
+		   (nreverse v)))
+	 ;; Figure out if and how to set the parameters to the returned values.
+	 (all-setters (do ((v nil)
+			   (vars vnames (rest vars))
+			   (args arglist (rest args)))
+			  ((null args) (nreverse v))
+			(let ((var (first vars))
+			      (arg (first args)))
+			  (push (cond ((or (vble-is-array-p arg)
+					   (member arg *external_function_names*))
+				       ;; Fortran can't return
+				       ;; whole arrays or
+				       ;; functions, so don't try
+				       ;; to assign the value to
+				       ;; arrays or functions.
+				       nil)
+				      ((symbolp arg)
+				       `(setf ,arg ,var))
+				      ((and (listp arg)
+					    (eq (first arg) 'fref))
+				       `(fset ,arg ,var))
+				      (t
+				       nil))
+				v))))
+	 ;; A variable is ignored if no setter for it is given.
+	 (ignored-vars (remove nil (mapcar #'(lambda (varname setter)
+					       (if (not setter)
+						   varname))
+					   vnames all-setters)))
+	 (setters (remove nil all-setters)))
+    (if setters
+	`((multiple-value-bind ,(if return (append '(ret-val) vnames) vnames)
+	      (,@routine ,@arglist)
+	    (declare (ignore ,@ignored-vars))
+	    ,@setters
+	    ,@(if return (list 'ret-val))))
+	`((,@routine ,@arglist ,@(if return (list 'ret-val)))))))
 ;------------------------------------------------------------------------------
 (defun parse-subroutine-call (x)
   ;; X looks like (CALL SUBNAME (comma-separated list of args, if any))
@@ -1070,41 +1121,23 @@ MAIN-LOOP
 	   ;; Array references can also be a slice of an array that is
 	   ;; passed to the subroutine, and that isn't handled here!
 	   ;;
-	   (let* ((vnames (let ((v '()))
-			    ;; Make up some variable names
-			    (dotimes (k (length arglist))
-			      (push (intern (format nil "VAR-~D" k)) v))
-			    (nreverse v)))
-		  ;; Figure out if and how to set the parameters to the returned values.
-		  (setters (do ((v nil)
-				(vars vnames (rest vars))
-				(args arglist (rest args)))
-			       ((null args) (remove nil (nreverse v)))
-			     (let ((var (first vars))
-				   (arg (first args)))
-			       (push (cond ((or (vble-is-array-p arg)
-						(member arg *external_function_names*))
-					    ;; Fortran can't return
-					    ;; whole arrays or
-					    ;; functions, so don't try
-					    ;; to assign the value to
-					    ;; arrays or functions.
-					    nil)
-					   ((symbolp arg)
-					    `(setf ,arg ,var))
-					   ((and (listp arg)
-						 (eq (first arg) 'fref))
-					    `(fset ,arg ,var))
-					   (t
-					    nil))
-				     v)))))
-	     (if setters
-		 `((multiple-value-bind ,vnames
-		       (,(second x) ,@arglist)
-		     (declare (ignorable ,@vnames))
-		     ,@setters))
-		 `((,(second x) ,@arglist))))))))
+	   (generate-call-to-routine (list (second x)) arglist)))))
 
+(defun parse-function-call (x)
+  ;; X is (FUNCTION-CALL FNAME ARG1 ARG2 ARG3 ...)
+  (destructuring-bind (id fname &rest args)
+      x
+    (declare (ignore id))
+    (first (generate-call-to-routine
+	    (cond ((member fname *subprog-arglist*)
+		   ;; We want to use funcall only if the external function
+		   ;; was passed in as a parameter.  If not, then we don't
+		   ;; need to funcall it.  The user was just telling us that
+		   ;; it was external function instead an intrinsic.
+		   `(funcall ,fname)) 
+		  (t 
+		   `(,fname)))
+	    args t))))
 ;------------------------------------------------------------------------------
 (defun parse-do-loop (x)
  (let* ((limits (list-split '|,| (cddddr x))) (step (third limits)))
@@ -1841,6 +1874,21 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.52  2000/07/30 04:33:19  rtoy
+;;; READSUBPROG-EXTRACT-FORMAT-STMTS:
+;;;
+;;;   If the very first line had a line number, f2cl wouldn't understand the
+;;;   line.  Fix this be reading the margin at the top of the main loop.
+;;;   Also, don't do anything with MULTIPLE-LINE-FLAG since PREPROCESS now
+;;;   handles line continuations.  (Need to remove MULTIPLE-LINE-FLAG).
+;;;
+;;; TRANSLATE-AND-WRITE-SUBPROG:
+;;;
+;;;   By Fortran calling rules, functions can actually modify the input
+;;;   parameters.  Thus, functions need to return the function value and
+;;;   all of the parameters.  (Still need to modify the code that
+;;;   generates the caller so we can update the values appropriately.)
+;;;
 ;;; Revision 1.51  2000/07/28 22:08:31  rtoy
 ;;; Take out the pprint-logical-block if we're using Clisp since it
 ;;; doesn't have it.
