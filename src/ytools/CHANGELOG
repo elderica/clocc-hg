@@ -1,5 +1,8 @@
 $Id$
 	
+2004-09-26: Patch 'subr-synonym' to cope with bug in OpenMCL.
+            (Version 1.4.5)
+
 2004-09-16: Added field :initbind e to (x :in l) clause of
             'repeat'. The expression e is evaluated and bound to x
             initially.  This is purely to satisfy some compilers that

@@ -249,14 +249,19 @@
 (defvar subr-synonyms* '())
 		  
 (cl:defun define-subr-synonym (syn subr)
-	  (setf (symbol-function syn) (symbol-function subr))
-	  (let ((p (assoc syn subr-synonyms* :test #'eq)))
-	     (cond ((not p)
-		    (setq subr-synonyms*
-		          (cons (list syn subr) subr-synonyms*)))
+   ;; Work around bug in OpenMCL --
+   #+openmcl (cond ((macro-function subr)
+		    (setf (macro-function syn) (macro-function subr)))
 		   (t
-		    (setf (cadr p) subr)))))
-
+		    (setf (symbol-function syn)
+		          (symbol-function subr))))
+   #-openmcl (setf (symbol-function syn) (symbol-function subr))
+   (let ((p (assoc syn subr-synonyms* :test #'eq)))
+      (cond ((not p)
+	     (setq subr-synonyms*
+		   (cons (list syn subr) subr-synonyms*)))
+	    (t
+	     (setf (cadr p) subr)))))
 )
 
 (cl:defun make-eq-hash-table (&rest args)
