@@ -11,7 +11,7 @@
   (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `index-t'
   (require :cllib-withtype (translate-logical-pathname "cllib:withtype"))
-  ;; `mesg', `get-float-time', `elapsed', `with-timing'
+  ;; `mesg', `get-int-time', `elapsed', `with-timing'
   (require :cllib-log (translate-logical-pathname "cllib:log"))
   ;; `read-from-file', `write-to-file'
   (require :cllib-fileio (translate-logical-pathname "cllib:fileio"))
@@ -172,12 +172,12 @@ specifying the interval for progress reports."
   (when (and *primes* (>= (car *primes*) nn))
     (return-from primes-to (cdr *primes*)))
   (do* ((ii 3 (+ 2 ii)) (res (if (> nn 2) (list 2))) (end res)
-        (rt (isqrt ii) (isqrt ii)) (bt (get-float-time)))
+        (rt (isqrt ii) (isqrt ii)) (bt (get-int-time)))
        ((>= ii nn) (setq *primes* (cons nn res)) res)
     (declare (fixnum ii))
     (when (and int (= 1 (mod ii 1000)) (> (elapsed bt t) int))
       (format t "~:d..." ii) (force-output)
-      (setq bt (get-float-time)))
+      (setq bt (get-int-time)))
     (do ((mm res (cdr mm)))
         ((or (null mm) (> (car mm) rt))
          (setq end (cdr (nconc end (list ii)))))
@@ -234,11 +234,11 @@ E.g.: (number-sum-split 10 (lambda (x) (* x x)) 'isqrt) => ((1 . 3))"
   (declare (fixnum min find) (type (function ((integer 0)) (integer 0)) fun)
            (type (or null double-float) int))
   (do* ((ht (make-hash-table :test #'eql :size 100)) (cur 0 (1+ cur)) (found 0)
-        (fc (funcall fun cur) (funcall fun cur)) res (bt (get-float-time)))
+        (fc (funcall fun cur) (funcall fun cur)) res (bt (get-int-time)))
        ((= found find) (nreverse res))
     (when (and int (= 1 (mod cur 1000)) (> (elapsed bt t) int))
       (format t "~:d..." cur) (force-output)
-      (setq bt (get-float-time)))
+      (setq bt (get-int-time)))
     (dotimes (ii cur)
       (let* ((sum (+ fc (funcall fun ii))) (ha (gethash sum ht))
              (new (cons (cons cur ii) ha)))

@@ -563,7 +563,7 @@ Then generate the list to download."
   (rpm-get-present force out)
   (format out " *** ~d package~:p present~%" (length *rpm-present*))
   (rpm-get-available :force force :out out :err err)
-  (let ((bt (get-float-time nil)) (glob 0)
+  (let ((bt (get-int-time nil)) (glob 0)
         #+clisp (#+lisp=cl  ext:*pprint-first-newline*
                  #-lisp=cl lisp:*pprint-first-newline* nil))
     (declare (double-float bt) (type file-size-t glob))
