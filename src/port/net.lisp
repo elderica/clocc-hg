@@ -132,7 +132,7 @@
                        port host :element-type
                        (if bin '(unsigned-byte 8) 'character))
     #+cmu (sys:make-fd-stream (ext:connect-to-inet-socket host port)
-                              :buffering :line
+                              :buffering (if bin :full :line)
                               :input t :output t :element-type
                               (if bin '(unsigned-byte 8) 'character))
     #+gcl (si:make-socket-stream host port bin) ; FIXME
