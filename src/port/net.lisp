@@ -183,6 +183,8 @@
     #+gcl (si:make-socket-stream host port bin) ; FIXME
     #+lispworks (comm:open-tcp-stream host port :direction :io :element-type
                                       (if bin 'unsigned-byte 'base-char))
+    #+mcl (ccl:make-socket :remote-host host :remote-port port
+                           :format (if binary-p :binary :text))
     #+(and sbcl db-sockets)
     (let ((socket (make-instance 'sockets:inet-socket
                                  :type :stream :protocol :tcp)))
@@ -199,7 +201,7 @@
          'net.sbcl.sockets:binary-stream-socket
          'net.sbcl.sockets:character-stream-socket)
      :port port :host host)
-    #-(or allegro clisp cmu gcl lispworks
+    #-(or allegro clisp cmu gcl lispworks mcl
           (and sbcl (or net.sbcl.sockets db-sockets)))
     (error 'not-implemented :proc (list 'open-socket host port bin))))
 
