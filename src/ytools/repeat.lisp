@@ -517,7 +517,7 @@
       (car v)
       (cons (make-Rep-var-prop 'init (caddr v) 2)
 	    (let ((alist (keyword-args->alist
-			    (cdddr v) '(:tail)
+			    (cdddr v) '(:tail (:initbind :init))
 			    :offset 4)))
 	       (let ((tv (lookup-rep-var-prop ':tail alist)))
 		  (cond ((not tv)
@@ -859,10 +859,14 @@
 	    ((*simple *reset)
 	     `((,varname ,init)))
 	    (*throughlist
-	     (let ((tailvar (Rep-var-prop-val (lookup-rep-var-prop ':tail alist))))
+	     (let ((tailvar (Rep-var-prop-val (lookup-rep-var-prop ':tail alist)))
+		   (initexp (let ((rvp (lookup-rep-var-prop ':initbind alist)))
+			       (cond (rvp
+				      (Rep-var-prop-val rvp))
+				     (t 'false)))))
 	        `((,tailvar ,init)
 		  ,@(include-if (not (eq varname '_))
-		       `(,varname false)))))
+		       `(,varname ,initexp)))))
 	    (*each-iter
 	     (let ((iterfcnvar (Rep-var-prop-val (lookup-rep-var-prop 'iterfcnvar alist))))
 	        `((,iterfcnvar (\\ () ,init))
@@ -1025,10 +1029,14 @@
 		      `(,(Rep-var-name sv)
 			,@(case (Rep-var-mode sv)
 			     (*throughlist
-			      (let ((tailvar (lookup-rep-var-prop ':tail alist)))
-				 `(:in ,(cadr init)
+			      (let ((tailvar (lookup-rep-var-prop ':tail alist))
+				    (initexp (lookup-rep-var-prop ':initbind alist)))
+				 `(:in ,(second init)
 				       ,@(cond (tailvar
-						`(:tail ,(cadr tailvar)))
+						`(:tail ,(second tailvar)))
+					       (t '()))
+				       ,@(cond (initexp
+						`(:initbind ,(second initexp)))
 					       (t '())))))
 			     (*reset
 			      (let ((next (cadr (lookup-rep-var-prop
