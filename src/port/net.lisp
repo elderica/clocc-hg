@@ -152,7 +152,7 @@
                   (car loc) (caddr loc)))
   #+lispworks
   (multiple-value-bind (ho1 po1) (comm:socket-stream-peer-address sock)
-    (multiple-value-bind (ho1 po2) (comm:socket-stream-local-address sock)
+    (multiple-value-bind (ho1 po2) (comm:socket-stream-address sock)
       (values (ipaddr-to-dotted ho1) po1
               (ipaddr-to-dotted ho2) po2)))
   #-(or allegro clisp cmu gcl lispworks)
