@@ -1,4 +1,4 @@
-;;; File: <url.lisp - 1999-04-19 Mon 19:38:13 EDT sds@eho.eaglets.com>
+;;; File: <url.lisp - 1999-04-20 Tue 12:20:11 EDT sds@eho.eaglets.com>
 ;;;
 ;;; Url.lisp - handle url's and parse HTTP
 ;;;
@@ -12,6 +12,10 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.25  1999/04/19 23:40:28  sds
+;;; (url-time): print the time difference.
+;;; (open-url, url-get): fixed the call to (error 'code).
+;;;
 ;;; Revision 1.24  1999/04/19 15:56:12  sds
 ;;; (*url-default-max-retry*): new user variable, the
 ;;; default for the `max-retry' key.
@@ -351,7 +355,8 @@ The argument can be:
   "*The alist of (\"string\" . protocol) to guess the protocol from the host.")
 (defmethod url ((xx string))
   (let* ((string (string-trim +whitespace+ xx)) (url (make-url)) slashp
-         (idx (position #\: string :test #'char=)) (start 0) idx0)
+         (idx (position #\: string :test #'char=)) (start 0) idx0
+         (end (position #\? string :test #'char=)))
     (declare (simple-string string) (type index-t start) (type url url)
              (type (or null index-t) idx))
     (when (char= #\/ (char string 0))
@@ -359,17 +364,17 @@ The argument can be:
         (progn (setf (url-prot url) :file (url-path url) string) url)))
     (when idx
       (setf (url-prot url) (kwd (nstring-upcase (subseq string 0 idx))))
-      (setq start (position #\/ string :start (1+ idx) :test #'char/=)
+      (setq start (position #\/ string :start (1+ idx) :test #'char/= :end end)
             slashp (/= (1+ idx) start)))
-    (setq idx (position #\@ string :start start :test #'char=))
+    (setq idx (position #\@ string :start start :test #'char= :end end))
     (when idx
-      (setq idx0 (position #\# string :start start :test #'char=))
+      (setq idx0 (position #\# string :start start :test #'char= :end end))
       (if idx0 (setf (url-pass url) (subseq string (1+ idx0) idx)
                      (url-user url) (subseq string start idx0))
           (setf (url-user url) (subseq string start idx)))
       (setq start (1+ idx)))
-    (setq idx (position #\: string :start start :test #'char=))
-    (setq idx0 (position #\/ string :start start :test #'char=))
+    (setq idx (position #\: string :start start :test #'char= :end end))
+    (setq idx0 (position #\/ string :start start :test #'char= :end end))
     (when idx
       (setf (url-port url) (parse-integer string :start (1+ idx) :end idx0)))
     (when idx0
@@ -386,7 +391,8 @@ The argument can be:
                                 (declare (simple-string ho st))
                                 (string-beg-with st ho)))))
                (when pa (setf (url-prot url) (cdr pa)))))
-            ((position #\@ string) (setf (url-prot url) :mailto))
+            ((position #\@ string :test #'char= :end end)
+             (setf (url-prot url) :mailto))
             ((error "url: `~a': no protocol specified" string))))
     url))
 
