@@ -11,6 +11,9 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.2  2000/03/07 11:15:41  haible
+;;; Add comment about recommended CLISP version.
+;;;
 ;;; Revision 1.1  2000/02/18 21:26:00  sds
 ;;; renamed; removed defsystem for port
 ;;;
@@ -76,6 +79,9 @@
 ;; 1999-07-22 had serious bugs with logical pathnames.
 
 (setf (logical-pathname-translations "clocc")
-      '(("**;*" "/usr/local/src/clocc/**/*")))
+      '(("src;defsystem;*" "/usr/local/src/clocc/src/defsystem-3.x/*")
+	("src;defsystem-3-x;*" "/usr/local/src/clocc/src/defsystem-3.x/*")
+	("**;*" "/usr/local/src/clocc/**/*")
+	))
 
 ;;; clocc.lisp ends here
