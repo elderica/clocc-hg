@@ -1106,7 +1106,7 @@
 	  decl1
 	(when (eq (car decl2) 'array)
 	  (rotatef decl1 decl2))
-	(return `(declare (type (simple-array
+	(return `(declare (type (,*array-type*
 				 ,(car decl2)
                                  ,(mapcar #'(lambda (x)
                                               (if (every #'realp x)
@@ -1139,7 +1139,7 @@
 	      ((eq type 'ARRAY)
 	       (if (setq decl (member vble (cdar type-clauses) :key #'car))
                          
-		   (return `(declare (type (simple-array 
+		   (return `(declare (type (,*array-type*
 					    ,(get_array_type (caar decl) 
 							     vble-is-formal-arg)
 					    ,(mapcar #'(lambda (x) 
@@ -1153,13 +1153,13 @@
 	       (if (setq decl (member vble (cdar type-clauses) :key #'car))
 		   (return
 		     (if (cdar decl) 
-			 `(declare (type (simple-array (member t nil) ,(cadar decl)) 
+			 `(declare (type (,*array-type* (member t nil) ,(cadar decl)) 
 				    ,vble_name))
 			 `(declare (type (member t nil) ,vble))))))
 	      (t (when (setq decl (member vble (cdar type-clauses) :key #'car))
 		   (return 
 		       (if (cdar decl) 
-			   `(declare (type (simple-array 
+			   `(declare (type (,*array-type*
 					    ,type 
 					    ,(mapcar #'(lambda (x) 
 							 (if (every #'realp x)
@@ -1200,12 +1200,12 @@
 	   `(declare (type (simple-array base-char (,(cadr decl))) ,(car decl))))
 	  ((equal (cadr decl) '(*))
 	   ;; unspecified length spec
-	   (format t "unspecified length spec = ~A~%" decl)
+	   ;;(format t "unspecified length spec = ~A~%" decl)
            `(declare (type (simple-array base-char (*)) ,(car decl))))
 	  (t
 	   ;; array, no length spec.
 	   ;;(format t "array, no length spec = ~A~%" decl)
-           `(declare (type (simple-array
+           `(declare (type (,*array-type*
 			    (simple-array base-char ,(if (second type)
 							 `(,(second type))
 							 '(*)))
@@ -1306,7 +1306,7 @@
     (return
      (cond ; check if v is an array 
            ((setq dim (member v *common_array_dims*))
-            `(declare (type (simple-array ,(get_array_type v nil) ',(cadr dim)) 
+            `(declare (type (,*array-type* ,(get_array_type v nil) ',(cadr dim)) 
                             ,(check-reserved-lisp-names v))))
            ; else make ordinary declaration
            (t (make-declaration v))))))
@@ -1915,7 +1915,7 @@
 		;; type (for scalars) or a zero element array of the
 		;; appropriate dimensions for array slots.
 		(if dims
-		    `(,var ,var-init :type (simple-array ,(second var-type) ,(subst '* 0 dims)))
+		    `(,var ,var-init :type (,*array-type* ,(second var-type) ,(subst '* 0 dims)))
 		    `(,var ,var-init :type ,var-type))))
 	  varlist))
 
@@ -1991,6 +1991,11 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.44  2000/07/14 13:33:26  rtoy
+;;; Don't apply external ref fixups if the external function was also a
+;;; parameter to the routine.  If we do, then we referring to the wrong
+;;; thing!
+;;;
 ;;; Revision 1.43  2000/07/13 16:55:34  rtoy
 ;;; To satisfy the Copyright statement, we have placed the RCS logs in
 ;;; each source file in f2cl.  (Hope this satisfies the copyright.)
