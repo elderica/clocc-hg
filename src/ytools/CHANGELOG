@@ -1,5 +1,10 @@
 $Id$
 	
+2004-10-26: Fixed bug in outin whereby nonstreams were making it into
+            the variable 'out-streams*' (probably because Allegro does
+            something odd to streams when it closes them).  (Version
+            1.4.8.4)
+
 2004-10-05: One more tweak to logic of 'compilable' in
             lprec-check-compile. (Version 1.4.8.3)
 

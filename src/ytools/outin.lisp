@@ -51,19 +51,20 @@
    (cond ((Out-stream-p srm)
 	  srm)
 	 ((is-Stream srm)
-	  #+openmcl
 	  (cond ((typep srm 'ccl::xp-stream)
 		 (dbg-save srm)
 		 (breakpoint stream-outify
 		    "Got odd stream: " srm)))
-	  (cond (out-stream-cleanup*
-		 (cond ((some #'(lambda (p) (not (open-stream-p (car p))))
-			      out-streams*)
-			;; clean up table
-			(setq out-streams*
-			      (delete-if #'(lambda (p)
-					      (not (open-stream-p (car p))))
-					 out-streams*))))))
+	  (cond ((some #'(lambda (p)
+			    (or (not (streamp (car p)))
+				(not (open-stream-p (car p)))))
+		       out-streams*)
+		 ;; clean up table
+		 (setq out-streams*
+		       (delete-if #'(lambda (p)
+				       (or (not (streamp (car p)))
+					   (not (open-stream-p (car p)))))
+				  out-streams*))))
 	  (let ((p (assq srm out-streams*)))
 	     (cond (p (cadr p))
 		   (t
