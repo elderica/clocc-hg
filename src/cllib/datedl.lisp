@@ -548,7 +548,7 @@ Must not assume that the list is properly ordered!"
 (defsubst weighted-mean-dl (dl wts &key (slot 'val))
   "Apply `weighted-mean' to the dated list."
   (declare (type dated-list dl))
-  (weighted-mean (dl-ll dl) wts :key (dl-slot dl slot)))
+  (weighted-mean (dl-ll dl) wts :value (dl-slot dl slot)))
 
 ;;;
 ;;; Change
