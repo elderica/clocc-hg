@@ -1242,11 +1242,15 @@
 				      ,vble_name))
 			   `(declare (type ,type ,vble_name)))))))))
 					; check implicitly declared variable
-     ((and (not vble-is-formal-arg) (setq type (get-implicit-type vble)))
+     ((and (not vble-is-formal-arg)
+	   (setq type (get-implicit-type vble)))
       (if (and (listp type) (eq (car type) 'CHARACTER))
 	  (make-char-decl (list vble_name) type)
-	  `(declare (type ,type ,vble_name))))
-					; otherwise use default declaration
+	  (progn
+	    (when (eq type :none)
+	      (warn "Undeclared variable `~A' with no implicit type!" vble))
+	    `(declare (type ,type ,vble_name)))))
+     ;; otherwise use default declaration
      (t (if (default-int-p vble)
 	    `(declare (type integer4 ,vble_name))
 	    `(declare (type single-float ,vble_name))))))))
@@ -2086,6 +2090,12 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.69  2001/06/03 20:46:08  rtoy
+;;; Changes to FIX-DO:
+;;; o Add a test and code to keep FIX-DO from looping forever searching
+;;;   for a non-existent DO label.  We cause an error now if this happens.
+;;; o Gratuitously re-indented code.
+;;;
 ;;; Revision 1.68  2000/09/03 02:33:39  rtoy
 ;;; FORTRAN-CONTAGION returned (complex double-float) and (complex
 ;;; single-float) which confuses f2cl.  Return complex16 and complex8
