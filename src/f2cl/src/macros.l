@@ -451,9 +451,13 @@ is not included")
   ;; ftruncate is exactly what we want.
   (etypecase x
     (single-float
-     (ftruncate (the single-float x)))
+     (locally 
+       (declare (optimize (space 0) (speed 3)))
+       (values (ftruncate (the single-float x)))))
     (double-float
-     (ftruncate (the double-float x)))))
+     (locally 
+       (declare (optimize (space 0) (speed 3)))
+       (values (ftruncate (the double-float x)))))))
 
 (defun dint (x)
   (aint x))
@@ -1199,6 +1203,9 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.50  2002/05/05 23:41:17  rtoy
+;;; Typo: extra paren.
+;;;
 ;;; Revision 1.49  2002/05/05 23:38:47  rtoy
 ;;; The int-sub macro didn't handle things like (- 3 m m) correctly.  It
 ;;; was returning (- 3 (- m m)) instead of (- (- 3 m) m)!
