@@ -1,4 +1,4 @@
-;;; File: <math.lisp - 1998-11-13 Fri 15:16:39 EST sds@eho.eaglets.com>
+;;; File: <math.lisp - 1998-11-23 Mon 16:21:57 EST sds@eho.eaglets.com>
 ;;;
 ;;; Math utilities (Arithmetical / Statistical functions)
 ;;;
@@ -12,6 +12,9 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.10  1998/11/13 20:16:58  sds
+;;; Added `mean-some'.
+;;;
 ;;; Revision 1.9  1998/10/29 21:57:17  sds
 ;;; Fixed `standard-deviation-relative' to compute the actual volatility.
 ;;;
@@ -129,7 +132,7 @@ specifying the interval for progress reports."
         (rt (isqrt ii) (isqrt ii)) (bt (get-float-time)))
        ((>= ii nn) (setq *primes* (cons nn res)) res)
     (declare (fixnum ii))
-    (when (and int (= 1 (mod ii 1000)) (> (elapsed bt) int))
+    (when (and int (= 1 (mod ii 1000)) (> (elapsed bt t) int))
       (format t "~:d..." ii) (force-output)
       (setq bt (get-float-time)))
     (do ((mm res (cdr mm)))
@@ -164,7 +167,7 @@ The optional second argument specifies the list of primes."
   (let ((bt (get-float-time)) st)
     (format t "Computing primes up to ~:d..." limit) (force-output)
     (primes-to limit 10.0d0)
-    (format t "done [~a]~%" (setq st (elapsed-1 bt)))
+    (format t "done [~a]~%" (setq st (elapsed-1 bt t)))
     (write-to-file *primes* *primes-file* nil ";; Computed in " st
                    (format nil "~%;; Upper limit: ~:d~%;; ~:d primes~%"
                            limit (length *primes*)))))
@@ -256,6 +259,10 @@ Return the value and the derivative, suitable for `newton'."
 	      (lambda (k1 k2) (declare (double-float k1 k2))
 		      (incf dist (expt (- (/ k1 b1) (/ k2 b2)) 2))))
     dist))
+
+;;;
+;;; Statistics
+;;;
 
 (defsubst mean (seq &key (key #'value) (len (length seq)))
   "Compute the mean of the sequence of real numbers.
@@ -433,6 +440,38 @@ and the average annual volatility for US Dollar Index."
   (let ((vols (call-on-split lst #'standard-deviation-relative
 			     :split-key split-key :key key)))
     (values vols (mean vols :key #'cdr))))
+
+(eval-when (load compile eval)
+(defstruct (mdl #+cmu (:print-function print-mdl))
+  (mn 0.0 :type (double-float 0.0 *)) ; Mean
+  (sd 0.0 :type (double-float 0.0 *)) ; Deviation
+  (le 0 :type (unsigned-byte 20))) ; Length
+)
+
+(defconst +bad-mdl+ mdl (make-mdl) "The convenient constant for init.")
+
+#-cmu
+(defmethod print-object ((mdl mdl) (stream stream))
+  (if *print-readably* (call-next-method)
+      (format stream "[~6f ~6f ~5:d]" (mdl-mn mdl) (mdl-sd mdl) (mdl-le mdl))))
+
+#+cmu
+(defun print-cmu (mdl stream depth)
+  (declare (mdl mdl) (stream stream) (ignore depth))
+  (if *print-readably* (funcall (print-readably mdl) mdl stream)
+      (format stream "[~6f ~6f ~5:d]" (mdl-mn mdl) (mdl-sd mdl) (mdl-le mdl))))
+
+(defun standard-deviation-mdl (seq &key (key #'value))
+  "Compute an MDL from the SEQ."
+  (let ((len (length seq)))
+    (if (zerop len) +bad-mdl+
+        (multiple-value-bind (std mean)
+            (standard-deviation seq :len len :key key)
+          (make-mdl :sd std :mn mean :le len)))))
+
+;;;
+;;; Misc
+;;;
 
 (defsubst below-p (x0 y0 x1 y1 x2 y2)
   "Check whether (x0 y0) is below the line (x1 y1) -- (x2 y2)."
