@@ -312,7 +312,8 @@ FILENAME                 File containing Fortran code
 	       :array-slicing array-slicing
 	       :package package :declaim declaim
 	       :declare-common declare-common
-	       :float-format float-format)))
+	       :float-format float-format))
+	(*read-default-float-format* float-format))
     (multiple-value-prog1
 	#+cmu (compile-file lisp-file :output-file output-file :error-file error-file)
 	#-cmu (compile-file lisp-file :output-file output-file)
@@ -2400,6 +2401,10 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.110  2002/05/04 20:32:36  rtoy
+;;; If the entry for the function already exists, we don't want to smash
+;;; it.  Just update the return-values for the entry.
+;;;
 ;;; Revision 1.109  2002/05/04 17:00:06  rtoy
 ;;; We now keep a hash table of all functions and their return values and
 ;;; use that, if available, for generating calls to that function.
