@@ -1,5 +1,9 @@
+# CLLIB Makefile
+# LISPTYPE should be set before using this file
+#
 # $Id$
 # $Source$
+
 TOP := $(shell cd ../..; pwd)
 LISPEXT := lisp
 SOURCES := animals base card check clhs closio date datedl doall elisp fileio \
