@@ -142,7 +142,7 @@ Should not be called directly but only through `with-plot-stream'."
            (labels ((pp (xx)
                       (typecase xx
                         (number (format nil "~g" xx))
-                        (symbol (format nil "~a" xx))
+                        (symbol (format nil "~a" (string-downcase xx)))
                         (list (format nil "~{ ~a~}" xx))
                         (t (format nil "'~a'" xx))))
                     (plot-set (nm par)
