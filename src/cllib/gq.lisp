@@ -684,7 +684,7 @@ If DEBUG is non-nil, do not bind `*print-log*' and `*gq-error-stream*'."
     (setf (values *holdings* *history*)
           (if hist-file (read-data-file hist-file)
               (mapcar (lambda (ti) (make-pfl :tick ti)) tickers)))
-    (unless (eq plot t)
+    (if (eq plot t) (setq plot :plot)
       (multiple-value-bind (srv res hhh yea)
           (apply #'get-quotes server
                  (if hist-file (mapcar #'pfl-tick *holdings*) tickers))
@@ -700,7 +700,7 @@ If DEBUG is non-nil, do not bind `*print-log*' and `*gq-error-stream*'."
                            :out out))
           (when (and *history* (or fixed new))
             (save-data hist-file *holdings* *history*)
-            (unless plotp (setq plot t)))
+            (unless plotp (setq plot :plot)))
           (when log (close out) (format t "Wrote log to ~s~%" log))))))
   (when plot (plot-portfolio *holdings* *history* plot)))
 
