@@ -1016,7 +1016,7 @@ The values are counted and the result is used as a probability distribution.
          (tot 0) (sum 0))
     (loop :for num :being :each :hash-value :of ht :do
       (incf tot num)
-      (incf sum (* num (log num 2)))) ; we know num>0
+      (incf sum (* num (log (dfloat num) 2)))) ; we know num>0
     (values (- (log tot 2) (/ sum tot)) ht)))
 
 (defun kurtosis-skewness (seq &key (key #'value) std mean len)
