@@ -19,7 +19,7 @@
 (defpackage emacs-lisp
   #-allegro
   (:documentation "The package for loading Emacs-Lisp code into Common Lisp")
-  (:nicknames elisp el) (:use cl cl-user)
+  (:nicknames elisp el) (:use cl cllib)
   (:shadow let let* if member delete load require defcustom defconst provide
            ignore format /))
 
