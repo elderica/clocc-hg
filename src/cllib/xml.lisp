@@ -410,8 +410,9 @@ The first character to be read is #\T."
     ;; (set-macro-character #\> #'read-xml nil rt)
     (set-macro-character #\> (get-macro-character #\)) nil rt)
     (set-macro-character #\] (get-macro-character #\)) nil rt)
+    ;; this is a hack, but it works under Allegro, CLISP and CMUCL
+    (set-macro-character #\' (get-macro-character #\") nil rt)
     (set-syntax-from-char #\; #\a rt)
-    ;; (set-macro-character #\; (get-macro-character #\a) nil rt)
     rt))
 
 (defcustom *xml-readtable* readtable (make-xml-readtable)
