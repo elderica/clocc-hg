@@ -237,7 +237,7 @@ INPUT-FILE               File containing Fortran code
 			      (auto-save t) (relaxed-array-decls t)
 			      (coerce-assigns :as-needed)
 			      (keep-lisp-file t)
-			      (array-type :simple-array)
+			      (array-type :array)
 			      (array-slicing t)
 			      package
 			      declaim
@@ -2246,6 +2246,10 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.104  2002/03/19 06:03:14  rtoy
+;;; First pass at adding support for ENTRY statements (multiple entry
+;;; points into a routine).  See NOTES for description of technique.
+;;;
 ;;; Revision 1.103  2002/03/19 04:10:05  rtoy
 ;;; Comment out some debugging print statements.
 ;;;
