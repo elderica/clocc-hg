@@ -8,7 +8,8 @@
 ;;; License.  See file COPYING for details.
 
 (eval-when (:load-toplevel)
-   (export '(datafun datafun-table datafun-alist attach-datafun datafun-on-plist)))
+   (export '(datafun attach-datafun
+	     datafun-table datafun-alist datafun-from-plist)))
 
 ; (DATAFUN master sym def) defines a new procedure and puts it
 ; on the property list of sym under the indicator master.
@@ -91,8 +92,11 @@
 	    (ignore ind)
             (setf (alref ,name sym) (symbol-function fname))))))
 
-(defun datafun-on-plist (ind sym fname)
-   (setf (get sym ind) (symbol-function fname)))
+(defmacro datafun-from-plist (task-name)
+   `(eval-when  (:compile-toplevel :load-toplevel :execute :slurp-toplevel)
+       (datafun attach-datafun ,task-name
+	  (defun :^ (_ sym fname)
+	     (setf (get sym ',task-name) (symbol-function fname))))))
 
 ;;;;      (setf (table-entry datafun-attachers* ',ind)
 ;;;;	    (\\ (_ sym funame)

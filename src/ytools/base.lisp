@@ -409,8 +409,8 @@
 		     ,(cond ((eq initial^ 'false) 'false)
 			    (t `(\\ () ,initial^)))))
 
-(defun alist-entry-def (x a initializer =test)
-   (let ((p (assoc x a :test =test)))
+(defun alist-entry-def (x a initializer)
+   (let ((p (assoc x a :test #'eq)))
       (cond (p (second p))
 	    (t (and initializer (funcall initializer))))))
 
@@ -477,7 +477,7 @@
 				(let ((,store-var (cons ,entry-var ,alist-var)))
 				   ,alist-set)))
 			 (setf ,acc-form ,new-var))
-		    `(cond (,entry-var ,accform)
+		    `(cond (,entry-var ,acc-form)
 			   (t ,default^)))))))
 
 ;;; Most common special case.
