@@ -86,7 +86,15 @@
 
 #+gcl (defmacro lambda (bvl &body forms) `#'(lambda ,bvl ,@forms))
 
-#-(or allegro clisp cmucl mcl)
+(eval-when (:compile-toplevel :execute)
+  (let (x y)
+    (handler-case
+        (progn
+          (setf (values x y) (values 1 2))
+          (unless (and (= x 1) (= y 2))
+            (pushnew :broken-setf-values *features*)))
+      (error () (pushnew :broken-setf-values *features*)))))
+#+broken-setf-values
 (define-setf-expander values (&rest places &environment env)
   (loop :for pl :in places :with te :and va :and ne :and se :and ge :do
         (multiple-value-setq (te va ne se ge) (get-setf-expansion pl env))
