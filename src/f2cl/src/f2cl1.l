@@ -252,7 +252,7 @@ INPUT-FILE               File containing Fortran code
 					  :name (pathname-name input-path)
 					  )
 			   (make-pathname :type extension)))))
-    (format t ";; ~S -> ~S~%" input-file output-file)
+    (format t "~&;; ~S -> ~S~%" input-file output-file)
     (let ((processed-file (preprocess input-file)))
       (fortran-to-lisp processed-file output-file
 		       :declaim declaim
@@ -2379,6 +2379,10 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.117  2002/06/30 13:09:58  rtoy
+;;; Let f2cl also keep track of a list of functions that a function
+;;; calls.  (Useful for generating dependencies.)
+;;;
 ;;; Revision 1.116  2002/05/07 03:56:07  rtoy
 ;;; o In TRANSLATE_LINT, change how output when *verbose* is set so we can
 ;;;   see better what f2cl is really reading.  (Was hard to differentiate
