@@ -24,7 +24,7 @@
 
 (export '(string->dttm dttm->string date-formatter +day-sec+ print-date-month
           date date2time date2num date2days time2date days2date mk-date
-          unix-date infer-timezone infer-month
+          date-da date-mo date-ye unix-date infer-timezone infer-month
           days-week-day date-week-day black-days working-day-p
           days-to-next-working-day next-working-day previous-working-day
           days-since days-since-f *y2k-cut*
