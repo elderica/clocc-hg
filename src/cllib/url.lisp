@@ -315,7 +315,7 @@ Print the appropriate message MESG to OUT."
         :do (sleep-mesg sleep err "[open-socket-retry] Error")))
 
 (let ((fin (make-array 2 :element-type 'character :initial-contents
-                       '(#\Return #\Newline))))
+                       '(#\Return #\Linefeed))))
   (defun socket-send (sock &optional (count 1))
     (loop :repeat count :do (write-string fin sock))
     (finish-output sock)))
