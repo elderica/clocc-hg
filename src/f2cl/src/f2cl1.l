@@ -1207,10 +1207,11 @@ FILENAME                 File containing Fortran code
 ;; arg expression.
 (defun maybe-convert-array-ref-to-slice (arg-list)
   (if (not *array-slicing*)
-      expr
+      arg-list
       (mapcar #'(lambda (expr)
 		  ;;(format t "expr = ~A~%" expr)
-		  (if (eq (first expr) 'fref)
+		  (if (and (listp expr)
+			   (eq (first expr) 'fref))
 		      `(array-slice ,(second expr) ,(lookup-vble-type (second expr)) ,@(cddr expr))
 		      expr))
 	      arg-list)))
@@ -1976,6 +1977,14 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.68  2000/09/01 13:54:26  rtoy
+;;; o F2CL-COMPILE:  not all COMPILE-FILE's have the :ERROR-FILE option.
+;;; o Added MAYBE-CONVERT-ARRAY-REF-TO-SLICE to convert array refs to
+;;;   slices if appropriate.
+;;; o PARSE-SUBROUTINE-CALL:  we were not careful enough about array
+;;;   slicing.  We should only apply array slicing if the argument is an
+;;;   array ref.  Any arithmetic should disable array-slicing.
+;;;
 ;;; Revision 1.67  2000/08/30 16:54:04  rtoy
 ;;; In F2CL-COMPILE, make :output-file default to T.  CMUCL won't produce
 ;;; an output if it's NIL.
