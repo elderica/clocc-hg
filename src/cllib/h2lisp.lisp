@@ -1,5 +1,5 @@
 ;#!/usr/bin/clisp -M ~sds/bin/clisp.mem -C
-;;; File: <h2lisp.lisp - 1999-01-12 Tue 18:11:48 EST sds@eho.eaglets.com>
+;;; File: <h2lisp.lisp - 1999-01-13 Wed 15:42:28 EST sds@eho.eaglets.com>
 ;;;
 ;;; Convert *.c to CLISP's ffi
 ;;;
@@ -8,6 +8,9 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.1  1999/01/12 23:12:16  sds
+;;; Initial revision
+;;;
 ;;;
 
 (in-package :cl-user)
@@ -19,9 +22,6 @@
 ;;;
 ;;; C parsing
 ;;;
-
-(defcustom *c-readtable* readtable (copy-readtable nil)
-  "The readtable for C parsing.")
 
 (defcustom *c-comment* cons (list :*c-comment*)
   "The comment marker.")
@@ -37,11 +37,11 @@
     (#\#
      (let ((com (read stream t nil t)))
        (case com )))
-;;     (loop :for line :of-type simple-string =
-;;           (concatenate 'string "#" (read-line stream))
-;;           :then (read-line stream)
-;;           :until (char= #\\ (schar line (1- (length line))))
-;;           :collect line)
+    ;;     (loop :for line :of-type simple-string =
+    ;;           (concatenate 'string "#" (read-line stream))
+    ;;           :then (read-line stream)
+    ;;           :until (char= #\\ (schar line (1- (length line))))
+    ;;           :collect line)
     (#\/
      (case (peek-char nil stream nil nil t)
        (#\*
@@ -58,24 +58,29 @@
        (#\/ (cons *c-comment* (concatenate 'string "/" (read-line stream))))
        (t '/)))))
 
-(set-macro-character #\/ #'read-c-junk nil *c-readtable*)
-;; (set-macro-character #\# #'read-c-junk nil *c-readtable*)
+(defun make-c-readtable ()
+  "Make the readtable for parsing C."
+  (let ((rt (copy-readtable)))
+    (set-macro-character #\/ #'read-c-junk nil rt)
+    ;; (set-macro-character #\# #'read-c-junk nil rt)
+    (set-syntax-from-char #\; #\a rt)
+    (set-macro-character #\; #'read-c-junk nil rt)
+    (set-syntax-from-char #\# #\a rt)
+    (set-macro-character #\# #'read-c-junk nil rt)
+    (set-syntax-from-char #\: #\a rt)
+    (set-macro-character #\: #'read-c-junk nil rt)
+    (set-syntax-from-char #\, #\a rt)
+    (set-macro-character #\, #'read-c-junk nil rt)
+    (set-macro-character #\* #'read-c-junk nil rt)
+    (set-macro-character #\{ #'read-c-junk nil rt)
+    (set-macro-character #\} (get-macro-character #\)) nil rt)
+    (set-macro-character #\[ #'read-c-junk nil rt)
+    (set-macro-character #\] (get-macro-character #\)) nil rt)
+    (setf (readtable-case rt) :preserve)
+    rt))
 
-(set-syntax-from-char #\; #\a *c-readtable*)
-(set-macro-character #\; #'read-c-junk nil *c-readtable*)
-(set-syntax-from-char #\# #\a *c-readtable*)
-(set-macro-character #\# #'read-c-junk nil *c-readtable*)
-(set-syntax-from-char #\: #\a *c-readtable*)
-(set-macro-character #\: #'read-c-junk nil *c-readtable*)
-(set-syntax-from-char #\, #\a *c-readtable*)
-(set-macro-character #\, #'read-c-junk nil *c-readtable*)
-(set-macro-character #\* #'read-c-junk nil *c-readtable*)
-(set-macro-character #\{ #'read-c-junk nil *c-readtable*)
-(set-macro-character #\} (get-macro-character #\)) nil *c-readtable*)
-(set-macro-character #\[ #'read-c-junk nil *c-readtable*)
-(set-macro-character #\] (get-macro-character #\)) nil *c-readtable*)
-
-(setf (readtable-case *c-readtable*) :preserve)
+(defcustom *c-readtable* readtable (make-c-readtable)
+  "The readtable for C parsing.")
 
 (defsubst c-comment-p (obj) (and (consp obj) (eq (car obj) *c-comment*)))
 
