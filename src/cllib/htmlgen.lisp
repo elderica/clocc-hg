@@ -100,8 +100,9 @@ Both print a tag but the second one does not do a `terpri' afterwards."
 
 (defun crlf (sock)
   "Write CR/LF into the socket SOCK."
-  (write-char (code-char 13) sock)
-  (write-char (code-char 10) sock))
+  (write-string #.(make-array 2 :element-type 'character :initial-contents
+                              '(#\Return #\Linefeed))
+                sock))
 
 (defmacro with-http-output ((var raw &rest opts &key keep-alive (debug 0)
                              (return-code 200) (return-name "OK")
