@@ -121,7 +121,7 @@ Inspired by Paul Graham, <On Lisp>, p. 145."
   #-(or allegro clisp cmu cormanlisp gcl lispworks lucid sbcl)
   (error 'not-implemented :proc (list 'quit code)))
 
-(defconst +eof+ cons (cons nil nil)
+(defconst +eof+ cons (list '+eof+)
   "*The end-of-file object.
 To be passed as the third arg to `read' and checked against using `eq'.")
 
