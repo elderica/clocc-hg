@@ -209,6 +209,12 @@ Returns a socket stream or NIL."
                                 (socket:accept-connection serv :wait nil))
                             (socket:accept-connection serv :wait t))))
               (when sock
+                ;; From: John Foderaro <jkf@franz.com>
+                ;; Date: Sun, 12 Nov 2000 16:58:28 -0800
+                ;; in ACL6 and later, all sockets are bivalent (both
+                ;; text and binary) and thus there's no need to convert
+                ;; between the element types.
+                #-(version>= 6)
                 (socket:set-socket-format sock (if bin :binary :text))
                 sock))
   #+clisp (multiple-value-bind (sec usec) (floor (or wait 0))
