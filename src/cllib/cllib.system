@@ -26,6 +26,7 @@
             ("base" "string" "miscprint" "fileio" "closio" "symb"))
      (:file "autoload" :depends-on ("base" "fileio"))
      (:file "base")
+     (:file "base64" :depends-on ("base"))
      (:file "card" :depends-on
             ("base" "withtype" "closio" "tilsla" "string" "date" "url"))
      (:file "check" :depends-on ("base" "log" "math"))
