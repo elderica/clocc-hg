@@ -1,8 +1,8 @@
-;;; File: <gnuplot.lisp - 1999-01-26 Tue 17:44:23 EST sds@eho.eaglets.com>
+;;; File: <gnuplot.lisp - 1999-04-09 Fri 15:14:36 EDT sds@eho.eaglets.com>
 ;;;
 ;;; Gnuplot interface
 ;;;
-;;; Copyright (C) 1997, 1998 by Sam Steingold.
+;;; Copyright (C) 1997-1999 by Sam Steingold.
 ;;; This is open-source software.
 ;;; GNU General Public License v.2 (GPL2) is applicable:
 ;;; No warranty; you may copy/modify/redistribute under the same
@@ -12,6 +12,9 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.24  1999/01/26 22:45:28  sds
+;;; Added `plot-msg'.
+;;;
 ;;; Revision 1.23  1999/01/07 03:59:28  sds
 ;;; Use `index-t' instead of (unsigned-byte 20).
 ;;; Use `close-pipe'.
@@ -104,7 +107,7 @@
 (defcustom *gnuplot-path* simple-string #+win32 "c:/bin/gnuplot/wgnuplot.exe"
         #+unix "/usr/local/bin/gnuplot"
   "*The path to the windows gnuplot executable.")
-(defconst +gnuplot-epoch+ date (mk-date :ye 2000 :mo 1 :da 1)
+(defconst +gnuplot-epoch+ integer (encode-universal-time 0 0 0 1 1 2000 0)
   "*The gnuplot epoch - 2000-1-1.")
 #+win32
 (defcustom *gnuplot-path-console* simple-string "c:/bin/cgnuplot.exe"
@@ -124,7 +127,7 @@
 (defsubst plot-sec-to-epoch (dt)
   "Return the number of seconds from date DT to `+gnuplot-epoch+'."
   (declare (type date dt) (values integer))
-  (* +day-sec+ (days-between +gnuplot-epoch+ dt)))
+  (- (date2time dt) +gnuplot-epoch+))
 
 (defun plot-msg (&rest args)
   "Write a status message to `*gnuplot-msg-stream*'."
@@ -420,8 +423,7 @@ OPTS is passed to `plot-lists-arg'."
   "Make a list of conses (days-from-beg . value) of length
 DEPTH out of the dated list."
   (declare (type dated-list dl) (symbol slot) (fixnum depth))
-  (do ((bd (dl-nth-date dl)) (ll (dated-list-ll dl) (cdr ll))
-       (ii 0 (1+ ii)) rr)
+  (do ((bd (dl-nth-date dl)) (ll (dl-ll dl) (cdr ll)) (ii 0 (1+ ii)) rr)
       ((or (null ll) (= ii depth)) (nreverse rr))
     (declare (fixnum ii) (type date bd) (list rr ll))
     (push (cons (days-between bd (funcall (dl-date dl) (car ll)))
