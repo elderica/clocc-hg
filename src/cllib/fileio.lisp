@@ -185,11 +185,11 @@ defaults to `read' and is called with 3 arguments - STREAM, NIL and EOF.
 ;;;###autoload
 (defun pr (obj &optional (str *standard-output*) (nice t))
   "Print the OBJECT readably to the STREAM (default `*standard-output*').
-Set `*print-circle*' and `*print-pretty*' to the third argument
-NICE (default T).  Uses `with-standard-io-syntax'."
+Set `*print-pretty*' to the third argument NICE (default T).
+Uses `with-standard-io-syntax'."
   (declare (stream str))
   (with-standard-io-syntax
-    (write obj :stream str :case :downcase :circle nice :pretty nice))
+    (write obj :stream str :case :downcase :pretty nice))
   (values))
 
 ;;;###autoload
