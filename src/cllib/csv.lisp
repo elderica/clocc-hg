@@ -58,7 +58,7 @@
     :finally (return res)))
 
 (defmacro with-csv ((vec file &key (progress '*csv-progress*)
-                         skip-first-line
+                         skip-first-line junk-allowed
                          (progress-1 '*csv-progress-1*) limit
                          (out '*standard-output*) columns)
                     &body body)
@@ -85,6 +85,9 @@ Return 3 values:
                               ,len (file-position ,in)
                               (/ (file-position ,in) ,fsize 1d-2))
                         (loop-finish)))
+             :unless (and ,junk-allowed
+                          (zerop (length (setq ,ln (string-trim
+                                                    *csv-whitespace* ,ln)))))
              :do (setq ,vec (csv-parse-string ,ln)) (incf ,len)
              (if ,cols
                  (assert (= ,cols (length ,vec)) (,cols ,vec)
@@ -102,6 +105,7 @@ Return 3 values:
                    (format ,out "<~A~:D: ~4F% ETA: ~/pr-secs/~A>"
                            incomplete ,len (* pos 1d2) eta incomplete))
                  (force-output ,out) (setq ,pro1-count 0)))
+             :end
              :finally (format ,out "done [~:d record~:p~@[, ~:d column~:p~]]"
                               ,len ,cols)
              :finally (return
