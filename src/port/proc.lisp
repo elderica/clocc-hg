@@ -428,6 +428,7 @@ and reapply its initial function to its arguments."
 
 (defmacro with-lock ((lock) &rest body)
   "This macro executes the body with LOCK locked."
+  #-threads (declare (ignore lock))
   #+Allegro    `(mp:with-process-lock (,lock) ,@body)
   #+CMU        `(mp:with-lock-held (,lock) ,@body)
   #+CormanLisp FIXME
