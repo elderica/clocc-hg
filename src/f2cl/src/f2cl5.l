@@ -1992,10 +1992,18 @@
 ;; NIL, FUNCALL, PROG, etc.  If it does, replace it a new name with a
 ;; trailing underscore.
 
+#+nil
 (defun check-reserved-lisp-names (x)
   (if (member x +reserved-lisp-names+)
       (intern (concatenate 'string (string x) "_"))
       x))
+
+(defun check-reserved-lisp-names (x)
+  (multiple-value-bind (found-it access)
+      (find-symbol (string x) :common-lisp)
+    (if (and found-it (eq access :external))
+	(intern (concatenate 'string (string x) "$"))
+	x)))
 
 ;-----------------------------------------------------------------------------     
 ; functions for fixing DO and IF structures
@@ -2751,6 +2759,13 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.106  2002/09/13 17:50:19  rtoy
+;;; From Douglas Crosher:
+;;;
+;;; o Make this work with lower-case Lisps
+;;; o Fix a few typos
+;;; o Make a safer fortran reader.
+;;;
 ;;; Revision 1.105  2002/05/05 21:10:10  rtoy
 ;;; Comment out extraneous print.
 ;;;
