@@ -561,6 +561,7 @@ TERM can be a predicate, a character or a sequence of characters."
   (flet ((tost (xx) (etypecase xx
                       (symbol (symbol-name xx)) (string xx)
                       (number (prin1-to-string xx)) ; for malformed border=1
+                      (character (string xx)) ; for malformed href=http://
                       (cons xx))))
     (when (setq list (delete-if #'xml-comment-p list))
       (do ((ll list))
