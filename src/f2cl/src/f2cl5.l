@@ -2086,8 +2086,7 @@
 				  ;; dimension.  Otherwise use 0.
 				  (if (every #'numberp (third var-type))
 				      (third var-type)
-				      0)
-				  )
+				      0))
 				 (t nil)))
 		     (var-init (cond ((and (listp var-type)
 					   (subtypep (first var-type) 'array))
@@ -2103,7 +2102,7 @@
 		;; type (for scalars) or a zero element array of the
 		;; appropriate dimensions for array slots.
 		(if dims
-		    `(,var ,var-init :type (,*array-type* ,(second var-type) (,(subst '* 0 dims))))
+		    `(,var ,var-init :type (,*array-type* ,(second var-type) ,(subst '(*) 0 dims)))
 		    `(,var ,var-init :type ,var-type))))
 	  varlist))
 
@@ -2195,6 +2194,18 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.62  2000/08/09 22:45:17  rtoy
+;;; o In MAKE-DECLARATION, use the LOGICAL type instead of (MEMBER T NIL)
+;;;   in declaring arrays.
+;;; o MAKE-SPECIAL-VAR-DECL was not returning the right dimensions.
+;;;   (After the conversion to 1-D arrays.)
+;;; o In MAKE-COMMON-BLOCK-VARS, try to initialize arrays to the right
+;;;   size and values.  (Particularly for logical arrays.)
+;;; o In MAKE-COMMON-BLOCK-VAR-INIT, we didn't compute the array bounds
+;;;   correctly.  Also, if we know the initializer for the common block
+;;;   structure element initialized the array (because the dimension was a
+;;;   number), don't do it when creating the structure.
+;;;
 ;;; Revision 1.61  2000/08/07 18:55:03  rtoy
 ;;; GET-ARG-DECL was confused by arrays of strings.  We return the type
 ;;; ARRAY-STRINGS now.  (Need better names for these types or need to fix
