@@ -189,6 +189,7 @@ Return the new buffer or NIL on EOF."
   "Read the next something from TS - a text stream."
   (declare (type text-stream ts) (type (or null function) skip))
   (loop :with *package* = +kwd+ :and tok :and pos
+        :and *read-default-float-format* = 'double-float
         :when (and (or (typep pos 'error)
                        (>= (ts-posn ts) (length (ts-buff ts))))
                    (null (ts-pull-next ts (typep pos 'error) kill)))
