@@ -88,8 +88,11 @@ This carries the function name which makes the error message more useful."))
 (defmacro with-gensyms (syms &body body)
   "Bind symbols to gensyms.  First sym is a string - `gensym' prefix.
 Inspired by Paul Graham, <On Lisp>, p. 145."
-  `(let (,@(mapcar (lambda (sy) `(,sy (gensym ,(car syms)))) (cdr syms)))
-    ,@body))
+  `(let (,@(mapcar (lambda (sy)
+                     `(,sy (gensym ,(concatenate 'string (car syms)
+                                                 (symbol-name sy) "-"))))
+                   (cdr syms)))
+     ,@body))
 
 (defmacro map-in (fn seq &rest seqs)
   "`map-into' the first sequence, evaluating it once.
