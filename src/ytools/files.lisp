@@ -315,7 +315,7 @@
       (let ((action
 	       (cond (src-version
 		      (cond ((and (not must-ask)
-				  (or (eq why ':just-do-it)
+				  (or (memq why '(:just-do-it :no-reason))
 				      (cond ((or (not whether-compile)
 						 (eq whether-compile
 						     ':ask))
