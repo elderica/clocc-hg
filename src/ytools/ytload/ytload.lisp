@@ -15,6 +15,7 @@
    (:import-from :cl-user cl-user::mcd-install cl-user::mcd-load))
 		   
 (in-package :ytools)
+;;;$Id$
 
 (defvar tools-version* "1.3")
 
