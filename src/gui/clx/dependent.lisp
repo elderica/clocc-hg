@@ -73,9 +73,9 @@
 ;;; declaration is available, it would be a good idea to make it here when
 ;;; *buffer-speed* is 3 and *buffer-safety* is 0.
 (defun declare-buffun ()
-  #+(and cmu clx-debugging)
-  '(declare (optimize (speed 1) (safety 1)))
-  #-(and cmu clx-debugging)
+  #+clx-debugging
+  '(declare (optimize (speed 0) (safety 3)))
+  #-clx-debugging
   `(declare (optimize (speed ,*buffer-speed*) (safety ,*buffer-safety*))))
 
 )
@@ -617,8 +617,8 @@
                                     "~A~D"
                                     +X-unix-socket-path+
                                     display)
-                            :stream
-                            t))
+                            :kind :stream
+                            :bin t))
     (t
      ;; try to connect by hand
      (port:open-socket (resolve-host-ipaddr host)

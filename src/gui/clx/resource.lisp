@@ -1,4 +1,4 @@
-;;; -*- Mode:Common-Lisp; Package:XLIB; Syntax:COMMON-LISP; Base:10; Lowercase:T -*-
+;;; -*- Mode: LISP; Package:XLIB; Syntax:COMMON-LISP; Base:10; Lowercase:T -*-
 
 ;; RESOURCE - Lisp version of XLIB's Xrm resource manager
 
@@ -354,6 +354,7 @@
 (defun get-tables-lookup (dbase name names classes)
   (declare (type list dbase names classes)
 	   (type stringable name))
+  #-clx-debugging
   (declare (optimize speed))
   (dolist (entry dbase)
     (declare (type resource-database entry))
