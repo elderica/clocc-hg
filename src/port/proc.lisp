@@ -166,14 +166,14 @@ whichever comes first."
 (defmacro with-timeout ((seconds &body timeout-forms) &body body)
   "Execute BODY; if execution takes more than SECONDS seconds, terminate
 and evaluate TIMEOUT-FORMS."
-  (declare (ignorable seconds timeout-forms))
+  #-threads (declare (ignore seconds timeout-forms))
   ;;#+(or (and allegro multiprocessing) (and cmu mp))
   ;;`(mp:with-timeout (,seconds ,@timeout-forms) ,@body)
   #+threads
-  (with-gensyms (bodyf timeoutf)
+  (with-gensyms ("WT-" bodyf timeoutf)
     `(flet ((,bodyf () ,@body)
             (,timeoutf () ,@timeout-forms))
-      (with-timeout-f seconds bodyf timeoutf)))
+      (with-timeout-f seconds #'bodyf #'timeoutf)))
   #-threads `(progn ,@body))
 
 (defun y-or-n-p-timeout (seconds default &rest args)
