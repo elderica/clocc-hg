@@ -1216,8 +1216,8 @@ FILENAME                 File containing Fortran code
 	   (check_new_vbles (list lhs))
 	   (check_new_vbles (list rhs))
 	   (when (member lhs *subprog-arglist*)
-	     (format t "subprog-arglist = ~A~%" *subprog-arglist*)
-	     (format t "lhs = ~A~%" lhs)
+	     ;;(format t "subprog-arglist = ~A~%" *subprog-arglist*)
+	     ;;(format t "lhs = ~A~%" lhs)
 	     (pushnew lhs *assigned-variables*))
 	   (let* ((lhs-type (first (get-upgraded-fun-arg-type (list (list lhs)))))
 		  (rhs-type (first (get-upgraded-fun-arg-type (list (list rhs))))))
@@ -2237,6 +2237,9 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.102  2002/03/19 01:45:20  rtoy
+;;; Oops.  Remove the debugging print statements.
+;;;
 ;;; Revision 1.101  2002/03/18 23:34:15  rtoy
 ;;; Was not correctly handling some implied do loops containing multiple
 ;;; variables in the loop in data statements.  Fix that and clean up some
