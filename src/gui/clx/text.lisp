@@ -45,7 +45,7 @@
 ;; Specifying width is simply a hint, for performance.  Note that specifying
 ;; width may be difficult if transform can return nil.
 
-(defun translate-default (src src-start src-end font dst dst-start)
+(defun translate-default (src src-start src-end afont dst dst-start)
   ;; dst is guaranteed to have room for (- src-end src-start) integer elements,
   ;; starting at dst-start; whether dst holds 8-bit or 16-bit elements depends
   ;; on context.  font is the current font, if known.  The function should
@@ -64,7 +64,7 @@
   ;; (returns values: ending-index
   ;;                  (OR null horizontal-motion font)
   ;;                  (OR null translated-width))
-(defun translate (src src-start src-end afont dst dst-start)
+
   ;; This is for replacing the clx-translate-default-function
   ;; who does'nt know about accentated characters because
   ;; of a call to cl:graphic-char-p that return nil with accentated characters.
