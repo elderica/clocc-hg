@@ -275,14 +275,8 @@ When `DRY-RUN' is non-NIL, no actual changes are done."
                                     :external-format :unix
                                     :if-exists :supersede)
                  (write-line line out))))))
-    (let ((root-cvs (merge-pathnames
-                     (make-pathname :directory '(:relative "CVS")
-                                    :name nil :defaults nil)
-                     root))
-          (root-subdirs (merge-pathnames
-                         (make-pathname :directory '(:relative "*")
-                                        :name nil :defaults nil)
-                         root)))
+    (let ((root-cvs (mk-path root :directory '(:relative "CVS")))
+          (root-subdirs (mk-path root :directory '(:relative "*"))))
       (when (probe-directory root-cvs)
         (change-one-line (merge-pathnames "Repository" root-cvs) substitutions)
         (change-one-line (merge-pathnames "Root" root-cvs) substitutions))
