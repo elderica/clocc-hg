@@ -75,7 +75,7 @@
       CormanLisp
       Genera
       LispWorks
-      Lucid
+      (and Lucid multitasking)
       MCL)
 
 (eval-when (compile load eval)
@@ -411,7 +411,7 @@ and reapply its initial function to its arguments."
   #+CormanLisp FIXME
   #+Genera     FIXME
   #+LispWorks  (mp:claim-lock lock)
-  #+Lucid      FIXME
+  #+Lucid      (lcl:process-lock lock)
   #+MCL        (ccl:process-enqueue lock)
   #-threads    (error 'not-implemented :proc (list 'get-lock lock)))
 
@@ -422,7 +422,7 @@ and reapply its initial function to its arguments."
   #+CormanLisp FIXME
   #+Genera     FIXME
   #+LispWorks  (mp:release-lock lock)
-  #+Lucid      FIXME
+  #+Lucid      (lcl:process-unlock lock)
   #+MCL        (ccl:process-dequeue lock)
   #-threads    (error 'not-implemented :proc (list 'giveup-lock lock)))
 
@@ -434,7 +434,7 @@ and reapply its initial function to its arguments."
   #+CormanLisp FIXME
   #+Genera     FIXME
   #+LispWorks  `(mp:with-lock (,lock) ,@body)
-  #+Lucid      FIXME
+  #+Lucid      `(lcl:with-process-lock (,lock) ,@body)
   #+MCL        `(ccl:with-process-enqueued (,lock) ,@body)
   #-threads    `(progn ,@body))
 
