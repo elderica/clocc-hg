@@ -300,6 +300,8 @@
 				     (intern (concatenate 'string "ARRAY-" (string type)))))
 				((subtypep type 'string)
 				 'string)
+				((subtypep type 'integer4)
+				 'integer4)
 				(t
 				 type))))
 		    arglist)
@@ -1563,14 +1565,14 @@
 ;; just want to read data into the variables.  Implied do loops are
 ;; not supported.
 (defun parse-read (x)
-  (append (list "***WARNING:  READ statement may not be translated correctly!")
+  (append (list '(fortran_comment "***WARNING:  READ statement may not be translated correctly!"))
 	  (mapcar #'(lambda (var)
 		      `(setf ,(if (rest var)
 				  var
 				  (first var))
 			(read)))
 		  (remove nil (list-split '|,| (cddr x))))
-	  (list "***WARNING: Preceding READ statements may not be correct!")))
+	  (list '(fortran_comment "***WARNING: Preceding READ statements may not be correct!"))))
   
      
 ;; Handle things like FMT = number
@@ -2067,6 +2069,12 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.65  2000/08/29 14:41:41  rtoy
+;;; o Remove lots of unused code
+;;; o Fix a typo in the Fortra D format parser: the equivalent Lisp format
+;;;   is E not D!  Also, explicitly specify the exponent character of "D".
+;;; o For the E format, specify an explicit exponent character of "E".
+;;;
 ;;; Revision 1.64  2000/08/27 16:36:07  rtoy
 ;;; Clean up handling of format statements.  Should handle many more
 ;;; formats correctly now.
