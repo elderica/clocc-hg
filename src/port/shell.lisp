@@ -29,7 +29,7 @@
   #+allegro (apply #'excl:run-shell-command (apply #'vector prog prog args)
                    :wait wait opts)
   #+clisp (apply #'lisp:run-program prog :arguments args opts)
-  #+cmu (apply ext:run-program prog args :wait wait opts)
+  #+cmu (apply #'ext:run-program prog args :wait wait opts)
   #+gcl (apply #'si:run-process prog args)
   #+liquid (apply #'lcl:run-program prog args)
   #+lispworks (apply #'sys::call-system (format nil "~a~{ ~a~}" prog args)
