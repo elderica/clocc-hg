@@ -26,7 +26,7 @@
    socket open-socket socket-host/port socket-string socket-server
    socket-accept open-socket-server socket-server-close socket-server-host/port
    socket-service-port servent-name servent-aliases servent-port servent-proto
-   network timeout login))
+   network timeout login path))
 
 ;;;
 ;;; {{{ name resolution
@@ -372,6 +372,7 @@ Kind can be :stream or :datagram."
                (format out " [timeout ~a sec]" (timeout-time cc))))))
 
 (define-condition login (network) ())
+(define-condition path (network) ())
 
 ;;;
 ;;; }}}{{{ `socket-service-port'
