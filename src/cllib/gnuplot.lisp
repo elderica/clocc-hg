@@ -111,7 +111,7 @@ according to the given backend")
   (orientation :landscape :type (member :landscape :portrait))
   (font-family "Helvetica" :type string)
   (font-size 9 :type (integer 1 100))
-  (target nil :type (or null string pathname))))
+  (target nil :type (or null string pathname symbol))))
 
 (defmethod plot-output ((pt plot-term) (out stream) (backend (eql :gnuplot)))
   (format out "set terminal ~a~{ ~a~} "
