@@ -308,7 +308,7 @@ By default nothing is printed."
 (defun file-newer (f0 f1)
   "Return T if the first arg is newer than the second.
 Non-existent files are assumed to be VERY old."
-  (flet ((fwd (ff) (or (file-write-date ff) 0)))
+  (flet ((fwd (ff) (or (ignore-errors (file-write-date ff)) 0)))
     (> (fwd f0) (fwd f1))))
 
 ;;;###autoload
