@@ -19,7 +19,8 @@
 (export
  '(getenv finalize variable-special-p arglist
    class-slot-list class-slot-initargs
-   pathname-ensure-name probe-directory default-directory chdir sysinfo
+   pathname-ensure-name probe-directory default-directory chdir
+   mkdir rmdir sysinfo
    +month-names+ +week-days+ +time-zones+ tz->string current-time))
 
 ;;;
@@ -217,8 +218,7 @@ but there is a TYPE slot, move TYPE into NAME."
   #+allegro (excl:delete-directory dir)
   #+clisp (lisp:delete-dir dir)
   #+cmu (unix:unix-rmdir dir)
-  #+lispworks (lw:delete-directory dir)
-  #-(or allegro clisp cmu lispworks) (delete-file dir))
+  #-(or allegro clisp cmu) (delete-file dir))
 
 (defun sysinfo (&optional (out *standard-output*))
   "Print the current environment to a stream."
