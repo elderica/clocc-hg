@@ -156,20 +156,16 @@ See constants `+card-output-bbdb+', `+card-output-vcard+',
 `+card-output-pretty+'.")
 
 (defcustom *user-bbdb-file* pathname
-  (merge-pathnames (make-pathname :name ".bbdb" :defaults nil)
-                   (user-homedir-pathname))
+  (mk-path (user-homedir-pathname) :name ".bbdb")
   "*The path to the user's BBDB file.")
 
 (defcustom *user-vcard-file* pathname
-  (merge-pathnames (make-pathname :directory '(:relative ".gnome")
-                                  :name "GnomeCard.gcrd"
-                                  :defaults nil)
-                   (user-homedir-pathname))
+  (mk-path (user-homedir-pathname) :directory '(:relative ".gnome")
+           :name "GnomeCard.gcrd")
   "*The path to the user's VCARD file.")
 
 (defcustom *user-native-file* pathname
-  (merge-pathnames (make-pathname :name ".rolodex" :defaults nil)
-                   (user-homedir-pathname))
+  (mk-path (user-homedir-pathname) :name ".rolodex")
   "*The path to the user's native data file.")
 
 (defconst +card-output-bbdb+ card-output
