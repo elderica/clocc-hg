@@ -11,6 +11,9 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.3  2000/03/03 22:01:03  sds
+;;; fixed provide statements
+;;;
 ;;; Revision 1.2  2000/02/18 21:16:45  sds
 ;;; in-package :port now; make system works
 ;;;
@@ -38,7 +41,7 @@
                    :wait wait opts)
   #+clisp (apply #'lisp:run-program prog :arguments args opts)
   #+cmu (ext:run-program prog args :wait wait)
-  #+gcl (apply #'run-process prog args)
+  #+gcl (apply #'si:run-process prog args)
   #+lispworks (sys::call-system (format nil "~a~{ ~a~}" prog args))
   #-(or allegro clisp cmu gcl lispworks)
   (error 'not-implemented :proc (list 'run-prog prog opts)))
@@ -48,9 +51,9 @@
   #+allegro (excl:run-shell-command (format nil "~a~{ ~a~}" prog args)
                                     :input :stream :wait nil)
   #+clisp (lisp:make-pipe-output-stream (format nil "~a~{ ~a~}" prog args))
-  #+cmu
-  (process-input (run-program prog args :input :stream :output t :wait nil))
-  #+gcl (si::fp-input-stream (apply #'run-process prog args))
+  #+cmu (ext:process-input (ext:run-program prog args :input :stream
+                                            :output t :wait nil))
+  #+gcl (si::fp-input-stream (apply #'si:run-process prog args))
   #+lispworks (sys::open-pipe (format nil "~a~{ ~a~}" prog args)
                               :directory :output)
   #-(or allegro clisp cmu gcl lispworks)
@@ -61,9 +64,9 @@
   #+allegro (excl:run-shell-command (format nil "~a~{ ~a~}" prog args)
                                     :output :stream :wait nil)
   #+clisp (lisp:make-pipe-input-stream (format nil "~a~{ ~a~}" prog args))
-  #+cmu
-  (process-output (run-program prog args :output :stream :input t :wait nil))
-  #+gcl (si::fp-output-stream (apply #'run-process prog args))
+  #+cmu (ext:process-output (ext:run-program prog args :output :stream
+                                             :input t :wait nil))
+  #+gcl (si::fp-output-stream (apply #'si:run-process prog args))
   #+lispworks (sys::open-pipe (format nil "~a~{ ~a~}" prog args)
                               :directory :input)
   #-(or allegro clisp cmu gcl lispworks)

@@ -11,6 +11,9 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.5  2000/03/03 22:01:03  sds
+;;; fixed provide statements
+;;;
 ;;; Revision 1.4  2000/03/01 20:01:36  sds
 ;;; (arglist, class-slot-list): new functions
 ;;;
@@ -42,7 +45,7 @@
 
 (defun getenv (var)
   "Return the value of the environment variable."
-  #+cmu (cdr (assoc (string var) *environment-list* :test #'equalp
+  #+cmu (cdr (assoc (string var) ext:*environment-list* :test #'equalp
                     :key #'string)) ; xlib::getenv
   #+(or allegro clisp) (system::getenv (string var))
   #+lispworks (lw:environment-variable (string var))
@@ -146,7 +149,7 @@ all slots are returned, otherwise only the slots with
 (defun chdir (dir)
   #+allegro (ext:chdir dir)
   #+clisp (lisp:cd dir)
-  #+cmu (setf (default-directory) dir)
+  #+cmu (setf (ext:default-directory) dir)
   #+gcl (si:chdir dir)
   #+lispworks (hcl:change-directory dir)
   #+lucid (working-directory dir)
