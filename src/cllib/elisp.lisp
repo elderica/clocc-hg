@@ -295,7 +295,7 @@
 
 #+allegro (pushnew "el" sys:*source-file-types* :test #'equal)
 #+cmu (pushnew "el" ext::*load-source-types* :test #'equal)
-#+clisp (pushnew #p".el" sys::*source-file-types* :test #'equalp)
+#+clisp (pushnew "el" custom:*source-file-types* :test #'equalp)
 #+lispworks (pushnew "el" system:*text-file-types* :test #'equal)
 #+gcl (error 'not-implemented :proc 'file-types)
 
