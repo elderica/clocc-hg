@@ -2937,17 +2937,16 @@
   (let ((var-inits '()))
     (maphash
      #'(lambda (key val)
-	 (push `(eval-when (:compile-toplevel :load-toplevel :execute)
-		  (let* ,key-params
-		    ,@key-param-decls
-		    (defparameter ,(intern (concatenate 'string
-							"*"
-							(symbol-name key)
-							(symbol-name '#:-common-block*)))
-		      (,(intern (concatenate 'string
-					     (symbol-name '#:make-)
-					     (symbol-name key)))
-			,@(make-common-block-var-init val comm-decls)))))
+	 (push `(let* ,key-params
+		  ,@key-param-decls
+		  (defparameter ,(intern (concatenate 'string
+						      "*"
+						      (symbol-name key)
+						      (symbol-name '#:-common-block*)))
+		    (,(intern (concatenate 'string
+					   (symbol-name '#:make-)
+					   (symbol-name key)))
+		      ,@(make-common-block-var-init val comm-decls))))
 	       var-inits))
      comm-blocks)
     (nreverse var-inits)))
@@ -2956,6 +2955,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.120  2004/08/14 19:27:41  rtoy
+;;; Try to clean up code a little.
+;;;
 ;;; Revision 1.119  2004/08/14 16:10:10  rtoy
 ;;; Forgot to create the symbol-macrolet for arrays in the common block,
 ;;; when using common-blocks-as-arrays.
