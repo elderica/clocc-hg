@@ -14,7 +14,6 @@ ZIPEXTRA = ../defsystem-3.x/defsystem.lisp ../tools/metering/metering.lisp \
 	$(TOP)/etc/GNU-GPL
 DOCFILES = $(SYSTEM).html entities.xml
 include $(TOP)/clocc.mk
-DUMPEXT := $(shell $(RUNLISP) -dumpext)
 
 ifneq ($(DUMPEXT),)
 image:		image$(DUMPEXT)
