@@ -13,6 +13,8 @@
 
 (eval-when (compile load eval)
   (require :ext (translate-logical-pathname "clocc:src;port;ext"))
+  ;; `getenv'
+  (require :sys (translate-logical-pathname "port:sys"))
   #+cormanlisp (require :winsock)
   #+lispworks (require "comm"))
 
