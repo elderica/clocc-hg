@@ -13,6 +13,7 @@
 (in-package :cllib)
 
 (export '(ppprint-list nsublist fix-list to-list from-list zero-len-p paste
+          lexicographic-comparison
           skip-to-new flatten with-collect filter list-length-dotted))
 
 ;;;
@@ -66,6 +67,24 @@ AKA `remove-if-not':
     (dolist (el lst)
       (let ((kk (funcall key el)))
         (when (funcall test kk) (coll (funcall collect kk)))))))
+
+;;;
+;;; }}}{{{ lexicographic
+;;;
+
+(defmacro lexicographic-comparison (functions &key (eq '=) (gt '>) (ge '>=))
+  "create a function comparing its two arguments in the lexicographical order
+determined by the FUNCTIONS"
+  (labels ((l (fl)
+             (let ((first (first fl)) (rest (rest fl)))
+               (if rest
+                   (let ((x1 (gensym "X")) (y1 (gensym "Y")))
+                     `(let ((,x1 (,first x)) (,y1 (,first y)))
+                        (or (,gt ,x1 ,y1)
+                            (and (,eq ,x1 ,y1)
+                                 ,(l rest)))))
+                   `(,ge (,first x) (,first y))))))
+    `(lambda (x y) ,(l functions))))
 
 ;;;
 ;;; }}}{{{ misc
