@@ -85,7 +85,7 @@ Both print a tag but the second one does not do a `terpri' afterwards."
           (with-tag (:html)
             (with-tag (:head ,@head)
               (with-tag (:meta ,@meta))
-              (with-tag (:link :rev 'made :href ,mailto))
+              (with-tag (:link :rev "made" :href ,mailto))
               (with-tag (:title) (princ ,title ,var)))
             (with-tag (:body)
               ,@body
