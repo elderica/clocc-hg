@@ -1401,7 +1401,7 @@
 		    (t
 		     `(,(first p) ,@(mapcar #'grovel-frefs (rest p))))))
 	    (generate-with-array (arrays body)
-	      (let ((result body))
+	      (let (array-data-forms)
 		(flet ((find-type (a)
 			 (dolist (x (rest (first formal-arg-decls)))
 			   (when (member a x)
@@ -1411,14 +1411,9 @@
 		    (let ((d-name (array-data-name a))
 			  (o-name (array-offset-name a))
 			  (d-type (find-type a)))
-		      (setf result `(with-array-data (,d-name
-						      ,o-name
-						      ,a)
-				     (declare (type f2cl-lib:integer4 ,o-name)
-				              (type (simple-array ,d-type (*)) ,d-name)
-				              (ignorable ,o-name ,d-name))
-				     ,result))))
-		      result))))
+		      (push `(,a ,d-type ,d-name ,o-name) array-data-forms)))
+		  `(with-multi-array-data ,array-data-forms
+		     ,body)))))
 	 ;;(format t "formal-arg-decls = ~A~%" formal-arg-decls)
 
 	 ;; If array-slicing is not used and the array-type is
@@ -2772,6 +2767,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.111  2003/11/12 05:32:49  rtoy
+;;; The test for matching arglist for ENTRY points was wrong.  Fix it.
+;;;
 ;;; Revision 1.110  2003/07/13 18:54:51  rtoy
 ;;; Add mod to +allowed-lisp-names+.
 ;;;
