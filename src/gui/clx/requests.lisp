@@ -766,7 +766,7 @@
   (with-buffer-request-and-reply (display *x-getinputfocus* 16 :sizes (8 32))
        ()
     (values
-      (or-get 8 (member :none :pointer-root) window)
+      (or-get 8 window (member :none :pointer-root))
       (member8-get 1 :none :pointer-root :parent))))
 
 (defun query-keymap (display &optional bit-vector)
