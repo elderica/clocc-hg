@@ -315,7 +315,8 @@
       num-err)))
 
 (defun test-all (&key (out *standard-output*)
-                 (what '(string math date rpm url elisp xml munkres cvs base64))
+                 (what '(string math date rpm url elisp xml munkres cvs base64
+                         matrix))
                  (disable-network-dependent-tests t))
   (mesg :test out "~& *** ~s: regression testing...~%" 'test-all)
   (let* ((num-test 0)
