@@ -95,7 +95,8 @@ Inspired by Paul Graham, <On Lisp>, p. 145."
   #+cormanlisp (cl::gc)
   #+gcl (si::gbc)
   #+lispworks (hcl:normal-gc)
-  #-(or allegro clisp cmu cormanlisp gcl lispworks)
+  #+lucid (lcl:gc)
+  #-(or allegro clisp cmu cormanlisp gcl lispworks lucid)
   (error 'not-implemented :proc (list 'gc)))
 
 (defun quit (&optional code)
@@ -105,7 +106,8 @@ Inspired by Paul Graham, <On Lisp>, p. 145."
   #+cormanlisp (win32:exitprocess code)
   #+gcl (lisp:bye code)
   #+lispworks (lw:quit :status code)
-  #-(or allegro clisp cmu cormanlisp gcl lispworks)
+  #+lucid (lcl:quit code)
+  #-(or allegro clisp cmu cormanlisp gcl lispworks lucid)
   (error 'not-implemented :proc (list 'quit code)))
 
 (defconst +eof+ cons (cons nil nil)
