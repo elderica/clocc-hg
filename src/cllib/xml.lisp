@@ -192,8 +192,8 @@ Add it to `*xml-pre-namespaces*' and `*xml-uri-namespaces*'."
         (xml-namespace (values uri t))
         (string (gethash uri *xml-uri-namespaces*)))
     (unless oldp
-      (remf opts :pre-tmp) (remf opts :out)
-      (setq ns (apply #'make-xml-namespace :uri uri opts))
+      (setq ns (apply #'make-xml-namespace :uri uri
+                      (remove-plist opts :pre-tmp :out)))
       ;; only newly created namespaces have to be reported to the user
       (mesg :xml out "~& * added XML namespace: ~s~@[ [prefix ~s]~]~%"
             ns pre-tmp))
