@@ -25,7 +25,7 @@
 ;;
 ;;(format t "~&The f2cl software has been loaded.~%")
 
-(defpackage "FORTAN-TO-LISP"
+(defpackage "FORTRAN-TO-LISP"
     (:use "CL")
   (:documentation "The package holding all symbols need by the Fortran to Lisp converter")
   (:nicknames "F2CL")
@@ -67,6 +67,10 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.3  2000/07/28 16:56:48  rtoy
+;;; f2cl0.l isn't the (unused) f2cl loader anymore.  Use it to define the
+;;; package used by f2cl.
+;;;
 ;;; Revision 1.2  2000/07/13 16:55:34  rtoy
 ;;; To satisfy the Copyright statement, we have placed the RCS logs in
 ;;; each source file in f2cl.  (Hope this satisfies the copyright.)
