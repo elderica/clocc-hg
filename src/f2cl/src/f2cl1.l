@@ -1476,8 +1476,11 @@ FILENAME                 File containing Fortran code
 ;; returns the value of the function in addition to the parameters.
 
 (defun generate-call-to-routine (routine arglist &optional return)
-  (let* ((routine-name (check-reserved-lisp-names (first routine)))
-	 (finfo (gethash routine-name *f2cl-function-info*)))
+  (multiple-value-bind (routine-name finfo)
+      (if (eq (first routine) 'funcall)
+	  (values routine (gethash (second routine) *f2cl-function-info*))
+	  (values (list (check-reserved-lisp-names (first routine)))
+		  (gethash (first routine) *f2cl-function-info*)))
     (if (and finfo (f2cl-finfo-return-values finfo))
 	(let ((this (gethash *subprog_name* *f2cl-function-info*)))
 	  (unless this
@@ -1576,11 +1579,11 @@ FILENAME                 File containing Fortran code
 	;;(format t "setters = ~A~%" setters)
 	(if setters
 	    `((multiple-value-bind ,(if return (append '(ret-val) vnames) vnames)
-		  (,routine-name ,@arglist)
+		  (,@routine-name ,@arglist)
 		(declare (ignore ,@ignored-vars))
 		,@setters
 		,@(if return (list 'ret-val))))
-	    `((,routine-name ,@arglist)))))))
+	    `((,@routine-name ,@arglist)))))))
 
 ;; Convert array references to an array slice, as appropriate. That
 ;; is, the array reference must be the actual arg. No arithmetic
@@ -2387,6 +2390,15 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.122  2003/07/12 04:24:38  rtoy
+;;; o Add new keyword parameter to specify the package to be used for
+;;;   compiling the code.  Defaults to COMMON-LISP-USER
+;;; o When generating a call to a routine, we need to check for reserved
+;;;   Lisp names and mangle it appropriately.  Use the new name as needed.
+;;; o When parsing a do loop, we need to check reserved lisp names
+;;;   for the loop variable.  (Because other places will have mangled the
+;;;   name).
+;;;
 ;;; Revision 1.121  2003/01/08 18:41:46  rtoy
 ;;; Reference symbols in the common-lisp package with "common-lisp:",
 ;;; instead of "lisp:".
