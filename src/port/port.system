@@ -2,6 +2,8 @@
 ;;;
 ;;; Cross-implementation Portability System
 ;;;
+;;; $Id$
+;;; $Source$
 
 (mk:defsystem port
     :source-pathname (translate-logical-pathname "clocc:src;port;")
@@ -12,4 +14,7 @@
      (:file "net" :depends-on ("ext"))
      (:file "proc" :depends-on ("ext"))
      (:file "shell" :depends-on ("ext"))
-     (:file "sys" :depends-on ("ext"))))
+     (:file "sys" :depends-on ("ext")))
+    :initially-do
+    (progn (mk:system-source-size :port :all)
+           (mk:system-source-size :port :new-source-and-dependents)))
