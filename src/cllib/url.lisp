@@ -417,6 +417,24 @@ ERR is the stream for information messages or NIL for none."
         (close sk) (setq sk (open-url sym :err err))
         (format sk "GET ~a HTTP/1.0~2%" (url-path sym))))))
 
+(defun http-parse-header (sock &key (out *standard-output*))
+  "Read the headers, when there there is none, return nil,
+when the first line is OK, return the hash-table of headers,
+otherwise return the first line."
+  (unless (char= #\< (peek-char t sock))
+    (let ((ret (make-hash-table :test 'equal)) pos
+          (line (read-line sock)))
+      (if (string-equal "ok" line)
+          (loop (setq line (read-line sock))
+                (when (zerop (length line)) (return ret))
+                (mesg :log out "[*] ~s~%" line)
+                (setq pos (position #\: line))
+                (if pos
+                    (setf (gethash (subseq line 0 pos) ret)
+                          (subseq line (+ 2 pos)))
+                    (warn "~s: invalid header: ~s" 'http-parse-header line)))
+          line))))
+
 (defcustom *url-replies* hash-table
   (let ((ht (make-hash-table :test 'eq)))
     (dolist (cc '(((:user) 331 332) ((:pass) 230 332) ((:acct) 230 202)
