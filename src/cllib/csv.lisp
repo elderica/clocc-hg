@@ -26,7 +26,7 @@
   "Print a vector as a comma-separated line."
   (declare (type vector vec) (stream out))
   (loop :with len = (length vec) :for val :across vec :and ii :from 1
-        :when val :do (write val :stream out)
+        :when val :do (write val :stream out :escape nil)
         :unless (= ii len) :do (write-char *csv-separator* out))
   (terpri out))
 
