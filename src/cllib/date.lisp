@@ -17,6 +17,8 @@
   (require :sorted (translate-logical-pathname "cllib:sorted"))
   ;; `mesg'
   (require :log (translate-logical-pathname "cllib:log"))
+  ;; `print-struct-object'
+  #+cmu (require :closio (translate-logical-pathname "cllib:closio"))
   ;; `dfloat'
   (require :withtype (translate-logical-pathname "cllib:withtype")))
 

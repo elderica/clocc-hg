@@ -29,7 +29,7 @@
      (:file "closio" :depends-on ("base"))
      (:file "cvs" :depends-on ("base" "string" "fileio" "date" "miscprint"))
      (:file "date" :depends-on
-            ("base" "simple" "string" "sorted" "log" "withtype"))
+            ("base" "simple" "string" "sorted" "log" "withtype" #+cmu"closio"))
      (:file "datedl" :depends-on
             ("base" "withtype" "date" "laser" "math" "symb"))
      (:file "doall" :depends-on ("base"))
