@@ -11,7 +11,7 @@
 ;	concaten
 ;	f-to-l
 ;---------------------------------------------------------------------------
-(in-package :user)
+(in-package :cl-user)
 (defvar *verbose* nil)
 (defvar *comments* nil)
 (defvar *f2cl-version* "2.0 beta")
@@ -274,6 +274,7 @@ INPUT-FILE               File containing Fortran code
 		      year month date hour minute second))
 	    (let ((*print-case* :downcase))
 	      ;; Insert in-package and declaim, if needed
+	      #-(and clisp (not xp))
 	      (when options
 		(pprint-logical-block (outport options :per-line-prefix ";;; ")
 		  (format outport "~&Options: ~S" options))
@@ -1812,6 +1813,10 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.48  2000/07/21 21:56:37  rtoy
+;;; Squash another parsing bug in initializing a single element of an
+;;; array.
+;;;
 ;;; Revision 1.47  2000/07/21 21:14:21  rtoy
 ;;; The last change to PARSE-DATA broke the case of
 ;;;
