@@ -224,6 +224,23 @@ E.g.: (number-sum-split 10 (lambda (x) (* x x)) 'isqrt) => ((1 . 3))"
         (setf (gethash sum ht) new)))))
 
 ;;;
+;;; Random sequences
+;;;
+
+(defun vector-shuffle (vec)
+  "Generate a random permutation of the vector in place.
+If the argument is a number, return a new random vector of this length."
+  (etypecase vec
+    (vector (loop :for ii :downfrom (1- (length vec)) :to 0
+                  :for jj = (random (1+ ii))
+                  :unless (= jj ii)
+                  :do (rotatef (aref vec ii) (aref vec jj)))
+            vec)
+    (number (vector-shuffle (let ((vv (make-array vec)))
+                              (dotimes (ii vec vv)
+                                (setf (aref vv ii) ii)))))))
+
+;;;
 ;;; Ratios
 ;;;
 
