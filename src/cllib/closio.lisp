@@ -56,8 +56,8 @@ otherwise you will probably get an error.")
           ((endp tail) res)
        (setf (slot-value res (car tail)) (cadr tail))))
     (:initarg (apply #'make-instance (read-delimited-list #\] st t)))
-    (nil (error 'code :proc 'read-object :args '(*closio-method* nil)
-                :mesg "~s is ~s"))
+    ((nil) (error 'code :proc 'read-object :args '(*closio-method* nil)
+                  :mesg "~s is ~s"))
     (t (error 'case-error :proc 'read-object :args
               (list '*closio-method* *closio-method*
                     :initarg :slot-name nil)))))
