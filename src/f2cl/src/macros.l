@@ -1124,7 +1124,7 @@ causing all pending operations to be flushed"
 		      `',dims
 		      `(list ,@dims))))
     `(let ((,init (make-array ,new-dims
-			      :element-type `(simple-array base-char (,',@len))
+			      :element-type `(simple-array character (,',@len))
 			      :initial-element (make-string ,@len))))
        (dotimes (k (array-total-size ,init))
 	 (setf (aref ,init k)
@@ -1311,6 +1311,9 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.60  2004/09/01 14:17:57  rtoy
+;;; atan2 takes single-float args, not double-float.
+;;;
 ;;; Revision 1.59  2004/08/14 22:29:16  marcoxa
 ;;; Added an EVAL-WHEN to silence the LW compiler.
 ;;;
