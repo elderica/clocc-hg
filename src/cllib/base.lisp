@@ -11,7 +11,7 @@
   (require :ext (translate-logical-pathname "clocc:src;port;ext"))
   (require :sys (translate-logical-pathname "port:sys")))
 
-(defpackage cllib
+(defpackage "CLLIB"
   (:use "COMMON-LISP" "PORT")
   (:nicknames "ORG.CONS.CLOCC/SDS/CLLIB")
   (:export "VALUE" "CODE"))
