@@ -28,7 +28,7 @@
    product-from-to binomial *primes* *primes-file*
    make-primes-list number-sum-split all-num-split
    vector-shuffle permutation with-permutations-shuffle
-   with-permutations-swap with-permutations-lex permutations-list subsets
+   with-permutations-swap with-permutations-lex permutations-list subsets pick
    eval-cont-fract fract-approx
    *num-tolerance* *relative-tolerance* *absolute-tolerance*
    dot poly1 poly erf cndf norm normalize rel-dist
@@ -414,6 +414,15 @@ The order in which the permutations are listed is either
                            (cons first subset))
                          others)))
         (list nil (list first)))))
+
+(defun pick (seq)
+  "Return a random element from the sequence."
+  (declare (type sequence seq))
+  (let ((len (length seq)))
+    (case len
+      (0 (error "~S: no elements in the empty sequence ~S" 'pick seq))
+      (1 (elt seq 0))
+      (t (elt seq (random len))))))
 
 ;;;
 ;;; Ratios
