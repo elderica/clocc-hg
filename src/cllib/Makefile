@@ -5,9 +5,10 @@ LISPEXT := lisp
 SOURCES := animals base card check clhs closio date datedl doall elisp fileio \
 	fin geo gnuplot gq h2lisp html iter laser list log math miscprint \
 	octave rpm server simple sorted stat string symb tilsla url withtype \
-	inspect autoload htmlgen xml prompt matrix
+	inspect autoload htmlgen xml prompt matrix getopt
 BASE = $(TOP)/clocc base auto
 NET = $(TOP)/clocc base url gq
+SCRIPT = $(TOP)/clocc base getopt
 SYSTEM := cllib
 ZIPEXTRA = ../defsystem-3.x/defsystem.lisp ../tools/metering/metering.lisp \
 	$(TOP)/etc/GNU-GPL
@@ -19,3 +20,6 @@ image:		$(addsuffix .$(FASLEXT),$(BASE))
 
 image-net:	$(addsuffix .$(FASLEXT),$(NET))
 	$(TOP)/bin/run-lisp $(patsubst %,-i %,$^) -d image-net
+
+image-script:	$(addsuffix .$(FASLEXT),$(SCRIPT))
+	$(TOP)/bin/run-lisp $(patsubst %,-i %,$^) -d image-script
