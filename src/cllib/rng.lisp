@@ -4,6 +4,9 @@
 ;;;;  Class of Random number generators
 ;;;;
 ;;;;  $Log$
+;;;;  Revision 1.9  2001/11/02 22:31:15  sds
+;;;;  prefix module names with `cllib-'
+;;;;
 ;;;;  Revision 1.8  2001/08/27 17:21:33  rtoy
 ;;;;  o ZIGGURAT-INIT:  forgot to initialize x[0], fx[0], and fx[n].
 ;;;;    (Thanks to Clisp for catching this stupid error.)
@@ -614,7 +617,7 @@ mean of 1:
 ;; show that good exponential numbers are still generated.
 (let ((r 7.69711747013104972d0))
   (flet ((density (x)
-	   (declare (type (double-float (0d0)) x))
+	   (declare (type (double-float 0d0) x))
 	   (exp (- x))))
     (declare (inline density))
     (multiple-value-bind (k-table w-table f-table)
