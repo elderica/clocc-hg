@@ -20,6 +20,7 @@
   #-allegro
   (:documentation "The package for loading Emacs-Lisp code into Common Lisp")
   (:nicknames "ELISP" "EL") (:use "CL" "CLLIB" "PORT")
+  #+cmu (:shadowing-import-from :cllib cllib:defstruct)
   (:shadow let let* if member delete load require provide ignore format /
            defcustom defconst autoload))
 
