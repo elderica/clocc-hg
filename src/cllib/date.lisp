@@ -1,4 +1,4 @@
-;;; File: <date.lisp - 1998-07-31 Fri 12:37:40 EDT sds@mute.eaglets.com>
+;;; File: <date.lisp - 1998-08-03 Mon 14:37:02 EDT sds@mute.eaglets.com>
 ;;;
 ;;; Date-related structures
 ;;;
@@ -12,6 +12,10 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.17  1998/07/31 16:43:25  sds
+;;; Added `exp-mov-avg-append' and `lincom'.
+;;; Declared `stream' as a stream in `print-*'.
+;;;
 ;;; Revision 1.16  1998/07/06 21:58:10  sds
 ;;; Combined the two &key arguments of `dl-copy-shift' into one optional
 ;;; argument, branching on its type.
@@ -225,33 +229,24 @@ and (funcall KEY arg), as a double-float. KEY should return a date."
 (defun date= (d0 d1)
   "Check that the dates are the same. Like equalp, but works with children."
   (declare (type date d0 d1)) (= (date2days d0) (date2days d1)))
-;; (and (= (date-ye d0) (date-ye d1))
-;;     (= (date-mo d0) (date-mo d1))
-;;     (= (date-da d0) (date-da d1))))
+
+(defun date/= (d0 d1)
+  "Check that the dates are not the same."
+  (declare (type date d0 d1)) (/= (date2days d0) (date2days d1)))
 
 (defun date< (d0 d1)
   "Check the precedence of the two dates."
   (declare (type date d0 d1)) (< (date2days d0) (date2days d1)))
-;;  (let ((dd (- (date-ye d0) (date-ye d1))))
-;;    (cond ((plusp dd) nil) ((minusp dd) t)
-;;	  ((setq dd (- (date-mo d0) (date-mo d1)))
-;;	   (cond ((plusp dd) nil) ((minusp dd) t)
-;;		 ((minusp (- (date-da d0) (date-da d1)))))))))
 
 (defun date> (d0 d1)
   "Check the precedence of the two dates."
   (declare (type date d0 d1)) (> (date2days d0) (date2days d1)))
-;;  (let ((dd (- (date-ye d0) (date-ye d1))))
-;;    (cond ((plusp dd) t) ((minusp dd) nil)
-;;	  ((setq dd (- (date-mo d0) (date-mo d1)))
-;;	   (cond ((plusp dd) t) ((minusp dd) nil)
-;;		 ((plusp (- (date-da d0) (date-da d1)))))))))
 
-(defsubst latest-date (d0 d1)
+(defsubst date-max (d0 d1)
   "Return the latest date."
   (declare (type date d0 d1) (values date)) (if (date< d0 d1) d1 d0))
 
-(defsubst earliest-date (d0 d1)
+(defsubst date-min (d0 d1)
   "Return the earliest date."
   (declare (type date d0 d1) (values date)) (if (date> d0 d1) d1 d0))
 
@@ -735,9 +730,9 @@ Must not assume that the list is properly ordered!"
 		 :test #'date=)
     (regress ll :ykey (dl-val dl)
 	     :xkey (days-since-f (dl-date dl)
-				 (earliest-date (funcall (dl-date dl) (car ll))
-						(funcall (dl-date dl)
-							 (car (last ll))))))))
+				 (date-min (funcall (dl-date dl) (car ll))
+                                           (funcall (dl-date dl)
+                                                    (car (last ll))))))))
 
 (defsubst mean-dl (dl &key (slot 'val))
   "Apply `mean' to the dated list."
@@ -767,6 +762,7 @@ Must not assume that the list is properly ordered!"
     `(let* ((,ll (date-in-dated-list ,dt ,dl)) (,tt (cdr ,ll)))
       (unwind-protect (progn (setf (cdr ,ll) nil) ,@body)
 	(setf (cdr ,ll) ,tt)))))
+
 ;;;
 ;;; Change
 ;;;
@@ -880,15 +876,15 @@ a diff structure is created with the same date and the difference
 and the ratio of the values.
 The date is accessed by (funcall date* rec),
 the value by (funcall val* rec)."
-  (do* ((bd (latest-date (funcall date0 (car ls0))
-			 (funcall date1 (car ls1)))) ll c0 c1 d0 d1 cd
-	(pd nil cd)			; prev date
+  (do* ((bd (date-max (funcall date0 (car ls0))
+                      (funcall date1 (car ls1)))) ll c0 c1 d0 d1 cd
+	(pd nil cd)             ; prev date
 	(l0 (date-in-list bd ls0 date0) (cdr l0))
 	(l1 (date-in-list bd ls1 date1) (cdr l1)))
        ((or (null l0) (null l1)) (nreverse ll))
     (setq c0 (car l0) d0 (funcall date0 c0)
 	  c1 (car l1) d1 (funcall date1 c1)
-	  cd (latest-date d0 d1))
+	  cd (date-max d0 d1))
     (cond ((date< d0 cd)
 	   (if (date= pd d0)
 	       (format t " -> Double  record in the 1st list on ~a~%" pd)
