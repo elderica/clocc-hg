@@ -93,7 +93,7 @@
                   (loop :with pp =
                         (fli:foreign-slot-value he 'comm::h_addr_list)
                         :for cp = (fli:dereference pp :type '(:unsigned :long))
-                        :until (zerop cp) ; broken !!!
+                        :until (zerop cp) ; FIXME broken !!!
                         :collect (ipaddr-to-dotted cp)
                         :do (fli:incf-pointer pp))
                   :addr-type (fli:foreign-slot-value he 'comm::h_addrtype)))
@@ -202,7 +202,8 @@
   #+cmu (declare (ignore server))
   #+allegro (socket:ipaddr-to-dotted (socket:local-host server))
   #+clisp (lisp:socket-server-host server)
-  #+cmu (ext::gethostbyname "localhost") ; FIXME (returns an alien, not string)
+  #+cmu (ipaddr-to-dotted (car (ext:host-entry-addr-list
+                                (ext:lookup-host-entry "localhost"))))
   #-(or allegro clisp cmu)
   (error 'not-implemented :proc (list 'socket-server-host server)))
 
