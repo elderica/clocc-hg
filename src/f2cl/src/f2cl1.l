@@ -1553,7 +1553,7 @@ FILENAME                 File containing Fortran code
 	    (setf (gethash *subprog_name* *f2cl-function-info*)
 		  (make-f2cl-finfo)))
 	  ;; Add this function to the list of called functions
-	  (pushnew routine-name
+	  (pushnew (first routine-name)
 		   (f2cl-finfo-calls (gethash *subprog_name*
 					      *f2cl-function-info*))))
 	(warn "Generating call to unknown function ~A.  Check generated call!" routine-name))
@@ -2537,6 +2537,10 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.131  2003/11/14 06:45:41  rtoy
+;;; Actually, if the declared arg type is an array, we always want to
+;;; slice.  Otherwise, we just want the single element.
+;;;
 ;;; Revision 1.130  2003/11/14 04:29:31  rtoy
 ;;; Handle function calls to statement functions too so we can generate
 ;;; the correct args for them.  Do this by adding a hash table to hold
