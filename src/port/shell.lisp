@@ -25,7 +25,7 @@
 (defun run-prog (prog &rest opts &key args (wait t) &allow-other-keys)
   "Common interface to shell. Does not return anything useful."
   #+gcl (declare (ignore wait))
-  (remf opts :args) (remf opts :wait)
+  (setq opts (remove-plist opts :args :wait))
   #+allegro (apply #'excl:run-shell-command (apply #'vector prog prog args)
                    :wait wait opts)
   #+(and clisp      lisp=cl)
