@@ -458,7 +458,7 @@ See constants `+card-output-bbdb+', `+card-output-vcard+',
             '(www ftp gopher telnet)))))
 
 (defun card-read-bbdb (in ra)
-  "Read CARD from a BBDB stream.  Suitable for `read-list-from-file'."
+  "Read CARD from a BBDB stream.  Suitable for `read-list-from-stream'."
   (declare (stream in) (simple-vector ra))
   (handler-case (values (vector-to-card ra) (read in nil +eof+))
     (error (co)
@@ -466,7 +466,7 @@ See constants `+card-output-bbdb+', `+card-output-vcard+',
       (error co))))
 
 (defun card-read-vcard (in ra)
-  "Read CARD from a vCard stream.  Suitable for `read-list-from-file'."
+  "Read CARD from a vCard stream.  Suitable for `read-list-from-stream'."
   (declare (stream in) (ignore ra))
   (macrolet ((pushslot (val obj slot)
                `(if (slot-boundp ,obj ',slot)
