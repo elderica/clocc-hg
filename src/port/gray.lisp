@@ -16,7 +16,7 @@
   (error 'not-implemented :proc "Gray streams")
   (require :ext (translate-logical-pathname "clocc:src;port;ext"))
   #+cmu
-  (unless (ignore-errors (find-class 'ext:fundamental-stream))
+  (unless (ignore-errors (find-class 'ext:fundamental-input-stream))
     (load "library:subsystems/gray-streams-library")))
 
 (in-package #+allegro :excl
