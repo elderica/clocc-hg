@@ -211,7 +211,7 @@
     num-err))
 
 (defun test-all (&key (out *standard-output*)
-                 (what '(string math date rpm url elisp xml cvs)))
+                 (what '(string math date rpm url elisp xml))) ; cvs
   (mesg :test out "~& *** ~s: regression testing...~%" 'test-all)
   (let* ((num-test 0)
          (num-err (reduce #'+ what :key
