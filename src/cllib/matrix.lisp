@@ -69,7 +69,7 @@ By default prints the contents.
   "write matrix into the file, suitable for matlab/octave input"
   (with-timing (:out log)
     (when log
-      (format log ";; ~S: ~{~D~^x~}..." 'matrix-to-file
+      (format log "~&;; ~S: ~{~D~^x~}..." 'matrix-to-file
               (array-dimensions matrix))
       (force-output log))
     (with-open-file (out file :direction :output :if-exists :rename)
@@ -87,7 +87,7 @@ By default prints the contents.
   (with-timing (:out log)
     (with-open-file (in file :direction :input)
       (when log
-        (format log ";; ~S(~A, ~:D byte~:P)..."
+        (format log "~&;; ~S(~A, ~:D byte~:P)..."
                 'matrix-from-file file (file-length in))
         (force-output log))
       (let* ((list
