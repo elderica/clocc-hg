@@ -279,7 +279,7 @@ case "$1" in
 
     case "$LISPTYPE" in
       clisp )
-          todo="(setq lisp:*load-paths* '(#P\"\")) "$todo
+          todo="(progn (setq lisp:*load-paths* '(#P\"\")) ${todo})"
           test -z "$image" || image="-M ${image}.mem";
           exec ${CLISP-clisp} -norc -q ${image} -x "$todo"
           ;;
