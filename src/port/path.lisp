@@ -71,11 +71,11 @@ but there is a TYPE slot, move TYPE into NAME."
   "The default directory."
   #+allegro (excl:current-directory)
   #+clisp (#+lisp=cl ext:default-directory #-lisp=cl lisp:default-directory)
-  #+cmucl (ext:default-directory)
+  #+cmu (ext:default-directory)
   #+cormanlisp (ccl:get-current-directory)
   #+lispworks (hcl:get-working-directory)
   #+lucid (lcl:working-directory)
-  #-(or allegro clisp cmucl cormanlisp lispworks lucid) (truename "."))
+  #-(or allegro clisp cmu cormanlisp lispworks lucid) (truename "."))
 
 (defun chdir (dir)
   #+allegro (excl:chdir dir)
