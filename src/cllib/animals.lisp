@@ -144,12 +144,14 @@ Returnes a fresh string."
 ;;; Network implementation
 ;;;
 
+(eval-when (compile load eval)  ; ACL: for `*root-node*'
 (defclass node ()
   ((name :type symbol :accessor node-name :initarg name)
    (info :type simple-string :accessor node-info :initarg info)
    (yes :type symbol :accessor node-yes :initarg yes)
    (no :type symbol :accessor node-no :initarg no))
   (:documentation "The information node."))
+)
 
 (defmethod print-object ((nd node) (out stream))
   (if *print-readably* (call-next-method)
