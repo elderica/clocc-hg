@@ -82,7 +82,7 @@ $(SYSTEM).zip: $(DOCFILES) $(LISPFILES) $(MAKEFILES)
 	@$(RM) $(SYSTEM) extra $(notdir $(ZIPEXTRA));
 
 clean-all: force
-	$(RM) $(FASLFILES) core *.core *.mem *.dxl
+	$(RM) $(FASLFILES) core *.core *.mem *.dxl TAGS *.list
 
 clean:
 	$(RM) *.$(FASLEXT) core
