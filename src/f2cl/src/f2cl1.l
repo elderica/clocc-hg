@@ -1544,7 +1544,7 @@ FILENAME                 File containing Fortran code
               (return (list `(,(tail-chop sym lis)
                  ,@(list-split sym (head-chop sym lis))) ops))))))
 
-#||
+
 #+cmu
 (defun concat (&rest syms)
   (cond ((null syms)
@@ -1552,7 +1552,7 @@ FILENAME                 File containing Fortran code
 	(t
 	 (concatenate 'string (symbol-name (first syms))
 		      (apply #'concat (rest syms))))))
-||#
+
 
 (defun list-split-multi (op lis)
   (prog (ret)
@@ -1883,6 +1883,12 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.63  2000/08/10 13:50:42  rtoy
+;;; o UPDATE_CM_ARRAY_DIMS was not handling the new method of storing
+;;;   dimensions.  Fix it.
+;;; o Removed unused CONCAT function.
+;;; o Gratuitous mods to PARSE-COMMON.
+;;;
 ;;; Revision 1.62  2000/08/09 22:33:27  rtoy
 ;;; The preprocessor converted // to f2cl-//.  We need to undo that
 ;;; because // in a COMMON statement really means the blank common block.
