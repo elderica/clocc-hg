@@ -23,7 +23,8 @@
 (in-package :cllib)
 
 (export
- '(mulf divf sqr ! !! stirling fibonacci ruler primes-to divisors primep
+ '(mulf divf sqr triangle
+   ! !! stirling fibonacci ruler primes-to divisors primep
    product-from-to binomial *primes* *primes-file*
    make-primes-list number-sum-split all-num-split
    vector-shuffle permutation with-permutations-shuffle
@@ -61,6 +62,10 @@
   "Compute the square of a number, taking care to eval only once."
   (if (atom xx) `(* ,xx ,xx)
       (with-gensyms ("SQR-" var) `(let ((,var ,xx)) (* ,var ,var)))))
+(declaim (inline triangle))
+(defun triangle (i)
+  "Compute the triangular number"
+  (/ (* i (1- i)) 2))
 
 ;;;
 ;;; Integers
