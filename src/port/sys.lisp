@@ -62,8 +62,8 @@
                     (symbol fn)
                     (function (si:compiled-function-name fn)))))
           (get fn 'si:debug))
-  ;; ??? #+lispworks (walker::walk-arglist symbol nil nil)
-  #-(or allegro clisp cmu gcl)
+  #+lispworks (lw:function-lambda-list fn)
+  #-(or allegro clisp cmu gcl lispworks)
   (error 'not-implemented :proc (list 'arglist fn)))
 
 (defun class-slot-list (class &optional (all t))
