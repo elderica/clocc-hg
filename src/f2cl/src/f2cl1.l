@@ -1704,8 +1704,8 @@ FILENAME                 File containing Fortran code
 	    (let ((var (remove nil (list-split '|,| (car list))))
 		  (vals (list-split '|,| (cadr list))))
 	      ;;(format t "list = ~a~%" list)
-	      ;;(format t "var = ~a~%" var)
-	      ;;(format t "vals = ~a~%" vals)
+	      (format t "var = ~a~%" var)
+	      (format t "vals = ~a~%" vals)
 	      
 	      ;; Need to be careful here.  We might be doing either
 	      ;;
@@ -1718,8 +1718,16 @@ FILENAME                 File containing Fortran code
 	      ;; So we check the var is an array without dimensions.
 	      ;; If so, the VALS list is really all the values for the
 	      ;; array.
-	      (let* ((is-array (and (vble-is-array-p (check-reserved-lisp-names (caar var)))
-				    (null (cdar var))))
+	      ;;
+	      ;; We also might have an implied do loop, in which case,
+	      ;; we want VALS to be all the values.
+	      ;;
+	      ;; (FIXME:  This area probably needs a lot of rework!)
+	      (let* ((is-array (or (and (vble-is-array-p (check-reserved-lisp-names (caar var)))
+					(null (cdar var)))
+				   (and (listp var) (listp vals)
+					(listp (caar var))
+					(member '= (caar var)))))
 		     (result (mapcar #'parse-data1 var (if is-array (list vals) vals))))
 		;;(format t "result = ~a~%" result)
 		(setf *data-init* (append *data-init* (if (consp (first result))
@@ -1755,10 +1763,11 @@ FILENAME                 File containing Fortran code
 		       (t
 			(push (fix-up-negative-number item) result))))))
 	     (data-var (v)
+	       (format t "data-var v = ~A~%" v)
 	       (cond ((atom v)
 		      v)
 		     ((listp v)
-		      (data-var (first v)))
+		      (mapcar #'car v))
 		     (t
 		      nil))))
     (cond ((and (listp (car l))
@@ -1784,20 +1793,31 @@ FILENAME                 File containing Fortran code
 		(member '= (first v)))
 	   ;; Implied do loop.  Extract out the important parts of the
 	   ;; implied do and construct what we need from it.
-
-	   ;;(format t "parse-data1 implied-do~%")
-	   `(data-implied-do ,(first v) ,(data-var v) ,(fix-up-data-reps l)))
+	   (let* ((posn (position '= (first v)))
+		  (split (list-split '|,| (subseq (first v) 0 (- posn 2))))
+		  (loop-info
+		   `(,split ,(remove '= (remove '|,| (subseq (first v) (1- posn)))))))
+	     (format t "parse-data1 implied-do~%")
+	     (format t "  v = ~S~%" v)
+	     (format t "    = ~S~%" split)
+	     (format t "  n = ~S~%" loop-info)
+	     (format t "  l = ~S~%" l)
+	     (format t "  dvar = ~S~%" (data-var split))
+	     #+nil
+	     `(data-implied-do ,(first v) ,(data-var v) ,(fix-up-data-reps l))
+	     `(data-implied-do ,loop-info ,(data-var split) ,(fix-up-data-reps l))
+	     ))
 	  ((and (listp v) (listp l)
 		(= (length v) (length l))
 		(> (length v) 1))
-	   ;;(format t "parse-data1 op~%")
+	   (format t "parse-data1 op~%")
 	   (mapcar #'(lambda (var val)
 		       `(setq ,(check-reserved-lisp-names var)
 			      ,(fix-up-negative-number val)))
 		   v l))
 	  (t
-	   ;;(format t "parse-data1 else: v, l = ~S ~S~%" v l)
-	   ;;(format t "parse-data1 else:  v is array:  ~A~%" (vble-is-array-p (check-reserved-lisp-names (first v))))
+	   (format t "parse-data1 else: v, l = ~S ~S~%" v l)
+	   (format t "parse-data1 else:  v is array:  ~A~%" (vble-is-array-p (check-reserved-lisp-names (first v))))
 	   (if (and (vble-is-array-p (check-reserved-lisp-names (first v)))
 		    (null (rest v)))
 	       `(replace ,(check-reserved-lisp-names (first v))
@@ -2226,6 +2246,10 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.100  2002/03/16 15:21:28  rtoy
+;;; If an argument to a subprogram is not assigned to, return NIL as the
+;;; value instead of the argument.  (See NOTES file.)
+;;;
 ;;; Revision 1.99  2002/03/13 03:58:48  rtoy
 ;;; Use INT instead of TRUNCATE.
 ;;;

@@ -761,6 +761,15 @@
 				`(coerce ,rhs ',lhs-type)))))))
 	     new-rhs)))))
 
+(defun flatten-list (x)
+  (labels ((flatten-helper (x r);; 'r' is the stuff to the 'right'.
+	     (cond ((null x) r)
+		   ((atom x)
+		    (cons x r))
+		   (t (flatten-helper (car x)
+				      (flatten-helper (cdr x) r))))))
+    (flatten-helper x nil)))
+
 (defun insert-declarations (fort-fun) 
   (prog (defun-bit arglist prog-bit formal-arg-decls common_var_decls
 		   local-vbles vble-decls body common-blocks
@@ -907,8 +916,9 @@
 	       (remove-duplicates
 		(append *save_vbles*
 			(remove nil 
-				(mapcar #'extract-var-name
-					*data-init*)))))))
+				(flatten-list
+				 (mapcar #'extract-var-name
+					 *data-init*))))))))
 
      ;; If a variable names a function used or an external function,
      ;; delete the variable.
@@ -1026,7 +1036,9 @@
      (setq *data-init*
 	   (mapcar #'(lambda (init)
 		       (flet ((get-dims (var)
-				(mapcar #'first (lookup-array-bounds var))))
+				(mapcar #'caar
+					    (mapcar #'lookup-array-bounds
+						    (if (listp var) var (list var))))))
 				  
 		       (cond #+nil
 			     ((eq 'fset (first init))
@@ -2606,6 +2618,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.92  2002/03/16 14:27:34  rtoy
+;;; Remove some print statements that were left in.
+;;;
 ;;; Revision 1.91  2002/03/15 04:04:01  rtoy
 ;;; When creating the symbol macros for accessing common block vars, we
 ;;; can get some speed gain by treating arrays specially so that we don't

@@ -788,6 +788,7 @@ is not included")
 (defun ffloat (x)
   (coerce x 'single-float))
 
+#+nil
 (defun process-implied-do (ido low-bnds init)
   (let* ((implied-do (remove '|,| ido))
 	 (array (first implied-do))
@@ -809,12 +810,25 @@ is not included")
 	     (declare (integer4 ,do-var))
 	     ,(process-implied-do (remove '|,| array) low-bnds init))))))
 
+(defun process-implied-do (ido low-bnds init)
+  (destructuring-bind (data-vars (index-var start end &optional step))
+      ido
+    (flet ((map-vars (v)
+	     (mapcar #'(lambda (x b)
+			 `(fset (fref ,(first x) ,(second x) ((,b))) (pop ,init)))
+		     v low-bnds)))
+    `(do ((,index-var ,start (+ ,index-var ,(or step 1))))
+         ((> ,index-var ,end))
+       ,@(map-vars data-vars))
+    )))
+
 
 ;; Process implied do loops for data statements
 (defmacro data-implied-do (implied-do low-bnds vals)
   (let ((v (gensym)))
     `(let ((,v ',vals))
       ,(process-implied-do implied-do low-bnds v))))
+
 ;-----------------------------------------------------------------------------  ; end of macros.l
    
 ;; Map Fortran logical unit numbers to Lisp streams
@@ -1166,6 +1180,14 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.44  2002/03/11 16:44:00  rtoy
+;;; o Remove an extra paren.
+;;; o Indent FIND-ARRAY-DATA better.
+;;; o Declare the iteration count to be of type INTEGER4.
+;;; o Added macros INT-ADD, INT-SUB, INT-MUL to tell the compiler that the
+;;;   integer operation can't overflow.  (First try.)
+;;; o Tell the compiler that the result of truncate is an INTEGER4 in INT.
+;;;
 ;;; Revision 1.43  2002/03/06 23:07:19  rtoy
 ;;; o Make INT return an integer4 type, not integer.
 ;;; o log10 was thinking it could generate complex result, but that's not
