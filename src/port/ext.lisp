@@ -135,7 +135,7 @@ Return the list of objects read and the final index in STRING.
 Binds `*package*' to the keyword package,
 so that the bare symbols are read as keywords."
   (declare (type (or null fixnum) max) (type fixnum start))
-  (let ((*package* (find-package "KEYWORD")))
+  (let ((*package* (find-package :keyword)))
     (if max
         (do ((beg start) obj res (num 0 (1+ num)))
             ((= max num) (values (nreverse res) beg))
