@@ -33,12 +33,27 @@
   #+allegro (sys::getenv (string var))
   #+clisp (sys::getenv (string var))
   #+cmu (cdr (assoc (string var) ext:*environment-list* :test #'equalp
-                    :key #'string)) ; xlib::getenv
+                    :key #'string))
   #+gcl (si:getenv (string var))
   #+lispworks (lw:environment-variable (string var))
   #+lucid (lcl:environment-variable (string var))
   #-(or allegro clisp cmu gcl lispworks lucid)
   (error 'not-implemented :proc (list 'getenv var)))
+
+(defun (setf getenv) (val var)
+  "Set an environment variable."
+  #+allegro (setf (sys::getenv (string var)) (string val))
+  #+clisp (setf (sys::getenv (string var)) (string val))
+  #+cmu (let ((cell (assoc (string var) ext:*environment-list* :test #'equalp
+                           :key #'string)))
+          (if cell
+              (setf (cdr cell) (string val))
+              (push (cons (string var) (string val)) ext:*environment-list*)))
+  #+gcl (si:setenv (string var) (string val))
+  #+lispworks (setf (lw:environment-variable (string var)) (string val))
+  #+lucid (setf (lcl:environment-variable (string var)) (string val))
+  #-(or allegro clisp cmu gcl lispworks lucid)
+  (error 'not-implemented :proc (list '(setf getenv) var)))
 
 (defun finalize (obj func)
   "When OBJ is GCed, FUNC is called on it."
