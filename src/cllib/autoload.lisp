@@ -40,7 +40,6 @@
 
 )
 
-(eval-when (compile load eval)
 (defgeneric autoload-stream (in out log)
   (:documentation "Generate the autoloads writing into a stream.")
   (:method ((in string) (out stream) (log t))
@@ -67,7 +66,6 @@
                       name (pathname-name in) doc))
             :finally (progn (format log "~d autoload~:p~%" total) (terpri out)
                             (return total))))))
-)
 
 (defun autoload-generate (in out &optional (log t))
   "Generate the autoloads, indicated by ';;;###autoload'."
