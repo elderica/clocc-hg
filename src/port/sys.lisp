@@ -125,12 +125,8 @@ or does not contain valid compiled code."
           (get fn 'si:debug))
   #+lispworks (lw:function-lambda-list fn)
   #+lucid (lcl:arglist fn)
-  #+sbcl
-  (let ((f (coerce fn 'function)))
-    (typecase f
-      (STANDARD-GENERIC-FUNCTION (sb-pcl:generic-function-lambda-list f))
-      #+(or) (EVAL:INTERPRETED-FUNCTION (eval:interpreted-function-arglist f))
-      (FUNCTION (sb-kernel:%simple-fun-arglist f))))
+  #+sbcl (progn (require :sb-introspect)
+                (sb-introspect:function-arglist fn))
   #-(or allegro clisp cmu cormanlisp gcl lispworks lucid sbcl scl)
   (error 'not-implemented :proc (list 'arglist fn)))
 
