@@ -4,6 +4,9 @@
 ;;;;  Class of Random number generators
 ;;;;
 ;;;;  $Log$
+;;;;  Revision 1.12  2005/03/08 21:32:21  sds
+;;;;  STATE argument is always optional and binds *RANDOM-STATE*
+;;;;
 ;;;;  Revision 1.11  2004/05/18 21:04:30  sds
 ;;;;  whitespace changes to help emacs
 ;;;;
@@ -860,7 +863,7 @@ mean of 1:
 ;;
 ;; On the next call, return Y
 
-#+nil
+#+(or)
 (let ((save 0d0)
       (gen -1))
   (declare (double-float save)
@@ -1128,7 +1131,7 @@ of zero and a variance of 1.
 ;;;               1600k    1612k      800k                1619k
 ;;;
 
-#+nil
+#+(or)
 (defun gen-gamma-variate-squeeze
     (order &optional (*random-state* *random-state*))
   "Generate a pseudo-random number drawn from a Gamma distribution of
@@ -1239,7 +1242,7 @@ order ORDER.
 	       (return-from gen-gamma-variate-squeeze rgama)))))))
 
 
-#+nil
+#+(or)
 (defun gen-gamma-variate-gn (order &optional (*random-state* *random-state*))
   "Generate a pseudo-random number drawn from a Gamma distribution of
 order ORDER.
@@ -1516,7 +1519,7 @@ order ORDER.
   (multiple-value-bind (n r)
       (floor order)
     (declare (fixnum n)
-	     #+nil(type (double-float 0d0) r))
+	     #+(or)(type (double-float 0d0) r))
     (let ((x 1d0))
       (declare (type (double-float (0d0)) x))
       ;; Sum up the exponential variates here.  This is done my
@@ -1539,7 +1542,7 @@ order ORDER.
   )
 
 ;; Ahrens and Dieter's Algorithm GO.
-#+nil
+#+(or)
 (defun gen-gamma-variate-algo-go (a &optional (*random-state* *random-state*))
   (declare (type (double-float (2.5327805161251d0)) a)
 	   (type random-state *random-state*)
@@ -1652,7 +1655,7 @@ order ORDER.
 ;;; progressively worse as the parameter gets larger.  This tries to
 ;;; take advantage of the fact that the desired region actually fits
 ;;; in a thin rotated rectangle.  Needs more work.
-#+nil
+#+(or)
 (defun gen-gamma-variate-ratio (a &optional (*random-state* *random-state*))
   (declare (type (double-float 1.5d0) a)
 	   (type random-state *random-state*)
@@ -1735,7 +1738,7 @@ order ORDER.
 	 ;; Pick the fastest of the three algorithms above.
 	 (gen-gamma-variate-squeeze order))
 	;; If the threshold s is 1, comment out this code.
-	#+nil
+	#+(or)
 	((> order 1d0)
 	 (gen-gamma-variate-direct order))
 	((= order 1d0)
@@ -1791,7 +1794,7 @@ with parameters a and b:
 
 ;;; Binomial random variate
 
-#+nil
+#+(or)
 (eval-when (compile eval)
 (declaim (ftype (function ((and (integer 0) fixnum)
 			   (non-negative-float double-float 1d0)
@@ -1846,7 +1849,7 @@ with parameters N and p:
 
 ;;; Poisson random variate
 
-#+nil
+#+(or)
 (eval-when (compile)
   (declaim (ftype (function ((double-float 0d0) &optional random-state)
 			    (and (integer 0) fixnum))
