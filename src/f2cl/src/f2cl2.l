@@ -337,7 +337,8 @@ Tag being parsed:| (cadr x))))
 	  (listp (cadr l)))
      ;; Should we check for T and PI here?
      (let ((fname (car l))
-	   (args (mapcar #'id-expression (list-split '|,| (cadr l)))))
+	   (args (let ((*apply-array-slice* *array-slicing*))
+		   (mapcar #'id-expression (list-split '|,| (cadr l))))))
        ;; Save the function name and number of arguments so we can
        ;; declare the function appropriately.  We also save the
        ;; argument list so we can determine later the types of each
@@ -429,6 +430,13 @@ definition.| l) ))
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.26  2000/08/05 19:20:01  rtoy
+;;; o If we're parsing the LHS of an assignment, and it looks like a
+;;;   function call, we don't want to mangle it because it's not a
+;;;   function call but the definition of a statement function.
+;;; o If the function is a call to statement function, we don't need to
+;;;   mangle it because a statement function can't modify its parameters.
+;;;
 ;;; Revision 1.25  2000/07/31 04:21:28  rtoy
 ;;; Remove some unused functions.
 ;;;
