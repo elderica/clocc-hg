@@ -33,3 +33,12 @@ image-net$(DUMPEXT):	$(addsuffix .$(FASLEXT),$(NET))
 
 image-script$(DUMPEXT):	$(addsuffix .$(FASLEXT),$(SCRIPT))
 	$(TOP)/bin/run-lisp $(patsubst %,-i %,$^) -d image-script
+
+auto.$(LISPEXT):	$(addsuffix .$(LISPEXT),$(SOURCES))
+	touch $@
+	$(TOP)/bin/run-lisp $(patsubst %,-i %,$(BASE)) -i autoload -x \
+		"(funcall (intern \"AUTOLOAD-GENERATE\" \"CLLIB\") \
+			  '($(patsubst %,\"%\",$^)) \"$@\")"
+
+auto.$(FASLEXT):	auto.$(LISPEXT)
+	$(TOP)/bin/run-lisp $(patsubst %,-i %,$(BASE)) -c $^
