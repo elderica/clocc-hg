@@ -10,19 +10,20 @@
 ;;;
 ;;; $Id$
 ;;; $Source$
-;;; $Log$
-;;;
 
 (eval-when (compile load eval)
-  #-(or allegro clisp cmu)
+  #-(or allegro clisp cmu lispworks)
   (error 'not-implemented :proc "Gray streams")
   (require :ext (translate-logical-pathname "clocc:src;port;ext")))
 
-(in-package #+allegro :excl #+clisp :lisp #+cmu :ext)
+(in-package #+allegro :excl
+            #+clisp :lisp
+            #+cmu :ext
+            #+lispworks :stream)
 
 (let ((gray-symbols
-       ;; Classes
-       '(FUNDAMENTAL-STREAM FUNDAMENTAL-INPUT-STREAM FUNDAMENTAL-OUTPUT-STREAM
+       '(;; Classes
+         FUNDAMENTAL-STREAM FUNDAMENTAL-INPUT-STREAM FUNDAMENTAL-OUTPUT-STREAM
          FUNDAMENTAL-CHARACTER-STREAM FUNDAMENTAL-BINARY-STREAM
          FUNDAMENTAL-CHARACTER-INPUT-STREAM FUNDAMENTAL-CHARACTER-OUTPUT-STREAM
          FUNDAMENTAL-BINARY-INPUT-STREAM FUNDAMENTAL-BINARY-OUTPUT-STREAM
