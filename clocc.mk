@@ -9,7 +9,7 @@
 RUNLISP := $(TOP)/bin/run-lisp
 LISPFILE := $(TOP)/bin/lisp-file
 FASLEXT := $(shell $(RUNLISP) -faslext)
-CLOCCTOP := $(TOP)/clocc
+CLOCCIMAGE := $(TOP)/clocc-image
 FASLFILES = *.fas *.lib *.axpf *.x86f *.hpf *.sgif *.sparcf *.fasl \
 	*.o *.data *.ufsl
 LISPFILES = $(addsuffix .$(LISPEXT),$(SOURCES))
@@ -30,7 +30,7 @@ default: force
 	@echo " + $(SYSTEM).zip - the archive of SOURCES, DOCFILES ($(DOCFILES)), MAKEFILES ($(MAKEFILES)) and ZIPEXTRA ($(ZIPEXTRA))"
 
 system: $(SYSTEM).system
-	$(RUNLISP) -i $(CLOCCTOP) -x '(mk:compile-system "$(SYSTEM)")'
+	$(RUNLISP) -I $(CLOCCIMAGE) -x '(mk:compile-system "$(SYSTEM)")'
 
 all: $(addsuffix .$(FASLEXT),$(SOURCES))
 
