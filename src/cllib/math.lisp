@@ -1018,7 +1018,7 @@ occurs, i.e., the normalized sequence should be the probability distribution."
                                (if (zerop num) 0 (* num (log num 2))))))))
     (- (log tot 2) (/ sum tot))))
 
-(defun entropy-sequence (seq &key (key #'value) (test 'eql) weight)
+(defun entropy-sequence (seq &key (key #'value) (test 'eql) (weight 1))
   "Compute the entropy of the given distribution.
 The values are counted and the result is used as a probability distribution.
  (multiple-value-bind (entropy ht) (entropy-sequence seq)
