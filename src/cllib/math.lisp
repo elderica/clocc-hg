@@ -993,8 +993,8 @@ occurs, i.e., the normalized sequence should be the probability distribution."
                                (if (zerop num) 0 (* num (log num 2))))))))
     (- (log tot 2) (/ sum tot))))
 
-(defun count-all (seq &key (test 'eql) (key #'value)
-                  &aux (ht (make-hash-table :test test)))
+(defun count-all (seq &key (test 'eql) (key #'value) append
+                  &aux (ht (or append (make-hash-table :test test))))
   "Return the hash table with counts for values of the sequence."
   (map nil (lambda (el) (incf (gethash (funcall key el) ht 0))) seq)
   ht)
