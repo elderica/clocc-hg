@@ -71,8 +71,8 @@
     (return-from product-from-to 0))
   ;; this algorithm insures that we multiply bignums
   ;; of approximately the same size
-  ;; we use `labels' since that some compilers optimize `labels' better than
-  ;; plain recursion and because this avoids doing the checks above in cycle
+  ;; we use `labels' since some compilers optimize `labels' better than
+  ;; plain recursion and because this avoids doing the above checks in cycle
   (labels ((pft (aa bb)
              (case (- bb aa)
                (0 1) (1 bb) (2 (* (- bb 1) bb)) (3 (* (- bb 2) (- bb 1) bb))
