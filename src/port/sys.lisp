@@ -42,8 +42,9 @@
   #+gcl (si:getenv (string var))
   #+lispworks (lw:environment-variable (string var))
   #+lucid (lcl:environment-variable (string var))
+  #+mcl (ccl::getenv var)
   #+sbcl (sb-ext:posix-getenv var)
-  #-(or allegro clisp cmu gcl lispworks lucid sbcl)
+  #-(or allegro clisp cmu gcl lispworks lucid mcl sbcl)
   (error 'not-implemented :proc (list 'getenv var)))
 
 (defun (setf getenv) (val var)
