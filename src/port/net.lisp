@@ -343,8 +343,8 @@ When SERVICE is NIL, return the list of all services."
                                      "/system32/drivers/etc/services")
                         :direction :input)
       (loop :with name :and alis :and port :and prot
-            :for st = (read-line fl nil +eof+)
-            :until (eq +eof+ st)
+            :for st = (read-line fl nil nil)
+            :until (null st)
             :unless (or (equal "" st) (char= #\# (schar st 0)))
               :do (setf (values name alis port prot) (parse st)) :and
               :if service
