@@ -259,13 +259,17 @@
 		   'complex8))
 		 ((member fun '(sin cos tan
 				asin acos atan atan2
-				exp flog alog10
+				sinh cosh tanh
+				exp flog alog10 log10
 				fsqrt aint sign dim max min))
-		  ;; Generic functions.  Note thate SIGN and DIM are
-		  ;; intrinsics that take two args, and MAX and MIN
-		  ;; take man args.  However, Fortran says all args
-		  ;; should be of same type, so we just look at the
-		  ;; type of the first.
+		  ;; Generic functions.  These generics always return
+		  ;; a number of the same type as its args.  Some
+		  ;; functions take more than one arg, but Fortran
+		  ;; says they are supposed to be the same type, so we
+		  ;; only need to look at the first.  Also, some of
+		  ;; them only take real-type arguments.  We don't
+		  ;; check for that because Fortran says you're
+		  ;; supposed to make sure they are anyway.
 		  (get-fun-arg-type (second arg)))
 		 ((member fun '(dsin dcos dtan
 				dasin dacos datan datan2
@@ -2244,6 +2248,21 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.83  2002/02/09 16:08:49  rtoy
+;;; o GET-FUN-ARG-TYPE:  We forgot to handle the AINT, SIGN, DIM, MAX, and
+;;;   MIN intrinsics.
+;;; o INSERT-DECLARATIONS:
+;;;   o Rename special-proclamation to common-blocks because we don't have
+;;;     special proclamations anymore.
+;;;   o The declarations for common blocks are inserted only if
+;;;     *DECLARE-COMMON-BLOCKS* is non-NIL.
+;;; o GET-IMPLICIT-TYPE:  We don't care if the arg is a formal arg or
+;;;   not.
+;;; o MAKE-COMMON-BLOCK-VARS:  If *RELAXED-ARRAY-DECLS* is non-NIL, the
+;;;   dimensions of the array in the common block is unspecified, even if
+;;;   we already know it.  (Useful for changing the sizes of the arrays in
+;;;   common blocks at run time.  Some Fortran code uses this feature.)
+;;;
 ;;; Revision 1.82  2002/02/08 23:32:51  rtoy
 ;;; The last change to support block data was majorly broken.  Right idea,
 ;;; wrong implementation.  Initializers and stuff need to be inside the
