@@ -295,7 +295,8 @@ Should not be called directly but only through `with-plot-stream'."
     (setq plot :plot))
   (let* ((plot-stream (make-plot-stream plot))
          (plot-spec (apply #'make-plot :data body-function :plot plot opts))
-         (plot-file (pltm-target (plsp-term plot-spec))))
+         (plot-file (typecase plot-stream
+                      (file-stream (namestring plot-stream)))))
     (declare (stream plot-stream))
     (when (or (stringp plot) (pathnamep plot)) (setq plot :file))
     (unwind-protect
