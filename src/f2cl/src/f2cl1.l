@@ -225,8 +225,8 @@ INPUT-FILE               File containing Fortran code
 	(*common-block-initialized* nil)
 	(*relaxed-array-decls* relaxed-array-decls)
 	(*coerce-assignments* coerce-assigns)
-	(*array-type* (cdr (assoc array-type '((:simple-array . lisp:simple-array)
-					       (:array . lisp:array)))))
+	(*array-type* (cdr (assoc array-type '((:simple-array . common-lisp:simple-array)
+					       (:array . common-lisp:array)))))
 	(*array-slicing* array-slicing)
 	(*apply-array-slice* nil)
 	(*declare-common-blocks* declare-common)
@@ -2382,6 +2382,26 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.120  2003/01/08 18:19:00  rtoy
+;;; Was incorrectly converting things like
+;;;
+;;; 	character*8 s
+;;; 	data s/'z'/
+;;;
+;;; to
+;;;
+;;;   (let ((s (make-array 8 :element-type 'base-char :initial-element #\space)))
+;;;     (setf s "z"))
+;;;
+;;; It should really be
+;;;
+;;;   (let ((s (make-array 8 :element-type 'base-char :initial-element #\space)))
+;;;     (replace s "z"))
+;;;
+;;; We really should do this when making the array, not afterwords.
+;;;
+;;; Bug noted by Christophe Rhodes.
+;;;
 ;;; Revision 1.119  2002/09/13 17:50:18  rtoy
 ;;; From Douglas Crosher:
 ;;;

@@ -1424,7 +1424,7 @@
 	 ;; If array-slicing is not used and the array-type is
 	 ;; :simple-array, we don't need the with-array-data stuff
 	 ;; because we couldn't have sliced the array.
-	 (when (eq *array-type* 'lisp:array)
+	 (when (eq *array-type* 'common-lisp:array)
 	   (setf prog-bit (grovel-frefs prog-bit))
 	   ;;(format t "new-prog-bit = ~A~%" prog-bit)
 
@@ -2759,6 +2759,12 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.107  2003/01/08 18:37:58  rtoy
+;;; Checking of reserved lisp names was rather weak.  Now check to see if
+;;; the symbol is an external symbol in the common-lisp package.  If so,
+;;; mangle the name.  (Append with $ instead of _.  Should I really do
+;;; that?)
+;;;
 ;;; Revision 1.106  2002/09/13 17:50:19  rtoy
 ;;; From Douglas Crosher:
 ;;;
