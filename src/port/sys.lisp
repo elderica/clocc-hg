@@ -217,7 +217,11 @@ but there is a TYPE slot, move TYPE into NAME."
   #+allegro (excl:delete-directory dir)
   #+clisp (lisp:delete-dir dir)
   #+cmu (unix:unix-rmdir dir)
-  #+lispworks (lw:delete-directory dir)
+  #+lispworks
+  ;; `lw:delete-directory' is present in LWW 4.1.20 but not on LWL 4.1.0
+  (if (fboundp 'lw::delete-directory)
+      (lw::delete-directory dir)
+      (delete-file dir))
   #-(or allegro clisp cmu lispworks) (delete-file dir))
 
 (defun sysinfo (&optional (out *standard-output*))
