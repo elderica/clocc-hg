@@ -184,14 +184,15 @@ The second value is the last atom (i.e., `dotted-p')."
   (and (apply #'subsetp set1 set2 rest)
        (apply #'subsetp set2 set1 rest)))
 
-(defun count-all (seq &key (test 'eql) (key #'value) append weight
+(defun count-all (seq &key (test 'eql) (key #'value) append (weight 1)
                   &aux (ht (or append (make-hash-table :test test))))
   "Return the hash table with counts for values of the sequence."
-  (map nil (if weight
-               (lambda (el)
-                 (incf (gethash (funcall key el) ht 0)
-                       (funcall weight el)))
-               (lambda (el) (incf (gethash (funcall key el) ht 0))))
+  (map nil (etypecase weight
+             (function
+              (lambda (el)
+               (incf (gethash (funcall key el) ht 0) (funcall weight el))))
+             (number
+              (lambda (el) (incf (gethash (funcall key el) ht 0) weight))))
        seq)
   ht)
 
