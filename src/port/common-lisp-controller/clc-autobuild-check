@@ -93,7 +93,7 @@ fi
 
 source_ab=$ab_dir/$impl/$source/autobuild
 impl_ab=$ab_dir/$impl/autobuild
-global_db=$ab_dir/autobuild
+global_ab=$ab_dir/autobuild
 
 if [ -r $source_ab ]; then
     # package's autobuild readable
