@@ -401,7 +401,7 @@ Suitable for `read-list-from-stream'."
   "Compute the correct total from the hist records and holdings list."
   (declare (list hold navs))
   (loop :for ho :of-type pfl :in hold :for vl :of-type double-float :in navs
-        :sum (* vl (pfl-nums ho)) double-float))
+        :sum (* vl (pfl-nums ho)) :of-type double-float))
 
 (defun read-data-file (file)
   "Return 2 values: the list of holdings and the history list."
