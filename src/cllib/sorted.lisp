@@ -88,10 +88,10 @@ If MK-IDX is non-nil, return indexes too.
 ;;;###autoload
 (defun top-bottom-ui (seq maxn minn idx &key (key #'value) (lessp #'<)
                       (morep #'>) (out *standard-output*)
-                      (label #'identity))
+                      (label #'identity) (klabel #'identity))
   "Call top-bottom and pretty print the results.
 Returns them for possible further processing."
-  (declare (sequence seq) (type (function (t) t) key label)
+  (declare (sequence seq) (type (function (t) t) key label klabel)
            (type (or null fixnum) maxn minn) (stream out))
   (multiple-value-bind (top bot)
       (top-bottom seq maxn minn idx :key key :lessp lessp :morep morep)
@@ -105,27 +105,27 @@ Returns them for possible further processing."
           (if idx
               (print-seqs out lifmt (mapcar #'cdr top)
                           (mapcar (compose 'label car) top)
-                          (mapcar (compose 'key car) top))
+                          (mapcar (compose 'klabel 'key car) top))
               (print-seqs out lfmt (mapcar label top)
-                          (mapcar key top)))
+                          (mapcar (compose 'klabel 'key) top)))
           (if idx
               (format out sifmt (cdr top) (funcall label (car top))
-                      (funcall key (car top)))
+                      (funcall klabel (funcall key (car top))))
               (format out sfmt (funcall label top)
-                      (funcall key top))))
+                      (funcall klabel (funcall key top)))))
       (format out "~%Bottom (~a):~%" (or minn "the only"))
       (if minn
           (if idx
               (print-seqs out lifmt (mapcar #'cdr bot)
                           (mapcar (compose 'label car) bot)
-                          (mapcar (compose 'key car) bot))
+                          (mapcar (compose 'klabel 'key car) bot))
               (print-seqs out lfmt (mapcar label bot)
-                          (mapcar key bot)))
+                          (mapcar (compose 'klabel 'key) bot)))
           (if idx
               (format out sifmt (cdr bot) (funcall label (car bot))
-                      (funcall key (car bot)))
+                      (funcall klabel (funcall key (car bot))))
               (format out sfmt (funcall label bot)
-                      (funcall key bot))))
+                      (funcall klabel (funcall key bot)))))
       (values top bot))))
 
 (defun top-bottom-fl (ls &key (val #'value) (label #'identity)
