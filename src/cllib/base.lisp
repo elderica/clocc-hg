@@ -1,4 +1,4 @@
-;;; File: <base.lisp - 1999-01-06 Wed 22:42:00 EST sds@eho.eaglets.com>
+;;; File: <base.lisp - 1999-01-12 Tue 18:19:17 EST sds@eho.eaglets.com>
 ;;;
 ;;; Basis functionality, required everywhere
 ;;;
@@ -12,6 +12,9 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.8  1999/01/07 03:42:14  sds
+;;; Added `index-t'.
+;;;
 ;;; Revision 1.7  1998/12/28 20:19:33  sds
 ;;; Added `close-pipe'.
 ;;;
@@ -59,6 +62,9 @@
                excl::stream-buffer-size 8192)
          (tpl:setq-default *read-default-float-format* 'double-float)
          (tpl:setq-default *print-case* :downcase)
+         ;; Duane Rettig <duane@franz.com>:
+         ;; TIME reports 32 other bytes too many CL unless tuned with
+         (setq excl::time-other-base 32)
          (push "lisp" sys:*source-file-types*))
   #+clisp (setq lisp:*warn-on-floating-point-contagion* t
                 lisp:*floating-point-contagion-ansi* t
@@ -291,7 +297,7 @@ Implementation:~20t~a~%~7tversion:~20t~a~%Machine:  type:~20t~a
   (format t "~%Software: type:~20t~a~%~7tversion:~20t~a~%Site:~20t~a (~a)
 User home:~20t~a~%Current directory:~20t~a~%Default pathname:~20t~a
 Features:~10t~{~<~%~9t ~1,74:; ~a~>~^,~}.
-Modules:~10t~{~<~%~9t ~,74:; ~a~>~^,~}.~%Current package:~30t~a~%"
+Modules:~10t~{~<~%~9t ~1,74:; ~a~>~^,~}.~%Current package:~30t~a~%"
           (software-type) (software-version) (long-site-name)
           (short-site-name) (user-homedir-pathname) (default-directory)
           *default-pathname-defaults* *features* *modules* *package*)
