@@ -470,7 +470,7 @@
 	(cond ((and (my-digit-char-p char) 
 		    (or (and (not (eql nxt-char 'EOF))
 			     (my-digit-char-p nxt-char))
-			(member nxt-char '(#\. #\D #\E) :test #'char-equal)))
+			(member nxt-char '(#\. #\D #\E #\d #\e))))
 	       (write-char char str))
 	      ((and (or (my-char= char '#\+)
 			(my-char= char '#\-))
@@ -601,6 +601,13 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.32  2002/02/07 23:27:05  rtoy
+;;; Some more number parsing bugs in PARSE-NUMBER.
+;;; o d and e are valid exponent indicators and we missed them sometimes.
+;;; o Add a few more comments
+;;; o Make it easier to debug what parse-number would return as the
+;;;   number.
+;;;
 ;;; Revision 1.31  2002/02/07 22:12:56  rtoy
 ;;; Oops.  Remove that debugging statement.
 ;;;
