@@ -11,9 +11,17 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.1  1999/11/24 17:07:09  sds
+;;; Cross-implementation Portability System
+;;;
 ;;;
 
-(in-package :cl-user)
+(eval-when (compile load eval)
+  (require :ext (translate-logical-pathname "clocc:src;port;ext")))
+
+(in-package :port)
+
+(export '(run-prog pipe-output pipe-input close-pipe with-open-pipe))
 
 ;;;
 ;;; Shell interface
@@ -26,7 +34,7 @@
   #+allegro (apply #'excl:run-shell-command (apply #'vector prog prog args)
                    :wait wait opts)
   #+clisp (apply #'lisp:run-program prog :arguments args opts)
-  #+cmu (run-program prog args :wait wait)
+  #+cmu (ext:run-program prog args :wait wait)
   #+gcl (apply #'run-process prog args)
   #+lispworks (sys::call-system (format nil "~a~{ ~a~}" prog args))
   #-(or allegro clisp cmu gcl lispworks)
