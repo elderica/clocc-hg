@@ -138,6 +138,7 @@ The inverse is `hash-table->alist'."
 
 ;;; beware that some lisps (e.g., CLISP and CMUCL) will not use this
 ;;; method for hash-tables.  it does work with Allegro though.
+;;; since CLISP externalizes hash-tables on its own, only CMUCL is a problem.
 (unlock-package :common-lisp)
 (defmethod print-object ((ht hash-table) (out stream))
   (if *print-readably*
