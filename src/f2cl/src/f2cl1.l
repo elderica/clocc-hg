@@ -885,6 +885,8 @@ FILENAME                 File containing Fortran code
        (return (parse-comp-goto x)))
      (when (id-comp-go-to x)
        (return (parse-comp-go-to x)))
+     (when (id-assign x)
+       (return (parse-assign x)))
      (when (id-assgn-goto x)
        (return (parse-assgn-goto x)))
      (setq bindings (id-goto x))
@@ -1093,6 +1095,10 @@ FILENAME                 File containing Fortran code
   (and (eq (car x) 'goto)
        (id-assgn-go-to-core (cdr x))))
 
+(defun id-assign (x)
+  ;; assign num to var
+  (and (eq (car x) 'assign)
+       (eq (third x) 'to)))
 
 ;integer x,y,z,...
 (defun id-declaration (x) 
@@ -1195,6 +1201,7 @@ FILENAME                 File containing Fortran code
                  (princ-to-string (variable-value '%label bindings))) 
             nil))) )
 ;------------------------------------------------------------------------------
+#+nil
 (defun make-label (n) 
   (read-from-string (concatenate 'string (symbol-name :label) (princ-to-string n))))
 
@@ -1265,6 +1272,12 @@ FILENAME                 File containing Fortran code
   (let* ((expr (remove '|,| x))
 	 (labels (remove '|,| (third expr))))
     `((assigned-goto ,(second expr) ,(or labels (reverse *statement-labels*))))))
+
+(defun parse-assign (x)
+  ;; assign num to var
+  (let ((label (second x))
+	(var (fourth x)))
+    `((setf ,var ,label))))
 
 ;------------------------------------------------------------------------------
 
@@ -2544,6 +2557,20 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.134  2004/08/13 21:16:27  rtoy
+;;; First pass at creating common blocks as arrays.  Intent is to allow
+;;; odepack to be converted via f2cl.
+;;;
+;;; So a common block structure is created that creates as large an array
+;;; as possible for consecutive elements of the same type in the common
+;;; block.  A new array is created for each such section.  Then the
+;;; elements of the common block are accessed either as either an
+;;; individual element of the array or as a displaced array.
+;;;
+;;; This might have speed impacts, so the default is not to do this.  Use
+;;; the keyword :common-as-array to control this feature.  Default is off,
+;;; preserving old behavior.
+;;;
 ;;; Revision 1.133  2004/08/11 19:00:33  rtoy
 ;;; Set the f2cl version to include the RCS Date.
 ;;;
