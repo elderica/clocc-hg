@@ -1707,10 +1707,9 @@ FILENAME                 File containing Fortran code
 			      (format t "  a-info, r-info, SLICE-P = ~A ~A ~A~%"
 				      a-info r-info (or (subtypep a-info 'array) r-info))
 			      ;; If the declared type is an array,
-			      ;; slice it.  If the arg is modified
-			      ;; (r-info is non-NIL) slice it.
-			      ;; Otherwise, grab just the element.
-			      (if (or r-info (subtypep a-info 'array))
+			      ;; slice it.  Otherwise, grab just the
+			      ;; element.
+			      (if (subtypep a-info 'array)
 				  `(array-slice ,(second expr) ,(lookup-vble-type (second expr)) ,@(cddr expr))
 				  expr))
 			     (t
@@ -2538,6 +2537,23 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.130  2003/11/14 04:29:31  rtoy
+;;; Handle function calls to statement functions too so we can generate
+;;; the correct args for them.  Do this by adding a hash table to hold
+;;; info about statement functions.
+;;;
+;;; 	(*f2cl-statement-finfo*): New variable holding the hash-table for
+;;; 	of function info for statement functions.
+;;; 	(f2cl): Give better descriptions of some options in the docstring.
+;;; 	(translate-and-write-subprog): Clear out the hash-table for the
+;;; 	statement function info.
+;;; 	(parse-arrayref-or-stmtfn): Save away function info when we find a
+;;; 	statement function.
+;;; 	(maybe-convert-array-ref-to-slice): If the function is in the
+;;; 	arglist, we can't do anything special about it.  Otherwise, try to
+;;; 	find the function in the global database or the statement-function
+;;; 	database so we can generate the correct array references.
+;;;
 ;;; Revision 1.129  2003/11/14 02:55:54  rtoy
 ;;; 	* src/f2cl1.l (maybe-convert-array-ref-to-slice): When looking up
 ;;; 	the function name to get the argument types, we need to be
