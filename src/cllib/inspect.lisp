@@ -55,7 +55,7 @@
   (up nil :type (or null inspection)) ; parent
   (num-slots 0 :type fixnum)    ; the number of slots
   (pos nil :type (or null fixnum)) ; pos in parent
-  (nth-slot nil :type (or null (function (integer) (t t)))) ; value & name
+  (nth-slot nil :type (or null (function (integer) (values t t)))) ; val & name
   (set-slot nil :type (or null (function (integer t) t)))) ; set Nth slot
 )
 
