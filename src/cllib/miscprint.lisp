@@ -118,6 +118,7 @@ This is the inverse of `hash-table->alist'."
     (dolist (co (cdr alist) ht)
       (setf (gethash (car co) ht) (cdr co)))))
 
+;;;###autoload
 (defun print-hash-table (ht &optional (out t))
   "Print the hash table with contents."
   (declare (hash-table ht))
