@@ -31,10 +31,15 @@
 ;;;
 ;;;
 
-(defcustom *clhs-root* url (url "/usr/doc/lisp/HyperSpec/")
+(defcustom *clhs-root* url (url "http://www.lisp.org/HyperSpec/")
   "The root of the HyperSpec tree.")
 
-(defun clhs-snarf-examples (&key (root *clhs-root*) (out *standard-output*))
+(defcustom *clhs-root-local* pathname
+  (parse-namestring "/usr/doc/lisp/HyperSpec/")
+  "The root of the local HyperSpec tree.")
+
+(defun clhs-snarf-examples (&key (root *clhs-root-local*)
+                            (out *standard-output*))
   "Get the examples from the HyperSpec."
   (declare (pathname root) (stream out))
   (format t " *** processing `~a'~%" root)
