@@ -63,7 +63,8 @@
      (:file "stat" :depends-on ("base" "math" "withtype" "matrix"))
      (:file "string" :depends-on ("base" "withtype"))
      (:file "symb" :depends-on ("base"))
-     (:file "tests" :depends-on ("base" "string" "date" "rpm" "url" "elisp"))
+     (:file "tests" :depends-on
+            ("base" "string" "date" "url" "rpm" "elisp" "xml" "cvs"))
      (:file "tilsla" :depends-on ("base" "withtype"))
      (:file "url" :depends-on ("base" "withtype" "symb" "string" "fileio"
                                "log" "simple" "tilsla" "date"))
