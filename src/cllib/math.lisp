@@ -87,10 +87,10 @@
   ;; we do not use the double recursion a la `product-from-to'
   ;; because it would take us outside the realm of the integers
   (loop :with res = 1
-        :for ii :from 1 :to (max kk (- nn kk))
-        :for jj :from nn :by -1
-        :do (mulf res (/ jj ii))
-        :finally (return res)))
+    :for ii :from 1 :to (max kk (- nn kk))
+    :for jj :downfrom nn
+    :do (mulf res (/ jj ii))
+    :finally (return res)))
 
 (declaim (ftype (function (integer) (values integer)) ! !!))
 (defun ! (nn)
