@@ -1,6 +1,6 @@
 ;;; Environment & System access
 ;;;
-;;; Copyright (C) 1999 by Sam Steingold
+;;; Copyright (C) 1999-2001 by Sam Steingold
 ;;; This is open-source software.
 ;;; GNU Lesser General Public License (LGPL) is applicable:
 ;;; No warranty; you may copy/modify/redistribute under the same
@@ -12,7 +12,9 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  (require :ext (translate-logical-pathname "clocc:src;port;ext")))
+  (require :ext (translate-logical-pathname "clocc:src;port;ext"))
+  #+(and allegro mswindows)
+  (require :ole))
 
 (in-package :port)
 
