@@ -225,10 +225,7 @@
 					 (numberp (second bnd)))
 				    (+ (- (second bnd) idx) 1)
 				    `(+ (- ,(second bnd) ,idx) 1)))
-			    indices bounds)))
-	(offset (mapcar #'(lambda (idx bnd)
-			    `(- ,idx ,(first bnd)))
-			indices bounds)))
+			    indices bounds))))
     `(make-array ,dims
       :element-type ',type
       :displaced-to ,vname
@@ -835,6 +832,14 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.24  2000/07/28 17:09:13  rtoy
+;;; o We are in the f2cl package now.
+;;; o Remove the export expression.
+;;; o // is now called F2CL-//, to prevent problems with the lisp variable
+;;;   //.
+;;; o REAL is now called FREAL, to prevent problems with the lisp type
+;;;   REAL.
+;;;
 ;;; Revision 1.23  2000/07/27 16:39:17  rtoy
 ;;; We want to be in the CL-USER package, not the USER package.
 ;;;
