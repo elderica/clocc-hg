@@ -1590,6 +1590,22 @@
      ,(get_format_stmt (list (second x)))
      ,@(mapcar #'parse-output-argument 
 		       (list-split '|,| (cdddr x))))))
+
+;; x is of the form '(read (lun |,| format) var |,| var)
+;;
+;; We're not trying to implement full Fortran read functionality.  We
+;; just want to read data into the variables.  Implied do loops are
+;; not supported.
+(defun parse-read (x)
+  (append (list "***WARNING:  READ statement may not be translated correctly!")
+	  (mapcar #'(lambda (var)
+		      `(setf ,(if (rest var)
+				  var
+				  (first var))
+			(read)))
+		  (remove nil (list-split '|,| (cddr x))))
+	  (list "***WARNING: Preceding READ statements may not be correct!")))
+  
      
 #+nil
 (defmacro fformat (dest cilist args)
@@ -2146,6 +2162,11 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.58  2000/08/03 03:39:49  rtoy
+;;; The string passed to PARSE-FORMAT-DESCRIPTOR-H can be a character,
+;;; digit, or symbol.  These all need to be converted to character.  Make
+;;; it so.
+;;;
 ;;; Revision 1.57  2000/08/02 16:26:20  rtoy
 ;;; The D and E format descriptors should print out a D and E,
 ;;; respectively.  Thus add PARSE-FORMAT-DESCRIPTOR-D.

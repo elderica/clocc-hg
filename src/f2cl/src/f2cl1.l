@@ -553,6 +553,9 @@ INPUT-FILE               File containing Fortran code
      ;;print
      (when (eq (car x) 'print)
        (return (parse-print x)))
+     ;; read
+     (when (eq (car x) 'read)
+       (return (parse-read x)))
        
      ;;format
      (when (eq (car x) 'format)
@@ -1794,6 +1797,11 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.57  2000/08/01 22:45:46  rtoy
+;;; o Add a few comments.
+;;; o GENERATE-CALL-TO-ROUTINE was crashing when passed an array-slice.
+;;;   We also hosed up function calls where no setters were needed.
+;;;
 ;;; Revision 1.56  2000/07/31 04:08:35  rtoy
 ;;; Remove unused function PARSE-FUNCTION-CALL.
 ;;;
