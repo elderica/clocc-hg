@@ -1,4 +1,4 @@
-;;; File: <url.lisp - 1999-01-13 Wed 13:24:52 EST sds@eho.eaglets.com>
+;;; File: <url.lisp - 1999-01-13 Wed 15:43:01 EST sds@eho.eaglets.com>
 ;;;
 ;;; Url.lisp - handle url's and parse HTTP
 ;;;
@@ -12,6 +12,10 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.15  1999/01/13 18:27:03  sds
+;;; `read-html-markup' now handles #\;, #\: and #\, so it is not necessary
+;;; now to remove these characters from buffer in `ts-pull-next'.
+;;;
 ;;; Revision 1.14  1999/01/09 22:15:42  sds
 ;;; Extracted `ts-pull-next' from `read-next'.
 ;;;
@@ -83,8 +87,6 @@
 ;;(setq *read-eval* nil *read-suppress* t) ; for parsing
 ;;(setq *read-eval* t *read-suppress* nil) ; original
 
-(defcustom *html-readtable* readtable (copy-readtable nil)
-  "The readtable for HTML parsing.")
 (defcustom *html-parse-tags* (member t nil) nil
   "*If non-nil, parse tags, if nil - return nil for all tags.")
 (defcustom *html-verbose* (member t nil) nil "*Be verbose while parsing.")
@@ -130,16 +132,23 @@
   (if *html-parse-tags* (and (consp obj) (eq (car obj) +html-tag+))
       (null obj)))
 
-(set-macro-character #\< #'read-html-markup nil *html-readtable*)
-(set-macro-character #\& #'read-html-markup nil *html-readtable*)
-(set-macro-character #\> (get-macro-character #\)) nil *html-readtable*)
-(set-syntax-from-char #\; #\a *html-readtable*)
-;;(set-macro-character #\; #'read-html-markup nil *html-readtable*)
-(set-syntax-from-char #\# #\a *html-readtable*)
-(set-syntax-from-char #\: #\a *html-readtable*)
-(set-macro-character #\: #'read-html-markup nil *html-readtable*)
-(set-syntax-from-char #\, #\a *html-readtable*)
-(set-macro-character #\, #'read-html-markup nil *html-readtable*)
+(defun make-html-readtable ()
+  "Make the readtable for parsing HTML."
+  (let ((rt (copy-readtable)))
+    (set-macro-character #\< #'read-html-markup nil rt)
+    (set-macro-character #\& #'read-html-markup nil rt)
+    (set-macro-character #\> (get-macro-character #\)) nil rt)
+    (set-syntax-from-char #\; #\a rt)
+    ;;(set-macro-character #\; #'read-html-markup nil rt)
+    (set-syntax-from-char #\# #\a rt)
+    (set-syntax-from-char #\: #\a rt)
+    (set-macro-character #\: #'read-html-markup nil rt)
+    (set-syntax-from-char #\, #\a rt)
+    (set-macro-character #\, #'read-html-markup nil rt)
+    rt))
+
+(defcustom *html-readtable* readtable (make-html-readtable)
+  "The readtable for HTML parsing.")
 
 ;;;
 ;;; }}}{{{ URL handling
