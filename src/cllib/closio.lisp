@@ -56,6 +56,12 @@
 ;;; }}}{{{ print CLOS objects readably
 ;;;
 
+;; without this, Allegro issues a warning on compiling this file
+;; about redefining a symbol (`print-object') in a locked package
+#+allegro
+(eval-when (compile)
+  (setf (excl:package-definition-lock (find-package :common-lisp)) nil))
+
 (defmethod print-object ((obj standard-object) (out stream))
   (if *print-readably*
       (let ((cl (class-of obj)))
@@ -65,6 +71,10 @@
             (format out " ~s ~s" slot (slot-value obj slot))))
         (write-string "]" out))
       (call-next-method)))
+
+#+allegro
+(eval-when (compile)
+  (setf (excl:package-definition-lock (find-package :common-lisp)) t))
 
 ;;;
 ;;; }}}{{{ macroexpand-r
