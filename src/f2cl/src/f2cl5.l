@@ -1167,13 +1167,16 @@
 	 ))
 
      ;; We need to handle BLOCK DATA subprograms differently from
-     ;; normal subprograms.
+     ;; normal subprograms.  (BLOCK DATA subprograms always start with
+     ;; "/BLOCKDATA".  See f2cl1.l that sets this name.)
      (cond
-       ((and (eq (second defun-bit) '/blockdata/)
+       ((and (let* ((sub-name (string (second defun-bit)))
+		    (name-len (min 10 (length sub-name))))
+	       (string-equal sub-name "/blockdata" :end1 name-len :end2 name-len))
 	     *subprog_common_vars*)
 	;; Block data subprograms need to be handled specially.  The
 	;; data-init part needs to be moved inside the body and
-	;; massaged to initialize the data.
+	;; massaged to initialize the data.  
 	(let ((sym-macs (create-sym-macros)))
 	  #+nil
 	  (format t "save-inits = ~A~%" (mapcar #'(lambda (x)
@@ -2440,6 +2443,15 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.85  2002/02/17 15:58:16  rtoy
+;;; o Implement the new array-slicing method.  (Still needs work.)
+;;; o Try to declare all arrays as simple-array, except for arrays that
+;;;   are parameters to a function
+;;; o Declare some loop variables apropriately for implied do loops in
+;;;   write statements.
+;;; o We don't try to declare the functions used by a routine anymore.
+;;;   (Should this be optional?)
+;;;
 ;;; Revision 1.84  2002/02/14 14:36:16  rtoy
 ;;; Add sinh, cosh, tanh to the list of generics we need to handle.
 ;;; Expand on the comments.
