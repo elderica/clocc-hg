@@ -427,7 +427,7 @@
 		(return))
 	     (cond ((or (eq c eof*) (char= c #\Newline))
 		    (read-char s)
-		    (return (dreverse res)))
+		    (return (nreverse res)))
 		   (t
 		    (setq res (cons (read-preserving-whitespace s) res))
 		    (go next)))))

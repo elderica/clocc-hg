@@ -23,7 +23,7 @@
 	     is-Vector is-Array is-Symbol Symbol-name Symbol-plist
 	     is-Keyword is-String memq assq nodup =<
 	     is-Pair is-cons list-copy
-	     tuple pair head tail left right
+	     tuple pair head tail nthrest left right
 	     ;;;; one two three four five six seven eight nine ten
 	     is-Char is-Integer is-Number
 	     is-Float is-Single-float is-Double-float
@@ -294,6 +294,8 @@
 ;;; For decomposing dot-pairs used as two-entry records (e.g., binary trees)
 (subr-synonym left car t)
 (subr-synonym right cdr t)
+
+(subr-synonym nthrest nthcdr t)
 
 ;;;;(subr-synonym one first)
 ;;;;(subr-synonym two second t)
