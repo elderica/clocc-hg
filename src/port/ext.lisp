@@ -65,14 +65,17 @@ This carries the function name which makes the error message more useful."))
   `(progn (declaim (inline ,name)) (defun ,name ,arglist ,@body)))
 
 (defmacro defcustom (name type init doc)
-  "Define a typed variable."
+  "Define a typed global variable."
   `(progn (declaim (type ,type ,name))
     (defvar ,name (the ,type ,init) ,doc)))
 
 (defmacro defconst (name type init doc)
   "Define a typed constant."
   `(progn (declaim (type ,type ,name))
-    (defconstant ,name (the ,type ,init) ,doc)))
+    ;; since constant redefinition must be the same under EQL, there
+    ;; can be no constants other than symbols, numbers and characters
+    (,(if (subtypep type '(or symbol number character)) 'defconstant 'defvar)
+     ,name (the ,type ,init) ,doc)))
 
 (defmacro mk-arr (type init &optional len)
   "Make array with elements of TYPE, initializing."
