@@ -1038,7 +1038,15 @@
 		       (flet ((get-dims (var)
 				(mapcar #'caar
 					    (mapcar #'lookup-array-bounds
-						    (if (listp var) var (list var))))))
+						    (if (listp var) var (list var)))))
+			      (get-types (vars)
+				;; I'm lazy.  Use make-declaration
+				;; to figure out the type of the array
+				;; element.
+				(mapcar #'(lambda (v)
+					    (let ((init (make-declaration v)))
+					      (second (second (second init)))))
+					vars)))
 				  
 		       (cond #+nil
 			     ((eq 'fset (first init))
@@ -1048,11 +1056,13 @@
 				(declare (ignore fset fref))
 				`(fset (fref ,var ,idx ,(get-dims var)) ,val)))
 			     ((eq 'data-implied-do (first init))
-			      ;; We need to get the dimensions for this array
+			      ;; We need to get the dimensions for
+			      ;; this array as well as the types.
 			      (destructuring-bind (ido loop var vals)
 				  init
 				(declare (ignore ido))
-				`(data-implied-do ,loop ,(get-dims var) ,vals)))
+				`(data-implied-do ,loop ,(get-dims var) ,(get-types var)
+				   ,vals)))
 			     (t
 			      init))))
 		   *data-init*))
@@ -2618,6 +2628,11 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.94  2002/03/18 23:46:48  rtoy
+;;; Was not correctly handling implicit variable declarations.  We just
+;;; want to compare the first character of the variable agains the given
+;;; ranges, not the whole variable name!
+;;;
 ;;; Revision 1.93  2002/03/18 23:34:16  rtoy
 ;;; Was not correctly handling some implied do loops containing multiple
 ;;; variables in the loop in data statements.  Fix that and clean up some
