@@ -1,4 +1,4 @@
-;;; File: <gnuplot.lisp - 1998-11-13 Fri 16:37:51 EST sds@eho.eaglets.com>
+;;; File: <gnuplot.lisp - 1998-11-17 Tue 16:16:10 EST sds@eho.eaglets.com>
 ;;;
 ;;; Gnuplot interface
 ;;;
@@ -12,6 +12,9 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.21  1998/11/13 21:38:06  sds
+;;; Added option `lines' to `plot-dated-lists'.
+;;;
 ;;; Revision 1.20  1998/10/21 20:01:25  sds
 ;;; Switched to keys in `plot-header'.  Now, to add a gnuplot option, one
 ;;; needs to modify only `plot-header', not `plot-lists-arg' &c.
@@ -141,7 +144,7 @@ PLOT means:
       (declare (stream ,str))
       (unwind-protect (progn (apply #'plot-header ,str ,plot ,@header) ,@body)
         (force-output ,str)
-        #+win32 (when ,str (close ,str))
+        #+win32 (close ,str)
         #+win32
         (ecase ,plot
           ((t :plot)
@@ -159,7 +162,7 @@ PLOT means:
                              (list "/noend" *gnuplot-file*))))
           (:print (format *gnuplot-msg-stream* "~&Sent the plot to `~a'.~%"
                           *gnuplot-printer*))
-          (:file (format *gnuplot-msg-stream* "~&Prepared file `~a'.
+          (:file (format *gnuplot-msg-stream* "~&Wrote `~a'.
 Type \"load '~a'\" at the gnuplot prompt.~%"
                          *gnuplot-file* *gnuplot-file*)))
         #+unix
@@ -169,13 +172,12 @@ Type \"load '~a'\" at the gnuplot prompt.~%"
            (fresh-line *gnuplot-msg-stream*)
            (princ "Press <enter> to continue..." *terminal-io*)
            (force-output *terminal-io*) (read-line *terminal-io* nil nil))
-          (:file
-           (close ,str)
-           (format *gnuplot-msg-stream* "~&Wrote `~a'.~%" *gnuplot-file*))
-          (:print
-           (format *gnuplot-msg-stream* "~&Sent the plot to `~a'.~%"
-                   *gnuplot-printer*)
-           (format ,str "set terminal x11~%set output~%")))))))
+          (:print (format *gnuplot-msg-stream* "~&Sent the plot to `~a'.~%"
+                          *gnuplot-printer*)
+                  (format ,str "set output~%"))
+          (:file (format *gnuplot-msg-stream* "~&Wrote `~a'.
+Type \"load '~a'\" at the gnuplot prompt.~%"
+                         *gnuplot-file* *gnuplot-file*)))))))
 
 (defun plot-header (str plot &key (xlabel "x") (ylabel "y") data-style
                     timefmt xb xe (title "plot") legend (xtics t) (ytics t)
@@ -192,11 +194,11 @@ The following gnuplot options are accepted:
              ((nil) (format str "set no~a~%" nm))
              (t (format str "set ~a ~a~%" nm par)))))
     (if (eq plot :print)
-        (format str "set terminal postscript landscape~%set output '~a'~%"
-                *gnuplot-printer*)
+        (format str "set terminal postscript landscape 'Helvetica' 9
+set output '~a'~%" *gnuplot-printer*)
         (format str "set terminal ~a~@[ ~a~]~%set output~%" #+unix "x11"
                 #+win32 "windows" term))
-    (format str "set time '%Y-%m-%d %a %H:%M:%S %Z' 0,0 'Helvetica'
+    (format str "set timestamp '%Y-%m-%d %a %H:%M:%S %Z' 0,0 'Helvetica'
 set xdata~:[~%set format x '%g'~; time~%set timefmt ~:*'~a'
 set format x ~:*'~a'~]~%set xlabel '~a'~%set ylabel '~a'~%set border
 set data style ~a~%set xrange [~a:~a]~%set title \"~a\"~%~@[set key ~a~%~]"
@@ -238,9 +240,9 @@ EMA is the list of parameters for Exponential Moving Averages.
 CHANNELS id the list of channels to plot.
 LINES and POSL are lists of positions,
 lines are drawn without position channels."
+  (assert dls () "Nothing to plot for `~a'~%" title)
   (setq begd (if begd (date begd) (dl-nth-date (car dls)))
         endd (if endd (date endd) (dl-nth-date (car dls) -1)))
-  (assert dls () "nothing to plot for `~a'~%" title)
   (remf opts :ema) (remf opts :rel) (remf opts :channels) (remf opts :posl)
   (remf opts :slot) (remf opts :plot) (remf opts :lines)
   (with-plot-stream (str plot :xlabel xlabel :ylabel ylabel :title title
@@ -259,8 +261,10 @@ lines are drawn without position channels."
                     dls))
     (let ((lt 2))
       (dolist (ch channels) (plot-channel-str ch str "" (incf lt))))
-    (dolist (pos posl) (plot-pos-str pos str))
-    (dolist (ln lines) (plot-pos-str ln str t))
+    (dolist (pos posl)
+      (when (pos-hit-interval-p pos begd endd) (plot-pos-str pos str)))
+    (dolist (ln lines)
+      (when (pos-hit-interval-p ln begd endd) (plot-pos-str ln str t)))
     (terpri str)                ; the command line is over!
     (let* ((emal (make-list (length ema))) bv
            (val (if rel (lambda (dl) (/ (dl-nth-slot dl slot) bv))
