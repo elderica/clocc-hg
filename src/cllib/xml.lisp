@@ -380,6 +380,7 @@ The first character to be read is #\T."
                      (xml-entity ent (case char
                                        (#\& *xml-amp*) (#\% *xml-per*))
                                  char :proc 'read-xml))))
+       (read-char stream)       ; #\;
        (etypecase str
          (string str)           ; "??" for undefined entities and &#nnnn;
          (stream
