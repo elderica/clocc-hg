@@ -41,7 +41,7 @@
           open-socket-retry open-url with-open-url
           ftp-list url-send-mail url-get-news url-time
           browse-url *browsers* *browser* *url-output* *url-error*
-          *nntp-server* *url-replies* *url-errors*
+          *nntp-server* *url-replies* *url-errors* *url-user-agent*
           dump-url url-get whois finger flush-http))
 
 ;;;
@@ -430,6 +430,10 @@ ERR is the stream for information messages or NIL for none."
             ((:news :nntp) (url-ask ,socket :nntp-quit "quit")))
           (close ,socket))))))
 
+(defcustom *url-user-agent* string
+  (format nil "CLOCC/CLLIB/url.lisp (~a)" (lisp-implementation-type))
+  "*The ID string sent by `url-open-http'.")
+
 (defun url-open-http (sock url)
   "Open the socket to the HTTP url.
 Sends the request, returns an open socket on success or signals an error."
@@ -438,8 +442,7 @@ Sends the request, returns an open socket on success or signals an error."
         (request (list (format nil "GET ~a HTTP/1.0"
                                (if (zerop (length (url-path url)))
                                    "/" (url-path url)))
-                       (format nil "User-Agent: CLOCC/CLLIB (~a)"
-                               (lisp-implementation-type))
+                       (format nil "User-Agent: ~a" *url-user-agent*)
                        (format nil "Host: ~a" (url-host url))
                        "Accept: */*" "Connection: close")))
     (socket-send sock request t)
