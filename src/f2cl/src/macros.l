@@ -815,6 +815,7 @@
     `(let ((,stream (lun->stream ,dest-lun)))
       ,@(expand-format stream format-cilist args))))
 
+#+nil
 (defmacro fformat1 (dest directive arg)
   (let ((val (gensym)))
     `(let ((,val ,arg))
@@ -823,11 +824,27 @@
 	  (print ,val)
 	  (format ,dest ,directive ,val)))))
 
+(defmacro fformat1 (dest directive arg)
+  (let ((val (gensym)))
+    `(let ((,val ,arg))
+      (cond ((and (arrayp ,val)
+		  (not (stringp ,val)))
+	     (dotimes (k (array-total-size ,val))
+	       (format ,dest ,directive (row-major-aref ,val k))
+	       (terpri ,dest)))
+	    ((listp ,val)
+	     (dolist (item ,val)
+	       (format ,dest ,directive item)
+	       (terpri ,dest)))
+	    (t
+	     (format ,dest ,directive ,val))))))
+
 (defun expand-format (dest cilist args)
   (if (equal cilist '("~A~%"))
       (append (mapcar #'(lambda (arg) `(fformat1 ,dest "~A " ,arg)) args)
 	   `((format ,dest "~%")))
 
+      ;loop through directives, consume arguments
       (do ((res '())
 	   (directives cilist (cdr directives))
 	   (arglist args arglist))
@@ -905,6 +922,16 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.26  2000/08/01 22:10:41  rtoy
+;;; o Try to make the Fortran functions to convert to integers work the
+;;;   way Fortran says they should.
+;;; o Declaim most of the intrinsics as inline so we don't have an
+;;;   additional function call for simple things.
+;;; o Add some compiler macros for Fortran max/min functions to call the
+;;;   Lisp max/min functions withouth using #'apply.
+;;; o Try to declare the args to functions with branchs appropriately,
+;;;   even in the face of signed zeroes.
+;;;
 ;;; Revision 1.25  2000/07/28 22:10:05  rtoy
 ;;; Remove unused var from ARRAY-SLICE.
 ;;;
