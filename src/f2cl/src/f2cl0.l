@@ -25,6 +25,8 @@
 ;;
 ;;(format t "~&The f2cl software has been loaded.~%")
 
+(in-package #:common-lisp-user)
+
 (defpackage "FORTRAN-TO-LISP"
     (:use "CL")
   (:documentation "The package holding all symbols need by the Fortran to Lisp converter")
@@ -71,6 +73,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.8  2001/04/26 17:49:50  rtoy
+;;; Export new functions D1MACH and R1MACH
+;;;
 ;;; Revision 1.7  2001/02/26 15:38:22  rtoy
 ;;; Move *check-array-bounds* from f2cl1.l to macros.l since the generated
 ;;; code refers to it.  Export this variable too.
