@@ -38,7 +38,7 @@ Taken from CLtL2 p602."
 (declaim (ftype (function (&optional t) (values (integer 0))) get-int-time))
 (defun get-int-time (&optional (run t))
   "Return the run (or real) time counter, as a double float."
-  (dfloat (if run (get-internal-run-time) (get-internal-real-time))))
+  (if run (get-internal-run-time) (get-internal-real-time)))
 
 (defun time-diff (end beg)
   "Compute the time (in seconds) between the two given internal timestamps."
