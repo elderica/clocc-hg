@@ -4,6 +4,13 @@
 ;;;;  Class of Random number generators
 ;;;;
 ;;;;  $Log$
+;;;;  Revision 1.7  2001/08/27 13:53:24  rtoy
+;;;;  o Change scaling in Ziggurat method for exponential variates because
+;;;;    CMUCL on sparc doesn't convert (unsigned-byte 32) to floats very
+;;;;    well.
+;;;;  o Add timing info for CMUCL sparc.  Ziggurat method is the fastest
+;;;;    still.
+;;;;
 ;;;;  Revision 1.6  2001/08/26 13:50:33  rtoy
 ;;;;  Add Marsaglia's Ziggurat method for generating exponential and
 ;;;;  Gaussian variates.  Almost twice as fast as any of the others.
@@ -129,11 +136,17 @@
 	    (setf (aref x k) (funcall finv (+ (/ v prev)
 					      (funcall f prev))))
 	    (setf (aref fx k) (funcall f (aref x k)))))
+
+    (setf (aref x 0) 0d0)
+    (setf (aref fx 0) (funcall f (aref x 0)))
+    (setf (aref fx n) (funcall f (aref x n)))
+    
     (loop for k from 1 to n do
 	  (setf (aref k-table k)
 		(floor (scale-float (/ (aref x (1- k)) (aref x k)) scale)))
 	  (setf (aref w-table k)
 		(* (aref x k) (expt .5d0 scale))))
+
     (setf (aref k-table 0) (floor (scale-float (/ (* r (funcall f r)) v) scale)))
     (setf (aref w-table 0) (* (/ v (funcall f r)) (expt 0.5d0 scale)))
     (values k-table w-table fx)))
@@ -1022,7 +1035,7 @@ of zero and a variance of 1.
 
 ;;; Select one that works for you.
 (defmacro gen-gaussian-variate (state)
-  `(gen-gaussian-variate-polar ,state))
+  `(gen-gaussian-variate-ziggurat ,state))
 
 ;;;;-------------------------------------------------------------------------
 ;;;;
@@ -1847,14 +1860,23 @@ with mean M:
 #||
 (defun time-expo (n)
   (declare (fixnum n))
-  (flet ((timer (f)
+  (flet (#+cmu
+	 (timer (f)
 	   (let ((func (coerce f 'function)))
 	     (gc)
 	     (format t "~A~%" f)
 	     (system:without-gcing
 	      (time (dotimes (k n)
 		      (declare (fixnum k))
-		      (funcall func 1d0 *random-state*)))))))
+		      (funcall func 1d0 *random-state*))))))
+	 #-cmu
+	 (timer (f)
+	   (let ((func (coerce f 'function)))
+	     (gc)
+	     (format t "~&~A~%" f)
+	     (time (dotimes (k n)
+		     (declare (fixnum k))
+		     (funcall func 1d0 *random-state*))))))
     (declaim (inline timer))
     (dolist (f (list #'gen-exponential-variate-log-method
 		     #'gen-exponential-variate-algo-s
@@ -1867,14 +1889,23 @@ with mean M:
 
 (defun time-gaussian (n)
   (declare (fixnum n))
-  (flet ((timer (f)
+  (flet (#+cmu
+	 (timer (f)
 	   (let ((func (coerce f 'function)))
 	     (gc)
 	     (format t "~A~%" f)
 	     (system:without-gcing
 	      (time (dotimes (k n)
 		      (declare (fixnum k))
-		      (funcall func *random-state*)))))))
+		      (funcall func *random-state*))))))
+	 #-cmu
+	 (timer (f)
+	   (let ((func (coerce f 'function)))
+	     (gc)
+	     (format t "~&~A~%" f)
+	     (time (dotimes (k n)
+		     (declare (fixnum k))
+		     (funcall func *random-state*))))))
     (declare (inline timer))
     (dolist (f (list #'gen-gaussian-variate-polar
 		     #'gen-gaussian-variate-algorithm-na
@@ -1980,16 +2011,21 @@ with mean M:
 		  (float (funcall pdf (aref center k)))))))))
 
 (defun rng-expo-histogram (n gen)
-  (let ((r (make-array n :element-type 'double-float)))
+  (let ((m 2d0)
+	(r (make-array n :element-type 'double-float)))
     (dotimes (k n)
-      (setf (aref r k) (funcall gen 1d0 *random-state*)))
-    (plot-hist r :intervals 50 :lo 0 :hi 10)))
+      (setf (aref r k) (funcall gen m *random-state*)))
+    (plot-hist-pdf r #'(lambda (x)
+			 (declare (double-float x))
+			 (/ (exp (- (/ x m))) m))
+		   :intervals 50 :lo 0 :hi (* 10 m))))
 
 (defun rng-gaussian-histogram (n gen)
   (let ((r (make-array n :element-type 'double-float)))
     (dotimes (k n)
       (setf (aref r k) (funcall gen *random-state*)))
     (plot-hist-pdf r #'(lambda (x)
+			 (declare (double-float x))
 			 (* (/ (sqrt (* 2 pi))) (exp (* -0.5d0 x x))))
 		   :intervals 50 :lo -5 :hi 5)))
 
