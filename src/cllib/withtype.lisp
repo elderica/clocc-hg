@@ -37,7 +37,7 @@
 
 (defmacro dfloat (num)
   "Coerce to double float."
-  `(float ,num 1.0d0))
+  `(float ,num 1d0))
 
 (deftype index-t () '(unsigned-byte 20))
 

@@ -358,7 +358,7 @@ the error `timeout' is signaled."
 (defcustom *url-bytes-transferred* integer 0
   "The number of bytes transferred during the current connection.")
 (makunbound '*url-bytes-transferred*)
-(defcustom *url-opening-time* double-float 0.0d0
+(defcustom *url-opening-time* double-float 0d0
   "The time when the current connection was open.")
 (makunbound '*url-opening-time*)
 

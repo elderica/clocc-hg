@@ -91,7 +91,7 @@ for relative change of at least ~5,3f~%"
 (defun out-of-bounds-p (ll &key (key #'value) (bn *big-num*) (out t))
   "Check for outrageous numbers in the list."
   (declare (list ll) (type (function (t) double-float)) (double-float bn))
-  (let ((err nil) (bn- (- bn)) (bn1 (/ bn)) (bn1- (- (/ bn))) (val 0.0d0))
+  (let ((err nil) (bn- (- bn)) (bn1 (/ bn)) (bn1- (- (/ bn))) (val 0d0))
     (declare (double-float bn- bn1 bn1- val))
     (dolist (rec ll err)
       (setq val (funcall key rec))

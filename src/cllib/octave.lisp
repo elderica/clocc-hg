@@ -52,7 +52,7 @@ Send the data to Octave, get the answer."
       (lisp:make-pipe-io-stream *octave-program*)
     (setq dim (array-dimension mx 0)
 	  ans (make-array dim :element-type 'double-float
-			  :initial-element 0.0d0 :adjustable nil)
+			  :initial-element 0d0 :adjustable nil)
 	  endstr "ans = 579" les (length endstr))
     (format oc-ou "format long~%page_screen_output = 0~%
 output_precision = 20~%AA=[")

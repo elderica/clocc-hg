@@ -107,7 +107,7 @@ Returns the list of the 2^dim points, less if the set was degenerate."
   (let* ((ll (if (> (length lst) (1+ (length (car lst))))
                  (convex-hull-n-dim (cdr lst)) (cdr lst)))
          (new (car lst)) (len (length ll)) (dim (length (car lst)))
-         (mid (mk-arr 'double-float 0.0d0 dim)))
+         (mid (mk-arr 'double-float 0d0 dim)))
     (declare (fixnum len dim) (type (simple-array double-float (*)) new mid))
     (setq mid (apply #'map-into mid
                      (lambda (&rest nums) (/ (apply #'+ nums) len)) ll))
