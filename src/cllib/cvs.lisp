@@ -202,7 +202,6 @@
         (when (null (cdr rr)) (push ff (author-owns au)))))
     (setq aul (sort (mapcar #'cdr (cdr (hash-table->alist aht))) #'<
                     :key (compose length author-revs)))
-    (progn (terpri)
     (format t "name        owns   modified  revisions   lines changed~%")
     (dolist (au aul)
       (format t "~a~10t ~5:d ~10:d ~10:d ~15:d~%"
@@ -213,7 +212,7 @@
             (reduce #'+ aul :key (lambda (au) (length (author-owns au))))
             (reduce #'+ aul :key (lambda (au) (length (author-mods au))))
             (reduce #'+ aul :key (lambda (au) (length (author-revs au))))
-            (reduce #'+ aul :key #'author-lines)))
+            (reduce #'+ aul :key #'author-lines))
     (values aul aht)))
 
 (provide :cvs)
