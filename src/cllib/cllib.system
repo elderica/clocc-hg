@@ -12,10 +12,9 @@
 
 (let (tbc)                      ; To Be Compiled
 
-(setq mk:*central-registry*
-      (nconc (list (translate-logical-pathname "clocc:src;port;")
-                   (translate-logical-pathname "clocc:src;tools;metering;"))
-             mk:*central-registry*))
+(mk:add-registry-location (translate-logical-pathname "clocc:src;port;"))
+(mk:add-registry-location
+ (translate-logical-pathname "clocc:src;tools;metering;"))
 
 (mk:defsystem cllib
     :source-pathname (translate-logical-pathname "clocc:src;cllib;")
