@@ -165,6 +165,7 @@ EOF defaults to `+eof+'.
 ;;; }}}{{{ Read/Write object
 ;;;
 
+;;;###autoload
 (defun write-to-file (obj file &optional (nice t) &rest comments)
   "Write the object to the file, readably.
 The optional third argument is passed to `pr'."
