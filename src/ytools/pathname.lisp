@@ -115,8 +115,6 @@
    file      ;; Either false; or a logical-name symbol;
              ;; or a pathname specifying only a name, optional type,
              ;; optional version
-;;;;   filename  ;; Either a symbol or false.  The symbol that was used to
-;;;;             ;; generate the file, if any.
 )
 ;;; Hmmm.  Host and device are supposed to be hidden in the 'directory'
 
