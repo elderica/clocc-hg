@@ -158,7 +158,8 @@ INPUT-FILE               File containing Fortran code
 	(delete-file processed-file))
       (values output-file))))
 
-(defun f2cl-compile (filename &key output-file
+(defun f2cl-compile (filename &key
+			      (output-file t)
 			      error-file prune-labels include-comments
 			      (auto-save t) (relaxed-array-decls t)
 			      (coerce-assigns :as-needed)
@@ -206,7 +207,7 @@ FILENAME                 File containing Fortran code
     (multiple-value-prog1
 	(compile-file lisp-file :output-file output-file :error-file error-file)
       (unless keep-lisp-file
-      (delete-file lisp-file)))))
+	(delete-file lisp-file)))))
 ;---------------------------------------------------------------------------
 (defun process-data (x) 
    (print x)
@@ -1957,6 +1958,10 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.66  2000/08/29 15:52:35  rtoy
+;;; Need to coerce the RHS of statement functions to the type of the
+;;; statement function itself.
+;;;
 ;;; Revision 1.65  2000/08/18 15:08:49  rtoy
 ;;; Gratuitous change from prog to let in TRANSLATE-AND-WRITE-SUBPROG.
 ;;;
