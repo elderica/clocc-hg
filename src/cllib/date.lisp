@@ -552,7 +552,8 @@ I.e., (tomorrow (today) -1) is yesterday."
 (defun date-next-year (dd &optional (skip 1))
   "Increment (destructively) the year."
   (declare (type date dd) (type days-t skip))
-  (incf (date-ye dd) skip) dd)
+  (incf (date-ye dd) skip)
+  (fix-date dd))
 
 (defun date-next-month (dd &optional (skip 1))
   "Increment (destructively) the month."
@@ -560,7 +561,7 @@ I.e., (tomorrow (today) -1) is yesterday."
   (multiple-value-bind (iy im) (floor (+ -1 skip (date-mo dd)) 12)
     (incf (date-ye dd) iy)
     (setf (date-mo dd) (1+ im))
-    dd))
+    (fix-date dd)))
 
 (defun date-next-all (dd &optional (skip 1))
   "Increment (non-destructively) year, month and day."
