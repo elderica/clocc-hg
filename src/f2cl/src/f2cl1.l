@@ -1719,7 +1719,7 @@ Senac syntax:... | op '| ...|)))
 	((eq (car x) 'double) 
 	 (append '(double-float) (cdr x)))
 	((eq (car x) 'logical) 
-	 (append t (cdr x)))
+	 (append '(logical) (cdr x)))
 	(t x)))
 
 (defun reduce-data-type (x)
@@ -1951,6 +1951,10 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.75  2001/06/04 17:14:38  rtoy
+;;; Handle IMPLICIT NONE by putting ":NONE (A-Z)" as the type for
+;;; *implicit_vble_decls*.
+;;;
 ;;; Revision 1.74  2001/06/04 14:31:20  rtoy
 ;;; Recognize IMPLICIT NONE, but the semantics are NOT currently
 ;;; implemented:  undeclared variables will still be declared with default
