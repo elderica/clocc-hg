@@ -1,4 +1,4 @@
-;;; File: <base.lisp - 1999-02-22 Mon 12:52:38 EST sds@eho.eaglets.com>
+;;; File: <base.lisp - 1999-03-02 Tue 15:38:53 EST sds@eho.eaglets.com>
 ;;;
 ;;; Basis functionality, required everywhere
 ;;;
@@ -12,6 +12,10 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.11  1999/02/22 18:18:51  sds
+;;; Added Naggum's ACL readtable fix.
+;;; Added `probe-directory' and *fas-ext*.
+;;;
 ;;; Revision 1.10  1999/01/28 14:37:36  sds
 ;;; Moved `with-open-pipe' here.
 ;;; Renamed `current-environment' to `sysinfo'.
@@ -58,7 +62,7 @@
            #+(or clisp gcl) (declaration values))
   (setq *read-default-float-format* 'double-float *print-case* :downcase
         *print-array* t)
-  #+cmu (setf *gc-verbose* nil *bytes-consed-between-gcs* 32000000
+  #+cmu (setq *gc-verbose* nil *bytes-consed-between-gcs* 32000000
               *efficiency-note-cost-threshold* 20)
   ;; (lisp::fd-stream-buffering system:*stdout*) :none
   ;; (lisp::fd-stream-buffering system:*tty*) :none)
@@ -105,9 +109,10 @@
                 ;; lisp:*pprint-first-newline* nil
                 ;; sys::*source-file-types* '(#".lisp") ; default
                 lisp:*print-rpars* nil ; put closing pars where they belong
+                lisp:*print-indent-lists* 1
                 lisp:*default-float-format* 'double-float)
   #+gcl (defmacro lambda (bvl &body forms) `#'(lambda ,bvl ,@forms))
-  #+allegro-v4.3
+  #+allegro-v4.3                ; From Erik Naggum <erik@naggum.no>
   (unless (member :key (excl:arglist #'reduce) :test #'string=)
     (setq excl:*compile-advice* t)
     (excl:defadvice reduce (support-key :before)
@@ -455,11 +460,16 @@ All the values from nth function are fed to the n-1th."
 ;;; }}}{{{ generic
 ;;;
 
+(declaim (ftype (function (t) number) value))
 (defgeneric value (xx)
-  (:documentation "Get the value.")
+  (:documentation "Get the value of the object.")
   (:method ((xx number)) xx)
   (:method ((xx cons)) (value (cdr xx))))
-(declaim (ftype (function (t) number) value))
+
+(declaim (ftype (function (t) symbol) code))
+(defgeneric code (xx)
+  (:documentation "Get the code of the object.")
+  (:method ((xx symbol)) xx))
 
 ;;;
 ;;; }}}{{{ autoloads
