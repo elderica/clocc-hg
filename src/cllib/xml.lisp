@@ -401,7 +401,7 @@ the second is `file size' (including tags)."
 (defun stream-length (st)
   "A wrap around for `file-stream'."
   (etypecase st
-    ((or file-stream #+allegro excl:file-simple-stream)
+    ((or file-stream #+allegro-v6.0 excl:file-simple-stream)
      (file-length st))
     (list (reduce #'+ st :key #'stream-length))
     (concatenated-stream (stream-length (concatenated-stream-streams st)))
@@ -442,7 +442,7 @@ the second is `file size' (including tags)."
             (xmlis-all str) (concatenated-stream-streams (xmlis-st str))))
   (dolist (st (concatenated-stream-streams (xmlis-st str)))
     (when (or (typep st 'file-stream)
-              #+allegro (typep st 'excl:file-simple-stream))
+              #+allegro-v6.0 (typep st 'excl:file-simple-stream))
       (when debug-p (format t " == ~s -> ~s~%" st (truename st)))
       (return (truename st)))))
 
