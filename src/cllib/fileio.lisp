@@ -198,7 +198,7 @@ NICE (default T).  Uses `with-standard-io-syntax'."
 The optional third argument is passed to `pr'.
 Return the size of the file."
   (declare (type (or simple-string pathname) file))
-  (format t "Writing `~a'..." file) (force-output)
+  (format t "~&Writing `~a'..." file) (force-output)
   (with-timing (:count file-length)
     (with-open-file (str file :direction :output :if-exists :supersede)
       (declare (stream str))
