@@ -90,6 +90,7 @@
 (setf (logical-pathname-translations "clocc")
       '(("src;defsystem;*" "/usr/local/src/clocc/src/defsystem-3.x/*")
 	("src;defsystem-3-x;*" "/usr/local/src/clocc/src/defsystem-3.x/*")
-	("**;*" "/usr/local/src/clocc/**/*")))
+	("**;*" "/usr/local/src/clocc/**/*")
+        ("**;*.*" "/usr/local/src/clocc/**/*.*")))
 
 ;;; clocc.lisp ends here

@@ -19,7 +19,8 @@
 (in-package :cllib)
 
 (setf (logical-pathname-translations "cllib")
-      `(("**;*" ,(logical-pathname "clocc:src;cllib;**;*"))))
+      `(("**;*" ,(logical-pathname "clocc:src;cllib;**;*"))
+        ("**;*.*" ,(logical-pathname "clocc:src;cllib;**;*.*"))))
 
 (defcustom *datadir* pathname
   (merge-pathnames "data/" (user-homedir-pathname))
