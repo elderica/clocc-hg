@@ -13,8 +13,6 @@
   (require :withtype (translate-logical-pathname "cllib:withtype"))
   ;; `kwd'
   (require :symb (translate-logical-pathname "cllib:symb"))
-  ;; `get-float-time'
-  (require :log (translate-logical-pathname "cllib:log"))
   ;; `save-restore', `skip-search', `skip-blanks', `skip-to-line',
   ;; `read-non-blanks'
   (require :fileio (translate-logical-pathname "cllib:fileio"))
