@@ -47,7 +47,7 @@
 ;      fix-slashes
 
 ;;-----------------------------------------------------------------------------
-(in-package :user)
+(in-package :cl-user)
 
 ;; functions for setting up varaible declarations and initialisations
 (eval-when (compile load eval)
@@ -264,7 +264,7 @@
 		  (get-fun-arg-type fun)))))
 	(t
 	 ;; If we have a fixnum, return integer4 instead.
-	 (if (fixnump arg)
+	 (if (typep arg 'integer)
 	     'integer4
 	     (type-of arg)))))
 
@@ -2086,6 +2086,17 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.52  2000/07/21 17:47:20  rtoy
+;;; o FIXUP-EXPRESSION:  add a case to convert (- N) to just -N, when N is
+;;;   a number.
+;;;
+;;; o MERGE-OPS: incorrectly merged (- (- 3) IT) to (- 3 IT).  I think
+;;;   this is fixed now.
+;;;
+;;; o INSERT-DECLARATIONS: Don't fixup external function refs if an
+;;;   intrinsic was actually a variable in the arglist.  (Missed this case
+;;;   from before.)
+;;;
 ;;; Revision 1.51  2000/07/20 13:43:00  rtoy
 ;;; Since all arrays are now actually stored in column-major order in a
 ;;; 1-dimensional vector, we don't need to transpose the data initializers
