@@ -1302,7 +1302,20 @@ main-loop
 	      ;;(format t "list = ~a~%" list)
 	      ;;(format t "var = ~a~%" var)
 	      ;;(format t "vals = ~a~%" vals)
-	      (let* ((is-array (vble-is-array-p (check-reserved-lisp-names (caar var))))
+	      
+	      ;; Need to be careful here.  We might be doing either
+	      ;;
+	      ;; data x / 1 , 2 , 3 /
+	      ;;
+	      ;; or
+	      ;;
+	      ;; data x(1) / 1 /.
+	      ;;
+	      ;; So we check the var is an array without dimensions.
+	      ;; If so, the VALS list is really all the values for the
+	      ;; array.
+	      (let* ((is-array (and (vble-is-array-p (check-reserved-lisp-names (caar var)))
+				    (null (cdar var))))
 		     (result (mapcar #'parse-data1 var (if is-array (list vals) vals))))
 		;;(format t "result = ~a~%" result)
 		(setf *data-init* (append *data-init* (if (consp (first result))
@@ -1799,6 +1812,13 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.46  2000/07/21 17:39:27  rtoy
+;;; PARSE-DATA and friends were mishandling the case
+;;;
+;;; 	DATA array/1,2,3,4/
+;;;
+;;; where array was an array.
+;;;
 ;;; Revision 1.45  2000/07/20 13:40:52  rtoy
 ;;; o PARSE-DATA was not correctly handling data statements of the form:
 ;;;
