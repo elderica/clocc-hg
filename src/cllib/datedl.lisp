@@ -16,7 +16,7 @@
   ;; `with-printing'
   (require :laser (translate-logical-pathname "cllib:laser"))
   ;; `mean', `standard-deviation', `standard-deviation-relative', `volatility'
-  ;; `lincom', `regress', `weighted-mean', `s/', `rel-diff'
+  ;; `lincom', `regress', `mean-weighted', `s/', `rel-diff'
   (require :math (translate-logical-pathname "cllib:math"))
   ;; `keyword-concat'
   (require :symb (translate-logical-pathname "cllib:symb")))
@@ -545,10 +545,10 @@ Must not assume that the list is properly ordered!"
   (declare (type dated-list dl))
   (standard-deviation-relative (dl-ll dl) :key (dl-slot dl slot)))
 
-(defsubst weighted-mean-dl (dl wts &key (slot 'val))
-  "Apply `weighted-mean' to the dated list."
+(defsubst mean-dl-weighted (dl wts &key (slot 'val))
+  "Apply `mean-weighted' to the dated list."
   (declare (type dated-list dl))
-  (weighted-mean (dl-ll dl) wts :value (dl-slot dl slot)))
+  (mean-weighted (dl-ll dl) wts :value (dl-slot dl slot)))
 
 ;;;
 ;;; Change
