@@ -1,4 +1,4 @@
-;;; File: <gnuplot.lisp - 1999-05-12 Wed 10:20:25 EDT sds@goems.com>
+;;; File: <gnuplot.lisp - 1999-05-18 Tue 19:00:40 EDT sds@goems.com>
 ;;;
 ;;; Gnuplot interface
 ;;;
@@ -12,6 +12,9 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.26  1999/05/12 14:23:14  sds
+;;; (plot-header): new options `xfmt' and `yfmt'.
+;;;
 ;;; Revision 1.25  1999/04/09 19:20:41  sds
 ;;; `+gnuplot-epoch+' is now an integer, not a date.
 ;;;
@@ -247,8 +250,9 @@ The rest is passed to `plot-dated-lists'."
   (if (> num-ls 30) "lines" "linespoints"))
 
 (defun plot-dated-lists (begd endd dls &rest opts &key (title "Dated Plot")
-                         (xlabel "time") (ylabel "value") data-style lines
-                         (timefmt "%Y-%m-%d") ema rel (slot 'val) channels
+                         (xlabel "time") rel data-style lines
+                         (ylabel (if rel "relative value" "value"))
+                         (timefmt "%Y-%m-%d") ema (slot 'val) channels
                          posl (plot t) &allow-other-keys)
   "Plot the dated lists from BEGD to ENDD.
 Most of the keys are the gnuplot options (see the documentation
@@ -307,7 +311,8 @@ lines are drawn without position channels."
         (do ((ee emal (cdr ee))) ((null ee)) (setf (car ee) nil))))))
 
 (defun plot-lists (lss &rest opts &key (key #'value) (title "List Plot")
-                   (xlabel "nums") rel (ylabel "value") (plot t)
+                   (plot t) rel (xlabel "nums")
+                   (ylabel (if rel "relative value" "value"))
                    (depth (1- (apply #'min (mapcar #'length lss))))
                    (data-style (plot-data-style depth)) &allow-other-keys)
   "Plot the given lists of numbers.
@@ -330,7 +335,8 @@ LSS is a list of lists, car of each list is the title, cdr is the numbers."
           (format str "~f~20t~f~%" ix (funcall val ll)))))))
 
 (defun plot-lists-arg (lss &rest opts &key (key #'identity) rel lines
-                       (title "Arg List Plot") (xlabel "nums") (ylabel "value")
+                       (title "Arg List Plot") (xlabel "nums")
+                       (ylabel (if rel "relative value" "value"))
                        data-style quads (plot t) xbeg xend &allow-other-keys)
   "Plot the given lists of numbers.
 Most of the keys are the gnuplot options (see the documentation
