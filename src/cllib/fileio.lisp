@@ -18,7 +18,7 @@
 
 (in-package :cllib)
 
-(export '(file-size-t file-size rename-files save-restore
+(export '(file-size-t file-size dir-size rename-files save-restore
           count-sexps code-complexity load-compile-maybe file-equal-p
           file-newer file-newest
           write-list-to-stream write-list-to-file file-cmp
@@ -34,11 +34,17 @@
 (deftype file-size-t () '(unsigned-byte 32))
 )
 
-(declaim (ftype (function (t) file-size-t) file-size))
+(declaim (ftype (function (t) file-size-t) file-size dir-size))
 ;;;###autoload
 (defun file-size (fn)
   "Return the size of file named FN."
   (with-open-file (str fn :direction :input) (file-length str)))
+
+;;;###autoload
+(defun dir-size (dir)
+  "Return the total size of all files in directory DIR."
+  (+ (reduce #'+ (directory (merge-pathnames "*" dir)) :key #'file-size)
+     (reduce #'+ (directory (merge-pathnames "*/" dir)) :key #'dir-size)))
 
 ;;;###autoload
 (defun rename-files (from to)
