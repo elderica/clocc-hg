@@ -289,6 +289,7 @@
         (unless (equalp vec (base64-decode str))
           (mesg :test out "<~S -> ~S -> ~S>" vec str (base64-decode str))
           (incf num-err)))
+      (mesg :test out "~& ** ~S: ~:D error~:P~%" 'test-base64 num-err)
       num-err)))
 
 (defun test-all (&key (out *standard-output*)
