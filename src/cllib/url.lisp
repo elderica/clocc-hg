@@ -67,7 +67,7 @@ When NIL, just the RFC numbers are returned.")
 (defun protocol-rfc (protocol)
   "Return the RFC url for the given protocol.
 See <http://www.cis.ohio-state.edu/hypertext/information/rfc.html>
-<http://www.faqs.org/rfcs/> and `*RFC-BASE*'."
+<http://rfc.net/>, <http://www.faqs.org/rfcs/> and `*RFC-BASE*'."
   (let* ((prot (typecase protocol
                  (symbol (if (keywordp protocol) protocol (kwd protocol)))
                  (string (kwd protocol))
