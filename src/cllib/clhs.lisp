@@ -112,6 +112,9 @@
                 :collect (subseq line pos1 pos2))))
      (mesg :log err "~s~%" rec)))
 
+(defcustom *clhs-hashtable* (or null hash-table) nil
+  "The hashtable for the CL symbols.")
+
 (defun clhs-init (&key (root *clhs-root*) (err *error-output*))
   "Set `*clhs-alist*', `*clhs-hashtable*' and `*clhs-version*' from ROOT."
   ;; make sure root ends with "/"
@@ -224,9 +227,6 @@
             (clhs-write-entity (car el) html str)))
         (format t "done [~:d entit~:@p] [~:d byte~:p]"
                 count (file-length str))))))
-
-(defcustom *clhs-hashtable* (or null hash-table) nil
-  "The hashtable for the CL symbols.")
 
 (defun clhs-doc (symb &key (out *standard-output*) (root *clhs-root*))
   "Dump the CLHS doc for the symbol."
