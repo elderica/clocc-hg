@@ -116,11 +116,9 @@ all slots are returned, otherwise only the slots with
                     (list (slot-name slot)))))
             (class-slots*
              (typecase class
-               (class class) (symbol (find-class class))
-               ((or structure-object standard-object) (class-of class))
-               (t (error 'case-error :proc 'class-slot-list
-                         :args (list 'class class 'class 'symbol
-                                     'structure-object 'standard-object))))))))
+               (class class)
+               (symbol (find-class class))
+               (t (class-of class)))))))
 
 ;;;
 ;;; Environment
