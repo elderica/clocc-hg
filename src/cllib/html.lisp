@@ -19,7 +19,8 @@
 
 (export
  '(*html-readtable* html-translate-specials
-   text-stream *ts-kill* read-next next-token next-number dump-url-tokens))
+   text-stream *ts-kill* read-next next-token next-number dump-url-tokens
+   xml-read-from-url))
 
 ;;;
 ;;; {{{ HTML parsing via `read'
@@ -254,6 +255,20 @@ This is mostly a debugging function, to be called interactively."
         ((eq +eof+ (setq rr (read-next ts))))
       (declare (type index-t ii))
       (format out fmt ii rr))))
+
+;;;###autoload
+(defun xml-read-from-url (url &key (repeat t)
+                          (reset-ent (xml-default-reset-entities))
+                          (resolve-namespaces *xml-read-balanced*)
+                          (out *standard-output*))
+  "Read all XML objects from the stream."
+  (when reset-ent (xml-init-entities :out out))
+  (let ((obj (with-open-url (sock url :err out)
+               (with-xml-input (xin sock)
+                 (read-from-stream xin :repeat repeat)))))
+    (if resolve-namespaces
+        (xml-resolve-namespaces obj :out out)
+        obj)))
 
 ;;;}}}
 
