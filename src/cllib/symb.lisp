@@ -29,7 +29,7 @@
   "Convert the argument, symbol or string, to a keyword."
   (declare (type (or symbol string) sy-st))
   (when (symbolp sy-st) (unintern sy-st) (setq sy-st (symbol-name sy-st)))
-  (intern sy-st +kwd+))
+  (values (intern sy-st +kwd+)))
 
 (declaim (ftype (function (&rest t) (values symbol)) keyword-concat))
 (defsubst keyword-concat (&rest args)
