@@ -406,19 +406,17 @@ the first character to be read is #\T"
 
 (defmacro with-xml-file ((var file &key reset-ent) &body body)
   "Open the XML stream to file."
-  (with-gensyms ("WXMLI-" bt bt1)
-    `(with-timing ()
-      (when ,reset-ent (xml-init-entities))
-      (with-xml-input (,var (open ,file :direction :input))
-        (format t "~&[~s]~% * [~a ~:d bytes]..." 'with-xml-input
-         file (file-length (car (xmlis-all ,var))))
-        (force-output)
-        (let ((*readtable* (make-xml-readtable)))
-          (prog1 (progn ,@body)
-            (format
-             t "done [entities(%/&): ~:d/~:d] [bytes: ~:d]"
-             (hash-table-count *xml-per*) (hash-table-count *xml-amp*)
-             (xmlis-size ,var))))))))
+  `(with-timing ()
+    (when ,reset-ent (xml-init-entities))
+    (with-xml-input (,var (open ,file :direction :input))
+      (format t "~&[~s]~% * [~a ~:d bytes]..." 'with-xml-input
+       file (file-length (car (xmlis-all ,var))))
+      (force-output)
+      (let ((*readtable* (make-xml-readtable)))
+        (prog1 (progn ,@body)
+          (format t "done [entities(%/&): ~:d/~:d] [bytes: ~:d]"
+                  (hash-table-count *xml-per*) (hash-table-count *xml-amp*)
+                  (xmlis-size ,var)))))))
 
 (defun xml-read-from-file (file &key (reset-ent t))
   "Read all XML objects from the file."
