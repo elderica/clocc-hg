@@ -24,7 +24,7 @@
 
 (export
  '(mulf divf sqr ! !! stirling fibonacci primes-to divisors primep
-   product-from-to binomial
+   product-from-to binomial *primes* *primes-file*
    make-primes-list number-sum-split all-num-split
    vector-shuffle permutation with-permutations-shuffle
    with-permutations-swap with-permutations-lex permutations-list
