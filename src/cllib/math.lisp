@@ -1,4 +1,4 @@
-;;; File: <math.lisp - 1999-02-22 Mon 17:54:09 EST sds@eho.eaglets.com>
+;;; File: <math.lisp - 1999-02-24 Wed 23:40:09 EST sds@eho.eaglets.com>
 ;;;
 ;;; Math utilities (Arithmetical / Statistical functions)
 ;;;
@@ -12,6 +12,9 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.14  1999/02/22 22:56:10  sds
+;;; Use `:min-len' key in the `call-on-split' call in `volatility'.
+;;;
 ;;; Revision 1.13  1999/01/13 23:37:56  sds
 ;;; Replaced CMUCL-specific print functions with a call to
 ;;; `print-struct-object'.
@@ -450,7 +453,7 @@ and the average annual volatility for US Dollar Index."
            (type (function (t) double-float) key))
   (let ((vols (call-on-split lst #'standard-deviation-relative
                              :split-key split-key :key key :min-len 2)))
-    (values vols (mean vols :key #'cdr))))
+    (values (mean vols :key #'cdr) vols)))
 
 ;;; Mean / Deviation / Length
 
