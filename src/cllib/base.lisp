@@ -14,7 +14,7 @@
 (defpackage #:cllib
   (:use #:common-lisp #:port)
   (:nicknames #:org.cons.clocc/sds/cllib)
-  #+cmu (:shadowing-import-from #:port #:defstruct)
+  #+cmu (:shadowing-import-from #:port port:defstruct)
   (:export #:value #:code #:*datadir* #:*mail-host-address*
            #:*user-mail-address*))
 
