@@ -29,7 +29,10 @@
 
 (export
  '(*xml-readtable* *xml-print-xml* *xml-read-balanced* *xml-read-entities*
-   with-xml-input with-xml-file xml-read-from-file read-standalone-char))
+   with-xml-input with-xml-file xml-read-from-file read-standalone-char
+   xml-obj xml-obj-p xmlo-args xmlo-name xmlo-data
+   xml-name xml-name-p xmln-ln xmln-ns
+   xml-namespace xml-namespace-p xmlns-uri xmlns-pre xmlns-nht))
 
 ;;;
 ;;; Entities
