@@ -93,7 +93,7 @@
 	 ,@(cdr get-macro))
        (defmacro ,(putify name) ,(car put-macro)
 	 ,@(cdr put-macro))
-       ,@(when *type-check?*
+       ,@(when +type-check?+
 	   (let ((predicating-put (third get-put-macros)))
 	     (when predicating-put
 	       `((setf (get ',name 'predicating-put) t)
@@ -506,7 +506,7 @@
 	(result))
        ((endp types)
 	`(cond ,@(nreverse result)
-	       ,@(when *type-check?*
+	       ,@(when +type-check?+
 		   `((t (x-type-error ,value '(or ,@type-list)))))))
      (let* ((type (car types))
 	    (type-name type)
@@ -516,7 +516,7 @@
 	       type-name (car type)))
        (push
 	 `(,@(cond ((get type-name 'predicating-put) nil)
-		   ((or *type-check?* (cdr types)) `((type? ,value ',type)))
+		   ((or +type-check?+ (cdr types)) `((type? ,value ',type)))
 		   (t '(t)))
 	   (,(putify type-name (get type-name 'predicating-put)) ,index ,value ,@args))
 	 result)))))
@@ -598,7 +598,7 @@
 ;
 (defmacro type-check (value type)
   value type
-  (when *type-check?*
+  (when +type-check?+
     `(unless (type? ,value ,type)
        (x-type-error ,value ,type))))
 
