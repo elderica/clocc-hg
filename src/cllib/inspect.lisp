@@ -437,6 +437,8 @@ This is useful for frontends which provide an eval/modify facility."
           (format t "~s: connection: ~s (keep-alive: ~s)~%"
                   'http-command (subseq line 12) keep-alive))
         (when keep-alive
+          ;; we override `keep-alive' because it makes it impossible to
+          ;; switch browsers in the middle of an inspection session
           (setq keep-alive nil)
           (when (> debug 0)
             (format t "~s: overriding keep-alive to NIL~%" 'http-command))))
