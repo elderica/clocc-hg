@@ -261,8 +261,9 @@ Suitable for `read-list-from-stream'."
   (format t "~a: " path)
   (let ((logl (cvs-read-log path)))
     (cvs-stat-files logl)
-    (format t "~& -- by the number of revisions --~%")
+    (format t "~2& -- by the number of revisions --~%")
     (top-bottom-ui logl 10 nil nil :key #'cvsf-tot-rev :label #'cvsf-work)
+    (format t "~2& -- the most recently modified --~%")
     (top-bottom-ui logl 10 nil nil :key (compose revision-time car cvsf-revs)
                    :label #'cvsf-work :klabel #'dttm->string)))
 
