@@ -99,6 +99,8 @@ guess from the protocol."
         (or (ssp (string-downcase (string (url-prot url))))
             (ssp (case (url-prot url)
                    (:mailto "smtp") (:news "nntp") (:www "http")))
+            ;; yuk!! Solaris does not have http in /etc/services
+            (and (eq (url-prot url) :http) 80)
             (error 'code :proc 'url-get-port :args (list url)
                    :mesg "Cannot guess the port for ~s")))
       (url-port url)))
