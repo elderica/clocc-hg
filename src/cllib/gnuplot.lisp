@@ -1,4 +1,4 @@
-;;; File: <gnuplot.lisp - 1998-06-08 Mon 19:48:42 EDT sds@mute.eaglets.com>
+;;; File: <gnuplot.lisp - 1998-06-09 Tue 11:18:16 EDT sds@mute.eaglets.com>
 ;;;
 ;;; Gnuplot interface
 ;;;
@@ -12,6 +12,9 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.13  1998/06/08 23:49:44  sds
+;;; In function `plot-lists-arg', fixed :key boundaries.
+;;;
 ;;; Revision 1.12  1998/06/03 17:20:35  sds
 ;;; Added a plot-key key, for placement of the gnuplot legend.
 ;;;
@@ -122,7 +125,8 @@ other => write `*gnuplot-file*' and print a message."
 				 (list "/noend" *gnuplot-file*))))
 	      ((eq ,plot :print)
 	       (format *gnuplot-msg-stream* "~&Sent the plot to `~a'.~%"
-		       *gnuplot-printer*))
+		       *gnuplot-printer*)
+               (format *gnuplot-stream* "set terminal windows~%set output~%"))
 	      ((format *gnuplot-msg-stream* "~&Prepared file `~a'.
 Type \"load '~a'\" at the gnuplot prompt.~%"
 		       *gnuplot-file* *gnuplot-file*)))
@@ -135,7 +139,8 @@ Type \"load '~a'\" at the gnuplot prompt.~%"
 	       (format *gnuplot-msg-stream* "Wrote `~a'.~%" *gnuplot-file*))
 	      ((eq ,plot :print)
 	       (format *gnuplot-msg-stream* "~&Sent the plot to `~a'.~%"
-		       *gnuplot-printer*)))))))
+		       *gnuplot-printer*)
+               (format *gnuplot-stream* "set terminal x11~%set output~%")))))))
 
 (defun plot-header (str plot xlabel ylabel data-style timefmt xb xe title key)
   "Print the header stuff into the stream.
