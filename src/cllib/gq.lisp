@@ -601,7 +601,7 @@ if PLOT is non-nil, or if it is not given but there was new data.
 If PLOT is T, just plot, do not try to update quotes.
 See `*get-quote-url-list*' for available SERVERs.
 If DEBUG is non-nil, do not bind `*print-log*' and `*gq-error-stream*'."
-  (let ((*print-log* (if debug *print-log* (mk-arr 'symbol nil 0)))
+  (let ((*print-log* (if debug *print-log* #()))
         (*gq-error-stream* (if debug *gq-error-stream* nil)))
     (setf (values *holdings* *history*) (read-data-file hist-file))
     (unless (eq plot t)
