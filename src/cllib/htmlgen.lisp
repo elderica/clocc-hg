@@ -17,8 +17,7 @@
 (in-package :cllib)
 
 (export '(html-stream-out with-html-output with-http-output with-tag
-          *with-html-output-doctype* http-error
-          flush-http directory-index))
+          *with-html-output-doctype* http-error directory-index))
 
 ;;;
 ;;; preparation
@@ -136,12 +135,6 @@ Supplies some HTTP/1.0 headers and calls `with-html-output'."
         (when (and ,dbg (> ,dbg 0))
           (format t "~s: closing ~s~%" 'with-http-output ,sock))
         (close ,sock)))))
-
-(defun flush-http (sock)
-  "Read everything from the HTTP socket SOCK, until a blank line."
-  (loop :for line = (read-line sock nil nil)
-        :while (and line (plusp (length line)))
-        :collect line))
 
 (defun http-error (sock url &key (name "Not Found") (code 404)
                    (keep-alive nil) (debug 0))
