@@ -11,6 +11,9 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.4  2000/03/22 23:54:05  sds
+;;; use package prefixes for CMU CL and GCL
+;;;
 ;;; Revision 1.3  2000/03/03 22:01:03  sds
 ;;; fixed provide statements
 ;;;
@@ -72,10 +75,14 @@
   #-(or allegro clisp cmu gcl lispworks)
   (error 'not-implemented :proc (list 'pipe-input prog args)))
 
+;;; Allegro CL: a simple `close' does NOT get rid of the process.
+;;; The right way, of course, is to define a Gray stream `pipe-stream',
+;;; define the `close' method and use `with-open-stream'.
+;;; Unfortunately, not every implementation supports Gray streams, so we
+;;; have to stick with this to further the portability.
+
 (defun close-pipe (stream)
-  "Close the pipe stream.
-The trouble is with ACL: a simple `close' doesn't get rid of the process.
-This function takes care of that."
+  "Close the pipe stream."
   (declare (stream stream))
   (close stream)
   #+allegro (sys:reap-os-subprocess))
