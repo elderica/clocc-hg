@@ -27,6 +27,13 @@
 				    (short-site-name)
 				    directory-delimiter*
 				    "ytinit.lisp"))
-	     (load-if-there (strings-concat config-directory* "ytinit.lisp")))
+	     (load-if-there (merge-pathnames
+			       "ytinit.lisp"
+			       (user-homedir-pathname)))
+	     (let ((config-dir-pathname
+		      (pathname config-directory*)))
+	        (cond ((not (equal config-dir-pathname (user-homedir-pathname)))
+		       (load-if-there
+			  (merge-pathnames "ytinit.lisp" config-dir-pathname))))))
 	  (list ytools-package*
 		ytools-readtable*))))

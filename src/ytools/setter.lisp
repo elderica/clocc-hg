@@ -20,7 +20,7 @@
 
 (eval-when (:compile-toplevel :load-toplevel)
    (export '(!= !=/ *-* switch matchq match-cond match-let
-	     make-Qvar is-Qvar Qvar-sym Qvar-notes)))
+	     make-Qvar is-Qvar is-Qvaroid Qvar-sym Qvar-notes)))
 
 ;;;;(declaim (special *-*))
 
@@ -600,8 +600,9 @@
 			(funcall unwrap-deeper
 			   (Qvaroid-notes clause)))
 		       ((car-eq clause ':?)
-			(funcall unwrap-deeper
-			   (cadr clause)))
+			(funcall unwrap-deeper (cddr clause)))
+;;;;			(<# (\\ (e) (funcall unwrap-deeper e))
+;;;;			    (cdr clause))
 		       (t
 			(mapcan unwrap-deeper clause))))
 	      (cddr exp))

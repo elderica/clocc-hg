@@ -27,7 +27,7 @@
 
 (defparameter lisp-readtable* *readtable*)
 (defparameter ytools-readtable* (copy-readtable nil))
-(defparameter default-ytools-bin-path* "../../bin/")
+(defparameter default-ytools-bin-path* "../bin/")
 
 (defun install-ytfm (sto)
    (format t "I will install YTFM.  I may ask you some questions to fill in gaps~%")
