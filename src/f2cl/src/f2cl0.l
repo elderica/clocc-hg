@@ -32,6 +32,7 @@
   (:export
    ;; Main routines
    "F2CL"
+   "F2CL-COMPILE"
    ;; Constants
    "%FALSE%" "%TRUE%"
    ;; Types
@@ -67,6 +68,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.4  2000/07/28 22:07:44  rtoy
+;;; It's FORTRAN, not FORTAN!
+;;;
 ;;; Revision 1.3  2000/07/28 16:56:48  rtoy
 ;;; f2cl0.l isn't the (unused) f2cl loader anymore.  Use it to define the
 ;;; package used by f2cl.
