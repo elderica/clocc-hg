@@ -9,13 +9,11 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  (require :base (translate-logical-pathname "clocc:src;cllib;base")))
-
-(export '(do-all))
-
-(eval-when (compile load eval)
+  (require :base (translate-logical-pathname "clocc:src;cllib;base"))
   (require :monitor (translate-logical-pathname
                      "clocc:src;tools;metering;metering")))
+
+(export '(do-all))
 
 (in-package :cllib)
 
