@@ -131,7 +131,7 @@ guess from the protocol."
 
 (defsubst url-path-dir (url)
   "Return the dir part of the URL's path."
-  (value (url-path-parse url)))
+  (values (url-path-parse url)))
 
 (defsubst url-path-file (url)
   "Return the file part of the URL's path."
