@@ -135,6 +135,15 @@ so that the bare symbols are read as keywords."
         (return (values (nreverse res) beg))
         (push obj res))))
 
+#+cmu (progn
+        (import '(ext:required-argument) :port)
+        (export '(required-argument) :port))
+#-cmu (progn
+        (proclaim '(ftype (function () nil) required-argument))
+        (defun required-argument ()
+          "A useful default for required keyword args and DEFSTRUCT slots."
+          (error "A required keyword argument was not supplied.")))
+
 ;;;
 ;;; Function Compositions
 ;;;
