@@ -29,6 +29,7 @@
 ;;; CVS diff ---> patch
 ;;;
 
+(eval-when (compile load eval) (fmakunbound 'cvs-diff2patch))
 ;;;###autoload
 (defgeneric cvs-diff2patch (in out)
   (:documentation "Convert a CVS diff to a patchable diff.")
