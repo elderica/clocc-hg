@@ -701,14 +701,18 @@ The first character to be read is #\T."
                      (let ((code (parse-integer ent :start 1)))
                        (if (< code char-code-limit)
                            (string (code-char code))
-                           (concatenate 'string "&" ent)))
+                           (concatenate 'string "&" ent ";")))
                      (xml-entity ent (case char
                                        (#\& *xml-amp*) (#\% *xml-per*))
                                  char :proc 'read-xml))))
        (read-char stream)       ; #\;
        (etypecase str
          (string str)           ; "??" for undefined entities and &#nnnn;
-         (stream (read (xmlis-push str stream) t nil t)))))
+         (stream
+          (xmlis-push str stream)
+          (if (find (peek-char t stream t nil t) "&%<>" :test #'char=)
+              (read stream t nil t)
+              (values (xml-read-text stream "<&")))))))
     ((#\: #\=) char)))
 
 ;;;
