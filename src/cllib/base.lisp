@@ -1,4 +1,4 @@
-;;; File: <base.lisp - 1999-04-19 Mon 19:49:19 EDT sds@eho.eaglets.com>
+;;; File: <base.lisp - 1999-04-20 Tue 13:37:29 EDT sds@eho.eaglets.com>
 ;;;
 ;;; Basis functionality, required everywhere
 ;;;
@@ -12,6 +12,9 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.18  1999/04/20 01:10:51  sds
+;;; Handle the new file card.lisp.
+;;;
 ;;; Revision 1.17  1999/04/18 05:10:33  sds
 ;;; Shut up CMUCL GC.
 ;;;
@@ -370,8 +373,8 @@ This function takes care of that."
     ("url" "base" "util" "date") ("geo" "base" "url")
     ("gq" "base" "url" "date") ("rpm" "base" "url" "date")
     ("h2lisp" "base" "url") #+nil ("clhs" "base" "url")
-    ("card" "base" "print" "date" "url")
-    ("elisp" "base" "list") ("tests" "base" "date" "url" "rpm" "elisp"))
+    ("elisp" "base" "list") ("card" "base" "print" "date" "url" "elisp")
+    ("tests" "base" "date" "url" "rpm" "elisp"))
   "*The alist of files to work with, in the order of loading.
 Key: name for `sds-require', value - the list of dependencies.")
 
