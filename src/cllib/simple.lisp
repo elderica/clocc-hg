@@ -187,6 +187,7 @@ The second value is the last atom (i.e., `dotted-p')."
 (defun count-all (seq &key (test 'eql) (key #'value) append (weight 1)
                   &aux (ht (or append (make-hash-table :test test))))
   "Return the hash table with counts for values of the sequence."
+  (unless weight (setq weight 1))
   (map nil (etypecase weight
              (function
               (lambda (el)
