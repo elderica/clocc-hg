@@ -16,6 +16,9 @@ SCRIPT = $(TOP)/clocc base getopt
 SYSTEM := cllib
 ZIPEXTRA = ../defsystem-3.x/defsystem.lisp ../tools/metering/metering.lisp \
 	$(TOP)/etc/GNU-GPL $(TOP)/bin/run-lisp
+ZIPEXTRANOLINK = cllib/port/Makefile cllib/port/Changelog \
+	cllib/port/port.system cllib/port/port.html cllib/port/*.lisp
+ZIPEXTRALINK = ../port
 DOCFILES = $(SYSTEM).html entities.xml
 include $(TOP)/clocc.mk
 
