@@ -67,7 +67,8 @@
      (:file "url" :depends-on ("base" "withtype" "symb" "string" "fileio"
                                "log" "simple" "tilsla" "date"))
      (:file "withtype" :depends-on ("base"))
-     (:file "xml" :depends-on ("base" "string" "withtype" "closio" "log")))
+     (:file "xml" :depends-on
+            ("base" "string" "withtype" "closio" "log" "fileio")))
     :initially-do
     (progn (mk:system-source-size :cllib :all)
            (setq tbc (mk:system-source-size
