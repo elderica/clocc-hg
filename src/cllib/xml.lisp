@@ -137,11 +137,13 @@ See <http://www.w3.org/TR/WD-html40-970708/sgml/entities.html>.")
 Note that the Unicode characters will NOT be printed as &#nnnn;.
 If this is `:sgml', use maximum SGML compatibility.")
 
+(eval-when (compile load eval)  ; ACL
 (defcustom *xml-pre-namespaces* hash-table (make-hash-table :test 'equal)
   "The mapping from prefixes to namespaces.")
 
 (defcustom *xml-uri-namespaces* hash-table (make-hash-table :test 'equal)
   "The mapping from URIs to namespaces.")
+)
 
 (eval-when (compile load eval)  ; CMUCL
 (defstruct (xml-comment #+cmu (:print-function print-struct-object))
