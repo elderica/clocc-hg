@@ -74,6 +74,7 @@
            (type (or null xlib:font) afont)
            (type vector dst))
   (declare (xlib::clx-values integer (or null integer xlib:font) (or null integer)))
+  
   (let ((min-char-index (xlib:font-min-char afont))
         (max-char-index (xlib:font-max-char afont)))
     afont

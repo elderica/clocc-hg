@@ -543,7 +543,7 @@
     (pad8 1)
     (card16 (encode-modifier-mask modifiers))))
 
-(defun ungrab-button (window button &key (modifiers :any ))
+(defun ungrab-button (window button &key (modifiers :any))
   (declare (type window window)
 	   (type (or (member :any) card8) button)
 	   (type modifier-mask modifiers))
