@@ -27,6 +27,10 @@ endif
 
 cvs.log: force
 	cvs log > $@ 2>/dev/null
-	@fgrep "author:" $@ | sed 's/^.*author: \([^;]*\);.*$$/\1/' | \
+
+cvs-stat: cvs.log
+	@fgrep "author:" cvs.log | sed 's/^.*author: \([^;]*\);.*$$/\1/' | \
 		sort | uniq -c | sort | sed 's/^/    /';
-	@fgrep "author:" $@ | wc -l;
+	@fgrep "author:" cvs.log | wc -l;
+	$(RUNLISP) -i clocc -i src/cllib/base -i src/cllib/cvs \
+		-x '(funcall (intern "CVS-STAT-LOG" :cllib) "cvs.log")'
