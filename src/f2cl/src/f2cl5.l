@@ -337,7 +337,11 @@
 			(multiple-value-bind (type arrayp)
 			    (get-fun-arg-type arg)
 			  (cond (arrayp
-				 (intern (concatenate 'string "ARRAY-" (string type))))
+				 (if (subtypep type 'string)
+				     ;; An array of strings
+				     (intern (concatenate 'string "ARRAY-STRINGS"))
+				     ;; Some other type of array
+				     (intern (concatenate 'string "ARRAY-" (string type)))))
 				((subtypep type 'string)
 				 'string)
 				(t
@@ -2164,6 +2168,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.60  2000/08/05 19:23:16  rtoy
+;;; Comment out some unreachable code.
+;;;
 ;;; Revision 1.59  2000/08/04 14:20:31  rtoy
 ;;; Add very rudimentary support for Fortran READ statements.  This means
 ;;; we just basically call read and assign the result to the (simple)
