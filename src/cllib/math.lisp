@@ -24,6 +24,7 @@
  '(mulf divf sqr ! !! stirling fibonacci primes-to divisors primep
    product-from-to binomial
    make-primes-list number-sum-split all-num-split
+   vector-shuffle
    eval-cont-fract fract-approx
    *num-tolerance* *relative-tolerance* *absolute-tolerance*
    dot poly1 poly erf norm normalize rel-dist
@@ -231,7 +232,10 @@ E.g.: (number-sum-split 10 (lambda (x) (* x x)) 'isqrt) => ((1 . 3))"
   "Generate a random permutation of the vector in place.
 If the argument is a number, return a new random vector of this length."
   (etypecase vec
-    (vector (loop :for ii :downfrom (1- (length vec)) :to 0
+    ;; Knuth, TAOCP vol 2 Algorithm 3.4.2P, p.145
+    ;; R.A. Fisher & F. Yates, Statistical Tables, London 1938, Example 12
+    ;; R. Durstenfeld, CACM 7 (1964), 420
+    (vector (loop :for ii :downfrom (1- (length vec)) :to 1
                   :for jj = (random (1+ ii))
                   :unless (= jj ii)
                   :do (rotatef (aref vec ii) (aref vec jj)))
