@@ -19,8 +19,7 @@
 
 (export
  '(*html-parse-tags* *html-readtable* html-translate-specials
-   text-stream *ts-kill* read-next next-token next-number dump-url-tokens
-   *html-output* with-tag with-open-html directory-index))
+   text-stream *ts-kill* read-next next-token next-number dump-url-tokens))
 
 ;;;
 ;;; {{{ HTML parsing via `read'
