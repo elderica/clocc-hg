@@ -236,6 +236,10 @@ Returns the number of seconds since the epoch (1900-01-01)."
   (:method ((format (eql :long)) se mi ho da mo ye dd)
     (format nil "~d-~2,'0d-~2,'0d ~a ~2,'0d:~2,'0d:~2,'0d +0000 (GMT)"
             ye mo da (aref +week-days+ dd) ho mi se))
+  (:method ((format (eql :mbox)) se mi ho da mo ye dd)
+    (format nil "~a ~a ~d ~2,'0d:~2,'0d:~2,'0d ~d"
+            (aref +week-days+ dd) (aref +month-names+ (1- mo))
+            da ho mi se ye))
   (:method ((format (eql :usa)) se mi ho da mo ye dd)
     (format nil "~a, ~d ~a ~d ~2,'0d:~2,'0d:~2,'0d +0000 (GMT)"
             (aref +week-days+ dd) da (aref +month-names+ (1- mo))
