@@ -1713,7 +1713,7 @@
 	  (rotatef decl1 decl2))
 	(return `(declare (type (,(if (and vble-is-formal-arg *array-slicing*)
 				      'array
-				      'simple-array)
+				      *array-type*)
 				 ,(car decl2)
                                  ,(f2cl-array-total-size (cdadr decl1))
 				 )
@@ -2697,6 +2697,14 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.98  2002/03/19 17:28:07  rtoy
+;;; o Declare some vars as ignored when creating the entry point
+;;;   functions.
+;;; o Add a check to make sure the entry point functions have exactly the
+;;;   same names for the parameters and number of parameters.  That's all
+;;;   we support right now.
+;;; o Remove a debugging print statement.
+;;;
 ;;; Revision 1.97  2002/03/19 06:03:14  rtoy
 ;;; First pass at adding support for ENTRY statements (multiple entry
 ;;; points into a routine).  See NOTES for description of technique.
