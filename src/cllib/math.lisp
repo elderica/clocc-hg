@@ -20,9 +20,6 @@
 
 (in-package :cllib)
 
-(eval-when (compile load eval)
-  (declaim (optimize (speed 3) (space 0) (safety 3) (debug 3))))
-
 (export
  '(mulf divf sqr ! !! stirling fibonacci primes-to divisors primep
    make-primes-list number-sum-split all-num-split
@@ -477,7 +474,7 @@ if this is not the case, the result will be a complex number."
 (defun kurtosis-skewness-weighted (seq wts &key std mean tot
                                    (value #'value) (weight #'value))
   "Compute the skewness and kurtosis (3rd & 4th centered momenta)."
-  (declare (sequence seq) (type (function (t) double-float) key))
+  (declare (sequence seq) (type (function (t) double-float) value weight))
   (unless std
     (setf (values std mean tot)
           (standard-deviation-weighted seq wts :value value :weight weight)))

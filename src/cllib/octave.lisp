@@ -14,9 +14,6 @@
 
 (export '(*octave-program* solve-lin))
 
-(eval-when (compile load eval)
-  (declaim (optimize (speed 3) (space 0) (safety 3) (debug 3))))
-
 ;;;
 ;;;
 ;;;

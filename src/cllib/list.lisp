@@ -13,9 +13,6 @@
   (require :simple (translate-logical-pathname "cllib:simple")))
 (in-package :cllib)
 
-(eval-when (compile load eval)
-  (declaim (optimize (speed 3) (space 0) (safety 3) (debug 3))))
-
 (export '(jumps count-jumps freqs
           check-list-type check-list-values out-of-bounds-p
           nsplit-list with-sublist with-nsplit call-on-split))

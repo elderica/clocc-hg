@@ -19,9 +19,6 @@
 
 (export '(cl-server))
 
-(eval-when (load compile eval)
-  (declaim (optimize (speed 3) (space 0) (safety 3) (debug 3))))
-
 ;;;
 ;;; }}}{{{
 ;;;

@@ -17,9 +17,6 @@
 
 (in-package :cllib)
 
-(eval-when (load compile eval)
-  (declaim (optimize (speed 3) (space 0) (safety 3) (debug 3))))
-
 (export
  '(*html-readtable* html-translate-specials
    text-stream *ts-kill* read-next next-token next-number dump-url-tokens))

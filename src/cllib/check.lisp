@@ -16,9 +16,6 @@
 
 (in-package :cllib)
 
-(eval-when (load compile eval)
-  (declaim (optimize (speed 3) (space 0) (safety 3) (debug 3))))
-
 (export '(check-list-type check-list-values out-of-bounds-p))
 
 (defun check-list-type (lst pred &key (key #'value) (out *standard-output*))

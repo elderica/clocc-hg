@@ -14,9 +14,6 @@
 
 (in-package :cllib)
 
-(eval-when (load compile eval)
-  (declaim (optimize (speed 3) (space 0) (safety 3) (debug 3))))
-
 (export '(*clos-readtable* make-clos-readtable macroexpand-r))
 
 ;;;

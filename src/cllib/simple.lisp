@@ -15,10 +15,6 @@
 (export '(ppprint-list nsublist fix-list to-list from-list zero-len-p paste
           skip-to-new flatten with-collect filter list-length-dotted))
 
-(eval-when (load compile eval)
-  (declaim (optimize (speed 3) (space 0) (safety 3) (debug 3))))
-
-
 ;;;
 ;;; {{{ `with-collect'
 ;;;

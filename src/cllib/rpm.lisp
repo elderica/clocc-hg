@@ -18,9 +18,6 @@
 (export '(*rpm-locations* rpm show-rpms rpm-to-be-installed rpm-get-list
           rpm-get-new-rpms rpm-list-rpm rpm-clean-up))
 
-(eval-when (compile load eval)
-  (declaim (optimize (speed 3) (space 0) (safety 3) (debug 3))))
-
 ;;;
 ;;; download data
 ;;;

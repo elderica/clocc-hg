@@ -21,17 +21,17 @@
 
 (export '(regress-n regress-poly))
 
-(eval-when (load compile eval)
-  (declaim (optimize (speed 3) (space 0) (safety 3) (debug 3))))
-
 ;;;
 ;;;
 ;;;
 
-;(declaim (ftype (function (??) (values (simple-array double-float (*))
-;                                       double-float (double-float 0.0d0 1.0d0)
-;                                       (double-float 0.0d0)))
-;                regress-n))
+(declaim (ftype (function ((simple-array double-float (*)) simple-array fixnum
+                           &key (:func (function (array fixnum fixnum)
+                                                 double-float)))
+                          (values (simple-array double-float (*))
+                                  double-float (double-float 0.0d0 1.0d0)
+                                  (double-float 0.0d0)))
+                regress-n))
 (defun regress-n (yy xx nx &key (func #'aref))
   "Returns: vector [b1 ... bn], free term, Rmult, Ftest."
   (declare (type (simple-array double-float (*)) yy)

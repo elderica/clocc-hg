@@ -14,9 +14,6 @@
 
 (in-package :cllib)
 
-(eval-when (load compile eval)
-  (declaim (optimize (speed 3) (space 0) (safety 3) (debug 3))))
-
 (export '(commas pr-secs pr-arr print-seqs))
 (import '(comma pr-secs pr-arr) :cl-user)
 

@@ -16,9 +16,6 @@
 
 (in-package :cllib)
 
-(eval-when (load compile eval)
-  (declaim (optimize (speed 3) (space 0) (safety 3) (debug 3))))
-
 (export '(map-sorted reduce-sorted sorted-map delete-duplicate-entries
           top-bottom top-bottom-ui top-bottom-fl
           binary-pos binary-member))

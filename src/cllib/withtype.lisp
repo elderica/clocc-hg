@@ -14,9 +14,6 @@
 
 (in-package :cllib)
 
-(eval-when (load compile eval)
-  (declaim (optimize (speed 3) (space 0) (safety 3) (debug 3))))
-
 (export '(index-t map-vec dfloat with-type +whitespace+ whitespace-char-p))
 
 ;;;

@@ -31,9 +31,6 @@
           matrix-solve matrix-inverse))
 (import '(matrix-print) :cl-user) ; format ~//
 
-(eval-when (compile load eval)
-  (declaim (optimize (speed 3) (space 0) (safety 3) (debug 3))))
-
 ;;;
 ;;; printing
 ;;;
@@ -149,7 +146,7 @@ By default prints the contents.
 
 (defun bilinear (mx v0 v1)
   "Compute the bilinear form (Ax,y)."
-  (declare (type (array * (* *)) mx) (type (array * (*)) v0 v2))
+  (declare (type (array * (* *)) mx) (type (array * (*)) v0 v1))
   (unless (and (= (array-dimension v0 0) (array-dimension mx 0))
                (= (array-dimension v0 0) (array-dimension mx 0)))
     (error 'dimension :proc 'bilinear :args

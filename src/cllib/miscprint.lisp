@@ -17,9 +17,6 @@
 (export '(hash-table-keys hash-table->alist alist->hash-table print-hash-table
           print-all-ascii print-all-packages))
 
-(eval-when (load compile eval)
-  (declaim (optimize (speed 3) (space 0) (safety 3) (debug 3))))
-
 ;;;
 ;;; characters
 ;;;

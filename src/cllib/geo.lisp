@@ -1,4 +1,4 @@
-;;; Geo.lisp - geographical data processing
+;;; geo - geographical data processing
 ;;;
 ;;; Copyright (C) 1998-2000 by Sam Steingold.
 ;;; This is Free Software, covered by the GNU GPL (v2)
@@ -27,9 +27,6 @@
 
 (export '(cite-info *weather-url* weather-report
           find-country *country-list* fetch-country-list))
-
-(eval-when (compile load eval)
-  (declaim (optimize (speed 3) (space 0) (safety 3) (debug 3))))
 
 ;;;
 ;;; {{{ Georgaphic Coordinates
