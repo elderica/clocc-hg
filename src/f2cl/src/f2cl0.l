@@ -50,11 +50,11 @@
    "ARRAY-SLICE" "ARRAY-INITIALIZE"
    ;; Intrinsic functions
    "ABS" "ACOS" "AIMAG" "AINT" "ALOG" "ALOG10" "AMAX0" "AMAX1"
-   "AMAX1" "AMIN1" "AMOD" "ANINT" "ASIN" "ATAN" "ATAN2"
+   "AMIN1" "AMOD" "ANINT" "ASIN" "ATAN" "ATAN2"
    "CABS" "CEXP" "FCHAR" "CLOG" "CMPLX" "CONJG" "CCOS"
    "CSIN" "CSQRT" "DABS" "DACOS" "DASIN"
    "DATAN" "DATAN2" "DBLE" "DCOS" "DCOSH" "DEXP" "DIM"
-   "DIM" "DINT" "DLOG" "DLOG10" "DMAX1" "DMIN1" "DMOD"
+   "DINT" "DLOG" "DLOG10" "DMAX1" "DMIN1" "DMOD"
    "DNINT" "DPROD" "DSIGN" "DSIN" "DSINH" "DSQRT" "DTAN"
    "DTANH" "FFLOAT" "IABS" "ICHAR" "IDIM" "IDINT"
    "IDNINT" "IFIX" "INDEX" "INT" "ISIGN" "LE" "LEN"
@@ -68,6 +68,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.5  2000/08/05 19:06:34  rtoy
+;;; Export F2CL-COMPILE.
+;;;
 ;;; Revision 1.4  2000/07/28 22:07:44  rtoy
 ;;; It's FORTRAN, not FORTAN!
 ;;;
