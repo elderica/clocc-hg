@@ -1,5 +1,3 @@
-;;; File: <url.lisp - 2000-03-03 Fri 17:50:27 EST sds@ksp.com>
-;;;
 ;;; Url.lisp - handle url's and parse HTTP
 ;;;
 ;;; Copyright (C) 1998-2000 by Sam Steingold.
@@ -737,8 +735,11 @@ For additional servers see http://www.eecis.udel.edu/~mills/ntp/servers.htm")
 ;;;
 
 (defcustom *browsers* list
-  '((:netscape "/usr/local/bin/netscape" "-remote" "openURL(~a,new-window)")
-    (:emacs-w3 "/usr/local/bin/gnudoit" "(w3-fetch \"~a\")"))
+  '((:netscape "netscape" "-remote" "openURL(~a,new-window)")
+    (:lynx "xterm" "-e" "lynx" "~a")
+    (:mmm "mmm" "-external" "~a")
+    (:mosaic "xmosaic" "~a")
+    (:emacs-w3 "gnudoit" "(w3-fetch \"~a\")"))
   "The ALIST of browsers.")
 
 ;;;###autoload
