@@ -342,5 +342,5 @@ and reapply its initial function to its arguments."
           (format stream "~A~vT~A~vT~A~%" (first line) name-max (second line)
                   whostate-max  (third line)))))))
 
-(provide "proc")
+(provide :proc)
 ;;; proc.lisp end here

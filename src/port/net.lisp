@@ -11,6 +11,9 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.3  2000/02/18 21:16:45  sds
+;;; in-package :port now; make system works
+;;;
 ;;; Revision 1.2  2000/02/10 17:55:50  sds
 ;;; (hostent): new defstruct
 ;;; (resolve-host-ipaddr): return a `hostent' instance
@@ -268,5 +271,5 @@
 
 ;;; }}}
 
-(provide "net")
+(provide :net)
 ;;; file net.lisp ends here

@@ -11,6 +11,9 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.3  2000/02/18 21:16:45  sds
+;;; in-package :port now; make system works
+;;;
 ;;; Revision 1.2  2000/02/10 17:53:40  sds
 ;;; (+eof+): new constant (for `string-tokens')
 ;;; (string-tokens): new function (for net)
@@ -170,5 +173,5 @@ All the values from nth function are fed to the n-1th."
             (lambda (&rest args) (multiple-value-call f0 (apply f1 args))))
           functions :initial-value #'identity))
 
-(provide "ext")
+(provide :ext)
 ;;; file ext.lisp ends here

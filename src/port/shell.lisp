@@ -11,6 +11,9 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.2  2000/02/18 21:16:45  sds
+;;; in-package :port now; make system works
+;;;
 ;;; Revision 1.1  1999/11/24 17:07:09  sds
 ;;; Cross-implementation Portability System
 ;;;
@@ -81,4 +84,5 @@ This function takes care of that."
     (unwind-protect (progn ,@body)
       (close-pipe ,pipe))))
 
+(provide :shell)
 ;;; file shell.lisp ends here

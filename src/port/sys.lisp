@@ -11,6 +11,9 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.4  2000/03/01 20:01:36  sds
+;;; (arglist, class-slot-list): new functions
+;;;
 ;;; Revision 1.3  2000/03/01 16:02:03  sds
 ;;; (variable-special-p): new function
 ;;;
@@ -252,4 +255,5 @@ Current time:~25t" (/ internal-time-units-per-second) *gensym-counter*)
             (tz->string (- (if dst 1 0) tz))
             (funcall (if dst #'cadr #'cddr) (assoc tz +time-zones+)))))
 
+(provide :sys)
 ;;; file sys.lisp ends here
