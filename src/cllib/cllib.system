@@ -50,7 +50,8 @@
      (:file "laser" :depends-on ("base" "log"))
      (:file "list" :depends-on ("base" "simple"))
      (:file "log" :depends-on ("base" "withtype" "tilsla"))
-     (:file "math" :depends-on ("base" "withtype" "fileio" "log" "list"))
+     (:file "math" :depends-on
+            ("base" "simple" "withtype" "fileio" "log" "list"))
      (:file "matrix" :depends-on ("base" "withtype"))
      (:file "metering" :source-pathname "../tools/metering/metering")
      (:file "miscprint" :depends-on ("base" "simple"))
