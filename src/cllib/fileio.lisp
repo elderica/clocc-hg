@@ -275,7 +275,7 @@ By default nothing is printed."
 (defun file-newer (f0 f1)
   "Return T if the first arg is newer than the second.
 Non-existent files are assumed to be VERY old."
-  (flet ((fwd (ff) (if (probe-file ff) (file-write-date ff) 0)))
+  (flet ((fwd (ff) (or (file-write-date ff) 0)))
     (> (fwd f0) (fwd f1))))
 
 (defsubst file-newest (f0 f1)
@@ -283,12 +283,16 @@ Non-existent files are assumed to be VERY old."
   (if (> (file-write-date f0) (file-write-date f1)) f0 f1))
 
 (defun latest-file (path &optional (nth 0))
-  "Return the latest file matching PATH, which should be wild."
-  (declare (fixnum nth))
-  (let ((ll (directory path)))
-    (when ll
-      (if (zerop nth) (reduce #'file-newest ll)
-          (nth nth (sort ll #'> :key #'file-write-date))))))
+  "Return the latest file matching PATH, which should be wild.
+The optional second argument NTH (default - 0)
+ specifies the which newest file to return.
+When it is NIL, return a list of conses (FILE . FILE-WRITE-DATE)"
+  (let ((ll (sort (mapcan (lambda (ff)
+                            (let ((fwd (file-write-date ff)))
+                              (when fwd (list (cons ff fwd)))))
+                          (directory path))
+                  #'> :key #'cdr)))
+    (when ll (if nth (car (nth nth ll)) ll))))
 
 (defun save-restore (what &key (name "~a") pre-save post-read var
                      (voidp #'null) (basedir *datadir*)
