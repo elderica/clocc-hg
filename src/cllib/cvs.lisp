@@ -249,7 +249,7 @@ Suitable for `read-list-from-stream'."
 (defun cvs-stat-log (path)
   "Generate and print some statistics of the CVS repository.
 Careful - this will return a huge list!"
-  (when (char= #\/ (char path (1- (length path))))
+  (when (probe-directory path)
     (with-timing ()
       (format t "~&~s: ~a is a directory, running `cvs log`..."
               'cvs-stat-log path)
