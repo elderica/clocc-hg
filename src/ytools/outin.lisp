@@ -106,7 +106,7 @@
      (let ((code `(let ((,stream (stream-outify ,stream-form)))
 		     (out-indent ,stream 0
 			(let ((out-vals* '()))
-			   (lisp:declare (special out-vals*))
+			   (cl:declare (special out-vals*))
 			   ,@(expand-out-body exps stream)
 			   ,@(include-if (not string-output)
 					'(list->values out-vals*)))))))

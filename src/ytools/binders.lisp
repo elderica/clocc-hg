@@ -22,7 +22,7 @@
   `(let ,vars-n-vals
      ;; if bindings, declare variables to be special
      ,@(if (not (null vars-n-vals))
-         `((lisp:declare (special
+         `((cl:declare (special
                           ,@(mapcar #'(lambda (var-n-val)
                                         (if (consp var-n-val)
                                             (car var-n-val)

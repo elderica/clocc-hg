@@ -1,5 +1,9 @@
 $Id$
 	
+2004-10-02: Replaced 'lisp:' with 'cl:' in a couple of files.
+            Stopped 'fload' from trying to compile files with types
+            other than Lisp source. (Version 1.4.8)
+
 2004-10-01: Define 'ytools-logical-pathname-def' to make it easy to
             find the definition of a YTools logical pathname. (Version 1.4.7)
 
