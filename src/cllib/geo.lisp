@@ -1,6 +1,11 @@
-;;; File: <geo.lisp - 1998-03-10 Tue 13:26:49 EST sds@mute.eaglets.com>
+;;; File: <geo.lisp - 1998-03-10 Tue 13:30:58 EST sds@mute.eaglets.com>
 ;;;
 ;;; Geo.lisp - geographical data processing
+;;;
+;;; $Id$
+;;; $Source$
+;;; $Log$
+
 
 (eval-when (load compile eval) (sds-require 'util) (sds-require 'url))
 
