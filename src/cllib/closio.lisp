@@ -78,11 +78,9 @@ otherwise you will probably get an error.")
 ;;; }}}{{{ print CLOS objects readably
 ;;;
 
-;; without this, Allegro issues a warning about redefining a symbol
-;; (`print-object') in a locked package when compiling this file
-#+allegro
-(eval-when (compile)
-  (setf (excl:package-definition-lock (find-package :common-lisp)) nil))
+;; without this, some CL implementations issue a warning or an error
+;; about redefining a symbol (`print-object') in a locked package
+(unlock-package :common-lisp)
 
 (defmethod print-object ((obj standard-object) (out stream))
   (case *closio-method*
@@ -103,9 +101,7 @@ otherwise you will probably get an error.")
            :finally (write-string "]" out) (return obj)))
     (t (call-next-method))))
 
-#+allegro
-(eval-when (compile)
-  (setf (excl:package-definition-lock (find-package :common-lisp)) t))
+(restore-package-lock :common-lisp)
 
 ;;;
 ;;; }}}{{{ macroexpand-r
