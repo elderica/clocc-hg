@@ -18,7 +18,7 @@
 
 (export
  '(getenv finalize variable-special-p arglist class-slot-list
-   probe-directory default-directory chdir sysinfo
+   pathname-ensure-name probe-directory default-directory chdir sysinfo
    +month-names+ +week-days+ +time-zones+ tz->string current-time))
 
 ;;;
@@ -120,6 +120,16 @@ all slots are returned, otherwise only the slots with
 ;;;
 ;;; Environment
 ;;;
+
+(defun pathname-ensure-name (path)
+  "Make sure that the pathname has a name slot.
+Call `pathname' on it argument and, if there is no NAME slot,
+but there is a TYPE slot, move TYPE into NAME."
+  (let ((path (pathname path)))
+    (if (or (pathname-name path) (null (pathname-type path))) path
+        ;; if you use CLISP, you will need 2000-03-09 or newer
+        (make-pathname :name (concatenate 'string "." (pathname-type path))
+                       :type nil :defaults path))))
 
 (defun probe-directory (filename)
   "Check whether the file name names an existing directory."
