@@ -286,7 +286,6 @@
 
 (defmethod print-inspection ((insp inspection) (out stream)
                              (backend (eql :tty)))
-  (declare (ignore backend))
   (format out "~s:  ~a~%~{ ~a~%~}" (insp-self insp) (insp-title insp)
           (insp-blurb insp))
   (when (insp-nth-slot insp)
@@ -342,7 +341,6 @@
 
 (defmethod print-inspection ((insp inspection) (raw stream)
                              (backend (eql :http)))
-  (declare (ignore backend))
   (flet ((href (com) (format nil "/~d/~s" (insp-id insp) com)))
     (with-html-output (out raw :title (insp-title insp) :footer nil)
       (with-tag (:h1) (princ (insp-title insp) out))
