@@ -142,7 +142,9 @@
            (tot-rev (parse-integer tot-rev-l :end p0))
            (sel-rev (parse-integer tot-rev-l :start (1+ p1)))
            (revs (progn (skip-to-line in *cvs-log-sep-1* nil)
-                        (read-list-from-stream in #'cvs-read-change +eof+))))
+                        (read-list-from-stream in #'cvs-read-change +eof+)))
+           (path (merge-pathnames (pathname-ensure-name work)
+                                  (directory-namestring in))))
       (unless (= tot-rev sel-rev)
         (warn "total revision (~d) != selected revisions (~d)"
               tot-rev sel-rev))
@@ -151,9 +153,7 @@
               tot-rev (length revs)))
       (values (make-cvs-file
                :revs revs :work work :head head :tot-rev tot-rev :rcs rcs
-               :size (file-size (merge-pathnames
-                                 (pathname-ensure-name work)
-                                 (directory-namestring in))))
+               :size (if (probe-file path) (file-size path) 0))
               (read in nil +eof+)))))
 
 (defun cvs-read-log (path)
