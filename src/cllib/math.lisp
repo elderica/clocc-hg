@@ -23,7 +23,7 @@
 (in-package :cllib)
 
 (export
- '(mulf divf sqr ! !! stirling fibonacci primes-to divisors primep
+ '(mulf divf sqr ! !! stirling fibonacci ruler primes-to divisors primep
    product-from-to binomial *primes* *primes-file*
    make-primes-list number-sum-split all-num-split
    vector-shuffle permutation with-permutations-shuffle
@@ -138,6 +138,13 @@
                        (+ (* f0 f0) (* f1 f1)))
                (values (+ (* f0 f0) (sqr (+ f0 f1)))
                        (* f0 (+ (* f1 2) f0)))))))))
+
+(defun ruler (n)
+  "The exponent of the largest power of 2 which divides the given number.
+See <http://mathworld.wolfram.com/RulerFunction.html>.
+See also <http://www.podval.org/~sds/notes.html#ruler-runction>
+for the explanation of the (logand n (- n)) part."
+  (1- (integer-length (logand n (- n)))))
 
 (defcustom *primes* list nil "The list of primes.
 The first element is the upper bound.")
