@@ -270,7 +270,7 @@ By default nothing is printed."
   (mesg :head out " +++ `skip-to-line' --> `~a'~%" ln)
   (do ((len (length ln)) (rr (read-line st) (read-line st)))
       ((and (>= (length rr) len) (string-equal ln rr :end2 len))
-       (subseq rr (length ln)))
+       (subseq rr len))
     (declare (fixnum len) (simple-string rr))))
 
 (defun skip-search (stream string &optional out)
