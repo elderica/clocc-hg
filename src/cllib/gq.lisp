@@ -99,8 +99,8 @@ change:~15t~7,2f~35thigh:~45t~7,2f
        :while (and xx (not (string= "" xx))))
                                 ; (not (string-beg-with "Content-Type:" xx))
       (mesg :xml ,err " *** data~%")
-      (with-xml-input (,var ,str)
-        (let ((*xml-read-balanced* nil) (*xml-read-entities* nil))
+      (let ((*xml-read-balanced* nil) (*xml-read-entities* nil))
+        (with-xml-input (,var ,str)
           ,@body)))))
 
 ;;;###autoload
@@ -285,7 +285,8 @@ The first arg, SERVER, when non-nil, specifies which server to use,
           (multiple-value-call #'values (third qq) (gq qq)))
         (do ((ql *get-quote-url-list* (cdr ql)) res name log)
             ((or (endp ql) (and (null server) (car res)))
-             (format t "Results:~%~:{~a: ~a~%~}" (nreverse log))
+             (mesg :log *gq-error-stream* "Results:~%~:{~a: ~a~%~}"
+                   (nreverse log))
              (values-list (cons name res)))
           (format t "~&Trying ~a...~%" (setq name (caddar ql)))
           (let ((re (multiple-value-list (ignore-errors (gq (car ql))))))
