@@ -331,7 +331,6 @@ FILENAME                 File containing Fortran code
 		      year month date hour minute second))
 	    (let ((*print-case* :downcase)))
 	      ;; Insert in-package and declaim, if needed
-	      #-clisp
 	      (when options
 		(pprint-logical-block (outport options :per-line-prefix ";;; ")
 		  (format outport "~&Options: ~S" options))
@@ -531,7 +530,13 @@ FILENAME                 File containing Fortran code
 
 ;=============================================================================
 (defun special-print (x o)
-   (write x :escape t :stream o :pretty t :readably t :case :downcase))
+  (with-standard-io-syntax
+    (let ((*package* (find-package :f2cl))
+	  (*print-pretty* t)
+	  (*print-case* :downcase)
+	  (*print-circle* nil)
+	  (*print-readably* t))
+      (write x :stream o))))
 ;------------------------------------------------------------------------------
 (defun princ-reset (x &optional (y ""))
   (print x)
@@ -1953,6 +1958,10 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.77  2001/09/11 14:29:14  rtoy
+;;; Try to do a better job of figuring out the extension for the output
+;;; file.
+;;;
 ;;; Revision 1.76  2001/06/04 17:20:10  rtoy
 ;;; CONVERT-DATA-TYPE was incorrectly returning T instead of '(LOGICAL)
 ;;; for LOGICAL Fortran types.
