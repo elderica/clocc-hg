@@ -1764,13 +1764,20 @@ FILENAME                 File containing Fortran code
 			 x)))
    nil)
 
-; restrict SAVE stmts to
-;     SAVE a,b,...
-; or  SAVE /label/a,b,..
+;; restrict SAVE stmts to
+;;     SAVE a,b,...
+;; or  SAVE /label/a,b,..
+;;
+;; But a plain SAVE means save all local variables.
 (defun parse-save (x)
-   (setq *save_vbles*
-        (append *save_vbles*
-                (remove '|,| (if (eq (first (cdr x)) '/) (cddddr x) (cdr x)))))
+  ;; Use the magic token '%save-all-locals% to mean we want to save
+  ;; all local variables.  This can't be a valid Fortran variable, so
+  ;; we're safe.
+  (if (rest x)
+      (setq *save_vbles*
+	    (append *save_vbles*
+		    (remove '|,| (if (eq (first (cdr x)) '/) (cddddr x) (cdr x)))))
+      (setq *save_vbles* '%save-all-locals%))
    nil) 
   
 (defun parse-common (common-statement)
@@ -2461,6 +2468,9 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.125  2003/11/13 05:38:15  rtoy
+;;; Define a pretty-printer for WITH-MULTI-ARRAY-DATA.
+;;;
 ;;; Revision 1.124  2003/11/12 05:32:03  rtoy
 ;;; Many changes to make assigned gotos work
 ;;;
