@@ -8,7 +8,8 @@
 ;;; License.  See file COPYING for details.
 
 (eval-when (:compile-toplevel :load-toplevel)
-   (export '(out in out-indent read-string read-y-or-n lineread)))
+   (export '(out in out-indent stream-indent
+	     read-string read-y-or-n lineread)))
 
 (eval-when (:compile-toplevel :load-toplevel :slurp-toplevel)
    (datafun-table out-ops* out-operator)
@@ -96,6 +97,13 @@
 		   ,@body)
 	       (setf (Out-stream-indent ,srmvar)
 		     ,indent-var))))))
+
+(defun stream-indent (srm amt)
+   (setq srm (stream-outify (cond ((eq srm t)
+				   (eval default-out-stream-var*))
+				  (t srm))))
+   (setf (Out-stream-indent srm)
+	 (+ (Out-stream-indent srm) amt)))
 
 (defmacro out (&rest exps)
   (let ((stream (gensym))
