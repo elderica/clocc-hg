@@ -4,6 +4,12 @@
 ;;;;  Class of Random number generators
 ;;;;
 ;;;;  $Log$
+;;;;  Revision 1.3  2001/03/19 15:17:25  rtoy
+;;;;  o Updated with several new generators for exponential.
+;;;;  o Added and updated (but commented out) timing routines.
+;;;;  o Added simple histogram routines used for testing whether the
+;;;;    generators work or not.  (Commented out).
+;;;;
 ;;;;  Revision 1.2  2001/03/15 00:04:01  sds
 ;;;;  added provide, in-package and use `dfloat'
 ;;;;
@@ -91,6 +97,9 @@
 ;;;    gen-exponential-variate-ea
 ;;;    gen-exponential-variate-ea-2
 ;;;    gen-exponential-variate-ratio
+;;;
+;;; These don't seem to work:
+;;;    gen-exponential-variate-algorithm-ma
 
 ;; GEN-EXPONENTIAL-VARIATE-LOG-METHOD
 ;;
@@ -522,7 +531,7 @@ mean of 1:
 (defmacro gen-exponential-variate (mu state)
   `(gen-exponential-variate-log-method ,mu ,state))
 
-
+
 ;;;;-------------------------------------------------------------------------
 ;;;;
 ;;;; Laplacian PDF
@@ -547,7 +556,7 @@ mean of 1:
   (if (zerop (random 2 state))
       (gen-std-exponential-variate 1d0 state)
       (- (gen-std-exponential-variate 1d0 state))))
-
+
 ;;;;-------------------------------------------------------------------------
 ;;;; Cauchy random variate.
 ;;;;
@@ -628,6 +637,11 @@ mean of 1:
     (gen-cauchy-variate-algorithm-ca-aux (random 1d0 state) state))
   )
 
+;;; Select the one that works best for you.
+
+(defmacro gen-cauchy-variate (state)
+  `(gen-cauchy-variate-tan ,state))
+
 ;;;;-------------------------------------------------------------------------
 ;;;;
 ;;;; Gaussian random variate
@@ -636,6 +650,8 @@ mean of 1:
 ;;;;
 ;;;;-------------------------------------------------------------------------
 
+;; A simple structure to hold the cached value for the Gaussian
+;; generators, which usually generate two variates at a time.
 (defstruct gaussian-generator-cache
   (cached-value 0d0 :type double-float)
   (cache-valid nil :type (member t nil) ))
@@ -803,6 +819,10 @@ of zero and a variance of 1.
 		     (<= xs (- (* 4.0d0 (log u))))))
 	    (return-from gen-gaussian-variate-ratio x))))))
 
+;;; Select one that works for you
+(defmacro gen-gaussian-variate (state)
+  `(gen-gaussian-variate-polar ,state))
+
 ;;;;-------------------------------------------------------------------------
 ;;;;
 ;;;; Gamma random variate, of order a
@@ -893,8 +913,8 @@ order ORDER.
 	 (cc (- (* order z0 z0 z0)
 		(* 0.5d0 x0 x0)))
 	 (cl (- 1d0 (* 3d0 order))))
-    (do* ((x (gen-std-gaussian-variate state)
-	     (gen-std-gaussian-variate state))
+    (do* ((x (gen-gaussian-variate state)
+	     (gen-gaussian-variate state))
 	  (z (+ (* s x) cs)
 	     (+ (* s x) cs)))
 	 (nil)
@@ -902,7 +922,7 @@ order ORDER.
       (when (plusp z)
 	(let* ((z z)
 	       (rgama (* order z z z))
-	       (e (gen-std-exponential-variate 1d0 state))
+	       (e (gen-exponential-variate 1d0 state))
 	       (cd (- (+ e (* 0.5d0 x x) cc)
 		      rgama))
 	       (tt (- 1d0 (/ z0 z))))
@@ -951,13 +971,13 @@ order ORDER.
     (loop
 	(tagbody
 	  step-1
-	   (setf x (gen-std-gaussian-variate state))
+	   (setf x (gen-gaussian-variate state))
 	   (setf z (+ (* x s) cs))
 	   (when (<= z 0)
 	     (go step-1))
 	   (let* ((z z)
 		  (rgama (* order z z z))
-		  (e (gen-std-exponential-variate 1d0 state))
+		  (e (gen-exponential-variate 1d0 state))
 		  (cd (- (+ e (* 0.5d0 x x) cc)
 			 rgama))
 		  (tt (- 1d0 (/ z0 z))))
@@ -1003,7 +1023,7 @@ order ORDER.
 	(nil)
       (declare (type (non-negative-float double-float (1d0)) u))
       (cond ((> u 0.009572265238289d0)
-	     (let* ((s (gen-std-gaussian-variate state))
+	     (let* ((s (gen-gaussian-variate state))
 		    (x (+ mu (* sigma s))))
 	       (when (and (<= 0 x b)
 			  (<= (log (random 1d0 state))
@@ -1015,7 +1035,7 @@ order ORDER.
 				 x)))
 		 (return-from gen-gamma-variate-gn x))))
 	    (t
-	     (let* ((s (gen-std-exponential-variate 1d0 state))
+	     (let* ((s (gen-exponential-variate 1d0 state))
 		    (x (* b (+ 1d0 (/ s d)))))
 	       (when (<= (log (random 1d0 state))
 			 (- (+ (* mu
@@ -1066,7 +1086,7 @@ order ORDER.
 	   (setf u (random 1d0 state))
 	   (when (<= u 0.009572265238289d0)
 	     (go step-5))
-	   (setf s (gen-std-gaussian-variate state))
+	   (setf s (gen-gaussian-variate state))
 	   (setf x (+ mu (* sigma s)))
 	   (when (or (< x 0) (> x b))
 	     (go step-2))
@@ -1082,7 +1102,7 @@ order ORDER.
 	       (go step-2)
 	       (return-from gen-gamma-variate-gn x))
 	  step-5
-	   (setf s (gen-std-exponential-variate 1d0 state))
+	   (setf s (gen-exponential-variate 1d0 state))
 	   (setf x (* b (+ 1 (/ s d))))
 	   (setf u (random 1d0 state))
 	   (if (> (log u)
@@ -1288,7 +1308,7 @@ order ORDER.
 	(nil)
       (cond ((<= u +beta-algo-go+)
 	     ;; Step 8 and 9
-	     (let ((x (* b (+ 1 (/ (gen-std-exponential-variate 1d0 state) d))))
+	     (let ((x (* b (+ 1 (/ (gen-exponential-variate 1d0 state) d))))
 		   (u (random 1d0 state)))
 	       (when (<= (log u) (- (+ (* mu (+ 2 (log (/ x mu)) (- (/ x b))))
 				       #.(- (log (/ (* (sqrt (* 2 pi)) +beta-algo-go+)
@@ -1298,7 +1318,7 @@ order ORDER.
 
 	    (t
 	     ;; Step 3
-	     (let* ((s (gen-std-gaussian-variate state))
+	     (let* ((s (gen-gaussian-variate state))
 		    (x (+ mu (* sigma s))))
 	       (if (<= 0 x b)
 		   (let ((x x)
@@ -1345,7 +1365,7 @@ order ORDER.
 	   (setf u (random 1d0 state))
 	   (when (<= u +beta-algo-go+)
 	     (go step-8))
-	   (setf s (gen-std-gaussian-variate state))
+	   (setf s (gen-gaussian-variate state))
 	   (setf x (+ mu (* sigma s)))
 	   (when (or (< x 0) (> x b))
 	     (go step-2))
@@ -1366,7 +1386,7 @@ order ORDER.
 	       (go step-2)
 	       (return-from gen-gamma-variate-algo-go x))
 	  step-8
-	   (setf s (gen-std-exponential-variate 1d0 state))
+	   (setf s (gen-exponential-variate 1d0 state))
 	   (setf x (* b (+ 1 (/ s d))))
 	   (setf u (random 1d0 state))
 	   (if (> (log u) (- (+ (* mu (+ 2 (log (/ x mu)) (- (/ x b))))
@@ -1377,6 +1397,12 @@ order ORDER.
 	       (go step-2)
 	       (return-from gen-gamma-variate-algo-go x))))))
 
+;;; This is probably quite broken.  It's my own attempt at using the
+;;; ratio method to generate Gamma variates.  The usual method gets
+;;; progressively worse as the parameter gets larger.  This tries to
+;;; take advantage of the fact that the desired region actually fits
+;;; in a thin rotated rectangle.  Needs more work.
+#+nil
 (defun gen-gamma-variate-ratio (a state)
   (declare (type (double-float 1.5d0) a)
 	   (type random-state state)
@@ -1423,8 +1449,17 @@ order ORDER.
 	       ((<= (* u u) (g v/u))
 		v/u)))))))
 
-
-
+;;;
+;;; The following Gamma variate routines appear to work (according to
+;;; the sample histogram).
+;;;
+;;;    gen-gamma-variate-algo-a
+;;;    gen-gamma-variate-algo-a-2
+;;;    gen-gamma-variate-squeeze
+;;;
+;;; These do not appear to work:
+;;;    gen-gamma-variate-algo-go  (some problem for small variates)
+;;;    gen-gamma-variate-gn       (doesn't quite match expected values for large values)
 
 
 (defun gen-gamma-variate (order state)
@@ -1455,11 +1490,12 @@ order ORDER.
 	 (gen-gamma-variate-direct order state))
 	((= order 1d0)
 	 ;; Gamma variate of order 1 is an exponential variate
-	 (gen-std-exponential-variate 1d0 state))
+	 (gen-exponential-variate 1d0 state))
 	(t
 	 ;; order < 1.  This is the algorithm in problem 16 in Sec. 3.4.1
 	 (gen-gamma-variate-small-order order state))))
 
+
 ;;; Geometric random variable
 (defun gen-geometric-variate (p state)
   (declare (type (non-negative-float double-float (1d0)) p) (optimize (speed 3)))
