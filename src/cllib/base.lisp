@@ -14,10 +14,28 @@
 (defpackage "CLLIB"
   (:use "COMMON-LISP" "PORT")
   (:nicknames "ORG.CONS.CLOCC/SDS/CLLIB")
-  (:export "VALUE" "CODE"
+  #+cmu (:shadow defstruct)
+  (:export "VALUE" "CODE" "DEFSTRUCT"
            "*DATADIR*" "*MAIL-HOST-ADDRESS*" "*USER-MAIL-ADDRESS*"))
 
 (in-package :cllib)
+
+;;;
+;;; {{{CMUCL structure hack - make them externalizable
+;;;
+
+#+cmu
+(defmacro defstruct (name &rest slots)
+  `(progn
+     (eval-when (compile load eval) (cl:defstruct ,name ,@slots))
+     ,(unless (and (consp name) (assoc :type (cdr name)))
+       `(defmethod make-load-form ((self ,(if (consp name) (first name) name))
+                                   &optional environment)
+          (make-load-form-saving-slots self :environment environment)))))
+
+;;;
+;;; }}}{{{paths
+;;;
 
 (setf (logical-pathname-translations "cllib")
       `(("**;*" ,(logical-pathname "clocc:src;cllib;**;*"))
