@@ -28,13 +28,13 @@
 (defun getenv (var)
   "Return the value of the environment variable."
   #+allegro (system::getenv (string var))
+  #+clisp (system::getenv (string var))
   #+cmu (cdr (assoc (string var) ext:*environment-list* :test #'equalp
                     :key #'string)) ; xlib::getenv
-  #+clisp (system::getenv (string var))
+  #+gcl (si:getenv (string var))
   #+lispworks (lw:environment-variable (string var))
   #+lucid (lcl:environment-variable (string var))
-  #+gcl (si:getenv (string var))
-  #-(or cmu allegro clisp lispworks lucid gcl)
+  #-(or allegro clisp cmu gcl lispworks lucid)
   (error 'not-implemented :proc (list 'getenv var)))
 
 ;;;
@@ -47,7 +47,8 @@
   #+clisp (system::special-variable-p symbol)
   #+cmu (walker:variable-globally-special-p symbol)
   #+gcl (system:specialp symbol)
-  #-(or allegro clisp cmu gcl)
+  #+lispworks (walker:variable-special-p symbol nil)
+  #-(or allegro clisp cmu gcl lispworks)
   (error 'not-implemented :proc (list 'variable-special-p symbol)))
 
 (defun arglist (fn)
@@ -61,8 +62,9 @@
                     (symbol fn)
                     (function (system:compiled-function-name fn)))))
           (get fn 'si:debug))
-  ;; #+lispworks
-  #-(or allegro clisp cmu gcl) (error 'not-implemented :proc 'arglist))
+  ;; ??? #+lispworks (walker::walk-arglist symbol nil nil)
+  #-(or allegro clisp cmu gcl)
+  (error 'not-implemented :proc (list 'arglist fn)))
 
 (defun class-slot-list (class &optional (all t))
   "Return the list of slots of a CLASS.
