@@ -206,10 +206,10 @@ but there is a TYPE slot, move TYPE into NAME."
 (defsetf default-directory chdir "Change the current directory.")
 
 (defun mkdir (dir)
-  #+allegro (excl:make-directory path)
-  #+clisp (lisp:make-dir path)
-  #+cmu (unix:unix-mkdir (directory-namestring path) #o777)
-  #+lispworks (system:make-directory path)
+  #+allegro (excl:make-directory dir)
+  #+clisp (lisp:make-dir dir)
+  #+cmu (unix:unix-mkdir (directory-namestring dir) #o777)
+  #+lispworks (system:make-directory dir)
   #-(or allegro clisp cmu lispworks)
   (error 'not-implemented :proc (list 'mkdir dir)))
 
