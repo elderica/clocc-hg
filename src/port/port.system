@@ -7,8 +7,6 @@
 
 (mk:defsystem port
     :source-pathname (translate-logical-pathname "clocc:src;port;")
-    :binary-pathname (mk:afs-binary-directory
-		      (translate-logical-pathname "clocc:src;port;"))
     :source-extension "lisp"
     :components
     ((:file "ext")
