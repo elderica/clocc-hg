@@ -86,5 +86,5 @@
               (setq len (with-csv (vec inf) (coll vec))))
             len)))
 
-(provide :csv)
+(provide :cllib-csv)
 ;;; file csv.lisp ends here
