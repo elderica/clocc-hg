@@ -13,14 +13,13 @@
 
 (defpackage cllib
   (:use "COMMON-LISP" "PORT")
-  (:nicknames "ORG.CONS.CLOCC/SDS/CLLIB"))
+  (:nicknames "ORG.CONS.CLOCC/SDS/CLLIB")
+  (:export value code))
 
 (in-package :cllib)
 
 (setf (logical-pathname-translations "cllib")
       `(("**;*" ,(logical-pathname "clocc:src;cllib;**;*"))))
-
-(export '(value code))
 
 (defcustom *datadir* pathname
   (merge-pathnames "data/" (user-homedir-pathname))
