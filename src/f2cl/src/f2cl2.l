@@ -347,33 +347,10 @@ Tag being parsed:| (cadr x))))
 	      ;;(format t "array   = ~A~%" vname)
 	      ;;(format t "indices = ~A~%" indices)
 	      ;;(format t "bounds  = ~A~%" bounds)
-	      (let ((dims (mapcar #'(lambda (idx bnd)
-				      (if (and (numberp idx)
-					       (numberp (second bnd)))
-					  (+ (- (second bnd) idx) 1)
-					  `(+ (- ,(second bnd) ,idx) 1)))
-				  indices bounds))
-		    (offset (mapcar #'(lambda (idx bnd)
-					`(- ,idx ,(first bnd)))
-				    indices bounds)))
-		`(make-array ,@dims
-		  :element-type ',(lookup-vble-type vname)
-		  :displaced-to ,vname
-		  :displaced-index-offset (array-row-major-index ,vname ,@offset))))
+	      `(array-slice ,vname ,(lookup-vble-type vname) ,indices ,bounds))
 	     (t
-	      ;; If all of the lower bounds are 1, don't need to pass that
-	      ;; on.  The fref macro already handles this situation.  Doesn't
-	      ;; affect the behavior, but makes the Lisp code look a bit
-	      ;; cleaner.
-	      (append (list 'fref vname)
-		      (list indices)
-		      (let ((blist (mapcar #'car bounds)))
-			(unless (and blist
-				     (every #'(lambda (x)
-						(and (numberp x)
-						     (= x 1)))
-					    blist))
-			  (list (mapcar #'car bounds)))))))))
+	      `(fref ,vname ,indices ,bounds)
+	      ))))
     ;; string (character array) reference 
     ((and (symbolp (car l))
 	  (listp (cadr l))
@@ -467,6 +444,15 @@ definition.| l) ))
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.20  2000/07/18 14:04:33  rtoy
+;;; Changes for UPDATE-CALLED-FUNCTIONS-LIST:
+;;;
+;;; o Document the layout of *functions-list*
+;;; o Make the appropriate code changes in other parts since the name arg
+;;;   is now either a list of the name for functions or a list of the name
+;;;   and :subroutine for subroutines.  (Used for declaring functions and
+;;;   subroutines correctly.)
+;;;
 ;;; Revision 1.19  2000/07/14 15:48:34  rtoy
 ;;; Preliminary support for array slicing.  Any array reference in a
 ;;; function or subroutine call is assumed to mean a slice of the array.
