@@ -765,10 +765,12 @@ is not included")
     (cond ((atom array)
 	   `(do ((,do-var ,start (+ ,do-var ,step)))
 	     ((> ,do-var ,end))
+	     (declare (integer4 ,do-var))
 	     (fset (fref ,array ,(remove '|,| (second implied-do)) ,low-bnds) (pop ,init))))
 	  (t
 	   `(do ((,do-var ,start (+ ,do-var ,step)))
 	     ((> ,do-var ,end))
+	     (declare (integer4 ,do-var))
 	     ,(process-implied-do (remove '|,| array) low-bnds init))))))
 
 
@@ -788,6 +790,7 @@ is not included")
     (setf (gethash t table) *standard-output*)
     table))
 
+#+nil
 (defun lun->stream (lun)
   (let ((stream (gethash lun *lun-hash*)))
     (if stream
@@ -796,6 +799,22 @@ is not included")
 	      (open (format nil "fort~d.dat" lun)
 		    :direction :output
 		    :if-exists :rename)))))
+
+(defun lun->stream (lun &optional readp)
+  (let ((stream (gethash lun *lun-hash*)))
+    (if stream
+	stream
+	(cond ((integerp lun)
+	       (setf (gethash lun *lun-hash*)
+		     (open (format nil "fort~d.dat" lun)
+			   :direction :output
+			   :if-exists :rename)))
+	      ((stringp lun)
+	       (setf (gethash lun *lun-hash*)
+		     (if readp
+			 (make-string-input-stream lun)
+			 (make-string-output-stream))))
+	      ))))
 
 (defun init-fortran-io ()
   "Initialize the F2CL Fortran I/O subsystem to sensible defaults"
@@ -818,7 +837,9 @@ causing all pending operations to be flushed"
 (defmacro fformat (dest-lun format-cilist &rest args)
   (let ((stream (gensym)))
     `(let ((,stream (lun->stream ,dest-lun)))
-      (execute-format-main ,stream ',format-cilist ,@args))))
+      (execute-format-main ,stream ',format-cilist ,@args)
+      (when (stringp ,dest-lun)
+	(replace ,dest-lun (get-output-stream-string ,stream))))))
 
 (defun execute-format (top stream format arg-list)
   (do ((formats format (if (and top (null formats))
@@ -1109,6 +1130,13 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.39  2002/02/09 15:59:26  rtoy
+;;; o Add more and better comments
+;;; o AINT was broken because it should accept any range of floats.
+;;; o DIM and friends computed the wrong thing!
+;;; o Change DPROD to convert to doubles first.
+;;; o Some cleanup of MAX and MIN
+;;;
 ;;; Revision 1.38  2002/02/08 23:38:36  rtoy
 ;;; Use ARRAY-TOTAL-SIZE to compute how many elements are in the slice
 ;;; instead of the f2cl declared/derived bounds so that we can dynamically
