@@ -1586,19 +1586,25 @@
                             *format_stmts*)))
 )
 
-; x is of form: '(WRITE (* |,| 8000) |,| J |,| K)
-;           or  '(WRITE (*) |,| J |,| K)
-;           or  '(WRITE (* |,| *) |,| J |,| K)
+;; x is of form: '(WRITE (* |,| 8000) |,| J |,| K)
+;;           or  '(WRITE (*) |,| J |,| K)
+;;           or  '(WRITE (* |,| *) |,| J |,| K)
+;;
+;; Note that the unit can be any arbitrary expression, so be careful.
 (defun parse-write (x)
   ;; check for comma before arguments
   (if (and (third x) (not (eq (third x) '|,|)))
       (setq x (append (list (first x) (second x) '|,|) (cddr x))))
-  `((fformat ,(parse_format_dest (first (second x)))
-     ,(if (null (second (second x))) 
-	  '(("~A~%"))
-	  (get_format_stmt (nthcdr 2 (second x))))
-     ,@(mapcar #'parse-output-argument 
-	       (list-split '|,| (cdddr x))))))
+  ;; The logical unit number is in the second element.  If the second element
+  (let ((lun-part (second x)))
+    `((fformat ,(parse_format_dest (if (null (rest lun-part))
+				       lun-part
+				       (butlast lun-part 2)))
+       ,(if (null (second (second x))) 
+	    '(("~A~%"))
+	    (get_format_stmt (nthcdr 2 (second x))))
+       ,@(mapcar #'parse-output-argument 
+		 (list-split '|,| (cdddr x)))))))
 
 ;; x is of the form: '(PRINT * |,| X |,| Y)
 ;;               or: '(PRINT 9000 |,| X |,| Y)
@@ -1639,9 +1645,15 @@
 	       ((null lis) (error "format stmt ~A not found" fmt-num))
 	     (if (equal fmt-num (caar lis))
 		 (return (cadar lis))))))))
-          
-(defun parse_format_dest (dest) 
-    (if (eq  dest '*) t dest))
+
+;; Figure out where we're trying to WRITE to.
+;;
+;; DEST can be any arbitrary expression, so we need to parse it. 
+(defun parse_format_dest (dest)
+  (cond ((null (rest dest))
+	 (if (eq dest '*) t dest))
+	(t
+	 (id-expression dest))))
 
 (defun parse-output-argument (arg) 
    (cond ((null arg) nil)
@@ -2119,6 +2131,11 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.75  2002/01/13 16:57:52  rtoy
+;;; When looking up variables in the declared variables list or the
+;;; subprog arglist, we still need to handle them via Fortran's implicit
+;;; typing rules.
+;;;
 ;;; Revision 1.74  2002/01/09 15:31:08  rtoy
 ;;; o In GET-FUN-ARG-TYPE, we weren't correctly handling the case of unary
 ;;;   + and -.
