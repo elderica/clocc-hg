@@ -1,8 +1,8 @@
-;;; File: <list.lisp - 1999-04-09 Fri 14:47:08 EDT sds@eho.eaglets.com>
+;;; File: <list.lisp - 1999-04-09 Fri 17:44:30 EDT sds@eho.eaglets.com>
 ;;;
 ;;; Additional List Operations
 ;;;
-;;; Copyright (C) 1997, 1998 by Sam Steingold.
+;;; Copyright (C) 1997-1999 by Sam Steingold.
 ;;; This is open-source software.
 ;;; GNU General Public License v.2 (GPL2) is applicable:
 ;;; No warranty; you may copy/modify/redistribute under the same
@@ -12,6 +12,9 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.8  1999/04/09 18:48:18  sds
+;;; Added `collecting'.
+;;;
 ;;; Revision 1.7  1999/02/22 22:56:53  sds
 ;;; `call-on-split': new key `:min-len'.
 ;;;
@@ -137,24 +140,32 @@ The alist is sorted by decreasing frequencies. TEST defaults to `eql'."
              seq :key key :initial-value nil)
      #'> :key #'cdr)))
 
-(defmacro collecting (&body forms)
-  "Evaluate forms, collecting objects into a list.
-Within the FORMS, you can use a local macro `collect'."
-  #+clisp                       ; this is faster in CLISP
-  (let ((ret (gensym "COLLECTING")))
-    `(let ((,ret nil))
-      (macrolet ((collect (form) `(push ,form ,',ret)))
+(defmacro with-collect ((&rest collectors) &body forms)
+  "Evaluate forms, collecting objects into lists.
+Within the FORMS, you can use local macros listed among collectors,
+they are returned as multiple values.
+E.g., (with-collect (c1 c2) (dotimes (i 10) (if (oddp i) (c1 i) (c2 i))))
+ ==> (1 3 5 7 9); (0 2 4 6 8) [2 values]
+In CLISP, push/nreverse is about 1.25 times as fast as pushing into the
+tail, so this macro uses push/nreverse on CLISP and push into the tail
+on other lisps (which is 1.5-2 times as fast as push/nreverse there)."
+  (let ((ret (mapcar (lambda (cc) (gensym (format nil "~:@(~s~)-RET-" cc)))
+                     collectors))
+        #-clisp
+        (tail (mapcar (lambda (cc) (gensym (format nil "~:@(~s~)-TAIL-" cc)))
+                      collectors)))
+    `(let (,@ret #-clisp ,@tail)
+      (macrolet ,(mapcar (lambda (co re #-clisp ta)
+                           `(,co (form)
+                             #+clisp `(push ,form ,',re)
+                             #-clisp
+                             `(if ,',re
+                               (setf (cdr ,',ta) (setf ,',ta (list ,form)))
+                               (setf ,',re (setf ,',ta (list ,form))))))
+                         collectors ret #-clisp tail)
         ,@forms
-        (nreverse ,ret))))
-  #-clisp                       ; this is faster in natively compiling lisps
-  (let ((ret (gensym "COLLECTING")) (tail (gensym "COLLECTING")))
-    `(let ((,ret nil) (,tail nil))
-      (macrolet ((collect (form)
-                   `(if ,',ret
-                     (setf (cdr ,',tail) (setf ,',tail (list ,form)))
-                     (setf ,',ret (setf ,',tail (list ,form))))))
-        ,@forms
-        ,ret))))
+        (values #+clisp ,@(mapcar (lambda (re) `(nreverse ,re)) ret)
+                #-clisp ,@ret)))))
 
 ;;;
 ;;; Sorted
