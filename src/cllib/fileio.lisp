@@ -188,8 +188,7 @@ defaults to `read' and is called with 3 arguments - STREAM, NIL and EOF.
 Set `*print-pretty*' to the third argument NICE (default T).
 Uses `with-standard-io-syntax'."
   (declare (stream str))
-  (with-standard-io-syntax
-    (write obj :stream str :case :downcase :pretty nice))
+  (with-standard-io-syntax (write obj :stream str :pretty nice))
   (values))
 
 ;;;###autoload
