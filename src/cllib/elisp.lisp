@@ -1,6 +1,6 @@
 ;;; Load Emacs-Lisp files into Common Lisp
 ;;;
-;;; Copyright (C) 1999-2000 by Sam Steingold
+;;; Copyright (C) 1999-2004 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
@@ -180,7 +180,7 @@
 (defsubst el::% (x y) (rem x y))
 (defsubst el::file-directory-p (ff) (probe-directory ff))
 (defsubst el::sref (ar ix) (aref ar ix))
-(defsubst el::set-default (sy va) (set sy va))
+(defsubst el::set-default (sy va) (setf (symbol-value sy) va))
 (defsubst el::default-value (sy) (symbol-value sy))
 
 (defun el::run-hooks (&rest hooks)
