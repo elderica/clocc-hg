@@ -1048,7 +1048,7 @@ The values are counted and the result is used as a probability distribution.
     (loop :for num :being :each :hash-value :of ht :do
       (incf tot num)
       (incf sum (* num (log (dfloat num) 2)))) ; we know num>0
-    (values (- (log tot 2) (/ sum tot)) ht)))
+    (values (- (log (dfloat tot) 2) (/ sum tot)) ht)))
 
 (defun kurtosis-skewness (seq &key (key #'value) std mean len)
   "Compute the skewness and kurtosis (3rd & 4th centered momenta)."
