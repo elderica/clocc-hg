@@ -1,4 +1,4 @@
-;;; File: <url.lisp - 2000-02-18 Fri 13:11:40 EST sds@ksp.com>
+;;; File: <url.lisp - 2000-03-03 Fri 12:11:39 EST sds@ksp.com>
 ;;;
 ;;; Url.lisp - handle url's and parse HTTP
 ;;;
@@ -596,14 +596,6 @@ as the remote one."
 ;;;
 ;;; }}}{{{ mail
 ;;;
-
-(defcustom *mail-host-address* simple-string
-  (let ((st (machine-instance))) (subseq st 0 (position #\Space st)))
-  "*Name of this machine, for purposes of naming users.")
-(defcustom *user-mail-address* simple-string
-  (concatenate 'string (getenv "USER") "@" *mail-host-address*)
-  "*Full mailing address of this user.
-This is initialized based on `mail-host-address'.")
 
 (defun url-send-mail (url &key (err *error-output*)
                       (text (current-time nil))
