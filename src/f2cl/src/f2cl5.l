@@ -346,7 +346,6 @@
 		       (if (atom z)
 			   z
 			   (let ((nodup (remove-duplicates z :test #'equalp)))
-			     (format t "z = ~A~%" z)
 			     (if (rest nodup)
 				 `(or ,@nodup)
 				 (first nodup)))))
@@ -2122,6 +2121,16 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.49  2000/07/19 14:04:28  rtoy
+;;; o GET-FUN-ARG-TYPE returns a second value to indicate if the arg is an
+;;;   array or not.
+;;; o More hacking on GET-ARG-DECL.  Should now correctly identify if an
+;;;   array is used as a parameter.  Still needs work.
+;;; o MAKE_MAKE-ARRAY_STMT creates 1-D arrays for all arrays to support
+;;;   Fortran array slicing.
+;;; o In MAKE-DECLARATION, declare all arrays as 1-D even if
+;;;   multi-dimensional, for supporting Fortran array slicing.
+;;;
 ;;; Revision 1.48  2000/07/18 13:59:23  rtoy
 ;;; o Left out some double precision intrinsics for getting function
 ;;;   types.
