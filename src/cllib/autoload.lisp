@@ -40,6 +40,9 @@
 
 )
 
+(defcustom *autoload-cookie* simple-string ";;;###autoload"
+  "*The cookie preceeding a function to be autoloaded.")
+
 (defgeneric autoload-stream (in out log)
   (:documentation "Generate the autoloads writing into a stream.")
   (:method ((in string) (out stream) (log t))
@@ -50,7 +53,7 @@
     (with-open-file (ins in :direction :input)
       (format out "~&;;; file ~s, ~:d bytes~%" in (file-length ins))
       (format log "~&~s [~:d bytes] --> " in (file-length ins)) (force-output)
-      (loop :while (ignore-errors (skip-to-line ins ";;;###autoload"))
+      (loop :while (ignore-errors (skip-to-line ins *autoload-cookie*))
             :count t :into total :do
             (let* ((*package* (find-package :cllib))
                    (form (read ins)) (name (second form))
@@ -68,11 +71,13 @@
                             (return total))))))
 
 (defun autoload-generate (in out &optional (log t))
-  "Generate the autoloads, indicated by ';;;###autoload'."
+  "Generate the autoloads, indicated by `*autoload-cookie*'."
   (with-open-file (outs out :direction :output :if-exists :supersede
                         :if-does-not-exist :create)
-    (format outs ";;; autoloads generated on ~s~%(in-package :cllib)~2%~s~2%"
-            (timestamp) *autoload-defun*)
+    (format outs ";;; autoloads generated on ~s~%;;; by ~a [~a]~2%~
+                  (in-package :cllib)~2%~s~2%"
+            (timestamp) (lisp-implementation-type)
+            (lisp-implementation-version) *autoload-defun*)
     (let ((tot (autoload-stream in outs log)))
       (format log "wrote ~d autoload~:p to ~s (~:d bytes)~%"
               tot out (file-length outs))
