@@ -1,4 +1,4 @@
-;;; File: <base.lisp - 1999-05-05 Wed 15:22:15 EDT sds@goems.com>
+;;; File: <base.lisp - 1999-05-24 Mon 15:43:21 EDT sds@goems.com>
 ;;;
 ;;; Basis functionality, required everywhere
 ;;;
@@ -12,6 +12,15 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.20  1999/05/05 20:58:27  sds
+;;; LispWorks & GCL compatibility:
+;;; (*fas-ext*): added LispWorks extension.
+;;; (code, case-error): moved the conditions here.
+;;; (not-implemented): new `code' condition.
+;;; (run-prog, pipe-output, pipe-input): works with LispWorks.
+;;; (probe-directory): added LispWorks and generic code.
+;;; (chdir, setf default-directory): base the latter on the former.
+;;;
 ;;; Revision 1.19  1999/04/20 17:38:15  sds
 ;;; (*current-project*): card now requires `elisp' (for reading BBDB).
 ;;;
@@ -89,10 +98,13 @@
            #+(or clisp gcl) (declaration values))
   (setq *read-default-float-format* 'double-float *print-case* :downcase
         *print-array* t)
-  #+cmu (setf *gc-verbose* nil *bytes-consed-between-gcs* 32000000
-              *efficiency-note-cost-threshold* 20
-              (alien:extern-alien "pointer_filter_verbose" alien:unsigned) 0
-              (alien:extern-alien "gencgc_verbose" alien:unsigned) 0)
+  #+cmu (setq *gc-verbose* nil *bytes-consed-between-gcs* 32000000
+              *efficiency-note-cost-threshold* 20)
+  ;; From: Douglas Thomas Crosher  <dtc@scrooge.ee.swin.oz.au>
+  ;; Date: Sun, 18 Apr 1999 14:58:45 +1000 (EST)
+  ;; this has to be done in ~/.cmucl-init.lisp
+  ;; (setf (alien:extern-alien "pointer_filter_verbose" alien:unsigned) 0
+  ;;       (alien:extern-alien "gencgc_verbose" alien:unsigned) 0)
   #+cmu (pushnew 'compile pcl::*defclass-times*)
   ;; #+cmu (pushnew 'compile pcl::*defgeneric-times*)
   ;; #+cmu (pushnew 'compile pcl::*defmethod-times*)
@@ -199,10 +211,10 @@
    #+lucid lcl:environment-variable #+gcl si:getenv (string var)))
 
 (unless (fboundp 'gc)           ; #+cmu (gc)
-  (defun gc ()
-    "Invoke the garbage collector."
-    #+clisp (lisp:gc) #+allegro (excl:gc) #+gcl (si::gbc)
-    #+lispworks (normal-gc)))
+(defun gc ()
+  "Invoke the garbage collector."
+  #+clisp (lisp:gc) #+allegro (excl:gc) #+gcl (si::gbc)
+  #+lispworks (normal-gc)))
 
 (deftype index-t () '(unsigned-byte 20)) ; for arithmetics
 
@@ -235,10 +247,11 @@
 ;;; Prompt
 ;;;
 
-#+cmu
-(defun sys::package-short-name (pkg)
+(defun package-short-name (pkg)
   "Return the shortest (nick)name of the package."
   (declare (type package pkg))
+  #+clisp (sys::package-short-name pkg)
+  #-clisp
   (let ((name (reduce (lambda (st0 st1)
                         (declare (simple-string st0 st1))
                         (if (> (length st0) (length st1)) st1 st0))
@@ -249,6 +262,7 @@
       (:downcase (string-downcase name))
       (:capitalize (string-capitalize name))
       (t name))))
+
 #+cmu
 (defcustom sys::*command-index* index-t 0
   "The number of commands issued so far.")
@@ -262,7 +276,7 @@
                (ee (if dumb "" "[m" )))
           (declare (simple-string bb ib ee))
           (format nil "~a~a~a~a[~:d]:~a " ib
-                  (sys::package-short-name *package*)
+                  (package-short-name *package*)
                   ee bb (incf sys::*command-index*) ee))))
 
 ;;;
@@ -282,8 +296,13 @@
   #-(or allegro clisp cmu gcl lispworks)
   (error 'not-implemented :proc (list 'run-prog prog opts)))
 
-#+gcl (defun quit () (bye))
-#+allegro (defun quit () (exit))
+(unless (fboundp 'quit)
+(defun quit ()
+  #+allegro (exit)
+  #+clisp (lisp:quit)
+  #+gcl (bye)
+  #-(or allegro clisp gcl)
+  (error 'not-implemented :proc (list 'quit))))
 
 (defun pipe-output (prog &rest args)
   "Return an output stream which will go to the command."
@@ -427,15 +446,15 @@ This function takes care of that."
     ("date" "base" "util") ("channel" "base" "date") ("futures" "base" "date")
     ("signal" "base" "date" "channel" "futures")
     ("gnuplot" "base" "date" "channel" "signal")
-    ("rules" "base" "date" "channel" "futures" "signal" "gnuplot")
+    ("rules" "base" "date" "channel" "futures" "signal" "gnuplot" "report")
     ("work" "base" "date" "channel" "futures" "signal" "gnuplot" "rules")
     ("report" "base" "date" "print" "math" ) ("currency" "base" "date")
     ("fx" "base" "util" "date" "currency" "futures" "report")
-    #+nil ("octave" "base" "date" "currency")
+    #+nil ("octave" "base" "date" "currency") ("animals" "base" "util")
     ("url" "base" "util" "date") ("geo" "base" "url")
     ("gq" "base" "url" "date") ("rpm" "base" "url" "date")
     ("h2lisp" "base" "url") #+nil ("clhs" "base" "url")
-    ("elisp" "base" "list") ("card" "base" "print" "date" "url" "elisp")
+    ("elisp" "base" "list") ("card" "base" "print" "date" "url")
     ("tests" "base" "date" "url" "rpm" "elisp"))
   "*The alist of files to work with, in the order of loading.
 Key: name for `sds-require', value - the list of dependencies.")
