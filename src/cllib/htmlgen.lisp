@@ -155,7 +155,7 @@ Supplies some HTTP/1.0 headers and calls `with-html-output'."
           (with-tag (:td :align "right")
             (format out "~:d" (ignore-errors (file-size fi))))
           (with-tag (:td :align "right")
-            (princ (ignore-errors (dttm->string (file-write-date fi)))
+            (princ (ignore-errors (dttm->string (file-write-date fi) :short))
                    out)))))))
 
 
