@@ -1213,7 +1213,10 @@ where `X/N' means normalized with (GETHASH X MDL-HT)"
                     ;; the returned functions to change automatically?
                     ;;(let ((m (gethash f mdl-ht)))
                     ;;  `(/ (- (,f x) ,(mdl-mn m)) ,(mdl-sd m)))
-                    `(mdl-normalize (,f x) ,(gethash f mdl-ht)))
+                    `(mdl-normalize (,f x) ,(or (gethash f mdl-ht)
+                                                (error "~S: ~S is not in ~S"
+                                                       'normalize-function-list
+                                                       f mdl-ht))))
                   fl))))
 
 ;;;
