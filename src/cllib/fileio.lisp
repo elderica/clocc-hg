@@ -29,7 +29,9 @@
 ;;; {{{ file misc
 ;;;
 
+(eval-when (compile load eval)  ; ACL
 (deftype file-size-t () '(unsigned-byte 32))
+)
 
 (declaim (ftype (function (t) file-size-t) file-size))
 ;;;###autoload
