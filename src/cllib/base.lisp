@@ -25,7 +25,7 @@
 
 (defcustom *datadir* pathname
   (merge-pathnames (make-pathname :directory '(:relative "data")
-                                  :defaults nil)
+                                  :name nil :defaults nil)
                    (user-homedir-pathname))
   "The directory where the data file are created by default.")
 (defcustom *mail-host-address* simple-string
