@@ -1,4 +1,4 @@
-;;; File: <math.lisp - 1999-01-13 Wed 18:21:50 EST sds@eho.eaglets.com>
+;;; File: <math.lisp - 1999-02-22 Mon 17:54:09 EST sds@eho.eaglets.com>
 ;;;
 ;;; Math utilities (Arithmetical / Statistical functions)
 ;;;
@@ -12,6 +12,10 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.13  1999/01/13 23:37:56  sds
+;;; Replaced CMUCL-specific print functions with a call to
+;;; `print-struct-object'.
+;;;
 ;;; Revision 1.12  1999/01/07 04:07:34  sds
 ;;; Use `index-t' instead of (unsigned-byte 20).
 ;;;
@@ -244,9 +248,11 @@ Return the value and the derivative, suitable for `newton'."
 
 (defun normalize (seq &optional (norm #'norm))
   "Make the SEQ have unit norm. Drop nils."
-  (declare (sequence seq) (type (function (t) double-float) norm))
+  (declare (sequence seq) (type (or real (function (t) double-float)) norm))
   (setq seq (delete nil seq))
-  (let ((nn (funcall norm seq)))
+  (let ((nn (etypecase norm
+              (real (norm seq :order norm))
+              (function (funcall norm seq)))))
     (declare (double-float nn))
     (assert (> nn 0) (seq) "Zero norm vector: ~a" seq)
     (map-in (lambda (rr) (declare (double-float rr)) (/ rr nn)) seq)))
@@ -270,14 +276,14 @@ Return the value and the derivative, suitable for `newton'."
 ;;; Statistics
 ;;;
 
-(defsubst mean (seq &key (key #'value) (len (length seq)))
+(defun mean (seq &key (key #'value) (len (length seq)))
   "Compute the mean of the sequence of real numbers.
 Returns 2 values: the mean and the length of the sequence."
   (declare (sequence seq) (type (function (t) double-float) key)
            (fixnum len) (values double-float fixnum))
   (values (/ (reduce #'+ seq :key key) len) len))
 
-(defsubst mean-cx (seq &key (key #'value) (len (length seq)))
+(defun mean-cx (seq &key (key #'value) (len (length seq)))
   "Compute the mean of the sequence of complex numbers.
 Returns 2 values: the mean and the length of the sequence."
   (declare (sequence seq) (type (function (t) (complex double-float)) key)
@@ -443,7 +449,7 @@ and the average annual volatility for US Dollar Index."
   (declare (type (or function fixnum) split-key) (list lst)
            (type (function (t) double-float) key))
   (let ((vols (call-on-split lst #'standard-deviation-relative
-                             :split-key split-key :key key)))
+                             :split-key split-key :key key :min-len 2)))
     (values vols (mean vols :key #'cdr))))
 
 ;;; Mean / Deviation / Length
