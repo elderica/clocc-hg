@@ -132,6 +132,8 @@ only when needed. ")
 
 (defvar *float-format* 'single-float)
 
+(defvar *common-blocks-as-arrays* nil)
+
 (defvar *use-function-info*
   t
   "If non-NIL, the database of function return values is used in
@@ -176,6 +178,7 @@ incorrect, so use caution.")
 			declaim
 			declare-common
 			(float-format *read-default-float-format*)
+	                common-as-array
 			&allow-other-keys)
   "Fortran to Common Lisp converter
 
@@ -242,7 +245,8 @@ INPUT-FILE               File containing Fortran code
 	(*declare-common-blocks* declare-common)
 	(*assigned-variables* nil)
 	(*entry-points* nil)
-	(*float-format* float-format))
+	(*float-format* float-format)
+	(*common-blocks-as-arrays* common-as-array))
 
     (unless (probe-file input-file)
       ;; Can't find it, so look for some other possibilities
@@ -291,6 +295,7 @@ INPUT-FILE               File containing Fortran code
 			      declaim
 			      declare-common
 			      (float-format *read-default-float-format*)
+                              common-as-array
 			      &allow-other-keys)
   "Convert the Fortran to Common Lisp and compile the resulting Lisp file
 
@@ -334,7 +339,8 @@ FILENAME                 File containing Fortran code
 	       :array-slicing array-slicing
 	       :package package :declaim declaim
 	       :declare-common declare-common
-	       :float-format float-format))
+	       :float-format float-format
+	       :common-as-array common-as-array))
 	(*read-default-float-format* float-format))
     (multiple-value-prog1
 	#+(or cmu scl) (compile-file lisp-file :output-file output-file :error-file error-file)
@@ -2538,6 +2544,9 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.133  2004/08/11 19:00:33  rtoy
+;;; Set the f2cl version to include the RCS Date.
+;;;
 ;;; Revision 1.132  2003/11/18 19:33:47  rtoy
 ;;; Push the function name onto the calls list, not a list of the function
 ;;; name.
