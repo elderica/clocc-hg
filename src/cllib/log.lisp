@@ -106,6 +106,7 @@ the expected remaining run and real times."
                              (time-diff
                               (/ (+ eta1 (linear lp lt1 pos now1 1)) 2) now1)
                              )))))))
+             (declare (ignorable (function eta)))
              ,@body)
         (when ,%out
           (when ,done (princ "done" ,%out))
