@@ -402,7 +402,7 @@ Suitable for `read-list-from-stream'."
     (unless fl
       (return-from read-data-file
         (format t " *** Cannot open file `~a' for reading~%" file)))
-    (values (read-list-from-stream fl #'read-pfl *hist-data-file-sep*)
+    (values (read-list-from-stream fl #'read-pfl :eof *hist-data-file-sep*)
             (read-list-from-stream fl #'read-hist))))
 
 (defun save-data (file hold hist)
