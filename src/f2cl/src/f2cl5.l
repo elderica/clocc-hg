@@ -933,22 +933,26 @@
 				 (remove vble *undeclared_vbles*))
 			   decl))
 		     (set-difference arglist *external-function-names*)))))
-     (let* ((var-type-list nil)
-	    (var-decls
-	     (mapcar #'(lambda (vble)
-			 (let ((decl
-				(make-declaration vble :vble-is-formal-arg t)))
-			   (destructuring-bind (declare-sym (type-sym type var))
-			       decl
-			     (declare (ignore declare-sym type-sym var))
-			     (push type var-type-list))
-			   (setf *declared_vbles*
-				 (remove vble *declared_vbles*))
-			   (setf *undeclared_vbles*
-				 (remove vble *undeclared_vbles*))
-			   decl))
-		     (set-difference arglist *external-function-names*))))
-       (setf var-type-list (nreverse var-type-list))
+     (let* ((var-decls nil)
+	    (var-type-list
+	      (mapcar #'(lambda (vble)
+			  (if (member vble *external-function-names*)
+			      t
+			      (let ((decl
+				     (make-declaration vble :vble-is-formal-arg t)))
+				(destructuring-bind (declare-sym (type-sym type var))
+				    decl
+				  (declare (ignore declare-sym type-sym var))
+				  (push decl var-decls)
+				  (setf *declared_vbles*
+					(remove vble *declared_vbles*))
+				  (setf *undeclared_vbles*
+					(remove vble *undeclared_vbles*))
+				  type))))
+		      arglist)
+	      ))
+       (setf var-decls (nreverse var-decls))
+
        ;; (format t "declare ~S: ~S~%" (second defun-bit) var-type-list)
        (let ((entry (gethash (second defun-bit) *f2cl-function-info*)))
 	 (if entry
@@ -2803,6 +2807,13 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.113  2003/11/13 21:07:38  rtoy
+;;; o Was not correctly handling a plain SAVE statement, which means save
+;;;   all locals.  Build up the list from the declared and undeclared
+;;;   variables.
+;;; o Subprograms with multiple entry points weren't returning the right
+;;;   number of values.  Fix that.
+;;;
 ;;; Revision 1.112  2003/11/13 05:39:09  rtoy
 ;;; Generate code to use the new macro WITH-MULTI-ARRAY-DATA.
 ;;;
