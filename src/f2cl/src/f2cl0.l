@@ -41,7 +41,7 @@
    #:array-double-float #:array-single-float #:array-integer4 #:array-strings
    #:logical
    ;; macros
-   #:fref #:fset #:with-array-data
+   #:fref #:fset #:with-array-data #:with-multi-array-data
    #:f2cl-init-string #:fref-string #:fset-string #:f2cl-set-string
    #:f2cl-// #:fstring-/= #:fstring-= #:fstring-> #:fstring->= #:fstring-< #:fstring-<=
    #:fortran_comment #:fdo #:f2cl/ #:arithmetic-if #:computed-goto
@@ -83,6 +83,13 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.15  2002/09/13 17:50:18  rtoy
+;;; From Douglas Crosher:
+;;;
+;;; o Make this work with lower-case Lisps
+;;; o Fix a few typos
+;;; o Make a safer fortran reader.
+;;;
 ;;; Revision 1.14  2002/04/18 13:03:29  rtoy
 ;;; Forgot to export I1MACH.
 ;;;
