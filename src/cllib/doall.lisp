@@ -13,14 +13,12 @@
 
 (export '(do-all))
 
-#-gcl
 (eval-when (compile load eval)
   (require :monitor (translate-logical-pathname
                      "clocc:src;tools;metering;metering")))
 
 (in-package :cllib)
 
-#-gcl
 (defun do-all (monitorp func answers &rest args)
   "Run FUNC answering ANSWERS (boolean list) to the y-or-n-p's.
 ARGS is passed to FUNC.
