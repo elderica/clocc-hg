@@ -228,6 +228,7 @@ The REPEAT keyword argument tells how many objects to read.
 
 ;;;###autoload
 (defun read-from-file (file &key (readtable *readtable*) repeat
+                       (float *read-default-float-format*)
                        (package *package*) (out *standard-output*))
   "Read an object or several objects from a file.
 The READTABLE keyword argument (default `*readtable*') specifies
@@ -241,7 +242,8 @@ Passes REPEAT (default NIL) keyword argument to `read-from-stream'."
         (format out "~&Reading `~a' [~:d bytes]..." file file-length)
         (force-output out))
       (with-standard-io-syntax
-        (let ((*readtable* readtable) (*package* package))
+        (let ((*readtable* readtable) (*package* package)
+              (*read-default-float-format* float))
           (read-from-stream str :repeat repeat))))))
 
 (defun append-to-file (file fmt &rest fmt-args)
