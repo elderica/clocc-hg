@@ -45,17 +45,25 @@
 ;; Out-streams
 (defvar out-streams* '())
 
+(defvar out-stream-cleanup* #+openmcl false #-openmcl true)
+
 (defun stream-outify (srm)
    (cond ((Out-stream-p srm)
 	  srm)
 	 ((is-Stream srm)
-	  (cond ((some #'(lambda (p) (not (open-stream-p (car p))))
-		       out-streams*)
-		 ;; clean up table
-		 (setq out-streams*
-		       (delete-if #'(lambda (p)
-				       (not (open-stream-p (car p))))
-				  out-streams*))))
+	  #+openmcl
+	  (cond ((typep srm 'ccl::xp-stream)
+		 (dbg-save srm)
+		 (breakpoint stream-outify
+		    "Got odd stream: " srm)))
+	  (cond (out-stream-cleanup*
+		 (cond ((some #'(lambda (p) (not (open-stream-p (car p))))
+			      out-streams*)
+			;; clean up table
+			(setq out-streams*
+			      (delete-if #'(lambda (p)
+					      (not (open-stream-p (car p))))
+					 out-streams*))))))
 	  (let ((p (assq srm out-streams*)))
 	     (cond (p (cadr p))
 		   (t
@@ -289,8 +297,8 @@
    (multiple-value-bind (prefix cmd suffix)
                         (pp-block-analyze cmd)
 	 (let (
-	       (pp-srmvar (gensym))
-	       (outified-pp-srmvar (gensym))
+;;;;	       (pp-srmvar (gensym))
+;;;;	       (outified-pp-srmvar (gensym))
 ;;;;	       (srmvar (gensym))
 ;;;;	       (realsrmvar default-out-stream-var*)  ;;;;(gensym)
               )
