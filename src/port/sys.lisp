@@ -170,9 +170,10 @@ but there is a TYPE slot, move TYPE into NAME."
 (defun probe-directory (filename)
   "Check whether the file name names an existing directory."
   #+allegro (excl::probe-directory filename)
-  #+clisp (ignore-errors
-            (#+lisp=cl ext:probe-directory #-lisp=cl lisp:probe-directory
-                       filename))
+  #+clisp (values
+           (ignore-errors
+             (#+lisp=cl ext:probe-directory #-lisp=cl lisp:probe-directory
+                        filename)))
   #+cmu (eq :directory (unix:unix-file-kind (namestring filename)))
   #+lispworks (lw:file-directory-p filename)
   #-(or allegro clisp cmu lispworks)
