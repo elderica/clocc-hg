@@ -14,8 +14,9 @@
 
 (in-package :cllib)
 
-(export '(hash-table-keys hash-table->alist alist->hash-table print-hash-table
-          print-all-ascii print-all-packages plist->alist alist->plist))
+(export
+ '(hash-table-keys hash-table->alist alist->hash-table make-ht-readtable
+   print-all-ascii print-all-packages plist->alist alist->plist))
 
 ;;;
 ;;; characters
@@ -112,18 +113,28 @@ The inverse is `alist->hash-table'."
 
 (defun alist->hash-table (alist)
   "Return the new hash-table based on this alist.
-This is the inverse of `hash-table->alist'."
+The inverse is `hash-table->alist'."
   (declare (list alist))
   (let ((ht (make-hash-table :test (car alist))))
     (dolist (co (cdr alist) ht)
       (setf (gethash (car co) ht) (cdr co)))))
 
 ;;;###autoload
-(defun print-hash-table (ht &optional (out t))
-  "Print the hash table with contents."
-  (declare (hash-table ht))
-  (format out "#S(hash-table :test '~s :size ~d ~s)" (hash-table-test ht)
-          (hash-table-count ht) (cdr (hash-table->alist ht))))
+(defun make-ht-readtable (&optional (rt (copy-readtable)))
+  "Make a readtable which will be able to read hash-tables with #h()."
+  (set-dispatch-macro-character
+   #\# #\h
+   (lambda (st char arg)
+     (declare (ignore char arg))
+     (alist->hash-table (read st t nil t)))
+   rt))
+
+;;; beware that some lisps (e.g., CLISP and CMUCL) will not use this
+;;; method for hash-tables.  it does work with Allegro though.
+(defmethod print-object ((ht hash-table) (out stream))
+  (if *print-readably*
+      (format out "#h~s" (hash-table->alist ht))
+      (call-next-method)))
 
 ;;;
 ;;; property lists
