@@ -11,6 +11,9 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.4  2000/03/03 22:01:03  sds
+;;; fixed provide statements
+;;;
 ;;; Revision 1.3  2000/02/18 21:16:45  sds
 ;;; in-package :port now; make system works
 ;;;
@@ -105,18 +108,19 @@ Inspired by Paul Graham, <On Lisp>, p. 145."
   "Invoke the garbage collector."
   #+allegro (excl:gc)
   #+clisp (lisp:gc)
-  #+cmucl (ext:gc)
+  #+cmu (ext:gc)
   #+gcl (si::gbc)
   #+lispworks (normal-gc)
-  #-(or allegro clisp cmucl gcl lispworks)
+  #-(or allegro clisp cmu gcl lispworks)
   (error 'not-implemented :proc (list 'gc)))
 
-(defun quit ()
-  #+allegro (exit)
-  #+clisp (lisp:quit)
-  #+gcl (bye)
-  #-(or allegro clisp gcl)
-  (error 'not-implemented :proc (list 'quit)))
+(defun quit (&optional code)
+  #+allegro (excl:exit code)
+  #+clisp (lisp:quit code)
+  #+cmu (ext:quit code)
+  #+gcl (lisp:bye code)
+  #-(or allegro clisp cmu gcl)
+  (error 'not-implemented :proc (list 'quit code)))
 
 (defconst +eof+ cons (cons nil nil)
   "*The end-of-file object.
