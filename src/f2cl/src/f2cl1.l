@@ -128,10 +128,6 @@ only when needed. ")
 
 (defvar *float-format* 'single-float)
 
-;; Hash table of all known converted functions.  
-(defvar *f2cl-function-info*
-  (make-hash-table))
-
 (defvar *use-function-info*
   t
   "If non-NIL, the database of function return values is used in
@@ -142,8 +138,23 @@ incorrect, so use caution.")
 (defstruct f2cl-finfo
   arg-types return-values)
 
+;; Hash table of all known converted functions.  
+(defvar *f2cl-function-info*
+  (let ((table (make-hash-table)))
+    ;; Insert d1mach and i1mach into the table
+    (setf (gethash 'd1mach table)
+	  (make-f2cl-finfo :arg-types '(integer4) :return-values '(nil)))
+    (setf (gethash 'i1mach table)
+	  (make-f2cl-finfo :arg-types '(integer4) :return-values '(nil)))
+    table))
+
 (defun clear-f2cl-finfo ()
-  (clrhash *f2cl-function-info*))
+  (clrhash *f2cl-function-info*)
+  (setf (gethash 'd1mach *f2cl-function-info*)
+	(make-f2cl-finfo :arg-types '(integer4) :return-values '(nil)))
+  (setf (gethash 'i1mach *f2cl-function-info*)
+	(make-f2cl-finfo :arg-types '(integer4) :return-values '(nil)))
+  *f2cl-function-info*)
 
 ;----------------------------------------------------------------------------
 
@@ -1487,6 +1498,9 @@ FILENAME                 File containing Fortran code
 
 (defun generate-call-to-routine (routine arglist &optional return)
   (let ((finfo (gethash (first routine) *f2cl-function-info*)))
+    (unless finfo
+      (warn "Generating call to unknown function ~A.  Check generated call!" routine))
+    
     (setf finfo (if (and *use-function-info* finfo)
 		    (f2cl-finfo-return-values finfo)
 		    (make-list (length arglist) :initial-element :unknown)))
@@ -1500,7 +1514,6 @@ FILENAME                 File containing Fortran code
 	     (args arglist (rest args))
 	     (ret-info finfo (rest ret-info)))
 	    ((null args)
-	     (Format t "returning v, vnames = ~A ~A~%" v vnames)
 	     (values (nreverse v) (nreverse vnames)))
 	  (let* ((arg (first args))
 		 (var (intern (concatenate 'string "VAR-" (princ-to-string count)))))
@@ -2406,6 +2419,15 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.112  2002/05/05 23:37:50  rtoy
+;;; Was not generating calls to routines correctly when a parameter is
+;;; given multiple times in the arg list.  Don't check for duplicates.
+;;;
+;;; (I'm a little fuzzy on the rules of Fortran on aliasing of parameters
+;;; of routines.  I think you're not allowed, so having an actual
+;;; parameter be an input and output is not allowed.  This almost always
+;;; works, however.)
+;;;
 ;;; Revision 1.111  2002/05/05 21:09:49  rtoy
 ;;; f2cl-compile needs to bind *READ-DEFAULT-FLOAT-FORMAT* before
 ;;; compiling the Lisp file so that numbers are read in the specified
