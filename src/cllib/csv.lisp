@@ -80,6 +80,7 @@
                                     (decf ,len) ,cols)
                             (return ,len))))))))
 
+;;;###autoload
 (defun csv-read-file (inf)
   "Read comma-separated values into a list of vectors."
   (let (len)
