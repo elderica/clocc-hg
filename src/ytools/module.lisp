@@ -182,6 +182,9 @@
 ;;;;(defvar redundant-write-time-calls* 0)
 
 (defun achieved-load-status (lprec status)
+;;;;   (out "status = " (Load-progress-rec-status lprec)
+;;;;	" timestamp = " (Load-progress-rec-status-timestamp lprec)
+;;;;	" file-op-count* = " file-op-count* :%)
    (let ((tl (memq (lprec-get-load-status lprec)
 		   +load-progress-progression+)))
       (cond (tl
@@ -199,6 +202,8 @@
 			  (recompute-load-status lprec))))
 	     (setf (Load-progress-rec-status-timestamp lprec)
 	           file-op-count*)))
+;;;;      (out " timestamp = " (Load-progress-rec-status-timestamp lprec)
+;;;;	   :%)
       (Load-progress-rec-status lprec)))
 
 (defun recompute-load-status (lprec)
@@ -216,18 +221,20 @@
 	       (t (Load-progress-rec-status lprec))))))
 
 (defun note-load-status (lprec status)
-   (cond ((and (eq (Load-progress-rec-status lprec)
-		   ':frozen)
-	       (not (eq status ':frozen)))
-	  (cerror "I'll continue, but please don't try to save a core image"
-		  "Attempt to change status of frozen Load-progress-rec to ~s"
-		  status)))
-   (setf (Load-progress-rec-status lprec)
-	 status)
-   (setf (Load-progress-rec-when-reached lprec)
-	 (get-universal-time))
-   (setf (Load-progress-rec-status-timestamp lprec)
-          file-op-count*))
+   (cond ((not (achieved-load-status lprec status))
+	  (cond ((and (eq (Load-progress-rec-status lprec)
+			  ':frozen)
+		      (not (eq status ':frozen)))
+		 (cerror "I'll continue, but please don't try to save a core image"
+			 "Attempt to change status of frozen Load-progress-rec to ~s"
+			 status)))
+
+	  (setf (Load-progress-rec-status lprec)
+		status)
+	  (setf (Load-progress-rec-when-reached lprec)
+		(get-universal-time))
+	  (setf (Load-progress-rec-status-timestamp lprec)
+		 file-op-count*))))
 
 ;;;;   (let ((tl (memq (Load-progress-rec-status lprec)
 ;;;;		   +load-progress-progression+)))

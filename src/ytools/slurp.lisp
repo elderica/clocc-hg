@@ -197,13 +197,16 @@
       (let ((src-version (pathname-source-version pn)))
 	 (cond (src-version
 		(let ((up-to-date
-			 (achieved-load-status
-			    lprec
-			    (ecase howmuch
-			       (:header-only ':header-checked)
-			       (:at-least-header ':slurped)
-			       (:whole-file ':slurped-all)))))
-;;;;		   (out "lprec-slurp finds up-to-date status " up-to-date
+			 (and (achieved-load-status
+				 lprec
+				 (ecase howmuch
+				    (:header-only ':header-checked)
+				    (:at-least-header ':slurped)
+				    (:whole-file ':slurped-all)))
+			      (= (Load-progress-rec-status-timestamp lprec)
+				 file-op-count*))))
+;;;;		   (out "[" file-op-count* "] lprec-slurp finds up-to-date status "
+;;;;			up-to-date
 ;;;;			" for amount " howmuch " of "
 ;;;;			:% lprec :%)
 		   (cond ((or force-flag (not up-to-date))

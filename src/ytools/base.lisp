@@ -260,13 +260,13 @@
 
 (defun nodup (l &key (test #'eql))
    (declare (type list l))
-   (do ((tl (reverse l) (cdr tl))
-	(res '()))
-       ((null tl) res)
-     (cond ((not (member (car tl) (cdr tl) :test test))
+   (remove-duplicates l :test test))
 
-
-	    (setq res (cons (car tl) res))))))
+;;;;   (do ((tl (reverse l) (cdr tl))
+;;;;	(res '()))
+;;;;       ((null tl) res)
+;;;;     (cond ((not (member (car tl) (cdr tl) :test test))
+;;;;	    (setq res (cons (car tl) res))))))
 
 (subr-synonym =< <=)
 

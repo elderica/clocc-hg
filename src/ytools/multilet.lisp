@@ -178,7 +178,7 @@
 	    (nest auxvars ign-auxvars bindspecs)))))
       
 (defun ignore-if-not-null (ign)
-   (include-if (not (null ign)) `(ignore ,@ign)))
+   (include-if (not (null ign)) `(declare (ignore ,@ign))))
 
 (defun value-list-check (vals vars form)
    (cond ((= (len vals) (len vars))
