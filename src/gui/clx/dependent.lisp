@@ -472,6 +472,7 @@
 ;;; MAKE-PROCESS-LOCK: Creating a process lock.
 
 (defun make-process-lock (name)
+  #+(or sbcl clisp) (declare (ignore name))
   #-(or sbcl clisp)
   (port::make-lock :name name))
 
