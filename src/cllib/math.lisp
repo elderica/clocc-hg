@@ -43,7 +43,7 @@
    convex-hull1 convex-hull sharpe-ratio to-percent percent-change
    rel-diff approx=-abs approx=-rel approx=
    binary-search newton integrate-simpson add-probabilities
-   line line-val line-rsl line-below-p line-above-p intersect
+   line make-line line-val line-rsl line-below-p line-above-p intersect
    with-line line-adjust line-adjust-dir line-adjust-list
    line-thru-points regress lincom))
 
