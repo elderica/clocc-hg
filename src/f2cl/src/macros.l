@@ -42,6 +42,10 @@
 #+aclpc (defmacro rexpt (x y) `(realpart (expt ,x ,y)))
 #-aclpc (defmacro rexpt (x y) `(expt ,x ,y))
 
+(defvar *check-array-bounds* nil
+  "If non-NIL, generated code checks for array bounds.  If NIL, checking
+is not included")
+
 (deftype logical ()
   `(member t nil))
 
@@ -945,6 +949,11 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.30  2000/08/30 17:00:42  rtoy
+;;; o In EXECUTE-FORMAT, handle the case where the group is supposed to be
+;;;   repeated "forever" (as indicated by a repetition factor of T).
+;;; o Remove some more unused code.
+;;;
 ;;; Revision 1.29  2000/08/27 16:36:07  rtoy
 ;;; Clean up handling of format statements.  Should handle many more
 ;;; formats correctly now.

@@ -61,9 +61,6 @@ only when needed. ")
 (defvar *fortran-extensions* '("f" "for")
   "A list of possible extensions for Fortran files.")
 (defvar *f2cl-trace* nil)
-(defvar *check-array-bounds* nil
-  "If non-NIL, generated code checks for array bounds.  If NIL, checking
-is not included")
 ;----------------------------------------------------------------------------
 
 (defun f2cl (input-file &key output-file verbose prune-labels include-comments
@@ -1977,6 +1974,10 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.69  2000/09/01 16:33:25  rtoy
+;;; MAYBE-CONVERT-ARRAY-REF-TO-SLICE: the expression isn't always a list!
+;;; Check for that.  Fix a typo too.
+;;;
 ;;; Revision 1.68  2000/09/01 13:54:26  rtoy
 ;;; o F2CL-COMPILE:  not all COMPILE-FILE's have the :ERROR-FILE option.
 ;;; o Added MAYBE-CONVERT-ARRAY-REF-TO-SLICE to convert array refs to

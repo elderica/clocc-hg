@@ -35,6 +35,7 @@
    "F2CL-COMPILE"
    ;; Constants
    "%FALSE%" "%TRUE%"
+   "*CHECK-ARRAY-BOUNDS*"
    ;; Types
    "INTEGER4" "INTEGER2" "INTEGER1" "REAL8" "REAL4" "COMPLEX8" "COMPLEX16"
    "ARRAY-DOUBLE-FLOAT" "ARRAY-SINGLE-FLOAT" "ARRAY-INTEGER4" "LOGICAL"
@@ -68,6 +69,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.6  2000/09/01 13:51:20  rtoy
+;;; AMAX1 and DIM were repeated.
+;;;
 ;;; Revision 1.5  2000/08/05 19:06:34  rtoy
 ;;; Export F2CL-COMPILE.
 ;;;
