@@ -1,4 +1,4 @@
-;;; File: <autoload.lisp - 2000-03-01 Wed 14:36:23 EST sds@ksp.com>
+;;; File: <autoload.lisp - 2000-03-03 Fri 12:31:55 EST sds@ksp.com>
 ;;;
 ;;; generate and use autoloads
 ;;;
@@ -52,7 +52,7 @@
   (:method ((in pathname) (out stream) (log t))
     (with-open-file (ins in :direction :input)
       (format out "~&;;; file ~s, ~:d bytes~%" in (file-length ins))
-      (format log "~s [~:d bytes] --> " in (file-length ins)) (force-output)
+      (format log "~&~s [~:d bytes] --> " in (file-length ins)) (force-output)
       (loop :while (ignore-errors (skip-to-line ins ";;;###autoload"))
             :count t :into total :do
             (let* ((*package* (find-package :cllib))
