@@ -183,7 +183,7 @@
   #+allegro (socket:make-socket :connect :passive :local-port
                                 (when (integerp port) port))
   #+clisp (lisp:socket-server port)
-  #+cmu (ext:create-inet-listener port)
+  #+cmu (ext:create-inet-listener (or port 0))
   #+gcl (si:make-socket-pair port) ; FIXME
   #+lispworks (let ((mbox (mp:make-mailbox :size 1)))
                 (make-socket-server
@@ -247,7 +247,7 @@ Returns a socket stream or NIL."
                   (lisp:socket-server-port server))
   #+cmu (values (ipaddr-to-dotted (car (ext:host-entry-addr-list
                                         (ext:lookup-host-entry "localhost"))))
-                server)
+                (nth-value 1 (ext:get-socket-host-and-port server)))
   #+gcl (let ((sock (si:getsockname server)))
           (values (car sock) (caddr sock)))
   #+lispworks (values (ipaddr-to-dotted (comm:get-host-entry
