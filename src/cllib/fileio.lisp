@@ -202,7 +202,7 @@ Return the size of the file."
   (declare (type (or simple-string pathname) file))
   (format t "~&Writing `~a'..." file) (force-output)
   (with-timing (:count file-length)
-    (with-open-file (str file :direction :output :if-exists :supersede)
+    (with-open-file (str file :direction :output :if-exists :rename)
       (declare (stream str))
       (format str ";; File: <~a - " file) (current-time str)
       (format str " ~a>~%;; Created by: ~a [~a]
