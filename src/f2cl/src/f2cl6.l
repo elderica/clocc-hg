@@ -75,11 +75,20 @@
 		    (setf prev-line (copy-seq line)))
 		   (t
 		    ;; A continuation line!  Append the line to our
-		    ;; buffer, stripping off leading spaces
-		    (setf prev-line
-			  (concatenate 'string prev-line
-				       (string-left-trim '(#\Space)
-							 (subseq line 6)))))))))))))
+		    ;; buffer, carefully stripping off leading spaces.
+		    ;; If the last character of the buffer or the
+		    ;; first character of this line is a punctuation,
+		    ;; strip off leading spaces.  Otherwise, leave a
+		    ;; space between.
+		    (let ((new-line (string-left-trim '(#\Space) (subseq line 6))))
+		      (setf prev-line
+			    (concatenate 'string prev-line
+					 (if (and prev-line
+						  (or (member (aref prev-line (1- (length prev-line))) '(\#.))
+						      (member (aref new-line 0) '(\#.))))
+					     ""
+					     " ")
+					 new-line))))))))))))
 
 ;--------------------------------------------------------------------------
 (defun write-comment-line (line outport)
@@ -269,4 +278,8 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.12  2000/07/13 16:55:34  rtoy
+;;; To satisfy the Copyright statement, we have placed the RCS logs in
+;;; each source file in f2cl.  (Hope this satisfies the copyright.)
+;;;
 ;;;-----------------------------------------------------------------------------
