@@ -336,18 +336,17 @@ Print the appropriate message MESG to *URL-OUTPUT*."
                    :time *url-timeout*)
         :do (sleep-mesg "Error")))
 
-(let ((fin (make-array 2 :element-type 'character :initial-contents
-                       '(#\Return #\Linefeed))))
 (defun socket-send (sock messages finish-p)
-  (dolist (mesg messages)
-    (mesg :log *url-output* "[~s]~a~%" *url-caller* mesg)
-    (write-string mesg sock)
-    (write-string fin sock))
-  (when finish-p
-    (write-string fin sock)
-    (mesg :log *url-output* "[~s]<terpri>~%" *url-caller*))
-  (finish-output sock))
-)
+  (let ((fin #.(make-array 2 :element-type 'character :initial-contents
+                           '(#\Return #\Linefeed))))
+    (dolist (mesg messages)
+      (mesg :log *url-output* "[~s]~a~%" *url-caller* mesg)
+      (write-string mesg sock)
+      (write-string fin sock))
+    (when finish-p
+      (write-string fin sock)
+      (mesg :log *url-output* "[~s]<terpri>~%" *url-caller*))
+    (finish-output sock)))
 
 (defun open-url (url &key ((:err *url-error*) *url-error*)
                  ((:init *url-open-init*)  *url-open-init*)
