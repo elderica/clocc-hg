@@ -191,6 +191,17 @@
 			 (pathname ytload-directory* ))))))
 	 (cond ((probe-file mod-file)
 		(load mod-file))
+	       ((and (not (check-loaded ':ytools))
+		     (not (string= module 
+				   (cond ((eq filename-case* ':upper)
+					  "YTOOLS")
+					 (t
+					  "ytools"))))
+		     (y-or-n-p "Can't find file for module ~a; load ytools and repeat search? "
+			       module))
+		
+		(yt-load :ytools)
+		(load-module-file module))
 	       (t
 		(error "Can't find file for module ~s" module)))))
    module)

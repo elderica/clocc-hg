@@ -10,7 +10,8 @@
 (eval-when (:slurp-toplevel :load-toplevel)
    (export '(s sv ps ss dbg-stack* dbg-save st g gty package seek ev ev-ugly
 	     get-frame-args
-	     symshow =g htab-show file-show test check condition-display-string)))
+	     symshow =g htab-show file-show test check
+	     condition-display-string)))
 
 ;; Each entry is of the form (flag form type), where flag is a symbol,
 ;; often *.  The idea is to make it easy to munge the forms further,
