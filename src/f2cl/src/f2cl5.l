@@ -607,7 +607,27 @@
 	 `(,@(mapcar #'merge-ops expr)))))
 	 
  
-
+(defun insert-sym-macro (prog-bit)
+  (let ((sym-lets '()))
+    (maphash
+     #'(lambda (key varlist)
+	 (mapc #'(lambda (var)
+		   (let ((accessor-name
+			  (concatenate 'string
+				       (symbol-name key)
+				       "-"
+				       (symbol-name var)))
+			 (name
+			  (concatenate 'string
+				       "*"
+				       (symbol-name key)
+				       "-COMMON-BLOCK*")))
+		     (push `(,var (,(intern accessor-name) ,(intern name)))
+			   sym-lets)))
+	       varlist))
+     *common-blocks*)
+    `(symbol-macrolet ,sym-lets ,prog-bit)))
+  
 (defun insert-declarations (fort-fun) 
   (prog (defun-bit arglist prog-bit formal-arg-decls common_var_decls
 		   local-vbles vble-decls body special-proclamation
@@ -941,29 +961,15 @@
 				    (mapcar #'first key-params)))))
 
 
-     ;; Add symbol-macrolets to access the common block variables
+     ;; Add symbol-macrolets to access the common block
+     ;; variables. Also need to add symbol-macrolets to the
+     ;; *data-init* part if this is a Fortran block data subroutine.
      (when *subprog_common_vars*
-       (let ((sym-lets '()))
-	 (maphash
-	  #'(lambda (key varlist)
-	      (mapc #'(lambda (var)
-			(let ((accessor-name
-			       (concatenate 'string
-					    (symbol-name key)
-					    "-"
-					    (symbol-name var)))
-			      (name
-			       (concatenate 'string
-					    "*"
-					    (symbol-name key)
-					    "-COMMON-BLOCK*")))
-			  (push `(,var (,(intern accessor-name) ,(intern name)))
-				sym-lets)))
-		    varlist))
-	  *common-blocks*)
-	 (setf prog-bit `(symbol-macrolet ,sym-lets ,prog-bit))))
+       (setf prog-bit (insert-sym-macro prog-bit))
+       (when (and *data-init*
+		  (eq (cadr defun-bit) '/blockdata/))
+	 (setf *data-init* (list (insert-sym-macro *data-init*)))))
 
-     
      ;; Return 3 pieces: Any proclamations for special variables, the
      ;; declarations for the special variables, and, finally, the
      ;; function itself.
@@ -2165,6 +2171,21 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.79  2002/02/07 23:21:58  rtoy
+;;; MAKE-DECLARATION
+;;; o For some reason when we were checking for implicitly declared
+;;;   variables, we checked to see if the variable was a formal arg or
+;;;   not.  Formal args can be implicitly declared too, so the check is
+;;;   removed.  (Why where we checking before?)
+;;; o Clean up some comments.
+;;;
+;;; SYM-IS-NUMBER-P
+;;; o Add some comments
+;;; o We were incorrectly saying things like 1D%3 were not numbers, but
+;;;   this is wrong.  It is a number.  Solves the occasional problem where
+;;;   we got weird things like unused variables named |1D%3|.  (Off-by-one
+;;;   bug.)
+;;;
 ;;; Revision 1.78  2002/02/07 22:16:19  rtoy
 ;;; If an array was declared but actually dimensioned in a common block
 ;;; like
