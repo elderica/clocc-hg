@@ -418,7 +418,9 @@
 					    (t
 					     "Maybe")))))
 		       (with-compilation-unit ()
-			  (eval (YT-module-contents ytm)))
+			  (eval (YT-module-contents ytm))
+			  (dolist (e (YT-module-expansion ytm))
+			     (eval e)))
 		       (note-load-status now-loading-lprec* ':loaded))
 		      ((memq name module-trace*)
 		       (format *error-output*
