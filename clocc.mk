@@ -81,7 +81,13 @@ $(SYSTEM).zip: $(DOCFILES) $(LISPFILES) $(MAKEFILES)
 		$(patsubst %,$(SYSTEM)/extra/%,$(notdir $(ZIPEXTRA)));
 	@$(RM) $(SYSTEM) extra $(notdir $(ZIPEXTRA));
 
-clean: force
-	rm -f $(FASLFILES) core *.core *.mem *.dxl
+clean-all: force
+	$(RM) $(FASLFILES) core *.core *.mem *.dxl
+
+clean:
+	$(RM) *.$(FASLEXT) core
+ifneq ($(DUMPEXT),)
+	$(RM) *$(DUMPEXT)
+endif
 
 force:
