@@ -976,7 +976,7 @@ The mean and the length can be pre-computed for speed."
   (multiple-value-bind (mn twt)
       (mean-weighted seq wts :value value :weight weight)
     (when (= twt 1)
-      (return-from standard-deviation-weighted (values 0d0 mn twt mn mn)))
+      (return-from standard-deviation-weighted (values 0d0 mn twt mn 1 mn 1)))
     (let ((sum 0d0) min max mi$ ma$)
       (map nil (lambda (xx ww)
                  (let ((val (funcall value xx)))
