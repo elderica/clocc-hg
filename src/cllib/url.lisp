@@ -798,7 +798,7 @@ The local file is located in directory LOC and has the same name
                      &aux (*url-caller* 'open-url))
   "Get the news article to the OUT stream.
 When RE is supplied, articles whose subject match it are retrieved."
-  (declare (type url url) (stream out))
+  (declare (type url url))
   (assert (or (eq :nntp (url-prot url)) (eq :news (url-prot url))) (url)
           "url-get-news: `~a' is not a `news'" url)
   (flet ((out (st) (if loc (merge-pathnames st loc) *url-output*)))
