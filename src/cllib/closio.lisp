@@ -38,14 +38,13 @@
   (declare (ignore char arg))
   (apply #'make-instance (read-delimited-list #\] st t)))
 
-(defun make-clos-readtable ()
+(defun make-clos-readtable (&optional (rt (copy-readtable)))
   "Return the readtable for reading #[]."
-  (let ((rt (copy-readtable)))
-    (set-syntax-from-char #\[ #\( rt)
-    (set-syntax-from-char #\] #\) rt)
-    (set-macro-character #\] (get-macro-character #\) rt) nil rt)
-    (set-dispatch-macro-character #\# #\[ #'read-object rt)
-    rt))
+  (set-syntax-from-char #\[ #\( rt)
+  (set-syntax-from-char #\] #\) rt)
+  (set-macro-character #\] (get-macro-character #\) rt) nil rt)
+  (set-dispatch-macro-character #\# #\[ #'read-object rt)
+  rt)
 )
 
 (defconst +clos-readtable+ readtable (make-clos-readtable)
