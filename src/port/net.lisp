@@ -18,10 +18,12 @@
 (in-package :port)
 
 (export
- '(resolve-host-ipaddr ipaddr-to-dotted dotted-to-ipaddr hostent
+ '(resolve-host-ipaddr ipaddr-to-dotted dotted-to-ipaddr
+   hostent hostent-name hostent-aliases hostent-addr-list hostent-addr-type
    socket open-socket socket-host/port socket-string socket-server
    socket-accept open-socket-server socket-server-close
-   socket-service-port socket-server-host/port socket-server-string
+   socket-server-host/port socket-server-string
+   socket-service-port servent-name servent-aliases servent-port servent-proto
    network timeout login))
 
 ;;;
