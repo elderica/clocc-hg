@@ -401,7 +401,9 @@
    name)
 
 (defun ytools-logical-pathname-def (name)
-   (href ytools-logical-names-table* name))
+   (let ((pn (href ytools-logical-names-table* name)))
+      (values pn
+	      (pathname-prop 'obj-version pn))))
 
 ;;; Produce pathname that bears relation 'dir-list' to 'pn'.  
 (defun place-relative-pathname (pn dir-list suff ensure-existence)

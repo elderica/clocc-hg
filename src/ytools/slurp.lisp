@@ -30,6 +30,10 @@
 
 (defun printable-as-string (s)
    (make-Printable (\\ (srm) (format srm "~a" s))))
+
+(defmethod make-load-form ((p Printable) &optional env)
+                          (declare (ignore env))
+   `(make-Printable ',(Printable-printer p)))
 )
 
 (defvar eof* (printable-as-string "#<End of file>"))
