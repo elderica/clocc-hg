@@ -58,6 +58,7 @@
     :finally (return res)))
 
 (defmacro with-csv ((vec file &key (progress '*csv-progress*)
+                         skip-first-line
                          (progress-1 '*csv-progress-1*) limit
                          (out '*standard-output*) columns)
                     &body body)
@@ -74,6 +75,7 @@ Return 3 values:
            (format ,out "~&Reading `~a' [~:d bytes]..."
                    ,fn (setq ,fsize (file-length ,in)))
            (force-output ,out)
+           (when ,skip-first-line (read-line ,in))
            (loop :with ,vec :and ,cols = ,columns :and ,pro1-count = 0
              :for ,ln = (read-line ,in nil nil) :while ,ln
              ,@(when limit
