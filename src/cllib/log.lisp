@@ -67,7 +67,7 @@ If FMT is non-NIL, return the corresponding string too."
 ;;;
 
 (defcustom *print-log* (simple-array symbol (*))
-  (mk-arr 'symbol '(:log :logv :date :plot :head :res :opt :err :test))
+  (mk-arr 'symbol '(:log :logv :date :plot :head :res :opt :err :test :xml))
   "The list of message types which are being printed.")
 
 (defmacro mesg (type str &rest args)
