@@ -116,8 +116,10 @@
     (let ((compiled-path (compile-file-pathname file)))
       (setf outfile-name
 	    (translate-pathname compiled-path
-				(make-pathname :type (pathname-type compiled-path))
-				(make-pathname :type "p")))))
+				(make-pathname :host (pathname-host compiled-path)
+					       :type (pathname-type compiled-path))
+				(make-pathname :host (pathname-host compiled-path)
+					       :type "p")))))
   (with-open-file (inport file :direction :input)
     (with-open-file (outport outfile-name
 			     :direction :output
@@ -601,6 +603,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.33  2002/02/08 03:32:55  rtoy
+;;; Oops.  Can't use #'char-equal because nxt-char might not be a char.
+;;;
 ;;; Revision 1.32  2002/02/07 23:27:05  rtoy
 ;;; Some more number parsing bugs in PARSE-NUMBER.
 ;;; o d and e are valid exponent indicators and we missed them sometimes.
