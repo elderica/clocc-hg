@@ -1053,9 +1053,8 @@ will return the average annual volatility for the value in the dated-list
 and the list of the volatilities for each year."
   (declare (type (or function fixnum) split-key) (list lst)
            (type (function (sequence) double-float) dev-fn))
-  (remf args :dev-fn)
   (let ((vols (apply #'call-on-split lst dev-fn :split-key split-key
-                     :min-len 2 args)))
+                     :min-len 2 (remove-plist :dev-fn))))
     (values (mean vols :key #'cdr) vols)))
 
 ;;; Mean / Deviation / Length
