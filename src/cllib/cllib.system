@@ -27,6 +27,7 @@
      (:file "clhs" :depends-on
             ("base" "withtype" "string" "fileio" "log" "html"))
      (:file "closio" :depends-on ("base"))
+     (:file "cvs" :depends-on ("base" "string" "fileio" "date" "miscprint"))
      (:file "date" :depends-on
             ("base" "simple" "string" "sorted" "log" "withtype"))
      (:file "datedl" :depends-on
