@@ -30,6 +30,7 @@
 
 ;;;###autoload
 (defun print-all-ascii (&optional (str *standard-output*))
+  "Print all ASCII characters with their names and codes."
   (declare (type (or null stream) str))
   (loop :with *print-pretty* = nil
         :with st :of-type stream = (or str (make-string-output-stream))
