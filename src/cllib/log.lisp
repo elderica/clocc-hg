@@ -42,7 +42,12 @@ Taken from CLtL2 p602."
 
 (defun time-diff (end beg)
   "Compute the time (in seconds) between the two given internal timestamps."
-  (dfloat (/ (- end beg) internal-time-units-per-second)))
+  (declare (type integer end beg))
+  (/ (- end beg)
+     ;; CLISP compiled files are cross-platform,
+     ;; so this value must be fixed at load time, not at read time
+     #+clisp #,(dfloat internal-time-units-per-second)
+     #-clisp #.(dfloat internal-time-units-per-second)))
 
 (defun elapsed (bt run &optional fmt)
   "Return the time in seconds elapsed since BT,
