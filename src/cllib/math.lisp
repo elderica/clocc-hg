@@ -1054,7 +1054,7 @@ and the list of the volatilities for each year."
   (declare (type (or function fixnum) split-key) (list lst)
            (type (function (sequence) double-float) dev-fn))
   (let ((vols (apply #'call-on-split lst dev-fn :split-key split-key
-                     :min-len 2 (remove-plist :dev-fn))))
+                     :min-len 2 (remove-plist args :dev-fn))))
     (values (mean vols :key #'cdr) vols)))
 
 ;;; Mean / Deviation / Length
