@@ -15,7 +15,7 @@
   (require :cllib-closio (translate-logical-pathname "cllib:closio"))
   ;; `open-socket-server'
   (require :port-net (translate-logical-pathname "port:net"))
-  ;; `browse-url'
+  ;; `browse-url', `flush-http'
   (require :cllib-url (translate-logical-pathname "cllib:url"))
   ;; `string-beg-with'
   (require :cllib-string (translate-logical-pathname "cllib:string"))
