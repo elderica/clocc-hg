@@ -13,6 +13,10 @@
 # $Id$
 # $Source$
 
+ifndef CLOCC_MK
+
+CLOCC_MK = true
+
 RUNLISP := $(TOP)/bin/run-lisp
 LISPFILE := $(TOP)/bin/lisp-file
 FASLEXT := $(shell $(RUNLISP) -faslext)
@@ -91,3 +95,5 @@ ifneq ($(DUMPEXT),)
 endif
 
 force:
+
+endif				# CLOCC_MK
