@@ -130,7 +130,12 @@ By default prints the contents.
 (defun array-check-return (arr dims)
   "Make the value to be returned."
   (if arr
-      (if (equal (array-dimensions arr) dims) arr
+      (if (equal (array-dimensions arr) dims)
+          (let* ((tot (array-total-size arr))
+                 (cp (make-array tot :displaced-to arr
+                                 :element-type (array-element-type arr))))
+            (fill cp 0)
+            arr)
           (error 'dimension :proc 'array-check-return :args
                  (list (array-dimensions arr) dims)))
       (make-array dims :initial-element 0)))
