@@ -397,9 +397,8 @@
 (defmethod inspect-frontend ((insp inspection) (frontend (eql :http)))
   (declare (ignore backend))
   (do ((server (let ((server (open-socket-server)))
-                 (browse-url (format nil "http://~a:~d/0/:s"
-                                     (socket-server-host server)
-                                     (socket-server-port server))
+                 (browse-url (format nil "http://~a/0/:s"
+                                     (socket-server-string server))
                              :browser *inspect-browser*)
                  server))
        sock id com)
