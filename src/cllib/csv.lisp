@@ -102,7 +102,7 @@ Return 3 values:
                    (format ,out "<~A~:D: ~4F% ETA: ~/pr-secs/~A>"
                            incomplete ,len (* pos 1d2) eta incomplete))
                  (force-output ,out) (setq ,pro1-count 0)))
-             :finally (format ,out "done [~:d record~:p, ~:d column~:p]"
+             :finally (format ,out "done [~:d record~:p~@[, ~:d column~:p~]]"
                               ,len ,cols)
              :finally (return
                         (values ,len (file-length ,in)
