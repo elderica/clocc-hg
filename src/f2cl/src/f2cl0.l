@@ -48,6 +48,7 @@
    "ASSIGNED-GOTO"
    "FFORMAT"
    "DATA-IMPLIED-DO"
+   "INT-ADD" "INT-SUB" "INT-MUL"
    ;; Utilities
    "ARRAY-SLICE" "ARRAY-INITIALIZE"
    ;; Intrinsic functions
@@ -82,6 +83,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.12  2002/02/17 15:50:17  rtoy
+;;; Export with-array-data.
+;;;
 ;;; Revision 1.11  2002/02/10 03:41:53  rtoy
 ;;; Export ARRAY-STRINGS type.
 ;;;
