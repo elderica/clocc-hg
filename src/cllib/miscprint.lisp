@@ -15,7 +15,7 @@
 (in-package :cllib)
 
 (export
- '(hash-table-keys hash-table->alist alist->hash-table make-ht-readtable
+ '(hash-table-keys hash-table->alist alist->hash-table make-ht-readtable pophash
    print-all-ascii print-all-packages plist->alist alist->plist plist= alist=))
 
 ;;;
@@ -119,6 +119,12 @@ The inverse is `hash-table->alist'."
   (let ((ht (make-hash-table :test (car alist))))
     (dolist (co (cdr alist) ht)
       (setf (gethash (car co) ht) (cdr co)))))
+
+(defun pophash (object ht)
+  "Remove the value and return it."
+  (multiple-value-bind (value present-p) (gethash object ht)
+    (when present-p (remhash object ht))
+    (values value present-p)))
 
 ;;;###autoload
 (defun make-ht-readtable (&optional (rt (copy-readtable)))
