@@ -22,7 +22,7 @@
   ;; `regress', `make-line', `line-sl', `line-co'
   (require :math (translate-logical-pathname "cllib:math"))
   ;; `regress-poly'
-  (require :statn (translate-logical-pathname "cllib:stat"))
+  (require :stat (translate-logical-pathname "cllib:stat"))
   ;; `pipe-output', `close-pipe', `run-prog'
   (require :shell (translate-logical-pathname "port:shell")))
 

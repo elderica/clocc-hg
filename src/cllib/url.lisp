@@ -19,7 +19,7 @@
   ;; `string-beg-with', `split-string'
   (require :string (translate-logical-pathname "cllib:string"))
   ;; `read-trim', `file-size-t', `file-size'
-  (require : (translate-logical-pathname "cllib:fileio"))
+  (require :fileio (translate-logical-pathname "cllib:fileio"))
   ;; `mesg', `elapsed', `get-float-time', `list-format'
   (require :log (translate-logical-pathname "cllib:log"))
   ;; `to-list'
