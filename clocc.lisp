@@ -84,6 +84,8 @@
   (pushnew 'compile pcl::*defgeneric-times*)
   (pushnew 'compile pcl::*defmethod-times*))
 
+#+cmu (setq ext:*gc-verbose* nil)
+
 (eval-when (compile eval)
   (let (x y)
     (handler-case
