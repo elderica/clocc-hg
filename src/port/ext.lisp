@@ -189,12 +189,16 @@ Useful for re-using the &REST arg after removing some options."
   `(eval-when (:compile-toplevel)
      (setf *lock-package-saved-value* (ext:package-lock ,pack)
            (ext:package-lock ,pack) nil))
+  #+ecl
+  `(eval-when (:compile-toplevel)
+     (si:package-lock (find-package ,pack) *lock-package-saved-value*)
+     (makunbound '*lock-package-saved-value*))
   #+lispworks (declare (ignore pack))
   #+lispworks
   `(eval-when (:compile-toplevel :load-toplevel)
      (setf *lock-package-saved-value* lw:*handle-warn-on-redefinition*
            lw:*handle-warn-on-redefinition* nil))
-  #-(or allegro clisp lispworks)
+  #-(or allegro clisp ecl lispworks)
   ;; nothing to be done
   (declare (ignore pack)))
 
@@ -208,12 +212,16 @@ Useful for re-using the &REST arg after removing some options."
   `(eval-when (:compile-toplevel)
      (setf (ext:package-lock ,pack) *lock-package-saved-value*)
      (makunbound '*lock-package-saved-value*))
+  #+ecl
+  `(eval-when (:compile-toplevel)
+     (si:package-lock (find-package ,pack) *lock-package-saved-value*)
+     (makunbound '*lock-package-saved-value*))
   #+lispworks (declare (ignore pack))
   #+lispworks
   `(eval-when (:compile-toplevel :load-toplevel)
      (setf lw:*handle-warn-on-redefinition* *lock-package-saved-value*)
      (makunbound '*lock-package-saved-value*))
-  #-(or allegro clisp lispworks)
+  #-(or allegro clisp ecl lispworks)
   ;; nothing to be done
   (declare (ignore pack)))
 
