@@ -144,7 +144,7 @@ initargs for all slots are returned, otherwise only the slots with
     (mapcan (if all (compose list slot-one-initarg)
                 (lambda (slot)
                   (when (eq (slot-alloc slot) :instance)
-                    (list (car (slot-one-initarg slot))))))
+                    (list (slot-one-initarg slot)))))
             (class-slots1 class))))
 
 ;;;
