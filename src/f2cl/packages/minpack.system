@@ -3,6 +3,10 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.6  2002/07/02 12:31:35  rtoy
+;;; o Put the code in the MINPACK package.
+;;; o Add defsystem for the tests.
+;;;
 ;;; Revision 1.5  2002/01/08 04:03:09  rtoy
 ;;; Fix some typos and replace a file that we deleted.
 ;;;
@@ -36,7 +40,9 @@
 (mk:defsystem minpack
     :source-pathname "clocc:src;f2cl;packages;minpack"
     :components
-    ((:module "minpack"
+    ((:file "minpack"
+		      :language :lisp)
+     (:module "minpack"
 	      :source-pathname ""
 	      :source-extension "f"
 	      :package "MINPACK"
@@ -48,7 +54,8 @@
 				 :array-slicing t
 				 :package "MINPACK")
 	      :components
-	      ((:file "dpmpar")
+	      (
+	       (:file "dpmpar")
 	       (:file "enorm")
 	       (:file "fdjac1" :depends-on ("dpmpar"))
 	       (:file "fdjac2" :depends-on ("dpmpar"))
