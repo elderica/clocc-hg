@@ -526,8 +526,8 @@ See constants `+card-output-bbdb+', `+card-output-vcard+',
                      (when (slot-boundp cc slot)
                        (setf (slot-value cc slot)
                              (nreverse (slot-value cc slot)))))
-          :finally (loop :for str = (read-line in nil +eof+)
-                         :until (or (eq str +eof+) (string= str "BEGIN:VCARD"))
+          :finally (loop :for str = (read-line in nil nil)
+                         :until (or (null str) (string= str "BEGIN:VCARD"))
                          :finally (return-from card-read-vcard
                                     (values (initialize-instance cc) str))))))
 
