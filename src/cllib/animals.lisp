@@ -15,6 +15,8 @@
   (require :miscprint (translate-logical-pathname "cllib:miscprint"))
   ;; `write-to-file', `save-restore'
   (require :fileio (translate-logical-pathname "cllib:fileio"))
+  ;; `*clos-readtable*'
+  (require :closio (translate-logical-pathname "cllib:closio"))
   ;; `symbol-concat'
   (require :symb (translate-logical-pathname "cllib:symb")))
 (in-package :cllib)
@@ -188,9 +190,12 @@ Returnes a fresh string."
   "*The root node, from which the search starts by default.")
 
 (defun save-restore-network (&optional file)
-  (save-restore file :name "network.dat" :var '*network* :basedir *datadir*
-                :voidp (lambda (ht) (>= 1 (hash-table-count ht))) :clos t
-                :pre-save #'hash-table->alist :post-read #'alist->hash-table))
+  (save-restore file :name "network.dat"
+                :var '*network* :basedir *datadir*
+                :voidp (lambda (ht) (>= 1 (hash-table-count ht)))
+                :readtable *clos-readtable*
+                :pre-save #'hash-table->alist
+                :post-read #'alist->hash-table))
 
 (defun resolve (&optional (root *root-node*))
   "Walk through the `*network*' starting with root."
