@@ -1490,25 +1490,27 @@ FILENAME                 File containing Fortran code
     (setf finfo (if (and *use-function-info* finfo)
 		    (f2cl-finfo-return-values finfo)
 		    (make-list (length arglist) :initial-element :unknown)))
-      
+
+    ;; (format t "ret-info = ~A~%" finfo)
     (multiple-value-bind (all-setters vnames)
 	;; Figure out if and how to set the parameters to the returned values.
-	(do ((dups (find-duplicates arglist))
-	     (v nil)
+	(do ((v nil)
 	     (count 0 (+ count 1))
 	     (vnames nil)
 	     (args arglist (rest args))
 	     (ret-info finfo (rest ret-info)))
 	    ((null args)
+	     (Format t "returning v, vnames = ~A ~A~%" v vnames)
 	     (values (nreverse v) (nreverse vnames)))
 	  (let* ((arg (first args))
 		 (var (intern (concatenate 'string "VAR-" (princ-to-string count)))))
 	    (push var vnames)
+	    ;; (format t "arg = ~A~%" arg)
+	    ;;(format t "ret-info = ~A~%" (first ret-info))
 	    (push (cond ((or (vble-is-array-p arg)
 			     (member arg *external-function-names*)
 			     (member arg *intrinsic-function-names*)
-			     (member arg '(%true% %false%))
-			     (member arg dups))
+			     (member arg '(%true% %false%)))
 			 ;; Fortran can't return whole arrays or
 			 ;; functions, so don't try to assign the value
 			 ;; to arrays or functions.  Also, we don't want
@@ -1551,6 +1553,7 @@ FILENAME                 File containing Fortran code
 			 ;; if the routine is trying to modify this.)
 			 nil))
 		  v)))
+      ;; (format t "all-setters = ~A~%" all-setters)
       (let ((ignored-vars
 	     ;; A variable is ignored if no setter for it is given.
 	     (remove nil (mapcar #'(lambda (varname setter)
@@ -1558,6 +1561,8 @@ FILENAME                 File containing Fortran code
 					 varname))
 				 vnames all-setters)))
 	    (setters (remove nil all-setters)))
+	;;(format t "ignored-vars = ~A~%" ignored-vars)
+	;;(format t "setters = ~A~%" setters)
 	(if setters
 	    `((multiple-value-bind ,(if return (append '(ret-val) vnames) vnames)
 		  (,@routine ,@arglist)
@@ -2401,6 +2406,11 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.111  2002/05/05 21:09:49  rtoy
+;;; f2cl-compile needs to bind *READ-DEFAULT-FLOAT-FORMAT* before
+;;; compiling the Lisp file so that numbers are read in the specified
+;;; format.
+;;;
 ;;; Revision 1.110  2002/05/04 20:32:36  rtoy
 ;;; If the entry for the function already exists, we don't want to smash
 ;;; it.  Just update the return-values for the entry.
