@@ -15,7 +15,7 @@
   (require :cllib-log (translate-logical-pathname "cllib:log"))
   ;; `read-from-file', `write-to-file'
   (require :cllib-fileio (translate-logical-pathname "cllib:fileio"))
-  ;; `with-collect'
+  ;; `with-collect', `linear'
   (require :cllib-simple (translate-logical-pathname "cllib:simple"))
   ;; `call-on-split'
   (require :cllib-list (translate-logical-pathname "cllib:list")))
@@ -42,7 +42,7 @@
    normalizer-table normalize-function-list
    kurtosis-skewness kurtosis-skewness-weighted
    covariance covariance1 cov volatility
-   below-p linear safe-fun safe-fun1 safe-/ s/ d/
+   safe-fun safe-fun1 safe-/ s/ d/
    convex-hull1 convex-hull sharpe-ratio to-percent percent-change
    rel-diff approx=-abs approx=-rel approx=
    binary-search newton integrate-simpson add-probabilities
@@ -1292,14 +1292,6 @@ p1=p(x=1), p2=p(y=1), p12=p(x=1 & y=1)"
 ;;;
 ;;; Misc
 ;;;
-
-(defsubst below-p (x0 y0 x1 y1 x2 y2)
-  "Check whether (x0 y0) is below the line (x1 y1) -- (x2 y2)."
-  (< y0 (/ (+ (* y1 (- x2 x0)) (* y2 (- x0 x1))) (- x2 x1))))
-
-(defsubst linear (x0 y0 x1 y1 tt)
-  "Compute the linear function through (x0 y0) and (x1 y1) at tt."
-  (/ (+ (* y0 (- x1 tt)) (* y1 (- tt x0))) (- x1 x0)))
 
 (defmacro safe-fun (func pred &optional default)
   "Return a function that will run FUNC when the PRED is non-NIL.
