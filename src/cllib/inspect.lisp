@@ -24,8 +24,9 @@
 
 (in-package :cllib)
 
-(export '(inspect-cllib *inspect-frontend* *inspect-print-lines*
-          *inspect-print-level* *inspect-print-length* *inspect-length*))
+(export
+ '(inspect-cllib *inspect-frontend* *inspect-browser* *inspect-print-lines*
+   *inspect-print-level* *inspect-print-length* *inspect-length*))
 
 ;;;
 ;;; options
