@@ -233,7 +233,7 @@ Returns the number of seconds since the epoch (1900-01-01)."
       (values-list
        (delete-if (lambda (st)
                     (and (symbolp st)
-                         (find (to-string st) +week-days+ :test
+                         (find (subseq (to-string st) 0 3) +week-days+ :test
                                #'string-equal)))
                   (string-tokens (purge-string xx) :max 8)))
     (if (numberp v0)
