@@ -7,7 +7,7 @@
 ;;; This software is released under the terms of the Modified BSD
 ;;; License.  See file COPYING for details.
 
-(depends-on :always %ytools/ misc)
+;;;;(depends-on :always %ytools/ misc)
 
 (depends-on %ytools/ mapper repeat)
 
