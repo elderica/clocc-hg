@@ -189,8 +189,9 @@ Set `*print-pretty*' to the third argument NICE (default T).
 Uses `with-standard-io-syntax'."
   (declare (stream str))
   (with-standard-io-syntax
-    (let ((*package* #.(make-package "FORCE-PACKAGE-PREFIXES" :use NIL)))
-      (write obj :stream str :pretty nice)))
+    (let ((*package* (make-package (gensym "FORCE-PACKAGE-PREFIXES") :use NIL)))
+      (unwind-protect (write obj :stream str :pretty nice)
+        (delete-package *package*))))
   (values))
 
 ;;;###autoload
