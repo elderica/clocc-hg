@@ -1997,9 +1997,12 @@
 (defun parse-format-descriptor-H (width string)
   (declare (ignore width))
   (list (coerce (mapcar #'(lambda (char-or-digit)
-			    (if (numberp char-or-digit)
-				(aref (format nil "~D" char-or-digit) 0)
-				char-or-digit))
+			    (cond ((numberp char-or-digit)
+				   (aref (princ-to-string char-or-digit) 0))
+				  ((symbolp char-or-digit)
+				   (aref (symbol-name char-or-digit) 0))
+				  (t
+				   char-or-digit)))
 			string)
 		'string)))
 
@@ -2143,6 +2146,10 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.57  2000/08/02 16:26:20  rtoy
+;;; The D and E format descriptors should print out a D and E,
+;;; respectively.  Thus add PARSE-FORMAT-DESCRIPTOR-D.
+;;;
 ;;; Revision 1.56  2000/08/02 14:42:20  rtoy
 ;;; o Add support for parsing Hollerith strings in format statements.  Not
 ;;;   perfect because the preprocessor mangles spaces within the string,
