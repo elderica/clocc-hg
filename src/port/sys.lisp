@@ -55,7 +55,7 @@
                            :key #'string)))
           (if cell
               (setf (cdr cell) (string val))
-              (push (cons (string var) (string val)) ext:*environment-list*)))
+              (push (cons (intern (string var) "KEYWORD") (string val)) ext:*environment-list*)))
   #+gcl (si:setenv (string var) (string val))
   #+lispworks (setf (lw:environment-variable (string var)) (string val))
   #+lucid (setf (lcl:environment-variable (string var)) (string val))
