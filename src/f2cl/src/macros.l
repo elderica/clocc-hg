@@ -162,14 +162,17 @@ is not included")
 ;; )
 
 (defun find-array-data (array)
-  (let ((offset 0))
-    (loop
-	(multiple-value-bind (displaced-to index-offset)
-	    (array-displacement array)
-	  (when (null displaced-to)
-	    (return-from find-array-data (values array offset)))
-	  (incf offset index-offset)
-	  (setf array displaced-to)))))
+  (declare (type (array * (*)) array))
+    (let ((offset 0))
+      (declare (type fixnum offset)
+	       (optimize (speed 3) (safety 0)))
+      (loop
+	  (multiple-value-bind (displaced-to index-offset)
+	      (array-displacement array)
+	    (when (null displaced-to)
+	      (return-from find-array-data (values array offset)))
+	    (incf offset index-offset)
+	    (setf array displaced-to))))))
 
 (defmacro with-array-data ((data-var offset-var array) &rest body)
   `(multiple-value-bind (,data-var ,offset-var)
@@ -350,32 +353,6 @@ is not included")
 ;; Define the intrinsic functions
 ;;
 ;; Reference:  The Fortran 77 standard found at www.fortran.com.  Section 15.10
-(declaim (inline truncate-towards-zero ftruncate-towards-zero))
-
-(defun truncate-towards-zero (x)
-  ;; Fortran 77 standard says INT functions round towards zero:
-  ;;
-  ;; int(a) is the integer whose magnitude is the largest integer that
-  ;; does not exceed the magnitude of a and whose sign is the same as
-  ;; the sign of a.
-  ;;
-  (if (minusp x)
-      (ceiling x)
-      (floor x)))
-
-#-cmu
-(defun ftruncate-towards-zero (x)
-  ;; Floating-point version of the above.
-  (if (minusp x)
-      (fceiling x)
-      (ffloor x)))
-
-#+cmu
-(defun ftruncate-towards-zero (x)
-  ;; Floating-point version of the above.
-  (if (minusp x)
-      (fceiling x)
-      (ffloor x)))
 
 ;; INT is the generic name as well as the integer version.  IFIX is
 ;; the same.  IDINT is the double version.
@@ -391,30 +368,31 @@ is not included")
     (integer
      x)
     (single-float
-     (truncate-towards-zero (the (single-float #.(float most-negative-fixnum)
-					       #.(float most-positive-fixnum))
-			      x)))
+     (truncate (the (single-float #.(float most-negative-fixnum)
+				  #.(float most-positive-fixnum))
+		 x)))
     (double-float
-     (truncate-towards-zero (the (double-float #.(float most-negative-fixnum 1d0)
-					       #.(float most-positive-fixnum 1d0))
-			      x)))))
+     (truncate (the (double-float #.(float most-negative-fixnum 1d0)
+				  #.(float most-positive-fixnum 1d0))
+		 x)))))
 
 #+cmu
 (defun int (x)
-  ;; We use fixnum here because f2cl thinks Fortran integers are
-  ;; fixnums.  If this should change, we need to change the ranges
-  ;; here as well.
+  ;; For CMUCL, we support the full 32-bit integer range, so INT can
+  ;; return a full 32-bit integer.  Tell CMUCL that this is true so we
+  ;; generate fast code.  If this is not true, the original Fortran
+  ;; code was wrong.
   (etypecase x
     (integer
      x)
     (single-float
-     (truncate-towards-zero (the (single-float #.(float (- (ash 1 31)))
-					       #.(float (1- (ash 1 31))))
-			      x)))
+     (truncate (the (single-float #.(float (- (ash 1 31)))
+				  #.(float (1- (ash 1 31))))
+		 x)))
     (double-float
-     (truncate-towards-zero (the (double-float #.(float (- (ash 1 31)) 1d0)
-					       #.(float (1- (ash 1 31)) 1d0))
-			      x)))))
+     (truncate (the (double-float #.(float (- (ash 1 31)) 1d0)
+				  #.(float (1- (ash 1 31)) 1d0))
+		 x)))))
   
 (defun ifix (x)
   (int x))
@@ -435,11 +413,12 @@ is not included")
 (declaim (inline aint dint anint dnint nint idnint))
 
 (defun aint (x)
+  ;; ftruncate is exactly what we want.
   (etypecase x
     (single-float
-     (ftruncate-towards-zero (the single-float x)))
+     (ftruncate (the single-float x)))
     (double-float
-     (ftruncate-towards-zero (the double-float x)))))
+     (ftruncate (the double-float x)))))
 
 (defun dint (x)
   (aint x))
@@ -1161,6 +1140,18 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.41  2002/02/17 15:55:29  rtoy
+;;; o For all array accessors, wrap the offset calculations with (the
+;;;   fixnum ...) since they have to be anyway.  Speeds up calculations
+;;;   quite a bit.
+;;; o FREF takes an additional optional OFFSET arg to specify an offset
+;;;   for the new array slicing method.
+;;; o Added WITH-ARRAY-DATA and FIND-ARRAY-DATA to support the new
+;;;   array-slicing method.
+;;; o For FDO, add (the integer4 ...) for loop index calculations.
+;;; o Add some more assertions for ISIGN and LOG10 to help the compiler
+;;;   generate better code.
+;;;
 ;;; Revision 1.40  2002/02/10 03:43:51  rtoy
 ;;; Partial support for WRITE statements writing to a string instead of
 ;;; logical unit.
