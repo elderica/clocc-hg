@@ -1666,8 +1666,8 @@
 		  ((stringp (car dl))
 		   (list (car dl)))
 		  ((listp (car dl))
-		   ;; Repeat group once
-		   (append  '(1) (list (parse-format1 (car dl) nil))))
+		   ;; Repeat group forever, as signaled by the rep factor of T.
+		   (append  '(T) (list (parse-format1 (car dl) nil))))
 		  ((and (numberp (car dl))
 			(listp (cadr dl)))
 		   ;; Repetition of a group
@@ -2069,6 +2069,13 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.66  2000/08/29 15:55:04  rtoy
+;;; o In GET-ARG-DECL, return type INTEGER4 if the arg is a subtype of
+;;;   INTEGER4. (So fixnum args are treated as INTEGER4 args for
+;;;   declaration purposes instead of a union of fixnum and integer4
+;;;   types.)
+;;; o In PARSE-READ, don't use literal strings; make them FORTRAN_COMMENT's.
+;;;
 ;;; Revision 1.65  2000/08/29 14:41:41  rtoy
 ;;; o Remove lots of unused code
 ;;; o Fix a typo in the Fortra D format parser: the equivalent Lisp format
