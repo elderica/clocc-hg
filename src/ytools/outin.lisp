@@ -51,6 +51,7 @@
    (cond ((Out-stream-p srm)
 	  srm)
 	 ((is-Stream srm)
+	  #+openmcl
 	  (cond ((typep srm 'ccl::xp-stream)
 		 (dbg-save srm)
 		 (breakpoint stream-outify
