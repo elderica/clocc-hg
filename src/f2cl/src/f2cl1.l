@@ -1087,21 +1087,6 @@ INPUT-FILE               File containing Fortran code
 		     `(,fname)))
 	      arglist))))))
 
-(defun parse-function-call (x)
-  ;; X is (FUNCTION-CALL FNAME ARG1 ARG2 ARG3 ...)
-  (destructuring-bind (id fname &rest args)
-      x
-    (declare (ignore id))
-    (first (generate-call-to-routine
-	    (cond ((member fname *subprog-arglist*)
-		   ;; We want to use funcall only if the external function
-		   ;; was passed in as a parameter.  If not, then we don't
-		   ;; need to funcall it.  The user was just telling us that
-		   ;; it was external function instead an intrinsic.
-		   `(funcall ,fname)) 
-		  (t 
-		   `(,fname)))
-	    args t))))
 ;------------------------------------------------------------------------------
 (defun parse-do-loop (x)
  (let* ((limits (list-split '|,| (cddddr x))) (step (third limits)))
@@ -1802,6 +1787,13 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.55  2000/07/31 03:00:20  rtoy
+;;; o Remove the support for continuation lines in
+;;;   READSUBPROG-EXTRACT-FORMAT-STMTS since the preprocessing handles
+;;;   that now.  Make this routine easier to read too(?).
+;;; o Make CONCAT-OPERATORS more lispy.
+;;; o Remove unused code that was replaced with new versions.
+;;;
 ;;; Revision 1.54  2000/07/30 06:12:23  rtoy
 ;;; o In GENERATE-CALL-TO-ROUTINE, don't use VAR-n for the variable names;
 ;;;   prepend NEW- to the actual variable names.  Some gratuitous
