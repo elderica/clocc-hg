@@ -1,7 +1,7 @@
 ;;; run a function, answering questions in a pre-defined way,
 ;;; possibly under monitor.
 ;;;
-;;; Copyright (C) 1997-2000 by Sam Steingold
+;;; Copyright (C) 1997-2002 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
@@ -13,9 +13,9 @@
   (require :monitor (translate-logical-pathname
                      "clocc:src;tools;metering;metering")))
 
-(export '(do-all))
-
 (in-package :cllib)
+
+(export '(do-all))
 
 (defun do-all (monitorp func answers &rest args)
   "Run FUNC answering ANSWERS (boolean list) to the y-or-n-p's.
