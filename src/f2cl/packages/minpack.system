@@ -3,6 +3,10 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.4  2002/01/08 03:29:09  rtoy
+;;; o Correct and change the compiler options.  We need array-slicing.
+;;; o Add some more routines.
+;;;
 ;;; Revision 1.3  2002/01/07 18:13:53  rtoy
 ;;; Set better compiler options for building minpack.
 ;;;
@@ -53,12 +57,13 @@
 	       (:file "lmder1" :depends-on ("lmder"))
 	       (:file "dogleg" :depends-on ("dpmpar" "enorm"))
 	       (:file "qform")
+	       (:file "r1mpyq")
 	       (:file "r1updt" :depends-on ("dpmpar"))
-	       (:file "hybrd1" :depends-on ("dogleg" "dpmpar" "enorm" "fdjac1"
-					   "qform" "qrfac" "r1mpyq" "r1updt")
-	       (:file "hybrd" :depends-on ("hybrd"))
+	       (:file "hybrd" :depends-on ("dogleg" "dpmpar" "enorm" "fdjac1"
+					   "qform" "qrfac" "r1mpyq" "r1updt"))
+	       (:file "hybrd1" :depends-on ("hybrd"))
 	       (:file "hybrj" :depends-on ("dogleg" "dpmpar" "enorm" "qform" "qrfac"
-					  "r1mpyq" "r1updt"))
+						    "r1mpyq" "r1updt"))
 	       (:file "hybrj1" :depends-on ("hybrj"))
 	       ))))
 
