@@ -33,7 +33,7 @@
 ;;;
 
 (define-condition code (error)
-  ((proc :type symbol :reader code-proc :initarg :proc)
+  ((proc :reader code-proc :initarg :proc)
    (mesg :type simple-string :reader code-mesg :initarg :mesg)
    (args :type list :reader code-args :initarg :args))
   (:report (lambda (cc out)
