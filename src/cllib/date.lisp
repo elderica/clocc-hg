@@ -1,4 +1,4 @@
-;;; File: <date.lisp - 1999-05-11 Tue 13:55:40 EDT sds@goems.com>
+;;; File: <date.lisp - 1999-05-11 Tue 16:02:18 EDT sds@goems.com>
 ;;;
 ;;; Date-related structures
 ;;;
@@ -12,6 +12,10 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.36  1999/05/11 17:57:30  sds
+;;; (infer-timezone): use error 'case-error.
+;;; (date<3, date>3): new functions.
+;;;
 ;;; Revision 1.35  1999/04/21 20:35:00  sds
 ;;; (dttm->string): print the (zero) offset.
 ;;; (date): added a sample (commented out) CLOS implementation.
@@ -162,7 +166,7 @@
 ;; `class-slot-list' for each output.  Still this would be much slower
 ;; than the current implementation, especially in CLISP, which doesn't
 ;; have native compilation and thus executes user-supplied functions
-;; like `read-object' and `print-object', much slower than the system
+;; like `read-object' and `print-object' much slower than the system
 ;; functions (like `structure-object' i/o).  E.g.:
 #|
 (defclass date ()
@@ -492,6 +496,16 @@ and (funcall KEY arg), as a double-float. KEY should return a date."
 (defsubst date-min (d0 d1)
   "Return the earliest date."
   (declare (type date d0 d1) (values date)) (if (date> d0 d1) d1 d0))
+
+(defun date-latest (ll &key (key #'date))
+  "Return the last date in the list thereof."
+  (reduce #'date-max (rest ll) :key key
+          :initial-value (funcall key (first ll))))
+
+(defun date-earliest (ll &key (key #'date))
+  "Return the last date in the list thereof."
+  (reduce #'date-min (rest ll) :key key
+          :initial-value (funcall key (first ll))))
 
 (defun next-month-p (d0 d1)
   "True if D1 is the next month of D0."
