@@ -99,7 +99,7 @@ the expected remaining run and real times."
                              (eta1 (linear 0 ,bt1 pos now1 1)))
                         (setq ,last-time now ,last-time1 now1)
                         (if (= ,last-pos pos)
-                          (values (- eta now) (- eta1 now1))
+                          (values (time-diff eta now) (time-diff eta1 now1))
                           (let ((lp ,last-pos))
                             (setq ,last-pos pos)
                             (values
