@@ -70,23 +70,33 @@ otherwise you will probably get an error.")
 ;; about redefining a symbol (`print-object') in a locked package
 (unlock-package :common-lisp)
 
+(defun write-slots (object out slots names)
+  (loop :for slot :in slots :and name :in names
+    :when (and name (slot-boundp object slot))
+    :do (write-char #\space out) (pprint-newline :fill out)
+    (write name :stream out)
+    (write-char #\space out) (pprint-newline :fill out)
+    (write (slot-value object slot) :stream out)))
+
 (defmethod print-object ((obj standard-object) (out stream))
   (case *closio-method*
     (:slot-name
-     (loop :with cl = (class-of obj)
-           :initially (format out "#[~w" (class-name cl))
-           :for slot :in (class-slot-list cl nil)
-           :when (slot-boundp obj slot)
-           :do (format out " ~w ~w" slot (slot-value obj slot))
-           :finally (write-string "]" out) (return obj)))
+     ;; have to pass NIL as object to PPRINT-LOGICAL-BLOCK
+     ;; because PPRINT-LOGICAL-BLOCK requires a list!
+     (pprint-logical-block (out nil :prefix "#[" :suffix "]")
+       (pprint-indent :current 0 out)
+       (let* ((cl (class-of obj)) (slots (class-slot-list cl nil)))
+         (write (class-name cl) :stream out)
+         (write-slots obj out slots slots)))
+     obj)
     (:initarg
-     (loop :with cl = (class-of obj)
-           :initially (format out "#[~w" (class-name cl))
-           :for slot :in (class-slot-list cl nil)
-           :and init :in (class-slot-initargs cl nil)
-           :when (and init (slot-boundp obj slot))
-           :do (format out " ~w ~w" init (slot-value obj slot))
-           :finally (write-string "]" out) (return obj)))
+     (pprint-logical-block (out nil :prefix "#[" :suffix "]")
+       (pprint-indent :current 0 out)
+       (let ((cl (class-of obj)))
+         (write (class-name cl) :stream out)
+         (write-slots obj out (class-slot-list cl nil)
+                      (class-slot-initargs cl nil))))
+     obj)
     (t (call-next-method))))
 
 (restore-package-lock :common-lisp)
