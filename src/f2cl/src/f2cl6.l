@@ -470,7 +470,7 @@
 	(cond ((and (my-digit-char-p char) 
 		    (or (and (not (eql nxt-char 'EOF))
 			     (my-digit-char-p nxt-char))
-			(member nxt-char '(#\. #\D #\E))))
+			(member nxt-char '(#\. #\D #\E) :test #'char-equal)))
 	       (write-char char str))
 	      ((and (or (my-char= char '#\+)
 			(my-char= char '#\-))
@@ -551,16 +551,25 @@
 		   (setf nxt-char (peek-char nil *inp* nil 'EOF)))
 		 ;;(format t " nxt = ~S~%" nxt-char)
 		 (cond ((my-char= nxt-char '#\+)
+			;; Write the exponent char out, read and
+			;; discard the "+" char
 			(write-char char str)
 			(read-char *inp* nil 'EOF t))
 		       ((my-char= nxt-char '#\-)
+			;; Write the exponent char out, read and
+			;; discard "-" char, and send a "%" out
+			;; instead.
 			(write-char char str)
 			(read-char *inp* nil 'EOF t)
 			(write-char '#\% str))
 		       ((my-digit-char-p nxt-char)
+			;; Exponent followed by a digit.  Write the
+			;; exponent out.
 			(write-char char str))
 		       (t
-			(write (get-output-stream-string str) :stream outport :escape nil)
+			(let ((s (get-output-stream-string str)))
+			  ;;(format t "number is ~a~%" s)
+			  (write s :stream outport :escape nil))
 			;; The exponent char we got isn't really part
 			;; of the number.  Push back the char.
 			(setq *inp*
@@ -582,7 +591,9 @@
 		       (setq *inp* 
 			     (make-string-input-stream
 			      (concatenate 'string (string char) (read-line *inp*))))))
-		 (write (get-output-stream-string str) :stream outport :escape nil)
+		 (let ((s (get-output-stream-string str)))
+		   ;;(format t "number is ~a~%" s)
+		   (write s :stream outport :escape nil))
 		 (write-char '#\space outport)
 		 (return-from parse-number t))))))))
 ;;;-----------------------------------------------------------------------------
@@ -590,6 +601,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.31  2002/02/07 22:12:56  rtoy
+;;; Oops.  Remove that debugging statement.
+;;;
 ;;; Revision 1.30  2002/02/07 20:35:22  rtoy
 ;;; Choose a better name than "prep.tmp" in whatever directory we are in
 ;;; for the temporary preprocessed file.  Make it go into the same
