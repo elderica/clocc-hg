@@ -1,4 +1,4 @@
-;;; File: <gq.lisp - 1999-01-09 Sat 21:36:50 EST sds@eho.eaglets.com>
+;;; File: <gq.lisp - 1999-02-25 Thu 18:33:22 EST sds@eho.eaglets.com>
 ;;;
 ;;; GetQuote
 ;;; get stock/mutual fund quotes from the Internet
@@ -14,6 +14,9 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.9  1999/01/10 02:37:25  sds
+;;; Replaced `gq-fix-date' with `gq-guess-date'.
+;;;
 ;;; Revision 1.8  1999/01/08 17:12:16  sds
 ;;; Fixed `get-quotes-sm'.
 ;;;
@@ -52,7 +55,7 @@
     (sds-require "url") (sds-require "gnuplot"))
   (declaim (optimize (speed 3) (space 0) (safety 3) (debug 3))))
 
-(defcustom *gq-error-stream* (or null stream) nil
+(defcustom *gq-error-stream* (or null stream) *error-output*
   "The error stream for `with-open-url'.")
 
 (defun gq-complete-url (url &rest ticks)
@@ -65,7 +68,6 @@
 ;;; {{{ Daily Data
 ;;;
 
-(eval-when (load compile eval)
 (defstruct (daily-data (:conc-name dd-))
   (nav 0.0d0 :type double-float)
   (chg 0.0d0 :type double-float)
@@ -75,7 +77,6 @@
   (pre 0.0d0 :type double-float)
   (low 0.0d0 :type double-float)
   (hgh 0.0d0 :type double-float))
-)
 
 (defun mk-daily-data (&rest args)
   "Make the DAILY-DATA structure, inferring the missing information."
@@ -108,21 +109,22 @@ change:~15t~7,2f~35thigh:~45t~7,2f
 
 (defun get-quotes-apl (url &rest ticks)
   "Get the data from the APL WWW server."
-  (with-open-url (sock (apply #'gq-complete-url url ticks) :timeout 600
+  (with-open-url (sock (apply 'gq-complete-url url ticks) :timeout 600
                        :err *gq-error-stream* :rt *html-readtable*)
     (do (zz res (ts (make-text-stream :sock sock)))
         ((or (null ticks) (eq (setq zz (next-token ts)) +eof+))
          (cons (gq-guess-date) (nreverse res)))
-      (mesg :logv t " -> ~a~%" zz)
       (when (eq (car ticks) zz)
-        (mesg :log t "Found: ~a~%" (pop ticks))
+        (mesg :log *gq-error-stream* "Found: ~a~%" (pop ticks))
         (push (mk-daily-data
-               :nav (next-token ts) :chg (next-token ts) :prc (next-token ts)
+               :nav (next-number ts)
+               :chg (next-number ts)
+               :prc (next-number ts)
                :bid (next-token ts :type 'float :dflt 0.0d0 :num 3)
                :ask (next-token ts :type 'float :dflt 0.0d0)
-               :pre (next-token ts :type 'float :dflt 0.0d0 :num 3)
-               :low (next-token ts :type 'float :dflt 0.0d0 :num 2)
-               :hgh (next-token ts :type 'float :dflt 0.0d0)) res)
+               :pre (next-number ts)
+               :low (next-number ts)
+               :hgh (next-number ts)) res)
         ;; (setq dt (infer-date (next-token ts 3) (next-token ts)))
         ))))
 
@@ -160,18 +162,19 @@ change:~15t~7,2f~35thigh:~45t~7,2f
                         (make-hist :date (caar cns) :navs (mapcar #'cdr cns)))
                       (nreverse hh))
                (nreverse ar)))
+    (mesg :log *gq-error-stream* " *** Processing ~a~%" (car ti))
     (with-open-url (sock (gq-complete-url url (car ti)) :timeout 600
                          :rt *html-readtable* :err *gq-error-stream*)
       (do ((st (read-line sock) (read-line sock))
-           (sy (format nil "(~a)" (car ti))))
-          ((string-equal st sy :end1 (min (length st) (length sy)))
+           (sy (concatenate 'string "(" (symbol-name (car ti)) ")")))
+          ((string-beg-with sy st)
            (mesg :log *gq-error-stream* "found `~a'~%" st))
         (declare (simple-string st sy)))
       (setq ts (make-text-stream :sock sock))
       (push (mk-daily-data :nav (next-number ts) :chg (next-number ts)
                            :prc (next-number ts))
             res)
-      (mesg :log *gq-error-stream* " ~a:~%~a~%" (car res))
+      (mesg :log *gq-error-stream* "~a~%" (car res))
       (push (list (next-number ts :num 5)
                   (next-token ts :type 'number :dflt 0.0)
                   (next-token ts :type 'number :dflt 0.0)
@@ -216,7 +219,7 @@ The first arg, SERVER, when non-nil, specifies which server to use."
         (force-output)
         (setq res (multiple-value-list
                    (ignore-errors (apply (cadar ql) (caar ql) ticks))))
-        (format t "~:[failed...~;success!~]~%" (car res)))))
+        (format t "~:[failed...[~a]~;success!~*~]~%" (car res) (cdr res)))))
 
 (defun infer-date (mon day)
   "Guess what the date is.
@@ -251,13 +254,11 @@ Return the most recent date with these month and day."
 (defcustom *history* list nil
   "The history, to be read from `*hist-data-file*'.")
 
-(eval-when (load compile eval)
 (defstruct (pfl)
   (tick nil :type symbol)
   (nums 0.0d0 :type double-float)
   (bprc 0.0d0 :type double-float)
   (name "" :type string))
-)
 
 (defun read-pfl (stream ra)
   "Read a PFL from the STREAM, using the read-ahead RA.
@@ -275,12 +276,10 @@ Suitable for `read-list-from-stream'."
   "Find the holding corresponding to the symbol."
   (declare (symbol sy)) (find sy *holdings* :key #'pfl-tick :test #'eq))
 
-(eval-when (load compile eval)
 (defstruct (hist)
   (date +bad-date+ :type date)
   (totl 0.0d0 :type double-float)
   (navs nil :type list))
-)
 
 (defmethod value ((hs hist)) (hist-totl hs))
 (defmethod date ((hs hist)) (hist-date hs))
@@ -459,17 +458,19 @@ previous day:~15t~{~7,2f~}~%Added an extra record~%~5t~{~a~}~%"
       ((null hl)
        (plot-dated-lists
         (hist-date (car hist)) (hist-date (car (last hist)))
-        (cons (make-dated-list :ll hist :date 'hist-date :name
-                               "Total Value" :misc 'hist-totl)
-              (nreverse res)) :rel t :slot 'misc :grid t
+        (cons (mk-dl (list (cons :all hist)) :date 'hist-date :name
+                     "Total Value" :misc 'hist-totl)
+              (nreverse res))
+        :rel t :slot 'misc :grid t
         :title "Portfolio History" :data-style "linespoints"
         :ylabel "Relative Value" :plot plot :legend "top left box"))
     (declare (fixnum ii))
-    (push (make-dated-list :ll hist :date 'hist-date :name (pfl-name (car hl))
-                           :code (pfl-tick (car hl)) :misc
-                           (let ((ii ii))
-                             (declare (fixnum ii))
-                             (lambda (hs) (nth ii (hist-navs hs))))) res)))
+    (push (mk-dl (list (cons :all hist)) :date 'hist-date
+                 :name (pfl-name (car hl))
+                 :code (pfl-tick (car hl)) :misc
+                 (let ((ii ii)) (declare (fixnum ii))
+                      (lambda (hs) (nth ii (hist-navs hs)))))
+          res)))
 
 ;;;
 ;;; }}}{{{ Run the thing
