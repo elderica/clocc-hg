@@ -122,8 +122,6 @@ optional argument SPACE is non-nil."
 ;;; }}}{{{ HTML streams
 ;;;
 
-#+(or clisp acl cmu) (progn
-
 (defclass html-stream-in (fundamental-character-input-stream)
   ((input :initarg :stream :initarg :input :type stream :reader html-in))
   (:documentation "The input stream for reading HTML."))
@@ -147,10 +145,8 @@ optional argument SPACE is non-nil."
   (listen (html-in in)))
 (defmethod stream-read-line ((in html-stream-in))
   (read-line (html-in in)))
-(defmethod stream-clear-output ((in html-stream-in))
+(defmethod stream-clear-input ((in html-stream-in))
   (clear-input (html-in in)))
-
-)
 
 ;;;
 ;;; }}}{{{ HTML parsing via `text-stream'
