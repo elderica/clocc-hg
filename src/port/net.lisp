@@ -201,7 +201,9 @@ Keyword arguments are:
  WAIT - wait for the connection this many seconds
         (the default is NIL - wait forever).
 Returns a socket stream or NIL."
-  (declare (type socket-server serv))
+  (declare (type socket-server serv)
+           #+(and allegro (version>= 6))
+           (ignore bin))
   #+allegro (let ((sock (if wait
                             (if (plusp wait)
                                 (mp:with-timeout (wait)
@@ -214,7 +216,7 @@ Returns a socket stream or NIL."
                 ;; in ACL6 and later, all sockets are bivalent (both
                 ;; text and binary) and thus there's no need to convert
                 ;; between the element types.
-                #-(version>= 6)
+                #+(and allegro (not (version>= 6)))
                 (socket:set-socket-format sock (if bin :binary :text))
                 sock))
   #+clisp (multiple-value-bind (sec usec) (floor (or wait 0))
