@@ -335,7 +335,8 @@ Non-existent files are assumed to be VERY old."
   "Compile the file if newer than the compiled and load it."
   (if force (load (compile-file file))
       (let ((cf (compile-file-pathname file)))
-        (if (file-newer file cf)
+        (if (or (file-newer file cf)
+                (not (port:compiled-file-p cf)))
             (load (compile-file file))
             (unless load-only-if-compiled
               (load cf))))))
