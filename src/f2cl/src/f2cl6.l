@@ -538,17 +538,30 @@
 		     (char-equal char #\D))
 		 ;;(format t "got exponent ~S~%" char)
 		 (setf in-number-p t)
-		 (write-char char str)
 		 ;; Process exponent, skip over white space.
 		 (when (my-char= nxt-char #\Space)
 		   (skip-spaces)
 		   (setf nxt-char (peek-char nil *inp* nil 'EOF)))
 		 ;;(format t " nxt = ~S~%" nxt-char)
 		 (cond ((my-char= nxt-char '#\+)
+			(write-char char str)
 			(read-char *inp* nil 'EOF t))
 		       ((my-char= nxt-char '#\-)
+			(write-char char str)
 			(read-char *inp* nil 'EOF t)
-			(write-char '#\% str))))
+			(write-char '#\% str))
+		       ((my-digit-char-p nxt-char)
+			(write-char char str))
+		       (t
+			(write (get-output-stream-string str) :stream outport :escape nil)
+			;; The exponent char we got isn't really part
+			;; of the number.  Push back the char.
+			(setq *inp*
+			      (make-string-input-stream
+			       (concatenate 'string " "
+					    (string char)
+					    (read-line *inp*))))
+			(return-from parse-number t))))
 		(t			;number complete
 		 ;;(format t "complete char, nxt = ~S ~S~%" char nxt-char)
 		 ;; We want to unread CHAR, but, according to the CLHS,
@@ -570,6 +583,10 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.28  2002/01/05 18:28:34  rtoy
+;;; Was still erroneously doing an unread-char.  (Caught by Clisp.)
+;;; Works with Clisp and CMUCL now, and probably others.
+;;;
 ;;; Revision 1.27  2001/09/10 16:37:14  rtoy
 ;;; Oops.  Forgot to strip out the extra quote when we got quoted quotes
 ;;; in format strings.
