@@ -24,14 +24,14 @@
 
 (defconst +kwd+ package (find-package :keyword) "The KEYWORD package.")
 
-(declaim (ftype (function ((or symbol string)) (values symbol)) kwd))
+(declaim (ftype (function ((or symbol string)) (values symbol symbol)) kwd))
 (defsubst kwd (sy-st)
   "Convert the argument, symbol or string, to a keyword."
   (declare (type (or symbol string) sy-st))
   (when (symbolp sy-st) (unintern sy-st) (setq sy-st (symbol-name sy-st)))
-  (values (intern sy-st +kwd+)))
+  (intern sy-st +kwd+))
 
-(declaim (ftype (function (&rest t) (values symbol)) keyword-concat))
+(declaim (ftype (function (&rest t) (values symbol symbol)) keyword-concat))
 (defsubst keyword-concat (&rest args)
   "Concatenate objects into a keyword."
   (kwd (apply #'concatenate 'string (mapcar #'string args))))
