@@ -224,7 +224,8 @@ initargs for all slots are returned, otherwise only the slots with
 ;;;
 
 #+cmu
-(eval-when (compile load eval) (shadow 'defstruct) (export 'defstruct))
+(eval-when (compile load eval)
+  (shadow "DEFSTRUCT") (export (intern "DEFSTRUCT")))
 #+cmu
 (defmacro defstruct (name &rest slots)
   `(progn
