@@ -13,7 +13,9 @@
 (eval-when (compile load eval)
   (require :base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `getenv'
-  (require :base (translate-logical-pathname "port:sys")))
+  (require :sys (translate-logical-pathname "port:sys")))
+
+(in-package :cllib)
 
 ;; CLISP defines but does not export this function
 ;; #+clisp (import 'sys::package-short-name)
@@ -53,3 +55,6 @@
   #+allegro
   (multiple-value-bind (bb ib ee) (beg-end)
     (setq tpl:*prompt* (concatenate 'string bb tpl:*prompt* ee))))
+
+(provide :prompt)
+;; prompt.lisp ends here
