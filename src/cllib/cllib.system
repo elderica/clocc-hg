@@ -42,6 +42,7 @@
      (:file "math" :depends-on ("base" "withtype" "fileio" "log" "list"))
      (:file "miscprint" :depends-on ("base" "simple"))
      #+clisp (:file "octave" :depends-on ("base"))
+     (:file "prompt" :depends-on ("base"))
      (:file "rpm" :depends-on ("base" "url"))
      (:file "server" :depends-on ("base" "log"))
      (:file "simple" :depends-on ("base"))
