@@ -1,4 +1,4 @@
-;;; File: <gnuplot.lisp - 1998-06-03 Wed 13:14:13 EDT sds@mute.eaglets.com>
+;;; File: <gnuplot.lisp - 1998-06-08 Mon 19:48:42 EDT sds@mute.eaglets.com>
 ;;;
 ;;; Gnuplot interface
 ;;;
@@ -12,6 +12,9 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.12  1998/06/03 17:20:35  sds
+;;; Added a plot-key key, for placement of the gnuplot legend.
+;;;
 ;;; Revision 1.11  1998/04/29 22:36:32  sds
 ;;; Made `*gnuplot-epoch*' into a constant `+gnuplot-epoch+'.
 ;;; Added function `plot-sec-to-epoch'.
@@ -249,7 +252,7 @@ LSS is a list of lists, car of each list is the title, cdr is the numbers."
 
 (defun plot-lists-arg (lss &key (key #'identity) (title "Plot") (xlabel "nums")
 		       (ylabel "value") data-style rel lines quads (plot t)
-                       plot-key)
+                       plot-key xbeg xend)
   "Plot the given lists of numbers.
 Most of the keys are the gnuplot options (see the documentation
 for `plot-header' and `with-plot-stream' for details.)
@@ -265,21 +268,22 @@ of conses of abscissas and ordinates. KEY is used to extract the cons."
     (setq quads (mapcar (lambda (ls)
 			  (regress2 (cdr ls) :xkey (compose #'car key)
 				    :ykey (compose #'cdr key))) lss)))
-  (let ((be (apply #'min (mapcar #'caadr lss)))
-	(en (apply #'max (mapcar (compose-m caar last) lss))))
-    (with-plot-stream (str plot xlabel ylabel data-style nil be en title
-                       plot-key)
-      (format str "plot~{ '-' using 1:2 title \"~a\"~^,~}" (mapcar #'car lss))
-      (dolist (ln lines) (plot-line-str ln be en str))
-      (dolist (qu quads) (plot-quad-str qu be en str))
-      (terpri str)
-      (let* (bv (val (if rel (lambda (kk) (/ kk bv)) #'identity)))
-	(dolist (ls lss)
-	  (setq bv (funcall key (cdadr ls)))
-	  (do ((ll (cdr ls) (cdr ll)) kk)
-	      ((null ll) (format str "e~%"))
-	    (setq kk (funcall key (car ll)))
-	    (format str "~f~20t~f~%" (car kk) (funcall val (cdr kk)))))))))
+  (setq xbeg (or xbeg (apply #'min (mapcar (compose #'car key #'cadr) lss)))
+	xend (or xend (apply #'max (mapcar (compose #'car key #'car #'last)
+                                           lss))))
+  (with-plot-stream (str plot xlabel ylabel data-style nil xbeg xend title
+                     plot-key)
+    (format str "plot~{ '-' using 1:2 title \"~a\"~^,~}" (mapcar #'car lss))
+    (dolist (ln lines) (plot-line-str ln xbeg xend str))
+    (dolist (qu quads) (plot-quad-str qu xbeg xend str))
+    (terpri str)
+    (let* (bv (val (if rel (lambda (kk) (/ kk bv)) #'identity)))
+      (dolist (ls lss)
+        (setq bv (cdr (funcall key (cadr ls))))
+        (do ((ll (cdr ls) (cdr ll)) kk)
+            ((null ll) (format str "e~%"))
+          (setq kk (funcall key (car ll)))
+          (format str "~f~20t~f~%" (car kk) (funcall val (cdr kk))))))))
 
 (defun plot-error-bars (ll &key (title "Plot") (xlabel "nums") (ylabel "value")
 			data-style (plot t) (xkey #'first)
