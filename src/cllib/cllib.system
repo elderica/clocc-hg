@@ -20,7 +20,7 @@
      (:file "autoload" :depends-on ("base" "fileio"))
      (:file "base")
      (:file "card" :depends-on
-            ("base" "withtype" "closio" "tilsla" "string" "date"))
+            ("base" "withtype" "closio" "tilsla" "string" "date" "url"))
      (:file "check" :depends-on ("base" "log" "math"))
      (:file "clhs" :depends-on
             ("base" "withtype" "string" "fileio" "log" "html"))
