@@ -105,8 +105,8 @@ INPUT-FILE               File containing Fortran code
 "
 
 
-  (format t "Copyright(c) 92-95 University of Waikato - all rights reserved~%")
-  (format t "1997, 1999 Many changes and fixes by Raymond Toy (toy@rtp.ericsson.se)~%")
+  ;;(format t "Copyright(c) 92-95 University of Waikato - all rights reserved~%")
+  ;;(format t "1997, 1999 Many changes and fixes by Raymond Toy (toy@rtp.ericsson.se)~%")
 
   ;; Check (some) parameters for validity
   (assert (or (null coerce-assigns)
@@ -1958,6 +1958,11 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.78  2002/01/05 18:30:35  rtoy
+;;; o Clisp's pretty-printer seems to work well enough now, so use it.
+;;; o Use with-standard-io-syntax in SPECIAL-PRINT when printing out the
+;;;   code (with a few minor changes).
+;;;
 ;;; Revision 1.77  2001/09/11 14:29:14  rtoy
 ;;; Try to do a better job of figuring out the extension for the output
 ;;; file.
