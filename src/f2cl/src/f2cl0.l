@@ -65,7 +65,7 @@
    "MAX1" "MIN0" "MIN1" "NINT" "FREAL"
    "SIGN" "SNGL" "FSQRT"
    ;; Other functions
-   "D1MACH" "R1MACH"
+   "D1MACH" "R1MACH" "I1MACH"
    ))
 
 (defpackage "FORTRAN-TO-LISP"
@@ -83,6 +83,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.13  2002/03/11 16:40:21  rtoy
+;;; Export INT-ADD, INT-SUB, INT-MUL.
+;;;
 ;;; Revision 1.12  2002/02/17 15:50:17  rtoy
 ;;; Export with-array-data.
 ;;;
