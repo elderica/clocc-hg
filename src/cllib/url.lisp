@@ -435,8 +435,9 @@ See RFC959 (FTP) &c.")
                    (null (setq code (parse-integer ln :end 3 :junk-allowed t)))
                    (and (< code 400) endl (not (member code endl :test #'=))))
         :finally (if (< code 400) (return (values ln code))
-                     (error 'network :proc 'url-ask :host (socket-host sock)
-                            :port (socket-port sock) :mesg ln))))
+                     (multiple-value-bind (ho po) (socket-host/port sock)
+                       (error 'network :proc 'url-ask :host ho
+                              :port po :mesg ln)))))
 
 ;;;
 ;;; }}}{{{ ftp
@@ -469,7 +470,7 @@ Some ftp servers do not like `user@host' if `host' is not what they expect.")
 (defun url-login-ftp (sock url err)
   "Login and cd to the FTP url."
   (declare (type socket sock) (type url url) (type (or null stream) err))
-  (let ((host (socket-host sock)) (port (socket-port sock)) co)
+  (multiple-value-bind (host port co) (socket-host/port sock)
     (dolist (pwd *ftp-anonymous-passwords*
              (error 'login :proc 'url-login-ftp :host host :port port
                     :mesg "All passwords failed: ~{ ~s~}~% -- ~a"
