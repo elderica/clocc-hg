@@ -103,6 +103,7 @@ Inspired by Paul Graham, <On Lisp>, p. 145."
 
 (defun gc ()
   "Invoke the garbage collector."
+  #+abcl (ext:gc)
   #+allegro (excl:gc)
   #+clisp (#+lisp=cl ext:gc #-lisp=cl lisp:gc)
   #+cmu (ext:gc)
@@ -115,6 +116,7 @@ Inspired by Paul Graham, <On Lisp>, p. 145."
   (error 'not-implemented :proc (list 'gc)))
 
 (defun quit (&optional code)
+  #+abcl (ext:quit code)
   #+allegro (excl:exit code)
   #+clisp (#+lisp=cl ext:quit #-lisp=cl lisp:quit code)
   #+cmu (ext:quit code)
