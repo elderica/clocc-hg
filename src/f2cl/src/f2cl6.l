@@ -556,13 +556,12 @@
 		 ;; was read.  Because of skip-spaces above, this CHAR
 		 ;; is not necessarily the last character read anymore.
 		 ;; We have to modify the stream directly now.
-		 #+t
-		 (if (equal (peek-char nil *inp* nil 'EOF t) 'EOF)
-		     (setq *inp* (make-string-input-stream (string char)))
-		     (setq *inp* 
-			   (make-string-input-stream
-			    (concatenate 'string (string char) (read-line *inp*)))))
-		 #-nil (unread-char char *inp*)
+		 (let ((p (peek-char nil *inp* nil 'EOF t)))
+		   (if (equal p 'EOF)
+		       (setq *inp* (make-string-input-stream (string char)))
+		       (setq *inp* 
+			     (make-string-input-stream
+			      (concatenate 'string (string char) (read-line *inp*))))))
 		 (write (get-output-stream-string str) :stream outport :escape nil)
 		 (write-char '#\space outport)
 		 (return-from parse-number t))))))))
@@ -571,6 +570,10 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.27  2001/09/10 16:37:14  rtoy
+;;; Oops.  Forgot to strip out the extra quote when we got quoted quotes
+;;; in format strings.
+;;;
 ;;; Revision 1.26  2001/09/10 16:21:39  rtoy
 ;;; Handle Fortran-style strings better by handling quoted quotes.  (In
 ;;; Fortran 'It''s time' is the string "It's time".)
