@@ -1317,15 +1317,19 @@ FILENAME                 File containing Fortran code
          (t `((if ,(id-predicate (second x)) ,@(translate-line (cddr x)))))))
 
 (defun parse-return (x) x)
+
 (defun parse-parameter (x) 
    (setq x (mapcar #'(lambda (l) (remove '= l))
                    (list-split '|,| (cadr x))))
 
-   (setq *key_params* (append *key_params* 
-                            (mapcar #'(lambda (l)
-                                           (list (first l) (id-factor (second l))))
-                                    x)))
+   ;;(format t "~&split x = ~A~%" x)
+   (setq *key_params*
+	 (append *key_params* 
+		 (mapcar #'(lambda (l)
+			     (list (first l) (id-expression (rest l))))
+			 x)))
    nil)
+
 ; restrict SAVE stmts to
 ;     SAVE a,b,...
 ; or  SAVE /label/a,b,..
@@ -1978,6 +1982,15 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.83  2002/01/07 18:16:15  rtoy
+;;; o Change the :array-type parameter to take a keyword instead of a
+;;;   symbol.
+;;; o Print a warning if :array-type is specified and inconsistent with
+;;;   :array-slicing option.  :array-slicing takes precedence.
+;;; o If possible convert a fortran_comment into a quoted string.  (Makes
+;;;   it easier to read the embedded comment.)
+;;; o Print the options in lower case.
+;;;
 ;;; Revision 1.82  2002/01/07 03:09:05  rtoy
 ;;; Print out a warning if a variable is declared that has the same name
 ;;; as a Fortran intrinsic.  Not sure what the spec says, but as long as
