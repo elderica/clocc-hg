@@ -452,14 +452,18 @@
 		   (my-char= char '#\+))
 	       (write-char char str))
 	      (t			;number complete
-	       ;; Clisp doesn't have unread-char?!?
-	       #+(and nil clisp)
+	       ;; We want to unread CHAR, but, according to the CLHS,
+	       ;; unread-char must push back the last character that
+	       ;; was read.  Because of skip-spaces above, this CHAR
+	       ;; is not necessarily the last character read anymore.
+	       ;; We have to modify the stream directly now.
+	       #+t
 	       (if (equal (peek-char nil *inp* nil 'EOF t) 'EOF)
 		   (setq *inp* (make-string-input-stream (string char)))
 		   (setq *inp* 
 			 (make-string-input-stream
 			  (concatenate 'string (string char) (read-line *inp*)))))
-	       #-(and nil clisp) (unread-char char *inp*)
+	       #-nil (unread-char char *inp*)
 	       (write (get-output-stream-string str) :stream outport :escape nil)
 	       (write-char '#\space outport)
 	       (return-from parse-number t)))))))
@@ -468,6 +472,11 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.20  2000/08/18 15:22:11  rtoy
+;;; Can't swallow blanks (for now) at the first part of parse-number
+;;; because it causes things like "6.or." to become the symbol "6OR",
+;;; which is wrong.
+;;;
 ;;; Revision 1.19  2000/08/13 22:31:10  rtoy
 ;;; With the change in PARSE-NUMBER, ADJUST_NRS was sometimes messing up
 ;;; the columns for the statement number and the statement itself.  Fix
