@@ -1293,10 +1293,11 @@ main-loop
 (defun parse-data (x)
   ;;(format t "parse-data:  ~S~%" x)
   (setq x (list-split '|/| (cdr x)))
+  ;;(format t "parse-data post-split:  ~S~%" x)
   (do ((list x (cddr list))
-       (ret nil (let* ((var (remove '|,| (car list)))
+       (ret nil (let* ((var (list-split '|,| (car list)))
 		       (vals (list-split '|,| (cadr list)))
-		       (result (parse-data1 var vals)))
+		       (result (mapcar #'parse-data1 var vals)))
 		  ;;(format t "list = ~a~%" list)
 		  ;;(format t "var = ~a~%" var)
 		  ;;(format t "vals = ~a~%" vals)
@@ -1317,7 +1318,7 @@ main-loop
 	     (cond ((numberp x)
 		    x)
 		   (t
-		    (let ((ex (id-expression x)))
+		    (let ((ex (id-expression (if (atom x) (list x) x))))
 		      (if (listp ex)
 			  (- (second ex))
 			  ex)))))
@@ -1787,6 +1788,11 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.44  2000/07/19 22:16:34  rtoy
+;;; o TRANSLATE-AND-WRITE-SUBPROG doesn't have the :declaim, :package, and
+;;;   :options arguments anymore.
+;;; o Clean out unused code.
+;;;
 ;;; Revision 1.43  2000/07/19 13:47:06  rtoy
 ;;; o Only print out one banner and version number, not one for each
 ;;;   subprog!
