@@ -61,22 +61,24 @@ file:/usr/doc/lisp/HyperSpec/Body/fun_translate-pathname.html"
         (declare (type index-t cc)))))
 
 ;;;###autoload
-(defun code-complexity (&optional file)
+(defun code-complexity (file)
   "Count the sexps in the file."
   (let ((errorp nil))
     (typecase file
+      (stream
+       (values
+        (loop :for form = (handler-case (read file nil +eof+)
+                            (error (err)
+                              (format t " *** problem: ~a~%" err)
+                              (setq errorp t)
+                              (return cc)))
+          :until (eq form +eof+) :finally (return cc)
+          :sum (count-sexps form) :into cc :of-type index-t)
+        (file-length file)
+        errorp))
       ((or pathname string)
        (with-open-file (str file :direction :input)
-         (values
-          (loop :for form = (handler-case (read str nil +eof+)
-                              (error (err)
-                                (format t " *** problem: ~a~%" err)
-                                (setq errorp t)
-                                (return cc)))
-                :until (eq form +eof+) :finally (return cc)
-                :sum (count-sexps form) :into cc :of-type index-t)
-          (file-length str)
-          errorp)))
+         (code-complexity str)))
       (cons
        (loop :for fl :in file :with cc :of-type index-t = 0
              :and cs :of-type file-size-t = 0 :and err :of-type boolean = nil
