@@ -918,7 +918,7 @@
 			   decl))
 		     (set-difference arglist *external-function-names*))))
        (setf var-type-list (nreverse var-type-list))
-       (format t "declare ~S: ~S~%" (second defun-bit) var-type-list)
+       ;; (format t "declare ~S: ~S~%" (second defun-bit) var-type-list)
        (let ((entry (gethash (second defun-bit) *f2cl-function-info*)))
 	 (if entry
 	     (setf (f2cl-finfo-arg-types entry) var-type-list)
@@ -2747,6 +2747,10 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.104  2002/05/04 20:33:32  rtoy
+;;; When we construct the declarations for the formal args of the
+;;; function, we save the arg types in away as well for later use.
+;;;
 ;;; Revision 1.103  2002/05/03 17:43:46  rtoy
 ;;; If the array type is simple-array, don't do the with-array-data stuff
 ;;; because we don't need it.
