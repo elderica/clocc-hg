@@ -87,7 +87,8 @@ This has to be a macro to avoid needless evaluating the args."
           (when ,run (format ,%out " [run: ~/pr-secs/]" ,el))
           (when ,real (format ,%out " [real: ~/pr-secs/]" (elapsed ,bt1 nil)))
           ,(when count
-            `(format ,%out " [~5f ~a per second]" (/ ,count ,el) ,units))
+             `(unless (zerop ,el)
+                (format ,%out " [~5f ~a per second]" (/ ,count ,el) ,units)))
           (when ,terpri (terpri ,%out)))))))
 
 ;;; }}}
