@@ -602,9 +602,6 @@
            (when (or (string= host "")
                      (string= host "unix"))
              ;; ok, try to connect to a AF_UNIX domain socket
-             ;;
-             ;; clisp doesn't have sockets, but special code for
-             ;; X connections:
              #-clisp
              (port::open-unix-socket (format nil
                                              "~A~D"
@@ -612,9 +609,9 @@
                                              display)
                                      :kind :stream
                                      :bin t)
-             ;; clisp doesn't have this...
+             ;; clisp has special code for X connections:
              #+clisp
-             (sys::make-socket-stream "" 0)))))
+             (sys::make-socket-stream "" display)))))
     (if socket
         socket
         ;; try to connect by hand
