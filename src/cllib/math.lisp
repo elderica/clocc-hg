@@ -167,7 +167,7 @@ The optional second argument specifies the list of primes."
   "Print all the splittings of NUM into (+ (FUN M) (FUN K))
 FUN-1 is the integer inverse function.
 E.g.: (number-sum-split 10 (lambda (x) (* x x)) 'isqrt) => ((1 . 3))"
-  (declare (type (integer 0) num) (type (or null stream out))
+  (declare (type (integer 0) num) (type (or null stream) out)
            (type (function ((integer 0)) (integer 0)) fun fun-1))
   (let ((lim (1+ (funcall fun-1 (floor num 2)))) res)
     (dotimes (ii lim (nreverse res))
