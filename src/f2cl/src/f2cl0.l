@@ -38,7 +38,8 @@
    "*CHECK-ARRAY-BOUNDS*"
    ;; Types
    "INTEGER4" "INTEGER2" "INTEGER1" "REAL8" "REAL4" "COMPLEX8" "COMPLEX16"
-   "ARRAY-DOUBLE-FLOAT" "ARRAY-SINGLE-FLOAT" "ARRAY-INTEGER4" "LOGICAL"
+   "ARRAY-DOUBLE-FLOAT" "ARRAY-SINGLE-FLOAT" "ARRAY-INTEGER4" "ARRAY-STRINGS"
+   "LOGICAL"
    ;; Macros
    "FREF" "FSET"
    "F2CL-INIT-STRING" "FREF-STRING" "FSET-STRING" "F2CL-SET-STRING"
@@ -81,6 +82,10 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.10  2002/01/13 16:24:24  rtoy
+;;; All of the exported symbols in macros.l have been moved from the F2CL
+;;; package to the F2CL-LIB package.
+;;;
 ;;; Revision 1.9  2002/01/05 18:52:12  rtoy
 ;;; Add in-package.
 ;;;
