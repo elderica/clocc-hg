@@ -106,12 +106,17 @@ Tag being parsed:| (cadr x))))
      (cond ((eq (car l) '+) (setq l (cdr l)))
            ((eq (car l) '-) (setq l (cons 0 l))))
 
+     ;; FIXME: This probably needs a rethink.  We need to parse
+     ;; logical operations better and I don't think this will work in
+     ;; all cases.
+     
      ;; This is a hack.  Let's try to identify some logical
      ;; operations.  If we find them we rewrite the expression with
      ;; parentheses and parse it normally.  Thus, x .le. y*z is
      ;; written as (x) .le. (y*z).
-     (dolist (log-op '(<= < >= > equal ><))
+     (dolist (log-op '(or and <= < >= > equal ><))
        (let ((split (list-split-multi log-op l)))
+	 ;;(format t "op = ~A, split = ~A~%" log-op split)
 	 (when (cdr split)
 	   ;; The expression was split into parts for the given
 	   ;; logical op.  Rewrite the expression with appropropriate
@@ -451,6 +456,15 @@ definition.| l) ))
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.33  2004/08/11 16:51:32  rtoy
+;;; A possible fix for the parsing bug wherein x .le. y*z was parsed as (x
+;;; .le. y) * z.
+;;;
+;;; We look for logical operations and rewrite the expression with
+;;; parentheses around the left and right parts of the operation.  Thus x
+;;; .le. y*z becomes (x) .le. (y*z), which will be parsed correctly by the
+;;; rest of the routines.
+;;;
 ;;; Revision 1.32  2003/11/13 22:16:59  rtoy
 ;;; Try to be smarter about generating args to functions, which is an
 ;;; issue if the arg is an element of an array.  If we know the declared
