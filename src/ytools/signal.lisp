@@ -65,26 +65,28 @@
 			 `(error ,@condspec))
 			((car-eq proceedspec ':prompt-for)
 			 (let ((supplied-var (gensym))
-			       (value-var (gensym)))
+			       (value-var (gensym))
+			       (srmvar (gensym)))
 			    `(restart-case (error ,@condspec)
 				(prompt-for-restart-val (,supplied-var ,value-var)
-				   :report (lambda (srm)
-					     (format srm
-						   "You will be prompted for: ~a"
-						   ,(cadr proceedspec)))
+				   :report (lambda (,srmvar)
+					     (out (:to ,srmvar)
+						   "You will be prompted for: "
+						   ,@(butlast (cdr proceedspec))))
 				   :interactive prompt-for-restart-val
 				  (cond (,supplied-var ,value-var)
-					(t ,(caddr proceedspec)))))))
+					(t ,(lastelt proceedspec)))))))
 			(t
-			 `(restart-case (error ,@condspec)
-			     (continue ()
-			      :report ,(cond ((atom proceedspec)
-					      ;; must be :proceed
-					      "I will attempt to continue")
-					     (t
-					      `(lambda (srm)
-						  (format srm "~a"
-						     ,(cadr proceedspec)))))))))))
+			 (let ((srmvar (gensym)))
+			    `(restart-case (error ,@condspec)
+				(continue ()
+				 :report ,(cond ((atom proceedspec)
+						 ;; must be :proceed
+						 "I will attempt to continue")
+						(t
+						 `(lambda (,srmvar)
+						     (out (:to ,srmvar)
+							,@(cdr proceedspec))))))))))))
 	 (maybe-wrap-debugger-hook
 	    (cond ((and simple (eq proceedspec ':proceed))
 		   `(cerror "I will try to proceed" ,@condspec))
