@@ -194,7 +194,7 @@ and evaluate TIMEOUT-FORMS."
   (with-gensyms ("WT-" bodyf timeoutf)
     `(flet ((,bodyf () ,@body)
             (,timeoutf () ,@timeout-forms))
-      (with-timeout-f seconds #'bodyf #'timeoutf)))
+      (with-timeout-f ,seconds #',bodyf #',timeoutf)))
   #-threads `(progn ,@body))
 
 (defun y-or-n-p-timeout (seconds default &rest args)
