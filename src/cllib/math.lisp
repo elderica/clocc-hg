@@ -142,7 +142,7 @@
 (defun ruler (n)
   "The exponent of the largest power of 2 which divides the given number.
 See <http://mathworld.wolfram.com/RulerFunction.html>.
-See also <http://www.podval.org/~sds/notes.html#ruler-runction>
+See also <http://www.podval.org/~sds/notes.html#ruler-function>
 for the explanation of the (logand n (- n)) part."
   (1- (integer-length (logand n (- n)))))
 
