@@ -20,7 +20,7 @@
 ;	id-array-store - check args eval to integers in range at eval time
 ;	restore-negative-numbers
 ;------------------------------------------------------------------------------
-(in-package :cl-user)
+(in-package :f2cl)
 (eval-when (compile load eval)
   (proclaim '(optimize (speed 3) (safety 1)))
 
@@ -147,8 +147,8 @@ Tag being parsed:| (cadr x))))
 ;-----------------------------------------------------------------------------
 (defun id-factor1 (l)
   (prog (x)
-     (setq x (list-split-multi-string '(^ //) l))
-     (setq x (list x (extract '(^ //) l)))
+     (setq x (list-split-multi-string '(^ f2cl-//) l))
+     (setq x (list x (extract '(^ f2cl-//) l)))
      (return (list-itp (mapcar #'id-factor (car x)) 
 		       (subst 'expt  '^ (cadr x))))))
 
@@ -316,10 +316,13 @@ Tag being parsed:| (cadr x))))
 				   (mapcar #'id-expression (list-split '|,| (cadr l))))
      (cons (case (car l)
 	     ;; Handle some special cases for intrinsic functions
+	     ;; because they conflict with the Lisp functions of the
+	     ;; same name.
 	     (char 'fchar)
 	     (sqrt 'fsqrt)
 	     (log 'flog)
 	     (float 'ffloat)
+	     (real 'freal)
 	     (t (car l)))
 	   (mapcar #'id-expression
 		   (list-split '|,| (cadr l)))))
@@ -444,6 +447,9 @@ definition.| l) ))
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.22  2000/07/27 16:39:17  rtoy
+;;; We want to be in the CL-USER package, not the USER package.
+;;;
 ;;; Revision 1.21  2000/07/19 13:50:11  rtoy
 ;;; o Use the macro ARRAY-SLICE to slice the array instead of inline as we
 ;;;   were doing it.
