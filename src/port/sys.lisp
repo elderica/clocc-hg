@@ -11,6 +11,9 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.2  2000/02/18 21:16:45  sds
+;;; in-package :port now; make system works
+;;;
 ;;; Revision 1.1  1999/11/24 17:07:09  sds
 ;;; Cross-implementation Portability System
 ;;;
@@ -22,7 +25,8 @@
 (in-package :port)
 
 (export
- '(getenv probe-directory default-directory chdir sysinfo
+ '(getenv variable-special-p
+   probe-directory default-directory chdir sysinfo
    +month-names+ +week-days+ +time-zones+ +whitespace+
    tz->string current-time))
 
@@ -39,7 +43,20 @@
   #+lucid (lcl:environment-variable (string var))
   #+gcl (si:getenv (string var))
   #-(or cmu allegro clisp lispworks lucid gcl)
-  (error 'not-implemented :proc (list 'getenv)))
+  (error 'not-implemented :proc (list 'getenv var)))
+
+;;;
+;;; Special
+;;;
+
+(defun variable-special-p (symbol)
+  "Return T if the symbol names a global special variable."
+  #+allegro (clos::variable-special-p symbol nil)
+  #+clisp (system::special-variable-p symbol)
+  #+cmu (walker:variable-globally-special-p symbol)
+  #+gcl (system:specialp symbol)
+  #-(allegro clisp cmu gcl)
+  (error 'not-implemented :proc (list 'variable-special-p symbol)))
 
 ;;;
 ;;; Environment
