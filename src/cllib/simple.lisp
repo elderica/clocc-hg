@@ -132,14 +132,12 @@ The second value is the last atom (i.e., `dotted-p')."
        (fast list (cddr fast))
        (slow list (cdr slow)))
       (nil)
+    (declare (type (integer 0) nn))
     (when (atom fast) (return (values nn fast)))
     (when (atom (cdr fast)) (return (values (1+ nn) (cdr fast))))
     (when (eq (cdr fast) slow) (return nil))))
 
-;;;
-;;; }}}{{{ use with-collect
-;;;
-
 ;;; }}}
+
 (provide :simple)
 ;;; file simple.lisp ends here
