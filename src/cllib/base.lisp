@@ -25,9 +25,10 @@
 
 (defun mk-path (default &rest make-pathname-args)
   "This is a helper function for portable creation of pathnames.
-If you need to create a pathnames under a specific pathname, you need
-to pass it first to `make-pathname' and than to `merge-pathnames' since
-otherwise `*default-pathname-defaults*' will get in the way."
+If you need to create a pathname under a specific directory, you need
+to pass it first to `make-pathname' and then to `merge-pathnames' since
+otherwise `*default-pathname-defaults*' will get in the way.
+Beware: `default' should not be a relative pathname!"
   (merge-pathnames (apply #'make-pathname :defaults default
                           make-pathname-args)
                    default))
