@@ -321,7 +321,7 @@ is a float, such as the GDP, VALUE is a cons with the range.
                              (&rest dump-args &key (out *standard-output*)
                                     &allow-other-keys))
   "Dump all the URLs for all the relevant countries."
-  (retq dump-args (remove-plist dump-args :out))
+  (setq dump-args (remove-plist dump-args :out))
   (dolist (cc (apply #'find-country find-args))
     (let ((st (if (or (and (symbolp out) (fboundp out)) (functionp out))
 		  (funcall out cc) out)))
