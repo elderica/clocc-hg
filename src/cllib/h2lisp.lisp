@@ -164,7 +164,6 @@
 ;;; H --> LISP
 ;;;
 
-#+cmu (pushnew 'compile pcl::*defmethod-times*)
 (defgeneric h2lisp (in out)
   (:documentation "Convert C header to lisp.
 Return the number of forms processed.")
