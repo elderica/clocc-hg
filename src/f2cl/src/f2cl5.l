@@ -1750,26 +1750,28 @@
 
 ;--------------------------------------------------------------------------------
 
-(defun parse-format1 (x)
-   (setq x (list-split '|,| (fix-slashes x)))
-   (do ((desc-lists x (cdr desc-lists))
-        (directive) (dl)
-        (directive-list nil (append directive-list directive)))
-       ((null desc-lists) (append directive-list '("~%")))
+(defun parse-format1 (format)
+  (let ((x (list-split '|,| (fix-slashes format))))
+    (do ((desc-lists x (cdr desc-lists))
+	 (directive) (dl)
+	 (directive-list nil (append directive-list directive)))
+	((null desc-lists) (append directive-list '("~%")))
       (setq dl (car desc-lists))
       (setq directive 
-         (cond ((null dl) nil) ;(list nil))
-               ((stringp (car dl)) (list (car dl)))
-               ((listp (car dl))
-                (append  '("~{") (parse-format1 (car dl)) '("~}")))
-               ((and (numberp (car dl)) (listp (cadr dl)))
-                (append '("~") (list (car dl)) '("{")
-                                 (parse-format1 (cadr dl)) '("~}")))
-               ((numberp (car dl)) 
-                (parse-format-descriptor-list (car dl) 
-                                (destruct-descriptor-list (cadr dl))))
-               (t (parse-format-descriptor-list 1 
-                          (destruct-descriptor-list (car dl))))))))
+	    (cond ((null dl) nil)	;(list nil))
+		  ((stringp (car dl))
+		   (list (car dl)))
+		  ((listp (car dl))
+		   (append  '("~{") (parse-format1 (car dl)) '("~}")))
+		  ((and (numberp (car dl))
+			(listp (cadr dl)))
+		   (append '("~") (list (car dl)) '("{")
+			   (parse-format1 (cadr dl)) '("~}")))
+		  ((numberp (car dl))
+		   (parse-format-descriptor-list (car dl) 
+						 (destruct-descriptor-list (cdr dl))))
+		  (t (parse-format-descriptor-list 1 
+						   (destruct-descriptor-list dl))))))))
 
 ;--------------------------------------------------------------------------------
 
@@ -1777,18 +1779,31 @@
 ; symbols eg (#\I 4) or (#\P 2 #\G 10 4 #\E 2)
 
 (defun destruct-descriptor-list (x)
-  (prog (descriptor-list char atm)
-   (if (not (symbolp x)) (return x))
-   (setq x (make-string-input-stream (symbol-name x)))
-    loop
-   (setq char (peek-char nil x nil 'EOF nil))
-   (if (equal char 'EOF) (return (reverse descriptor-list)))
-   (cond ((or (digit-char-p char) (member char '(#\+ #\-)))
-          (multiple-value-setq (atm x) (read-number-from-stream x)))
-         ((eq char #\.) (read-char x) (setq atm nil))
-         (t (setq atm (read-char x))))
-   (if atm (setq descriptor-list (cons atm descriptor-list)))
-   (go loop)))
+  (let (descriptor-list char atm)
+    (cond ((listp x)
+	   (setq x (make-string-input-stream
+		    (reduce #'(lambda (r s)
+				(concatenate 'string r " " s))
+			    (mapcar #'symbol-name x)))))
+	  ((symbolp x)
+	   (setq x (make-string-input-stream (symbol-name x))))
+	  (t
+	   (return-from destruct-descriptor-list x)))
+    (loop
+	(setq char (peek-char nil x nil :eof nil))
+	(when (equal char :eof)
+	  (return-from destruct-descriptor-list (reverse descriptor-list)))
+      (cond ((or (digit-char-p char)
+		 (member char '(#\+ #\-)))
+	     (multiple-value-setq (atm x)
+	       (read-number-from-stream x)))
+	    ((eq char #\.)
+	     (read-char x)
+	     (setq atm nil))
+	    (t
+	     (setq atm (read-char x))))
+      (when atm
+	(setq descriptor-list (cons atm descriptor-list))))))
 
 (defun read-number-from-stream (x)
    (prog ((number-str "") char)
@@ -1858,7 +1873,7 @@
          ((pattern-match-and-bind '((+ left) #\E (+ right)) x)
           (parse-format-descriptor-E left right))
          ((pattern-match-and-bind '((+ left) #\D (+ right)) x)
-          (parse-format-descriptor-F left right))
+          (parse-format-descriptor-E left right))
          ((pattern-match-and-bind '((> left) #\T #\R (+ right)) x)
           (parse-format-descriptor-TR right))
          ((pattern-match-and-bind '((> left) #\X) x)
@@ -1893,7 +1908,8 @@
          (list (concatenate 'string 
                  "~" (fixnum-string (car right)) ","     ;w
                      (fixnum-string (cadr right)) ","    ;d
-                     (fixnum-string k) ",,"              ;k
+                     (fixnum-string k) ","               ;k
+		     "'*,"
                      (if *SP* "@F" "F"))))
     (return
         (do ((i 1 (1+ i))
@@ -1954,14 +1970,14 @@
    (setq *SP* (if (eq right #\P) t nil))
    "")
 
-#+nil
 (defun parse-format-descriptor-H (width string)
-   (declare (ignore width string))
-   (list "*Hollerith*"))
-
-(defun parse-format-descriptor-H (width string)
-  (format t "Hollerith:  ~a ~a~%" width string)
-  (list "*Hollerith*"))
+  (declare (ignore width))
+  (list (coerce (mapcar #'(lambda (char-or-digit)
+			    (if (numberp char-or-digit)
+				(aref (format nil "~D" char-or-digit) 0)
+				char-or-digit))
+			string)
+		'string)))
 
 (defun parse-default-format-descriptor (x)
    (list (do ((i 1 (1+ i))
@@ -2103,6 +2119,11 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.55  2000/07/30 05:58:48  rtoy
+;;; Don't check for new variables inside of multiple-value-bind's that
+;;; were created for function calls.  We only need to check in the
+;;; arguments of the function call.
+;;;
 ;;; Revision 1.54  2000/07/28 17:05:01  rtoy
 ;;; o We are in the f2cl package now.
 ;;; o We convert // to f2cl-//, even in format statements so fix
