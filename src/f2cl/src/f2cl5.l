@@ -510,6 +510,10 @@
 	   ;; Handle fdo: the fdo macro depends on a certain format
 	   ;; for the loop (yuck!  Need to change that!)
 	   `(fdo ,(second expr) ,(third expr) ,@(mapcar #'fixup-expression (nthcdr 3 expr))))
+	  ((and (eq (first expr) '-)
+		(numberp (second expr)))
+	   ;; Convert (- N) to just -N
+	   (- (second expr)))
 	  ((is-neg (second expr))
 	   ;; We have (F (- Z) X ...).  If F is '+,
 	   ;; make it (- X Z).  If Z is a number, make it (F -Z X ...)
@@ -584,13 +588,14 @@
 	((and (third expr)
 	      (member (first expr) '(+ * - /)))
 	 ;; Try to merge a bunch of +, *, -, / operations into one.
-	 (destructuring-bind (op next args)
+	 (destructuring-bind (op next &rest args)
 	     expr
-	   (setf args (list args))
-	   (loop while (and (listp next) (eq op (first next)))
-	     do
-	     (push (third next) args)
-	     (setf next (second next)))
+	   ;;(setf args (list args))
+	   (when (and (listp next) (third next))
+	     (loop while (and (listp next) (eq op (first next)))
+	       do
+	       (push (third next) args)
+	       (setf next (second next))))
 	   `(,op ,(merge-ops next) ,@(merge-ops args))))
 	(t
 	 `(,@(mapcar #'merge-ops expr)))))
@@ -911,13 +916,15 @@
        (format t "key-params            = ~A~%" key-params)
        (format t "*declared_vbles*      = ~A~%" *declared_vbles*)
        (format t "*undeclared_vbles*    = ~A~%" *undeclared_vbles*)
-       (format t "*subprog_common_vars* = ~A~%" *subprog_common_vars*))
+       (format t "*subprog_common_vars* = ~A~%" *subprog_common_vars*)
+       (format t "arglist               = ~A~%" arglist))
      (setf prog-bit
 	   (fixup-external-function-refs
 	    prog-bit
 	    (set-difference *intrinsic_function_names*
 			    (append *declared_vbles*
 				    *undeclared_vbles*
+				    arglist
 				    (mapcar #'first key-params)))))
 
 
@@ -2079,6 +2086,12 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.51  2000/07/20 13:43:00  rtoy
+;;; Since all arrays are now actually stored in column-major order in a
+;;; 1-dimensional vector, we don't need to transpose the data initializers
+;;; anymore.  Replace fortran-transpose with fortran-data-init to
+;;; correctly initialize the array.
+;;;
 ;;; Revision 1.50  2000/07/19 22:17:13  rtoy
 ;;; Remove a print statement inadvertently left in.
 ;;;
