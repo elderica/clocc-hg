@@ -122,6 +122,7 @@
                        port host :element-type
                        (if bin '(unsigned-byte 8) 'character))
     #+cmu (sys:make-fd-stream (ext:connect-to-inet-socket host port)
+                              :buffering :line
                               :input t :output t :element-type
                               (if bin '(unsigned-byte 8) 'character))
     #+gcl (si:make-socket-stream host port bin) ; FIXME
@@ -242,6 +243,7 @@ Returns a socket stream or NIL."
                          (if bin '(unsigned-byte 8) 'character))))
   #+cmu (when (sys:wait-until-fd-usable serv :input wait)
           (sys:make-fd-stream (ext:accept-tcp-connection serv)
+                              :buffering :line
                               :input t :output t :element-type
                               (if bin '(unsigned-byte 8) 'character)))
   #+gcl (si:accept-socket-connection serv bin wait) ; FIXME
