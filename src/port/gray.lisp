@@ -26,7 +26,7 @@
             #+lispworks :stream
             #+sbcl :sb-gray)
 
-(let ((gray-symbols
+(let ((cl-user::gray-symbols
        '(;; Classes
          FUNDAMENTAL-STREAM FUNDAMENTAL-INPUT-STREAM FUNDAMENTAL-OUTPUT-STREAM
          FUNDAMENTAL-CHARACTER-STREAM FUNDAMENTAL-BINARY-STREAM
@@ -42,8 +42,8 @@
          STREAM-ADVANCE-TO-COLUMN
          ;; Binary streams
          STREAM-READ-BYTE STREAM-WRITE-BYTE)))
-  (import gray-symbols :port)
-  (export gray-symbols :port))
+  (import cl-user::gray-symbols :port)
+  (export cl-user::gray-symbols :port))
 
 (provide :port-gray)
 ;;; file gray.lisp ends here
