@@ -779,8 +779,15 @@ The first character to be read is #\T."
                   (hash-table-count *xml-per*) (hash-table-count *xml-amp*)
                   (xmlis-size ,var))))))))
 
+(defun xml-default-reset-entities ()
+  "Check whether the entities need to be initialized."
+  (and *xml-read-entities*
+       (zerop (hash-table-count *xml-per*))
+       (zerop (hash-table-count *xml-amp*))))
+
 ;;;###autoload
-(defun xml-read-from-file (file &key (repeat t) (reset-ent *xml-read-entities*)
+(defun xml-read-from-file (file &key (repeat t)
+                           (reset-ent (xml-default-reset-entities))
                            (resolve-namespaces *xml-read-balanced*)
                            (out *standard-output*))
   "Read all XML objects from the file."
