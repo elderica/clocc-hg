@@ -1,5 +1,9 @@
 $Id$
 	
+2004-09-29: Added convenience function (in-ytools), which sets
+            *package* and *readtable* to their proper YTools
+            values. (Version 1.4.6)
+
 2004-09-26: Patch 'subr-synonym' to cope with bug in OpenMCL.
             (Version 1.4.5)
 
