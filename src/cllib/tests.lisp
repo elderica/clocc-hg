@@ -216,6 +216,7 @@
 
 (defun test-matrix (&key (out *standard-output*) (num-test 10)
                     (dim 10) (max 10))
+  (mesg :test out "~& ** ~S...~%" 'test-matrix)
   (loop :repeat num-test :with det :with i1 = (make-array (list dim dim))
     :with error-count = 0 :for err = 0
     :for mx = (random-matrix dim dim max) :for m1 = (array-copy mx) :do
@@ -233,6 +234,7 @@
     (if (> err 0.001)
         (warn " ###~:D### ERROR: ~F~%~S~%==>~%~S" (incf error-count) err mx m1)
         (mesg :test out "    err = ~S~%" err))
+    :finally (mesg :test out " ** ~S: ~:D error~:P~2%" 'test-matrix error-count)
     :finally (return error-count)))
 
 (defun test-munkres (&key (out *standard-output*))
