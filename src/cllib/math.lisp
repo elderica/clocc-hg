@@ -1149,7 +1149,7 @@ When the distribution is not discreet, entropy is not available."
             (if weight
                 (standard-deviation-weighted seq seq :value key :weight weight)
                 (standard-deviation seq :len len :key key))
-          (make-mdl :sd std :mn mean :le len :mi min :ma max
+          (make-mdl :sd (dfloat std) :mn (dfloat mean) :le len :mi min :ma max
                     :en (when discreet
                           (entropy-sequence seq :key key :weight weight)))))))
 
