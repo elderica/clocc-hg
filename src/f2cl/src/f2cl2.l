@@ -16,8 +16,8 @@
 (eval-when (compile load eval)
   (proclaim '(optimize (speed 3) (safety 1)))
 
-  (proclaim '(special *intrinsic_function_names* *external_function_names*
-	      *subprog_name* *subprog_stmt_fns*
+  (proclaim '(special *intrinsic_function_names* *external-function-names*
+	      *subprog_name* *subprog-stmt-fns*
 	      *functions-used*)))
 ;-----------------------------------------------------------------------------
 ; subst-splice substitutes the list b for the atom a in the list c via splicing
@@ -357,7 +357,7 @@ Tag being parsed:| (cadr x))))
        ;; is.  If it's on the RHS, it's a real function call so call
        ;; it correctly.
        (if (or *parsing-lhs*
-	       (member fname *subprog_stmt_fns*))
+	       (member fname *subprog-stmt-fns*))
 	   `(,fname ,@args)
 	   (first (generate-call-to-routine
 		   (cond ((member fname *subprog-arglist*)
@@ -434,6 +434,12 @@ definition.| l) ))
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.28  2000/09/01 14:05:25  rtoy
+;;; o ID-FACTOR: we were not careful enough about array slicing in
+;;;   function calls.  We should only apply array slicing if the argument
+;;;   is an array ref.  Any arithmetic on the arg should disable
+;;;   array-slicing.
+;;;
 ;;; Revision 1.27  2000/08/29 03:20:25  rtoy
 ;;; Array slicing needs to handled in not only subroutine calls but
 ;;; function calls too.  Make it so.
