@@ -24,7 +24,7 @@
 
 (in-package :cllib)
 
-(export '(string->dttm dttm->string +day-sec+ print-date-month
+(export '(string->dttm dttm->string date-formatter +day-sec+ print-date-month
           date date2time date2num date2days time2date days2date mk-date
           unix-date infer-timezone infer-month
           days-week-day date-week-day black-days working-day-p
@@ -222,7 +222,7 @@ Returns the number of seconds since the epoch (1900-01-01)."
     (date-formatter format se mi ho da mo ye dd)))
 
 (defgeneric date-formatter (format se mi ho da mo ye dd)
-  (:documentation "Return the formatter function for the given format spec.
+  (:documentation "Format the date using the given format spec.
 The supported specs are:
   function -- run it
   string   -- assume it's a format string for the other arguments
