@@ -1194,13 +1194,16 @@ When the distribution is not discreet, entropy is not available."
 (defun normalizer-table (functions list &key (out *standard-output*)
                          &aux (mdl-ht (make-hash-table)))
   "Return the HASH-TABLE mapping functions to their normalizers.
-FUNCTIONS is a list of lists of symbols, each naming a function."
-  (dolist (fl functions mdl-ht)
-    (dolist (f fl)
-      (unless (gethash f mdl-ht)
-        (let ((mdl (standard-deviation-mdl list :key (fdefinition f))))
-          (when out (format out "~&~30@S: ~S~%" f mdl))
-            (setf (gethash f mdl-ht) mdl))))))
+FUNCTIONS is a LIST of SYMBOLs or LISTs of SYMBOLs, each naming a FUNCTION."
+  (flet ((stat-sym (f)
+           (unless (gethash f mdl-ht)
+             (let ((mdl (standard-deviation-mdl list :key (fdefinition f))))
+               (when out (format out "~&~30@S: ~S~%" f mdl))
+               (setf (gethash f mdl-ht) mdl)))))
+    (dolist (fl functions mdl-ht)
+      (etypecase fl
+        (list (mapc #'stat-sym fl))
+        (symbol (stat-sym fl))))))
 
 (defun normalize-function-list (fl mdl-ht)
   "Return a function which is a sum of elements of FL normalized with MDL-HT.
