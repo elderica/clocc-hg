@@ -135,7 +135,7 @@
 ;; Notational variant
 (defmacro memoize-val (exp^ &key ((:missing-if uncached-val^) 'false)
 				 ((:store-as store-place^)
-				  (signal-problem val-or-initialize
+				  (signal-problem memoize-val
 				         "'val-or-initialize' must have"
-				         " :init argument")))
+				         " :store-as argument")))
    `(val-or-initialize ,store-place^ :init ,exp^ :missing-if ,uncached-val^))

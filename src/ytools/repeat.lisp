@@ -12,7 +12,7 @@
 (slurp-whole-file)
 
 (eval-when (:compile-toplevel :load-toplevel)
-   (export '(repeat forall exists 
+   (export '(repeat forall exists keyword-args->alist
 	     one-collect list-collect empty-Collector Collector-elements
 	     collector-clear keyword-args->alist)))
 

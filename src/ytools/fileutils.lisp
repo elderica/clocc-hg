@@ -25,16 +25,18 @@
 		      (cond ((not (is-Load-progress-rec r))
 			     (error "~s has 'load-progress-rec' property ~s"
 				    pn r)))
-		      (case (Load-progress-rec-status r)
-			 ((:loaded)
-			  (lprec-load r false false false))
-			 ((:maybe-compiled)
-			  (lprec-compile
-			     r false
-			     (files-changed-since
-			        (lprec-find-supporters r)
-				(nth-value
-				   1 (lprec-find-version-modtimes r)))))))))))
+		      (cond ((not (is-Pseudo-pathname
+				     (Load-progress-rec-pathname r)))
+			     (case (Load-progress-rec-status r)
+				((:loaded)
+				 (lprec-load r false false false))
+				((:maybe-compiled)
+				 (lprec-compile
+				    r false
+				    (files-changed-since
+				       (lprec-find-supporters r)
+				       (nth-value
+					  1 (lprec-find-version-modtimes r)))))))))))))
       pathname-prop-table*))
 
 (defvar fload-version-suffix* ':-new)
