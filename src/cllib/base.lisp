@@ -1,4 +1,4 @@
-;;; File: <base.lisp - 2000-02-18 Fri 14:09:00 EST sds@ksp.com>
+;;; File: <base.lisp - 2000-03-03 Fri 12:07:46 EST sds@ksp.com>
 ;;;
 ;;; Basis functionality, required everywhere
 ;;;
@@ -30,6 +30,14 @@
 (defcustom *datadir* pathname
   (merge-pathnames "data/" (user-homedir-pathname))
   "The directory where the data file are created by default.")
+(defcustom *mail-host-address* simple-string
+  (let ((st (machine-instance))) (subseq st 0 (position #\Space st)))
+  "*Name of this machine, for purposes of naming users.")
+(defcustom *user-mail-address* simple-string
+  (concatenate 'string (getenv "USER") "@" *mail-host-address*)
+  "*Full mailing address of this user.
+This is initialized based on `mail-host-address'.")
+
 
 ;;;
 ;;; {{{ Prompt
