@@ -429,6 +429,7 @@ FILENAME                 File containing Fortran code
         ))
     t)
 ;-----------------------------------------------------------------------------
+#+nil
 (defun readsubprog-extract-format-stmts (inport)
   (let (input-list output-list margin *current_label*)
     (when *verbose*
@@ -457,6 +458,61 @@ FILENAME                 File containing Fortran code
 	  (setlispread))
         ;; extract format-stmts
         ;;(format t "extract format-stmts~%")
+	(if (eq (car input-list) 'FORMAT)
+	    (parse-format (brackets-check (concat-operators input-list)))
+	    (push (list *current_label* input-list) output-list))
+	;; Check for end of subprogram
+	(if (and (eq (car input-list) 'end) (null (cdr input-list)))
+	    (return (nreverse output-list))))))
+
+(defun readsubprog-extract-format-stmts (inport)
+  (let ((write-label 9000000)
+	input-list output-list margin *current_label* )
+    (when *verbose*
+      (format t "~&extracting format statements ...~%"))
+
+    (loop
+	;; Get the left margin (contains line number)
+	(setq margin (unless (eq (peek-char nil inport nil 'eof) 'eof)
+		       (read-six-chars inport)))
+	;; Set the label (line number), if any
+	(setq *current_label*
+	      (let ((label (read-from-string (coerce margin 'string) nil)))
+		(if (integerp label)
+		    label)))
+        ;; Make sure we aren't hosed if we break out of this!
+	(unwind-protect
+	     (progn
+	       (set-fortran-read)
+	       ;; read body of a line
+	       (setq input-list (lineread inport))
+	       ;; read newline character
+	       (read-char inport nil 'EOF t)
+
+	       ;;(format t "~% input-list: ~S" input-list)
+	       )
+	  (setlispread))
+        ;; extract format-stmts
+        ;;(format t "extract format-stmts~%")
+	(format t "~A~%" input-list)
+	(when (and (eq (car input-list) 'write)
+		   (stringp (fifth input-list)))
+	  (format t "Found desired write statement ~D ~A~%" write-label input-list)
+	  (push 
+	   `(,margin ,(list 'write '|(| (third input-list) '|,| write-label '|)| (nthcdr 6 input-list)))
+	   output-list)
+	  (setf *current_label* write-label)
+	  (incf write-label)
+	  (format t "~D format(~A)" *current_label* (fifth input-list))
+	  (let ((fmt (unwind-protect
+			  (progn
+			    (set-fortran-read)
+			    ;; read body of a line
+			    (lineread (make-string-input-stream (fifth input-list)))
+			    )
+		       (setlispread))))
+	    (setf input-list `(format ,@fmt))))
+	       
 	(if (eq (car input-list) 'FORMAT)
 	    (parse-format (brackets-check (concat-operators input-list)))
 	    (push (list *current_label* input-list) output-list))
@@ -2139,6 +2195,10 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.94  2002/03/06 03:16:37  rtoy
+;;; Oops.  A block data subprogram looks like "blockdata <name>" or "block
+;;; data <name>" where <name> is optional.
+;;;
 ;;; Revision 1.93  2002/03/06 02:49:07  rtoy
 ;;; o Correct some comments.
 ;;; o BLOCKDATA subprograms can have names, so make that part of the
