@@ -11,6 +11,9 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.6  2000/03/22 23:54:05  sds
+;;; use package prefixes for CMU CL and GCL
+;;;
 ;;; Revision 1.5  2000/03/03 22:01:03  sds
 ;;; fixed provide statements
 ;;;
@@ -36,8 +39,7 @@
 (export
  '(getenv variable-special-p arglist class-slot-list
    probe-directory default-directory chdir sysinfo
-   +month-names+ +week-days+ +time-zones+ +whitespace+
-   tz->string current-time))
+   +month-names+ +week-days+ +time-zones+ tz->string current-time))
 
 ;;;
 ;;; System
@@ -237,10 +239,6 @@ Current time:~25t" (/ internal-time-units-per-second) *gensym-counter*)
   '((5 "EDT" . "EST") (6 "CDT" . "CST") (7 "MDT" . "MST") (8 "PDT" . "PST")
     (0 "GMT" . "GDT") (-2 "MET" . "MET DST"))
   "*The string representations of the time zones.")
-
-(defconst +whitespace+ (simple-array character (*))
-  (mk-arr 'character '(#\Space #\Newline #\Tab #\Linefeed #\Return #\Page))
-  "*The whitespace characters.")
 
 (defun tz->string (tz)
   "Convert the CL timezone (rational [-24;24], multiple of 3600) to a string."
