@@ -4,7 +4,7 @@ $Id$
             'repeat'. The expression e is evaluated and bound to x
             initially.  This is purely to satisfy some compilers that
             complain if x is declared to be of some type incompatible
-            with an initial value of nil.
+            with an initial value of nil.  (Version 1.4.4)
 
 2004-09-11: Change 'ytools-module-load' in module.lisp so that
             expansion of module is evalualated when module is loaded.
