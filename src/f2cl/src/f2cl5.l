@@ -963,45 +963,84 @@
 				    arglist
 				    (mapcar #'first key-params)))))
 
+     ;; We need to handle BLOCK DATA subprograms differently from
+     ;; normal subprograms.
+     (cond
+       ((and (eq (second defun-bit) '/blockdata/)
+	     *subprog_common_vars*)
+	;; Block data subprograms need to be handled specially.  The
+	;; data-init part needs to be moved inside the body and
+	;; massaged to initialize the data.
+	(let ((sym-macs (create-sym-macros)))
+	  #+nil
+	  (format t "save-inits = ~A~%" (mapcar #'(lambda (x)
+						    `(setf ,@x))
+						save-inits))
+	  #+nil
+	  (format t "data-inits = ~A~%"
+		  (mapcar #'(lambda (x)
+			      (if (eq (first x) 'setq)
+				  `(setf ,@(rest x))
+				  x))
+			  *data-init*))
+	  ;; May want to remove multiple initializations since
+	  ;; save-inits and *data-init* might both initiliaze the
+	  ;; variable.  (Why is that?)
+	  (setf prog-bit
+		`(symbol-macrolet ,sym-macs
+		  ,@(append (mapcar #'(lambda (x)
+					`(setf ,@x))
+				    save-inits)
+			    (mapcar #'(lambda (x)
+					(if (eq (first x) 'setq)
+					    `(setf ,@(rest x))
+					    x))
+				    *data-init*)))))
+	(let* ((defun-stuff `(defun ,(cadr defun-bit) ,arglist
+			      ,prog-bit))
+	       (param-stuff (if key-params
+				`(let* ,key-params
+				  ,@key-params-decls
+				  ,defun-stuff)
+				defun-stuff)))
+	  (return
+	    (values nil
+		    nil
+		    param-stuff))
+	  )
+	)
+       (t
 
-     ;; If there are common blocks here, check to see if we need to
-     ;; add symbol-macrolets so that we can access the variables in
-     ;; the common block.  If so, add them.
-     ;;
-     
-     (when *subprog_common_vars*
-       (let ((sym-macs (create-sym-macros)))
-	 (if (and *data-init*
-		  (eq (cadr defun-bit) '/blockdata/))
-	   (setf *data-init* `((symbol-macrolet ,sym-macs ,@*data-init*)))
-	   (setf prog-bit `(symbol-macrolet ,sym-macs ,prog-bit)))))
+	;; Return 3 pieces: Any proclamations for special variables, the
+	;; declarations for the special variables, and, finally, the
+	;; function itself.
+	(when *subprog_common_vars*
+	  (let ((sym-macs (create-sym-macros)))
+	    (setf prog-bit `(symbol-macrolet ,sym-macs ,prog-bit))))
 
-     ;; Return 3 pieces: Any proclamations for special variables, the
-     ;; declarations for the special variables, and, finally, the
-     ;; function itself.
-     (let* ((defun-stuff `(defun ,(cadr defun-bit) ,arglist
-			   ;; Remove empty declaration
-			   ,@(unless (equal formal-arg-decls '((declare)))
-				     formal-arg-decls)
-			   ,prog-bit))
-	    (save-stuff (if (and (or *save_vbles* *auto-save-data*)
-				 save-inits)
-			    `(let ,save-inits
-			      ,@saved-decls
-			      ,@*data-init*
-			      ,defun-stuff)
-			    defun-stuff))
-	    (param-stuff (if key-params
-			     `(let* ,key-params
-			       ,@key-params-decls
-			       ,save-stuff)
-			     save-stuff)))
+	(let* ((defun-stuff `(defun ,(cadr defun-bit) ,arglist
+			      ;; Remove empty declaration
+			      ,@(unless (equal formal-arg-decls '((declare)))
+					formal-arg-decls)
+			      ,prog-bit))
+	       (save-stuff (if (and (or *save_vbles* *auto-save-data*)
+				    save-inits)
+			       `(let ,save-inits
+				 ,@saved-decls
+				 ,@*data-init*
+				 ,defun-stuff)
+			       defun-stuff))
+	       (param-stuff (if key-params
+				`(let* ,key-params
+				  ,@key-params-decls
+				  ,save-stuff)
+				save-stuff)))
        
-       (return 
-	 (values special-proclamation
-		 (when special-proclamation
-		   (make-common-block-init *common-blocks* common_var_decls key-params key-params-decls))
-		 param-stuff)))
+	  (return 
+	    (values special-proclamation
+		    (when special-proclamation
+		      (make-common-block-init *common-blocks* common_var_decls key-params key-params-decls))
+		    param-stuff)))))
      ))
 
 
@@ -2177,6 +2216,16 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.81  2002/02/08 06:04:48  rtoy
+;;; o We were generating incorrect code for symbol-macrolets for
+;;;   initializers.  Fix it and clean it up.  Now only generate it either
+;;;   for initialization or the body but not both since you can only
+;;;   initialize common blocks in a block data subprogram.
+;;; o Fix a bug wherein a variable in a parameter statement that was also
+;;;   declared was getting the wrong type and also getting declared as a
+;;;   local var.  Happened because we were checking the other var against
+;;;   the wrong list (was *key-params* but should have been key-params).
+;;;
 ;;; Revision 1.80  2002/02/08 04:27:31  rtoy
 ;;; To support BLOCK DATA subprograms, we need to have the data
 ;;; initialization part of the code wrapped by symbol-macrolets.  Make it
