@@ -57,9 +57,6 @@
 #+aclpc (defmacro rexpt (x y) `(realpart (expt ,x ,y)))
 #-aclpc (defmacro rexpt (x y) `(expt ,x ,y))
 
-(defvar *dummy_var* nil
-  "Used by f2cl for dummy return values")
-
 (deftype logical ()
   `(member t nil))
 
@@ -730,4 +727,8 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.19  2000/07/13 16:55:34  rtoy
+;;; To satisfy the Copyright statement, we have placed the RCS logs in
+;;; each source file in f2cl.  (Hope this satisfies the copyright.)
+;;;
 ;;;-----------------------------------------------------------------------------
