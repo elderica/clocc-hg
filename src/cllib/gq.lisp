@@ -618,7 +618,7 @@ If DEBUG is non-nil, do not bind `*print-log*' and `*gq-error-stream*'."
             (save-data hist-file *holdings* *history*)
             (unless plotp (setq plot t)))
           (when log (close out) (format t "Wrote log to ~s~%" log))))))
-  (when plot (plot-portfolio *holdings* *history* :plot)))
+  (when plot (plot-portfolio *holdings* *history* plot)))
 
 (provide :cllib-gq)
 ;;; }}} gq.lisp ends here
