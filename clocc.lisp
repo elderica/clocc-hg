@@ -10,14 +10,6 @@
 ;;;
 ;;; $Id$
 ;;; $Source$
-;;; $Log$
-;;; Revision 1.2  2000/03/07 11:15:41  haible
-;;; Add comment about recommended CLISP version.
-;;;
-;;; Revision 1.1  2000/02/18 21:26:00  sds
-;;; renamed; removed defsystem for port
-;;;
-;;;
 
 (in-package :cl-user)
 
@@ -61,14 +53,16 @@
           (remf (cddr excl:arglist) :key)
           (setf (second excl:arglist)
                 (map 'vector key (second excl:arglist)))))))
-  #-(or clisp allegro)
+  #-(or allegro clisp mcl)
   (define-setf-expander values (&rest places &environment env)
     (loop :for pl :in places :with te :and va :and ne :and se :and ge :do
           (multiple-value-setq (te va ne se ge) (get-setf-expansion pl env))
           :append te :into te1 :append va :into va1 :append ne :into ne1
           :collect se :into se1 :collect ge :into ge1
           :finally (return (values te1 va1 ne1 (cons 'values se1)
-                                   (cons 'values ge1))))))
+                                   (cons 'values ge1)))))
+  #+mcl
+  (import '(ccl:provide) :common-lisp))
 
 
 ;;;
@@ -81,7 +75,6 @@
 (setf (logical-pathname-translations "clocc")
       '(("src;defsystem;*" "/usr/local/src/clocc/src/defsystem-3.x/*")
 	("src;defsystem-3-x;*" "/usr/local/src/clocc/src/defsystem-3.x/*")
-	("**;*" "/usr/local/src/clocc/**/*")
-	))
+	("**;*" "/usr/local/src/clocc/**/*")))
 
 ;;; clocc.lisp ends here
