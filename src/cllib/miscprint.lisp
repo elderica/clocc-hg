@@ -177,10 +177,10 @@ The inverse is `hash-table->alist'."
 (defun alist= (a1 a2 &key (test #'eql))
   "Check that the two association lists have the same values."
   (macrolet ((a= (a b)
-               `(every (lambda (pair)
-                         (let ((other (assoc (car pair) ,b :test test)))
-                           (and other (funcall test (cdr pair) (cdr other)))))
-                       ,a)))
+               `(dolist (pair ,a t)
+                  (let ((other (assoc (car pair) ,b :test test)))
+                    (unless (and other (funcall test (cdr pair) (cdr other)))
+                      (return nil))))))
     (and (a= a1 a2) (a= a2 a1))))
 
 (provide :cllib-miscprint)
