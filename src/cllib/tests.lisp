@@ -160,7 +160,8 @@
 
 (defun test-elisp (&key (out *standard-output*))
   (mesg :test out " ** ~s...~%" 'test-elisp)
-  (let ((*readtable* +elisp-readtable+) (num-err 0))
+  (let ((*readtable* +elisp-readtable+) (num-err 0)
+        (*package* (find-package "CLLIB")))
     (flet ((ts (str obj)
              (mesg :test out " * ~s --> ~s~%" str obj)
              (handler-case
