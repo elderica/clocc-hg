@@ -49,16 +49,17 @@ If FMT is non-NIL, return the corresponding string too."
     (declare (double-float nn))
     (if fmt (values nn (format nil "~/pr-secs/" nn)) nn)))
 
-(defmacro with-timing ((&key (terpri t) (done nil) (run t) (real t))
+(defmacro with-timing ((&key (terpri t) (done nil) (run t) (real t)
+                             (out '*standard-output*))
                        &body body)
   "Evaluate the body, then print the timing."
   (with-gensyms ("TIMING-" bt bt1)
     `(let ((,bt (get-float-time)) (,bt1 (get-float-time nil)))
       (unwind-protect (progn ,@body)
-        (when ,done (princ "done"))
-        (when ,run (format t " [run: ~/pr-secs/]" (elapsed ,bt t)))
-        (when ,real (format t " [real: ~/pr-secs/]" (elapsed ,bt1 nil)))
-        (when ,terpri (terpri))))))
+        (when ,done (princ "done" ,out))
+        (when ,run (format ,out " [run: ~/pr-secs/]" (elapsed ,bt t)))
+        (when ,real (format ,out " [real: ~/pr-secs/]" (elapsed ,bt1 nil)))
+        (when ,terpri (terpri ,out))))))
 
 ;;;
 ;;; }}}{{{ logging
