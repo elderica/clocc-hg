@@ -30,7 +30,7 @@
    with-permutations-swap with-permutations-lex permutations-list
    eval-cont-fract fract-approx
    *num-tolerance* *relative-tolerance* *absolute-tolerance*
-   dot poly1 poly erf norm normalize rel-dist
+   dot poly1 poly erf cndf norm normalize rel-dist
    mean mean-cx mean-weighted mean-geometric mean-geometric-weighted mean-some
    standard-deviation standard-deviation-cx standard-deviation-weighted
    standard-deviation-relative standard-deviation-mdl mdl
@@ -462,20 +462,32 @@ so that (poly 10 '(1 2 3 4 5)) ==> 12345."
             (+ (* res var) coeff))
           coeffs :initial-value 0d0))
 
-(defun erf (xx)
-  "Compute the error function, accurate to 1e-6. See Hull p. 243.
+(defun cndf (xx)
+  "Compute the comulative normal distribution function, accurate to 1e-6.
+See Hull p. 243.
 The same as
   (+ 0.5d0 (/ (integrate-simpson (lambda (tt) (exp (* tt tt -0.5d0))) 0 xx)
               (sqrt (* 2 pi))))
-i.e., the comulative normal distribution function.
 Return the value and the derivative, suitable for `newton'."
   (declare (double-float xx))
-  (let* ((der (/ (exp (* -0.5d0 (expt xx 2))) (dfloat (sqrt (* 2 pi)))))
+  (let* ((der (/ (exp (* -0.5d0 xx xx)) #.(dfloat (sqrt (* 2 pi)))))
          (val (- 1 (* der (poly (/ (1+ (* (abs xx) 0.2316419d0)))
                                 #(1.330274429d0 -1.821255978d0 1.781477937d0
                                   -0.356563782d0 0.319381530d0 0d0))))))
     (declare (double-float der val))
     (values (if (minusp xx) (- 1 val) val) der)))
+
+(defun erf (xx)
+  "Compute the error function, accurate to 1e-6.
+Uses CNDF (comulative normal distribution function).
+The same as
+  (* 2 (/ (integrate-simpson (lambda (tt) (exp (- (* tt tt)))) 0 xx)
+          (sqrt pi)))
+Return the value and the derivative, suitable for `newton'."
+  (declare (double-float xx))
+  (multiple-value-bind (val der) (cndf (* #.(sqrt 2d0) xx))
+    (declare (double-float der val))
+    (values (1- (* 2 val)) (* 2 #.(sqrt 2d0) der))))
 
 (defun norm (seq &key (key #'value) (order 1))
   "Compute the ORDERth norm of the SEQ. ORDER of 0 means infinity."
