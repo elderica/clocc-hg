@@ -1,4 +1,4 @@
-;;; File: <gnuplot.lisp - 1998-06-09 Tue 11:18:16 EDT sds@mute.eaglets.com>
+;;; File: <gnuplot.lisp - 1998-06-19 Fri 17:02:57 EDT sds@mute.eaglets.com>
 ;;;
 ;;; Gnuplot interface
 ;;;
@@ -12,6 +12,9 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.14  1998/06/09 15:23:00  sds
+;;; After printing, reset terminal and output back to screen - for flushing.
+;;;
 ;;; Revision 1.13  1998/06/08 23:49:44  sds
 ;;; In function `plot-lists-arg', fixed :key boundaries.
 ;;;
@@ -95,8 +98,8 @@ PLOT means: T, :plot => plot; :print => print;
 'wait => plot and wait for gnuplot to terminate.
 NIL => do nothing, print nothing, return NIL.
 other => write `*gnuplot-file*' and print a message."
-  `(let (,str)
-    (when ,plot
+  `(when ,plot
+    (let (,str)
       (setq ,str
 	    #+win32 (if (eq ,plot :print) (pipe-output *gnuplot-path-console*)
 			(open *gnuplot-file* :direction :output
@@ -165,8 +168,8 @@ This is the simple UI to `plot-dated-lists'.
 The first argument is the list of dated lists,
 the second id the list of channels.
 The rest is passed to `plot-dated-lists'."
-  (let ((begd (apply #'min (mapcar (compose-m date2days channel-begd) chs)))
-	(endd (apply #'max (mapcar (compose-m date2days channel-endd) chs))))
+  (let ((begd (apply #'min (mapcar (compose date2days channel-begd) chs)))
+	(endd (apply #'max (mapcar (compose date2days channel-endd) chs))))
     (incf endd (floor (- endd begd) 4))
     (setq begd (date begd) endd (date endd))
     (format *gnuplot-msg-stream*
@@ -267,15 +270,14 @@ of conses of abscissas and ordinates. KEY is used to extract the cons."
   (setq data-style (or data-style (plot-data-style lss)))
   (when (eq lines t)
     (setq lines (mapcar (lambda (ls)
-			  (regress (cdr ls) :xkey (compose #'car key)
-				   :ykey (compose #'cdr key))) lss)))
+			  (regress (cdr ls) :xkey (compose car 'key)
+				   :ykey (compose cdr 'key))) lss)))
   (when (eq quads t)
     (setq quads (mapcar (lambda (ls)
-			  (regress2 (cdr ls) :xkey (compose #'car key)
-				    :ykey (compose #'cdr key))) lss)))
-  (setq xbeg (or xbeg (apply #'min (mapcar (compose #'car key #'cadr) lss)))
-	xend (or xend (apply #'max (mapcar (compose #'car key #'car #'last)
-                                           lss))))
+			  (regress2 (cdr ls) :xkey (compose car 'key)
+				    :ykey (compose cdr 'key))) lss)))
+  (setq xbeg (or xbeg (apply #'min (mapcar (compose car 'key cadr) lss)))
+	xend (or xend (apply #'max (mapcar (compose car 'key car last) lss))))
   (with-plot-stream (str plot xlabel ylabel data-style nil xbeg xend title
                      plot-key)
     (format str "plot~{ '-' using 1:2 title \"~a\"~^,~}" (mapcar #'car lss))
@@ -340,7 +342,7 @@ OPTS is passed to `plot-lists-arg'."
   (apply #'plot-lists-arg
 	 (mapcar
 	  (lambda (dl)
-	    (cons (print-dlist dl nil 2)
+	    (cons (prin1-to-string dl)
 		  (dated-list-to-day-list dl :slot slot :depth depth)))
 	  dls)
 	 opts))
