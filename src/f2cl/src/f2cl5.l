@@ -225,7 +225,9 @@
 		  (get-fun-arg-type (second arg)))
 		 ((eq 'fref fun)
 		  ;; Look up array references
-		  (get-fun-arg-type (second arg)))
+		  (values (get-fun-arg-type (second arg))
+			  (if *array-slicing*
+			      t nil)))
 		 ((member fun '(+ - * f2cl/ expt))
 		  ;; Basic arithmetic operations.
 		  (fortran-contagion (get-fun-arg-type (second arg))
@@ -2090,6 +2092,10 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.71  2002/01/06 23:10:12  rtoy
+;;; Rename *intrinsic_function_names*, *external_function_names* and
+;;; *subprog_stmt_fns* to use dashes.
+;;;
 ;;; Revision 1.70  2001/06/04 17:16:24  rtoy
 ;;; Print a warning if there is no implicit type given and the variable
 ;;; was not declared.  This is invalid Fortran anyway.
