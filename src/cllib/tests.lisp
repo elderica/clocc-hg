@@ -8,18 +8,18 @@
 ;;; $Source$
 
 (eval-when (load compile eval)
-  (require :base (translate-logical-pathname "clocc:src;cllib;base"))
+  (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `mesg'
-  (require :log (translate-logical-pathname "cllib:log"))
+  (require :cllib-log (translate-logical-pathname "cllib:log"))
   ;; these files will be tested:
-  (require :string (translate-logical-pathname "cllib:string"))
-  (require :math (translate-logical-pathname "cllib:math"))
-  (require :date (translate-logical-pathname "cllib:date"))
-  (require :url (translate-logical-pathname "cllib:url"))
-  (require :rpm (translate-logical-pathname "cllib:rpm"))
-  (require :elisp (translate-logical-pathname "cllib:elisp"))
-  (require :xml (translate-logical-pathname "cllib:xml"))
-  (require :cvs (translate-logical-pathname "cllib:cvs")))
+  (require :cllib-string (translate-logical-pathname "cllib:string"))
+  (require :cllib-math (translate-logical-pathname "cllib:math"))
+  (require :cllib-date (translate-logical-pathname "cllib:date"))
+  (require :cllib-url (translate-logical-pathname "cllib:url"))
+  (require :cllib-rpm (translate-logical-pathname "cllib:rpm"))
+  (require :cllib-elisp (translate-logical-pathname "cllib:elisp"))
+  (require :cllib-xml (translate-logical-pathname "cllib:xml"))
+  (require :cllib-cvs (translate-logical-pathname "cllib:cvs")))
 
 (in-package :cllib)
 
@@ -210,5 +210,5 @@
                     (test-cvs :out out))))
     (mesg :test out " *** ~s: ~:d error~:p~2%" 'test-all num-err)))
 
-(provide :tests)
+(provide :cllib-tests)
 ;;; file tests.lisp ends here

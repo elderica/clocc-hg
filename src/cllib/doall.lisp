@@ -9,7 +9,7 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  (require :base (translate-logical-pathname "clocc:src;cllib;base"))
+  (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   (require :monitor (translate-logical-pathname
                      "clocc:src;tools;metering;metering")))
 
@@ -35,5 +35,5 @@ ARGS is passed to FUNC.
       (setq *query-io* ost)))
   (values))
 
-(provide :doall)
+(provide :cllib-doall)
 ;;; file doall.lisp ends here

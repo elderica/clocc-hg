@@ -8,9 +8,9 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  (require :base (translate-logical-pathname "clocc:src;cllib;base"))
+  (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `mk-arr' [:ext is already required by :base anyway]
-  (require :ext (translate-logical-pathname "port:ext")))
+  (require :port-ext (translate-logical-pathname "port:ext")))
 
 (in-package :cllib)
 
@@ -61,5 +61,5 @@ Adopted from P.Graham `ANSI CL', p 410; with some modifications."
                                    (cdr nexp))))
          expr)))
 
-(provide :withtype)
+(provide :cllib-withtype)
 ;;; file withtype.lisp ends here

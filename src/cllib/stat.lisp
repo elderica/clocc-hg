@@ -9,13 +9,13 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  (require :base (translate-logical-pathname "clocc:src;cllib;base"))
+  (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `mean', `divf', `dot', `d/'
-  (require :math (translate-logical-pathname "cllib:math"))
+  (require :cllib-math (translate-logical-pathname "cllib:math"))
   ;; `map-vec'
-  (require :withtype (translate-logical-pathname "cllib:withtype"))
+  (require :cllib-withtype (translate-logical-pathname "cllib:withtype"))
   ;; `matrix-solve'
-  (require :matrix (translate-logical-pathname "cllib:matrix")))
+  (require :cllib-matrix (translate-logical-pathname "cllib:matrix")))
 
 (in-package :cllib)
 
@@ -95,5 +95,5 @@
                      (expt (aref xx ii 0) (1+ jj))))
       (concatenate 'simple-vector (nreverse vec) (list free)))))
 
-(provide :stat)
+(provide :cllib-stat)
 ;;; file stat.lisp ends here

@@ -8,11 +8,11 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  (require :base (translate-logical-pathname "clocc:src;cllib;base"))
+  (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; for `list-format'
-  (require :log (translate-logical-pathname "cllib:log"))
+  (require :cllib-log (translate-logical-pathname "cllib:log"))
   ;; for `run-prog', `pipe-output', `with-open-pipe'
-  (require :shell (translate-logical-pathname "port:shell")))
+  (require :port-shell (translate-logical-pathname "port:shell")))
 
 (in-package :cllib)
 
@@ -108,5 +108,5 @@ to the stream before BODY and can be a string or a sequence thereof."
                  (map nil (lambda (ll) (write-string ll ,out)) ,pre)))
     ,@body))
 
-(provide :laser)
+(provide :cllib-laser)
 ;;; file laser.lisp ends here

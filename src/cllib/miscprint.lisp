@@ -8,9 +8,9 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  (require :base (translate-logical-pathname "clocc:src;cllib;base"))
+  (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `with-collect'
-  (require :simple (translate-logical-pathname "cllib:simple")))
+  (require :cllib-simple (translate-logical-pathname "cllib:simple")))
 
 (in-package :cllib)
 
@@ -162,5 +162,5 @@ The inverse is `hash-table->alist'."
             (car co) (car ll)
             (car ll) co))))
 
-(provide :miscprint)
+(provide :cllib-miscprint)
 ;;; file miscprint.lisp ends here

@@ -8,7 +8,7 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  (require :base (translate-logical-pathname "clocc:src;cllib;base")))
+  (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base")))
 
 (in-package :cllib)
 
@@ -139,5 +139,5 @@ The second value is the last atom (i.e., `dotted-p')."
 
 ;;; }}}
 
-(provide :simple)
+(provide :cllib-simple)
 ;;; file simple.lisp ends here

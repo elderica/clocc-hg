@@ -8,19 +8,19 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  (require :base (translate-logical-pathname "clocc:src;cllib;base"))
+  (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `skip-to-new'
-  (require :simple (translate-logical-pathname "cllib:simple"))
+  (require :cllib-simple (translate-logical-pathname "cllib:simple"))
   ;; `purge-string'
-  (require :string (translate-logical-pathname "cllib:string"))
+  (require :cllib-string (translate-logical-pathname "cllib:string"))
   ;; `binary-member'
-  (require :sorted (translate-logical-pathname "cllib:sorted"))
+  (require :cllib-sorted (translate-logical-pathname "cllib:sorted"))
   ;; `mesg'
-  (require :log (translate-logical-pathname "cllib:log"))
+  (require :cllib-log (translate-logical-pathname "cllib:log"))
   ;; `print-struct-object'
-  #+cmu (require :closio (translate-logical-pathname "cllib:closio"))
+  #+cmu (require :cllib-closio (translate-logical-pathname "cllib:closio"))
   ;; `dfloat'
-  (require :withtype (translate-logical-pathname "cllib:withtype")))
+  (require :cllib-withtype (translate-logical-pathname "cllib:withtype")))
 
 (in-package :cllib)
 
@@ -623,5 +623,5 @@ previous record when SKIP is non-nil and nil otherwise.
     :cpy ,cpy :out ,out  :op ,op :skip ,skip
     :set (lambda (rr dd) (setf (slot-value rr ,key) dd))))
 
-(provide :date)
+(provide :cllib-date)
 ;;; date.lisp ends here

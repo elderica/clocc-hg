@@ -8,13 +8,13 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  (require :base (translate-logical-pathname "clocc:src;cllib;base"))
+  (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `*num-tolerance*', `sqr', `cndf'
-  (require :math (translate-logical-pathname "cllib:math"))
+  (require :cllib-math (translate-logical-pathname "cllib:math"))
   ;; `comma'
-  (require :tilsla (translate-logical-pathname "cllib:tilsla"))
+  (require :cllib-tilsla (translate-logical-pathname "cllib:tilsla"))
   ;; `dfloat'
-  (require :withtype (translate-logical-pathname "cllib:withtype")))
+  (require :cllib-withtype (translate-logical-pathname "cllib:withtype")))
 
 (in-package :cllib)
 

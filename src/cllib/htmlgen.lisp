@@ -8,11 +8,11 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  (require :base (translate-logical-pathname "clocc:src;cllib;base"))
+  (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `dttm->string' - needed only for `directory-index'
-  ;; (require :date (translate-logical-pathname "cllib:date"))
+  ;; (require :cllib-date (translate-logical-pathname "cllib:date"))
   ;; "Gray streams"
-  (require :gray (translate-logical-pathname "port:gray")))
+  (require :port-gray (translate-logical-pathname "port:gray")))
 
 (in-package :cllib)
 
@@ -160,5 +160,5 @@ Supplies some HTTP/1.0 headers and calls `with-html-output'."
                    out)))))))
 
 
-(provide :htmlgen)
+(provide :cllib-htmlgen)
 ;;; file htmlgen.lisp ends here

@@ -8,11 +8,11 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  (require :base (translate-logical-pathname "clocc:src;cllib;base"))
+  (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `print-seqs', `comma'
-  (require :tilsla (translate-logical-pathname "cllib:tilsla"))
+  (require :cllib-tilsla (translate-logical-pathname "cllib:tilsla"))
   ;; `percent-change'
-  (require :math (translate-logical-pathname "cllib:math")))
+  (require :cllib-math (translate-logical-pathname "cllib:math")))
 
 (in-package :cllib)
 
@@ -299,5 +299,5 @@ are expensive compared with `nthcdr'."
 
 ;;; }}}
 
-(provide :sorted)
+(provide :cllib-sorted)
 ;;; file sorted.lisp ends here

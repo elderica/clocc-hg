@@ -4,6 +4,13 @@
 ;;;;  Class of Random number generators
 ;;;;
 ;;;;  $Log$
+;;;;  Revision 1.8  2001/08/27 17:21:33  rtoy
+;;;;  o ZIGGURAT-INIT:  forgot to initialize x[0], fx[0], and fx[n].
+;;;;    (Thanks to Clisp for catching this stupid error.)
+;;;;  o Make TIME-EXPO, TIME-GAUSSIAN work for non-CMUCL systems too.
+;;;;  o RNG-EXPO-HISTOGRAM should use PLOT-HIST-PDF.  Make it use m = 2, as
+;;;;    a check that the generators work.
+;;;;
 ;;;;  Revision 1.7  2001/08/27 13:53:24  rtoy
 ;;;;  o Change scaling in Ziggurat method for exponential variates because
 ;;;;    CMUCL on sparc doesn't convert (unsigned-byte 32) to floats very
@@ -84,9 +91,9 @@
 ;;;;
 
 (eval-when (compile load eval)
-  (require :base (translate-logical-pathname "clocc:src;cllib;base"))
+  (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `dfloat', `with-type'
-  (require :withtype (translate-logical-pathname "cllib:withtype")))
+  (require :cllib-withtype (translate-logical-pathname "cllib:withtype")))
 
 (in-package :cllib)
 
@@ -140,7 +147,7 @@
     (setf (aref x 0) 0d0)
     (setf (aref fx 0) (funcall f (aref x 0)))
     (setf (aref fx n) (funcall f (aref x n)))
-    
+
     (loop for k from 1 to n do
 	  (setf (aref k-table k)
 		(floor (scale-float (/ (aref x (1- k)) (aref x k)) scale)))
@@ -988,7 +995,7 @@ of zero and a variance of 1.
 	      (when (< (abs j) (aref k-table i))
 		(return x))
 	      (when (zerop i)
-		(loop 
+		(loop
 		    (let ((x (/ (- (log (random 1d0 state))) r))
 			  (y (- (log (random 1d0 state)))))
 		      (when (> (+ y y) (* x x))
@@ -1019,7 +1026,7 @@ of zero and a variance of 1.
 ;;;
 ;;; Some timing results for CMUCL 18c+ (sparc-v9) on a 300 MHz Ultra
 ;;; 30:
-;;; 
+;;;
 ;;; (cllib::time-gaussian 500000)
 ;;;
 ;;; Method 	real	user	sys	cons
@@ -2048,5 +2055,5 @@ with mean M:
 
 ||#
 
-(provide :rng)
+(provide :cllib-rng)
 ;;; file rng.lisp ends here

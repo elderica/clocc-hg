@@ -8,9 +8,9 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  (require :base (translate-logical-pathname "clocc:src;cllib;base"))
+  (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `getenv'
-  (require :sys (translate-logical-pathname "port:sys")))
+  (require :port-sys (translate-logical-pathname "port:sys")))
 
 (in-package :cllib)
 
@@ -57,5 +57,5 @@
   #-(or allegro clisp cmu)
   (error 'not-implemented :proc 'set-cllib-prompt))
 
-(provide :prompt)
+(provide :cllib-prompt)
 ;; prompt.lisp ends here

@@ -8,8 +8,8 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  (require :ext (translate-logical-pathname "clocc:src;port;ext"))
-  (require :sys (translate-logical-pathname "port:sys")))
+  (require :port-ext (translate-logical-pathname "clocc:src;port;ext"))
+  (require :port-sys (translate-logical-pathname "port:sys")))
 
 (defpackage "CLLIB"
   (:use "COMMON-LISP" "PORT")
@@ -49,5 +49,5 @@ This is initialized based on `mail-host-address'.")
   (:documentation "Get the code of the object.")
   (:method ((xx symbol)) xx))
 
-(provide :base)
+(provide :cllib-base)
 ;;; }}} base.lisp ends here

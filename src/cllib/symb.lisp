@@ -8,7 +8,7 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  (require :base (translate-logical-pathname "clocc:src;cllib;base")))
+  (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base")))
 
 (in-package :cllib)
 
@@ -47,5 +47,5 @@
   (eq (if suff1p (keyword-concat (code key1) (code suffix1)) (code key1))
       (if suff2p (keyword-concat (code key2) (code suffix2)) (code key2))))
 
-(provide :symb)
+(provide :cllib-symb)
 ;;; file symb.lisp ends here

@@ -8,9 +8,9 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  (require :base (translate-logical-pathname "clocc:src;cllib;base"))
+  (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `dfloat'
-  (require :withtype (translate-logical-pathname "cllib:withtype")))
+  (require :cllib-withtype (translate-logical-pathname "cllib:withtype")))
 
 (in-package :cllib)
 
@@ -135,5 +135,5 @@ the `FORMATTER' macro."
 
 ;;; }}}
 
-(provide :tilsla)
+(provide :cllib-tilsla)
 ;;; file tilsla.lisp ends here

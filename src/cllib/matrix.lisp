@@ -19,11 +19,11 @@
 (in-package :cllib)
 
 (eval-when (compile load eval)
-  (require :base (translate-logical-pathname "clocc:src;cllib;base"))
+  (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `with-type', `index-t'
-  (require :withtype (translate-logical-pathname "cllib:withtype"))
+  (require :cllib-withtype (translate-logical-pathname "cllib:withtype"))
   ;; `divf'
-  (require :math (translate-logical-pathname "cllib:math")))
+  (require :cllib-math (translate-logical-pathname "cllib:math")))
 
 (export '(matrix-print matrix-multiply array-copy array-lin-comb dimension
           matrix-id matrix-id-p matrix-symmetric-p bilinear
@@ -393,5 +393,5 @@ If `matrix-solve-lu' fails, the matrix is inverted.  In this case,
           (error "the matrix is degenerate (det = 0):~%~/matrix-print/" mx))
         (values (matrix-multiply tm bb xx) det)))))
 
-(provide :matrix)
+(provide :cllib-matrix)
 ;;; matrix.lisp ends here

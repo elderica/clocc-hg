@@ -8,12 +8,12 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  (require :base (translate-logical-pathname "clocc:src;cllib;base"))
-  (require :gray (translate-logical-pathname "port:gray"))
+  (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
+  (require :port-gray (translate-logical-pathname "port:gray"))
   ;; `xml-read-comment'
-  (require :xml (translate-logical-pathname "cllib:xml"))
+  (require :cllib-xml (translate-logical-pathname "cllib:xml"))
   ;; `with-open-url' in `dump-url-tokens'
-  (require :url (translate-logical-pathname "cllib:url")))
+  (require :cllib-url (translate-logical-pathname "cllib:url")))
 
 (in-package :cllib)
 
@@ -276,5 +276,5 @@ This is mostly a debugging function, to be called interactively."
 
 ;;;}}}
 
-(provide :html)
+(provide :cllib-html)
 ;;; file html.lisp ends here

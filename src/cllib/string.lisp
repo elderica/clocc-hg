@@ -8,9 +8,9 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  (require :base (translate-logical-pathname "clocc:src;cllib;base"))
+  (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `index-t'
-  (require :withtype (translate-logical-pathname "cllib:withtype")))
+  (require :cllib-withtype (translate-logical-pathname "cllib:withtype")))
 
 (in-package :cllib)
 
@@ -149,5 +149,5 @@ The result is of the same type as SEQ.
         :finally (return (reduce (lambda (s0 s1) (concatenate type s0 s1))
                                  all :initial-value (subseq seq 0 start)))))
 
-(provide :string)
+(provide :cllib-string)
 ;;; }}} string.lisp ends here

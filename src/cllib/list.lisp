@@ -8,9 +8,9 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  (require :base (translate-logical-pathname "clocc:src;cllib;base"))
+  (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `with-collect', `zero-len-p', `to-list', `filter'
-  (require :simple (translate-logical-pathname "cllib:simple")))
+  (require :cllib-simple (translate-logical-pathname "cllib:simple")))
 
 (in-package :cllib)
 
@@ -146,5 +146,5 @@ Also, do NOT try to return a cons from NEWL.  You'd be surprised!"
                 (cons (if cnt? (incf ii) (funcall split-key (car ll)))
                       (apply func ll args)))))))
 
-(provide :list)
+(provide :cllib-list)
 ;;; list.lisp ends here

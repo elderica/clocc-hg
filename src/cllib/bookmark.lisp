@@ -9,9 +9,9 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  (require :base (translate-logical-pathname "clocc:src;cllib;base"))
-  (require :url (translate-logical-pathname "clocc:src;cllib;url"))
-  (require :card (translate-logical-pathname "clocc:src;cllib;card")))
+  (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
+  (require :cllib-url (translate-logical-pathname "clocc:src;cllib;url"))
+  (require :cllib-card (translate-logical-pathname "clocc:src;cllib;card")))
 
 (in-package :cllib)
 
@@ -27,7 +27,7 @@
 
 (defclass link (rec)
   ((vtime :type integer :reader vtime :documentation "Visit time.")
-   (url :type url :accessor link-url :documentation "The URL of this link.")
+   (url :type url :accessor link-url :documentation "The URL of this link."))
   (:documentation "WWW link"))
 
 (defclass folder (rec)
@@ -42,5 +42,5 @@
     (unless (slot-boundp rr 'atime) (setf (slot-value rr 'atime) tm))
     (unless (slot-boundp rr 'mtime) (setf (slot-value rr 'mtime) tm))))
 
-(provide :bookmark)
+(provide :cllib-bookmark)
 ;;; file bookmark.lisp ends here

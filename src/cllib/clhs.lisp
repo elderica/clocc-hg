@@ -8,17 +8,17 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  (require :base (translate-logical-pathname "clocc:src;cllib;base"))
+  (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `index-t'
-  (require :withtype (translate-logical-pathname "cllib:withtype"))
+  (require :cllib-withtype (translate-logical-pathname "cllib:withtype"))
   ;; `string-beg-with', `substitute-subseq'
-  (require :string (translate-logical-pathname "cllib:string"))
+  (require :cllib-string (translate-logical-pathname "cllib:string"))
   ;; `skip-search'
-  (require :fileio (translate-logical-pathname "cllib:fileio"))
+  (require :cllib-fileio (translate-logical-pathname "cllib:fileio"))
   ;; `with-timing'
-  (require :log (translate-logical-pathname "cllib:log"))
+  (require :cllib-log (translate-logical-pathname "cllib:log"))
   ;; `html-translate-specials'
-  (require :html (translate-logical-pathname "cllib:html")))
+  (require :cllib-html (translate-logical-pathname "cllib:html")))
 
 (in-package :cllib)
 
@@ -1400,5 +1400,5 @@
       (mapc #'gtk:widget-show (list window sw canvas)))
     (gtk:event-loop)))
 |#
-(provide :clhs)
+(provide :cllib-clhs)
 ;;; file clhs.lisp ends here

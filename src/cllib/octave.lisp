@@ -8,7 +8,7 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  (require :base (translate-logical-pathname "clocc:src;cllib;base")))
+  (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base")))
 
 (in-package :cllib)
 
@@ -68,5 +68,5 @@ output_precision = 20~%AA=[")
     (close oc-io)
     ans))
 
-(provide :octave)
+(provide :cllib-octave)
 ;;; octave.lisp ends here

@@ -8,15 +8,15 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  (require :base (translate-logical-pathname "clocc:src;cllib;base"))
+  (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `to-list'
-  (require :simple (translate-logical-pathname "cllib:simple"))
+  (require :cllib-simple (translate-logical-pathname "cllib:simple"))
   ;; `map-vec'
-  (require :withtype (translate-logical-pathname "cllib:withtype"))
+  (require :cllib-withtype (translate-logical-pathname "cllib:withtype"))
   ;; `mesg'
-  (require :log (translate-logical-pathname "cllib:log"))
+  (require :cllib-log (translate-logical-pathname "cllib:log"))
   ;; `dot', `approx=-abs', `normalize'
-  (require :math (translate-logical-pathname "cllib:math")))
+  (require :cllib-math (translate-logical-pathname "cllib:math")))
 
 (in-package :cllib)
 
@@ -219,5 +219,5 @@ Returns the list of the 2^dim points, less if the set was degenerate."
 
 ;;; }}}
 
-(provide :iter)
+(provide :cllib-iter)
 ;;; file iter.lisp ends here

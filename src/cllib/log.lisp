@@ -8,11 +8,11 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  (require :base (translate-logical-pathname "clocc:src;cllib;base"))
+  (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `with-type', `dfloat'
-  (require :withtype (translate-logical-pathname "cllib:withtype"))
+  (require :cllib-withtype (translate-logical-pathname "cllib:withtype"))
   ;; `pr-secs'
-  (require :tilsla (translate-logical-pathname "cllib:tilsla")))
+  (require :cllib-tilsla (translate-logical-pathname "cllib:tilsla")))
 
 (in-package :cllib)
 
@@ -87,5 +87,5 @@ This has to be a macro to avoid needless evaluating the args."
 
 ;;; }}}
 
-(provide :log)
+(provide :cllib-log)
 ;;; file log.lisp ends here

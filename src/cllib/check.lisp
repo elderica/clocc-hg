@@ -8,11 +8,11 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  (require :base (translate-logical-pathname "clocc:src;cllib;base"))
+  (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `list-format', `mesg'
-  (require :log (translate-logical-pathname "cllib:log"))
+  (require :cllib-log (translate-logical-pathname "cllib:log"))
   ;; `rel-diff'
-  (require :math (translate-logical-pathname "cllib:math")))
+  (require :cllib-math (translate-logical-pathname "cllib:math")))
 
 (in-package :cllib)
 
@@ -99,5 +99,5 @@ for relative change of at least ~5,3f~%"
         (setq err t)
         (mesg :err out " +++ ~a ===> ~f~%" rec val)))))
 
-(provide :check)
+(provide :cllib-check)
 ;;; file check.lisp ends here

@@ -8,12 +8,12 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  (require :base (translate-logical-pathname "clocc:src;cllib;base"))
+  (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `list-format'
-  (require :log (translate-logical-pathname "cllib:log"))
+  (require :cllib-log (translate-logical-pathname "cllib:log"))
   ;; `package-short-name'
-  (require :prompt (translate-logical-pathname "cllib:prompt"))
-  (require :net (translate-logical-pathname "port:net")))
+  (require :cllib-prompt (translate-logical-pathname "cllib:prompt"))
+  (require :port-net (translate-logical-pathname "port:net")))
 
 (in-package :cllib)
 
@@ -161,5 +161,5 @@ pvaneynd:~$ cat /usr/doc/cmucl/examples/Demos/Start-up-server.lisp
 |#
 
 
-(provide :server)
+(provide :cllib-server)
 ;;; file server.lisp ends here

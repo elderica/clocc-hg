@@ -9,9 +9,9 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  (require :base (translate-logical-pathname "clocc:src;cllib;base"))
+  (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `kwd'
-  (require :symb (translate-logical-pathname "cllib:symb")))
+  (require :cllib-symb (translate-logical-pathname "cllib:symb")))
 
 (in-package :cllib)
 
@@ -70,5 +70,5 @@ allow missing (additional) non-option arguments."
         (format t "~a~%" co)
         (return t)))))
 
-(provide :getopt)
+(provide :cllib-getopt)
 ;;; file getopt.lisp ends here

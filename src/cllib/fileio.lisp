@@ -8,13 +8,13 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  (require :base (translate-logical-pathname "clocc:src;cllib;base"))
+  (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `index-t'
-  (require :withtype (translate-logical-pathname "cllib:withtype"))
+  (require :cllib-withtype (translate-logical-pathname "cllib:withtype"))
   ;; `+kwd+'
-  (require :symb (translate-logical-pathname "cllib:symb"))
+  (require :cllib-symb (translate-logical-pathname "cllib:symb"))
   ;; `with-timing', `mesg'
-  (require :log (translate-logical-pathname "cllib:log")))
+  (require :cllib-log (translate-logical-pathname "cllib:log")))
 
 (in-package :cllib)
 
@@ -374,5 +374,5 @@ BASEDIR is the pathname relative to which NAME is expanded (`*datadir*')."
 
 ;;; }}}
 
-(provide :fileio)
+(provide :cllib-fileio)
 ;;; file fileio.lisp ends here

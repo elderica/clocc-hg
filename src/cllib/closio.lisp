@@ -10,9 +10,9 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  (require :base (translate-logical-pathname "clocc:src;cllib;base"))
+  (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `class-slot-list', `class-slot-initargs'
-  (require :sys (translate-logical-pathname "clocc:src;port;sys")))
+  (require :port-sys (translate-logical-pathname "clocc:src;port;sys")))
 
 (in-package :cllib)
 
@@ -120,5 +120,5 @@ otherwise you will probably get an error.")
 
 ;;; }}}
 
-(provide :closio)
+(provide :cllib-closio)
 ;;; file closio.lisp ends here

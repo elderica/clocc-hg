@@ -8,9 +8,9 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  (require :base (translate-logical-pathname "clocc:src;cllib;base"))
+  (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `skip-to-line', `timestamp'
-  (require :fileio (translate-logical-pathname "cllib:fileio")))
+  (require :cllib-fileio (translate-logical-pathname "cllib:fileio")))
 
 (in-package :cllib)
 

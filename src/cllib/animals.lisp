@@ -8,19 +8,19 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  (require :base (translate-logical-pathname "clocc:src;cllib;base"))
+  (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `string-beg-with'
-  (require :string (translate-logical-pathname "cllib:string"))
+  (require :cllib-string (translate-logical-pathname "cllib:string"))
   ;; `alist->hash-table', `hash-table->alist'
-  (require :miscprint (translate-logical-pathname "cllib:miscprint"))
+  (require :cllib-miscprint (translate-logical-pathname "cllib:miscprint"))
   ;; `write-to-file', `save-restore'
-  (require :fileio (translate-logical-pathname "cllib:fileio"))
+  (require :cllib-fileio (translate-logical-pathname "cllib:fileio"))
   ;; `+clos-readtable+'
-  (require :closio (translate-logical-pathname "cllib:closio"))
+  (require :cllib-closio (translate-logical-pathname "cllib:closio"))
   ;; `mesg'
-  (require :log (translate-logical-pathname "cllib:log"))
+  (require :cllib-log (translate-logical-pathname "cllib:log"))
   ;; `symbol-concat'
-  (require :symb (translate-logical-pathname "cllib:symb")))
+  (require :cllib-symb (translate-logical-pathname "cllib:symb")))
 
 (in-package :cllib)
 
@@ -299,5 +299,5 @@ Returnes a fresh string."
         :while (y-or-n-p "One more game?"))
   (save-restore-network t))
 
-(provide :animals)
+(provide :cllib-animals)
 ;;; animals.lisp ends here
