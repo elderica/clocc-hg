@@ -303,7 +303,7 @@ Current time:~25t" (/ internal-time-units-per-second) *gensym-counter*)
 (defun current-time (&optional (out t))
   "Print the current time to the stream (defaults to t)."
   (multiple-value-bind (se mi ho da mo ye dw dst tz) (get-decoded-time)
-    (declare (fixnum se mi ho da mo ye dw tz))
+    (declare (fixnum se mi ho da mo ye dw) (type rational tz))
     (format out "~4d-~2,'0d-~2,'0d ~a ~2,'0d:~2,'0d:~2,'0d ~a"
             ye mo da (aref +week-days+ dw) ho mi se
             (tz->string tz dst))))
