@@ -22,6 +22,7 @@
 
 (export
  '(mulf divf sqr ! !! stirling fibonacci primes-to divisors primep
+   product-from-to binomial
    make-primes-list number-sum-split all-num-split
    eval-cont-fract fract-approx
    *num-tolerance* *relative-tolerance* *absolute-tolerance*
