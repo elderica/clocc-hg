@@ -115,13 +115,9 @@
     ;; Pick some suitable default based on FILE.
     (let ((compiled-path (compile-file-pathname file)))
       (setf outfile-name
-	    (translate-pathname compiled-path
-				(make-pathname :host (pathname-host compiled-path)
-					       :directory (pathname-directory compiled-path)
-					       :name (pathname-name compiled-path)
-					       :type (pathname-type compiled-path))
-				(make-pathname :host (pathname-host compiled-path)
-					       :type "p")))))
+	    (merge-pathnames (make-pathname :host (pathname-host compiled-path)
+					       :type "p")
+			     compiled-path))))
   (with-open-file (inport file :direction :input)
     (with-open-file (outport outfile-name
 			     :direction :output
@@ -609,6 +605,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.36  2003/07/12 18:44:04  rtoy
+;;; Include directory and name when computing the name of the output file.
+;;;
 ;;; Revision 1.35  2002/09/13 17:50:19  rtoy
 ;;; From Douglas Crosher:
 ;;;
