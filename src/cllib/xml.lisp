@@ -29,7 +29,7 @@
 
 (export
  '(*xml-readtable* *xml-print-xml* *xml-read-balanced* *xml-read-entities*
-   with-xml-input with-xml-file xml-read-from-file))
+   with-xml-input with-xml-file xml-read-from-file read-standalone-char))
 
 ;;;
 ;;; Entities
@@ -712,12 +712,15 @@ The first character to be read is #\T."
           (xmlis-push str stream)
           (if (find (peek-char t stream t nil t) "&%<>" :test #'char=)
               (read stream t nil t)
-              (values (xml-read-text stream "<&")))))))
-    ((#\: #\=) char)))
+              (values (xml-read-text stream "<&")))))))))
 
 ;;;
 ;;; UI
 ;;;
+
+(defun read-standalone-char (stream char)
+  (declare (ignore stream))
+  char)
 
 (defun make-xml-readtable (&optional (rt (copy-readtable)))
   "Return a readtable for reading XML."
@@ -736,10 +739,10 @@ The first character to be read is #\T."
   (set-macro-character #\' (get-macro-character #\") nil rt)
   ;; handle namespaces
   (set-syntax-from-char #\: #\Space rt)
-  (set-macro-character #\: #'read-xml nil rt)
+  (set-macro-character #\: #'read-standalone-char nil rt)
   ;; attribute="value"
   (set-syntax-from-char #\= #\Space rt)
-  (set-macro-character #\= #'read-xml nil rt)
+  (set-macro-character #\= #'read-standalone-char nil rt)
   (set-syntax-from-char #\; #\Space rt) ; for HTML documents
   (set-syntax-from-char #\, #\Space rt) ; for HTML documents
   (set-syntax-from-char #\# #\Space rt) ; for HTML documents
