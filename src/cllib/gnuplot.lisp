@@ -1,4 +1,4 @@
-;;; Gnuplot interface
+;;; Gnuplot (http://www.gnuplot.org/) interface
 ;;;
 ;;; Copyright (C) 1997-2000 by Sam Steingold.
 ;;; This is Free Software, covered by the GNU GPL (v2)
