@@ -1113,11 +1113,18 @@ FILENAME                 File containing Fortran code
 	 `((fset-string ,lhs ,rhs)))
 	(t
 	 ;;statement_function
-	 (progn
+	 (let* ((lhs-type (first (get-upgraded-fun-arg-type (list (list (car lhs))))))
+		(rhs-type (first (get-upgraded-fun-arg-type (list (list rhs)))))
+		(rhs-expr (if (subtypep rhs-type lhs-type)
+			      rhs
+			      `(coerce ,rhs ',lhs-type))))
+	   ;; Look up type of statement function and coerce the RHS to the desired type.
+	   ;;(format t "statement func:  ~A~%" `((,(car lhs) ,(cdr lhs) ,rhs)))
+	   ;;(format t "type = ~A, ~A~%" lhs-type rhs-type)
 	   (setq *subprog_stmt_fns* (append *subprog_stmt_fns* (list (car lhs)))
 		 *subprog_stmt_fns_bodies*
 		 (append *subprog_stmt_fns_bodies* 
-			 `((,(car lhs) ,(cdr lhs) ,rhs))))
+			 `((,(car lhs) ,(cdr lhs) ,rhs-expr))))
 	   nil))))
 ;       (and (setq *subprog_stmt_fns* (append *subprog_stmt_fns* (list (car lhs))))
 ;            `((defun ,(read-from-string 
@@ -1950,6 +1957,9 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.65  2000/08/18 15:08:49  rtoy
+;;; Gratuitous change from prog to let in TRANSLATE-AND-WRITE-SUBPROG.
+;;;
 ;;; Revision 1.64  2000/08/13 04:16:53  rtoy
 ;;; Oops!  CONCAT is still being used!  Reinstate it.
 ;;;
