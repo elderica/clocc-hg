@@ -19,7 +19,7 @@
 (in-package :cllib)
 
 (export '(file-size-t file-size rename-files save-restore
-          count-sexps code-complexity load-compile-maybe
+          count-sexps code-complexity load-compile-maybe file-equal-p
           write-list-to-stream write-list-to-file
           read-list-from-stream read-list-from-file
           pr write-to-file read-from-file read-from-stream append-to-file
