@@ -724,3 +724,10 @@
 	   ;; String is too short, so append some spaces
 	   (concatenate 'string string (make-string (- len slen) :initial-element #\Space))))))
   
+
+;;;-------------------------------------------------------------------------
+;;; end of macros.l
+;;;
+;;; $Id$
+;;; $Log$
+;;;-----------------------------------------------------------------------------
