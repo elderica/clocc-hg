@@ -980,7 +980,7 @@ Keywords: `timeout', `max-retry', `out', `err'."
                     (flush-http sock)
                     ;; sock is a character stream,
                     ;; and socket-to-file expects a byte stream
-                    (set-socket-stream-format sock '(unsigned-byte 8))
+                    (port:set-socket-stream-format sock '(unsigned-byte 8))
                     (socket-to-file sock path))))
        (declare (type file-size-t size))
        (multiple-value-bind (el st) (elapsed bt nil t)
