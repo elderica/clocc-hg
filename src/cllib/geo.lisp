@@ -89,7 +89,8 @@ type \"48:51:00N 2:20:00E\". Return 2 values - latitude and longitude."
   (format out "~%Zip Code~p:~{ ~d~}~%" (length (geod-zip gd)) (geod-zip gd)))
 
 (defcustom *census-gazetteer-url* url
-  (make-url :prot :http :host "www.census.gov" :path "/cgi-bin/gazetteer?")
+  (make-url :port 80 :prot :http :host "www.census.gov"
+            :path "/cgi-bin/gazetteer?")
   "*The URL to use to get the cite information.")
 
 ;;;###autoload
