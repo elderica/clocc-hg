@@ -1,6 +1,6 @@
 $Id$
 	
-2004-10-04: Fixed bugs introduced by fixes of 10-02. (Version 1.4.8.1)            
+2004-10-04: Fixed bugs introduced by fixes of 10-02. (Version 1.4.8.1)
 
 2004-10-02: Replaced 'lisp:' with 'cl:' in a couple of files.
             Stopped 'fload' from trying to compile files with types

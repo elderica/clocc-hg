@@ -316,33 +316,33 @@
 	       (cond (src-version
 		      (cond ((and (not must-ask)
 				  (or (eq why ':just-do-it)
-				      (and compilable
-					   (cond ((or (not whether-compile)
-						      (eq whether-compile
-							  ':ask))
-						  false)
-						 ((eq whether-compile
-						      ':unknown)
-						  (not (eq fload-compile*
-							   ':ask)))
-						 (t true)))))
+				      (cond ((or (not whether-compile)
+						 (eq whether-compile
+						     ':ask))
+					     false)
+					    ((eq whether-compile
+						 ':unknown)
+					     (not (eq fload-compile*
+						      ':ask)))
+					    (t true))))
 			     ;; No need to ask
-			     (cond ((eq why ':no-reason)
+			     (cond ((eq why ':just-do-it)
+				    (ask-next-time lprec)
+				    ':compile)
+				   ((not compilable)
+				    ':source)
+				   ((eq why ':no-reason)
 				    (cond (obj-version-exists
 					   ':object)
 					  (t
 					   ':source)))
-				   ((eq why ':just-do-it)
-				    (ask-next-time lprec)
-				    ':compile)
 				   ((eq whether-compile ':unknown)
 				    (setf (Load-progress-rec-whether-compile
 					     lprec)
 				          fload-compile*)
 				    fload-compile*)
 				   (t whether-compile)))
-			    ((and compilable
-				  (not (eq why ':no-reason)))
+			    (compilable
 			     ;; Ask
 			     (ask-whether-compile
 			        lprec src-version obj-version-exists
