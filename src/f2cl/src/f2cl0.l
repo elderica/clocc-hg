@@ -25,18 +25,16 @@
 ;;
 ;;(format t "~&The f2cl software has been loaded.~%")
 
-(in-package #:common-lisp-user)
+(in-package :common-lisp-user)
 
-(defpackage "FORTRAN-TO-LISP"
-    (:use "CL")
-  (:documentation "The package holding all symbols need by the Fortran to Lisp converter")
-  (:nicknames "F2CL")
+(defpackage "F2CL-LIB"
+  (:use "CL")
+  (:documentation "The package holding all symbols used by the Fortran to Lisp library")
+  (:nicknames "FORTRAN-TO-LISP-LIBRARY")
   (:export
-   ;; Main routines
-   "F2CL"
-   "F2CL-COMPILE"
    ;; Constants
    "%FALSE%" "%TRUE%"
+   ;; User-settable runtime options
    "*CHECK-ARRAY-BOUNDS*"
    ;; Types
    "INTEGER4" "INTEGER2" "INTEGER1" "REAL8" "REAL4" "COMPLEX8" "COMPLEX16"
@@ -68,11 +66,24 @@
    "D1MACH" "R1MACH"
    ))
 
+(defpackage "FORTRAN-TO-LISP"
+    (:use "CL")
+  (:documentation "The package holding all symbols need by the Fortran to Lisp converter")
+  (:nicknames "F2CL")
+  (:export
+   ;; Main routines
+   "F2CL"
+   "F2CL-COMPILE"
+   ))
+
 ;;;-------------------------------------------------------------------------
 ;;; end of f2cl0.l
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.9  2002/01/05 18:52:12  rtoy
+;;; Add in-package.
+;;;
 ;;; Revision 1.8  2001/04/26 17:49:50  rtoy
 ;;; Export new functions D1MACH and R1MACH
 ;;;
