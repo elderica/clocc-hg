@@ -602,7 +602,7 @@ available in `*rpm-locations*'."
 
 ;;; active mode ftp - doesn't work - why?!
 
-#+(or clisp allegro)
+#+nil ;; (or clisp allegro)
 (progn
 
 (defun local-host (sock)
