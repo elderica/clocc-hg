@@ -31,7 +31,7 @@
 
 (defun pathname-ensure-name (path)
   "Make sure that the pathname has a name slot.
-Call `pathname' on it argument and, if there is no NAME slot,
+Call `pathname' on the argument and, if there is no NAME slot,
 but there is a TYPE slot, move TYPE into NAME."
   (let ((path (pathname path)))
     (if (or (un-unspecific (pathname-name path))
