@@ -32,7 +32,7 @@
 ;;; }}}{{{ read CLOS objects
 ;;;
 
-(eval-when (compile load eval)  ; for `*clos-readtable*'
+(eval-when (compile load eval)  ; CMUCL for `*clos-readtable*'
 (defun read-object (st char arg)
   "Read an instance of a CLOS class printed as #[name{ slot val}]"
   (declare (ignore char arg))

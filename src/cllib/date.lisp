@@ -39,7 +39,7 @@
 ;;; Date
 ;;;
 
-(eval-when (compile load eval)
+(eval-when (compile load eval)  ; CMUCL
 (deftype days-t () '(signed-byte 20))
 
 ;; Of course, a class would be more appropriate here, especially since

@@ -35,7 +35,7 @@
 ;;; {{{ definitions
 ;;;
 
-(eval-when (compile load eval)
+(eval-when (compile load eval)  ; CMUCL
 (defclass name ()
   ((first :type simple-string :initarg first :accessor name-first
           :documentation "the first name")
@@ -141,7 +141,7 @@
 ;;; }}}{{{ output
 ;;;
 
-(eval-when (compile load eval)
+(eval-when (compile load eval)  ; CMUCL
 (defstruct card-output
   (card nil :type symbol)
   (name nil :type symbol)

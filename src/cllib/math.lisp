@@ -557,7 +557,7 @@ and the list of the volatilities for each year."
 
 ;;; Mean / Deviation / Length
 
-(eval-when (compile load eval)
+(eval-when (compile load eval)  ; CMUCL
 (defstruct (mdl #+cmu (:print-function print-struct-object))
   (mn 0.0d0 :type double-float)   ; Mean
   (sd 0.0d0 :type (double-float 0.0d0)) ; Deviation
@@ -770,7 +770,7 @@ Returns the probability of at least one event happening."
 ;;; Line
 ;;;
 
-(eval-when (compile load eval)
+(eval-when (compile load eval)  ; CMUCL
 (defstruct (line #+cmu (:print-function print-struct-object))
   "A straight line."
   (sl 0.0d0 :type double-float) ; slope

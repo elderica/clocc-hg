@@ -13,6 +13,7 @@
   (require :closio (translate-logical-pathname "cllib:closio"))
   ;; `from-list'
   (require :list (translate-logical-pathname "cllib:list")))
+
 (in-package :cllib)
 
 (defpackage emacs-lisp
@@ -46,7 +47,7 @@
 ;;; Read Emacs-Lisp objects
 ;;;
 
-(eval-when (compile load eval)  ; for `*elisp-readtable*'
+(eval-when (compile load eval)  ; CMUCL for `*elisp-readtable*'
 (defun el::read-elisp-special (stream char)
   (declare (stream stream) (character char))
   (ecase char
