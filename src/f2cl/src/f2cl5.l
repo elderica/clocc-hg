@@ -304,6 +304,11 @@
 	    ((and (listp arg)
 		  (eq 'fref (first arg)))
 	     (push (get-fun-arg-type (second arg)) res))
+	    ((and (listp arg)
+		  (listp (car arg))
+		  (eq 'multiple-value-bind (caar arg)))
+	     ;; A funcall to a function.  Look up the type of the function.
+	     (push (get-fun-arg-type (second (third (car arg)))) res))
 	    (t
 	     (let ((arg-types (mapcar #'get-fun-arg-type arg)))
 	       (push (cond ((every #'(lambda (x)
@@ -2628,6 +2633,13 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.95  2002/03/19 02:23:09  rtoy
+;;; According to the rules of Fortran, the initializers in a DATA
+;;; statement are supposed to be converted to match the type of the
+;;; variable that is being initialized.  Make it so by passing the
+;;; variable type to the macro DATA-IMPLIED-DO so that the conversion can
+;;; be done.
+;;;
 ;;; Revision 1.94  2002/03/18 23:46:48  rtoy
 ;;; Was not correctly handling implicit variable declarations.  We just
 ;;; want to compare the first character of the variable agains the given
