@@ -307,8 +307,14 @@
 	    ((and (listp arg)
 		  (listp (car arg))
 		  (eq 'multiple-value-bind (caar arg)))
-	     ;; A funcall to a function.  Look up the type of the function.
-	     (push (get-fun-arg-type (second (third (car arg)))) res))
+	     ;; A call to a function.  Look up the type of the
+	     ;; function, but be careful.  Sometimes it's (fun args)
+	     ;; and sometimes it's (funcall fun args)
+	     (let ((f (third (car arg))))
+	       (push (get-fun-arg-type (if (eq (first f) 'funcall)
+					   (second (third (car arg)))
+					   (first f)))
+				       res)))
 	    (t
 	     (let ((arg-types (mapcar #'get-fun-arg-type arg)))
 	       (push (cond ((every #'(lambda (x)
@@ -2697,6 +2703,10 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.99  2002/03/19 23:08:24  rtoy
+;;; Oops.  The array type should default to whatever *array-type* is, not
+;;; simple-array!
+;;;
 ;;; Revision 1.98  2002/03/19 17:28:07  rtoy
 ;;; o Declare some vars as ignored when creating the entry point
 ;;;   functions.
