@@ -37,7 +37,7 @@
 (export '(url url-ask url-eta protocol-rfc
           open-socket-retry open-url with-open-url
           ftp-list url-send-mail url-get-news url-time
-          browse-url *browsers*
+          browse-url *browsers* *browser*
           dump-url url-get whois finger))
 
 ;;;
@@ -774,11 +774,19 @@ For additional servers see http://www.eecis.udel.edu/~mills/ntp/servers.htm")
     (:lynx "xterm" "-e" "lynx" "~a")
     (:mmm "mmm" "-external" "~a")
     (:mosaic "xmosaic" "~a")
-    (:emacs-w3 "gnudoit" "(w3-fetch \"~a\")"))
+    (:emacs-w3 "gnudoit" "-q" "(w3-fetch \"~a\")"))
   "The ALIST of browsers.")
 
+(defcustom *browser* (or symbol list) nil
+  "The default browser.
+Should be either a key in the `*browsers*' alist or value in it,
+i.e., a list of a shell command and arguments (which can contain `~a'
+which is replaced with the URL to view).
+The default value is NIL: the URL is printer to `*standard-output*'
+so that the user gets to type it into a browser.")
+
 ;;;###autoload
-(defun browse-url (url &key (browser :netscape) (out *standard-output*))
+(defun browse-url (url &key (browser *browser*) (out *standard-output*))
   "Run the browser (a keyword in `*browsers*' or a list) on the URL."
   (let* ((command
           (etypecase browser
@@ -787,9 +795,12 @@ For additional servers see http://www.eecis.udel.edu/~mills/ntp/servers.htm")
                         (error "unknown browser: `~s' (must be a key in `~s')"
                                browser '*browsers*)))))
          (args (mapcar (lambda (arg) (format nil arg url)) (cdr command))))
-    (mesg :log out "~&;; running [~s~{ ~s~}]..." (car command) args)
-    (run-prog (car command) :args args)
-    (mesg :log out "done~%")))
+    (cond (command
+           (mesg :log out "~&;; running [~s~{ ~s~}]..." (car command) args)
+           (run-prog (car command) :args args :wait nil)
+           (mesg :log out "done~%"))
+          ((format t "~s: no browser specified; please point your browser at
+ --> <URL:~a>~%" 'browse-url url)))))
 
 ;;;###autoload
 (defun dump-url (url &key (fmt "~3d: ~a~%") (out *standard-output*)
