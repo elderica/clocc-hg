@@ -51,6 +51,7 @@
                     ee bb (incf sys::*command-index*) ee))))
   #+allegro
   (multiple-value-bind (bb ib ee) (beg-end)
+    (declare (ignore ib))
     (setq tpl:*prompt* (concatenate 'string bb tpl:*prompt* ee))))
 
 (provide :prompt)
