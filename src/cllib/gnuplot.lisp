@@ -50,7 +50,7 @@ This must be either a full path or a name of an executable in your PATH.")
 (eval-when (compile load eval)  ; CMUCL
 (defcustom *gnuplot-printer* simple-string
   (format nil
-          #+(or win32 mswindows) "//SEATTLE/4th Floor N Color"
+          #+(or win32 mswindows) "//SEATTLE/4th Floor NE"
           #+unix "|lpr -h~@[ -P~a~]"
           (getenv "SDSPRT"))
   "*The printer to print the plots."))
@@ -143,8 +143,7 @@ according to the given backend")
   "The `plot-term' object sending the plot to the printer.")
 
 (defun ps-terminal (file)
-  (make-plot-term :target file :terminal "postscript"
-                  :terminal-options "landscape 'Helvetica' 9"))
+  (make-plot-term :target file :terminal "postscript"))
 (defgeneric directive-term (directive)
   (:documentation "Return the PLOT-TERM object appropriate for this directive")
   (:method ((directive t))
@@ -310,10 +309,9 @@ according to the given backend")
   (:method ((directive pathname)) (open directive :direction :output))
   (:method ((directive (eql :print))) (make-plot-stream :plot))
   (:method ((directive (eql :plot)))
-    (setq *gnuplot-stream*
-          (or (if (and *gnuplot-stream* (open-stream-p *gnuplot-stream*))
-                  *gnuplot-stream*)
-              (pipe-output *gnuplot-path*)))))
+    (unless (and *gnuplot-stream* (open-stream-p *gnuplot-stream*))
+      (setq *gnuplot-stream* (pipe-output *gnuplot-path*)))
+    *gnuplot-stream*))
 
 (defun internal-with-plot-stream (body-function &rest opts
                                   &key (plot *gnuplot-default-directive*)
