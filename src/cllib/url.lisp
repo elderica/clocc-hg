@@ -1,4 +1,4 @@
-;;; File: <url.lisp - 1999-04-19 Mon 11:55:02 EDT sds@eho.eaglets.com>
+;;; File: <url.lisp - 1999-04-19 Mon 19:38:13 EDT sds@eho.eaglets.com>
 ;;;
 ;;; Url.lisp - handle url's and parse HTTP
 ;;;
@@ -12,6 +12,10 @@
 ;;; $Id$
 ;;; $Source$
 ;;; $Log$
+;;; Revision 1.24  1999/04/19 15:56:12  sds
+;;; (*url-default-max-retry*): new user variable, the
+;;; default for the `max-retry' key.
+;;;
 ;;; Revision 1.23  1999/04/16 16:01:18  sds
 ;;; (with-tag): added `value' key; better default for `terpri'.
 ;;; (with-open-html): added `head', `comment' and `footer' keys;
@@ -608,8 +612,8 @@ the error `timeout' is signaled."
                        (url-ask sock err 220 "article ~a" (cadr strs)))))
                  t)
                 ((:time :daytime) t)
-                (t (error 'code :proc 'open-url :mesg
-                          "Cannot handle protocol ~s" :args (url-prot url)))))
+                (t (error 'code :proc 'open-url :args (list (url-prot url))
+                          :mesg "Cannot handle protocol ~s"))))
           (code (co) (error co))
           (error (co)
             (mesg :err err "Connection to `~a' dropped: `~a'~%" url co)))
@@ -930,8 +934,8 @@ When RE is supplied, articles whose subject match it are retrieved."
                (url-dump-to-dot sock :out (out "active"))))))))
 
 (defcustom *time-servers* list
-  '("clock.psu.edu" "black-ice.cc.vt.edu" "clock1.unc.edu" "ntp0.cornell.edu"
-    "clock-1.cs.cmu.edu" "time-b.timefreq.bldrdoc.gov" "time-b.nist.gov")
+  '("clock.psu.edu" "black-ice.cc.vt.edu" "clock1.unc.edu" "time-b.nist.gov"
+    "time-b.timefreq.bldrdoc.gov" "clock-1.cs.cmu.edu" "ntp0.cornell.edu")
   "Public NTP servers (secondary).
 For additional servers see http://www.eecis.udel.edu/~mills/ntp/servers.htm")
 
@@ -946,7 +950,7 @@ For additional servers see http://www.eecis.udel.edu/~mills/ntp/servers.htm")
      (map 'list (lambda (uu)
                   (format out "~&~a:" uu) (force-output out)
                   (let ((val (multiple-value-list (url-time uu))))
-                    (format out "~{~30t[~a -- ~a]~%~}" val)
+                    (format out "~{~30t[~a -- ~a~@[ [~d]~]]~%~}" val)
                     val))
           url))
     (url (with-open-url (sock url)
@@ -954,11 +958,11 @@ For additional servers see http://www.eecis.udel.edu/~mills/ntp/servers.htm")
              (:time
               (let ((nn (+ (ash (read-byte sock) 24) (ash (read-byte sock) 16)
                            (ash (read-byte sock) 8) (read-byte sock))))
-                (values nn (dttm->string nn))))
+                (values nn (dttm->string nn) (- nn (get-universal-time)))))
              (:daytime
               (let ((str (read-line sock)))
                 (if (zerop (length str)) (values)
-                    (values (string->dttm (copy-seq str)) str)))))))))
+                    (values (string->dttm (copy-seq str)) str nil)))))))))
 
 ;;;
 ;;; }}}{{{ HTML parsing
@@ -1131,7 +1135,7 @@ Keywords: `timeout', `max-retry', `out', `err'."
          (mesg :log out "Wrote `~a' [~:d bytes, ~a, ~:d bytes/sec]."
                path size st (round size el)))))
     (t (error 'code :proc 'url-get :mesg "Cannot handle protocol ~s"
-              :args (url-prot url)))))
+              :args (list (url-prot url))))))
 
 (defun whois (host &rest keys)
   "Get the whois information on a host."
