@@ -209,7 +209,7 @@ set xdata~@[ time~%set timefmt '~a'~]~%" timefmt)
 (defun plot-data-style (num-ls)
   "Decide upon the appropriate data style for the number of points."
   (when (listp num-ls)
-    (setq num-ls (1- (apply #'min (mapcar #'length num-ls)))))
+    (setq num-ls (1- (reduce #'min num-ls :key #'length))))
   (assert (realp num-ls) (num-ls)
           "~s got neither number nor list: ~s" 'plot-data-style num-ls)
   (if (> num-ls 30) :lines :linespoints))
@@ -268,7 +268,7 @@ EMA is the list of parameters for Exponential Moving Averages."
 ;;;###autoload
 (defun plot-lists (lss &rest opts &key (key #'value) (title "List Plot") rel
                    (xlabel "nums") (ylabel (if rel "relative value" "value"))
-                   (depth (1- (apply #'min (mapcar #'length lss))))
+                   (depth (1- (reduce #'min lss :key #'length)))
                    (data-style (plot-data-style depth)) &allow-other-keys)
   "Plot the given lists of numbers.
 Most of the keys are the gnuplot options (see `with-plot-stream' for details.)
@@ -306,8 +306,8 @@ of conses of abscissas and ordinates. KEY is used to extract the cons."
     (setq quads (mapcar (lambda (ls)
                           (regress-poly (cdr ls) 2 :xkey (compose car 'key)
                                         :ykey (compose cdr 'key))) lss)))
-  (setq xbeg (or xbeg (apply #'min (mapcar (compose car 'key cadr) lss)))
-        xend (or xend (apply #'max (mapcar (compose car 'key car last) lss))))
+  (setq xbeg (or xbeg (reduce #'min lss :key (compose car 'key cadr)))
+        xend (or xend (reduce #'max lss :key (compose car 'key car last))))
   (remf opts :key) (remf opts :rel) (remf opts :lines) (remf opts :quads)
   (remf opts :xbeg) (remf opts :xend)
   (with-plot-stream (str :xlabel xlabel :ylabel ylabel
