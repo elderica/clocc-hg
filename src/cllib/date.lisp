@@ -200,7 +200,9 @@ Returns the number of seconds since the epoch (1900-01-01)."
     (number
      (cond ((< -24 obj 24) obj)
            ((multiple-value-bind (ho mi) (floor obj 100)
-              (+ ho (/ mi 60))))))
+              ;; CL uses positive offsets to the West of Greenwich,
+              ;; while the rest of the world count positive to the East.
+              (- (+ ho (/ mi 60)))))))
     (t (error 'case-error :proc 'infer-timezone :args
               (list 'obj obj 'symbol 'string 'number)))))
 
