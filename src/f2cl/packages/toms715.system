@@ -3,6 +3,10 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.2  2000/08/07 17:02:29  rtoy
+;;; Comment out unused functions, make it more palatable to Clisp logical
+;;; pathnames, add some dependencies.
+;;;
 ;;; Revision 1.1  2000/07/21 22:13:48  rtoy
 ;;; Initial version.
 ;;;
@@ -17,7 +21,7 @@
 ||#
 
 (mk:define-language :f2cl
-    :compiler #'f2cl-compile
+    :compiler #'f2cl:f2cl-compile
     :source-extension "f")
 
 (mk:defsystem toms715
