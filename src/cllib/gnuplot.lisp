@@ -205,7 +205,10 @@ according to the given backend")
     (number (format nil "~g" xx))
     (symbol (string-downcase (symbol-name xx)))
     (list (format nil "~{ ~(~a~)~}" xx))
-    (t (format nil "'~a'" xx))))
+    (t (concatenate 'string "\""
+                    ;; quote #\":
+                    (substitute-subseq (princ-to-string xx) "\"" "\\\"")
+                    "\""))))
 
 (defmethod plot-output ((pa plot-axis) (out stream) (backend (eql :gnuplot)))
   (declare (ignorable backend))
