@@ -171,7 +171,23 @@
 ; Note that we are explicitly using a different angle representation than what
 ; is actually transmitted in the protocol.
 
-(deftype angle () '(real #.(* -2 pi) #.(* 2 pi)))
+;;; From cmucl clx:
+;;;
+;;; This overrides the (probably incorrect) definition in clx.lisp.  Since PI
+;;; is irrational, there can't be a precise rational representation.  In
+;;; particular, the different float approximations will always be /=.  This
+;;; causes problems with type checking, because people might compute an
+;;; argument in any precision.  What we do is discard all the excess precision
+;;; in the value, and see if the protocal encoding falls in the desired range
+;;; (64'ths of a degree.)
+;;;
+(deftype angle () '(satisfies anglep))
+
+(defun anglep (x)
+  (and (typep x 'real)
+       (<= (* -360 64)
+           (radians->int16 x)
+           (* 360 64))))
 
 (deftype mask32 () 'card32)
 
