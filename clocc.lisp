@@ -105,8 +105,12 @@
 (setf (logical-pathname-translations "clocc")
       `(("src;defsystem;*"
          ,(concatenate 'string *clocc-root* "src/defsystem-3.x/*"))
+        ("src;defsystem;*.*"
+         ,(concatenate 'string *clocc-root* "src/defsystem-3.x/*.*"))
         ("src;defsystem-3-x;*"
          ,(concatenate 'string *clocc-root* "src/defsystem-3.x/*"))
+        ("src;defsystem-3-x;*.*"
+         ,(concatenate 'string *clocc-root* "src/defsystem-3.x/*.*"))
         ("**;*" ,(concatenate 'string *clocc-root* "**/*"))
         ("**;*.*" ,(concatenate 'string *clocc-root* "**/*.*"))))
 
