@@ -24,7 +24,7 @@ ab_file_yes()
 {
     file=$1
     # file exists and is empty, equivalent to yes
-    if [ -f $file -a \( ! -s $file \) ]; then
+    if [[ -f $file && ! -s $file ]]; then
 	true
 	return
     fi
