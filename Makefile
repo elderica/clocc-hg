@@ -25,6 +25,13 @@ clocc-top.$(FASLEXT): $(TOP_DEP)
 
 endif
 
+recursive-clean: force
+	for x in `find . -type d ! -name CVS`; do \
+		if [ -r $${x}/Makefile ]; then $(MAKE) -C $${x} clean; \
+		else TOP=$(TOP) $(MAKE) -C $${x} -f $(TOP)/clocc.mk clean; \
+		fi ; \
+	done
+
 cvs.log: force
 	cvs log > $@ 2>/dev/null
 
