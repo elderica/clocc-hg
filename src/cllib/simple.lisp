@@ -56,7 +56,11 @@ on other lisps (which is 1.5-2 times as fast as push/nreverse there)."
         (values ,@ret)))))
 
 (defun filter (lst test collect &key (key #'identity))
-  "COLLECT those elements of LST which satisfy TEST."
+  "COLLECT those elements of LST which satisfy TEST.
+AKA `remove-if-not':
+ (filter lst test collect :key key) ==
+ (let ((res (remove-if-not test lst :key key)))
+   (map-into res (compose collect key) res))"
   (declare (list lst) (type (function (t) t) test collect key))
   (with-collect (coll)
     (dolist (el lst)
