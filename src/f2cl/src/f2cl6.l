@@ -30,7 +30,12 @@
 ; global stream input for parse-number:
 (defvar *inp* nil)
 ;---------------------------------------------------------------------------
-		 
+
+;; Fortran comment line characters are "c", "C", or "*".  "!" is an
+;; extension.
+(defvar *comment-line-characters* '(#\c #\C #\* #\!)
+  "A list of Fortran comment line characters")
+
 (defun preprocess (file &key (outfile-name "prep.tmp"))
   (when *verbose*
     (format t "~&preprocessing begins ...~%"))
@@ -54,8 +59,7 @@
 	  (let ((line (string-right-trim '(#\Space) line)))
 	    (cond 
 	      ((string= line "") nil)	; we leave out blank lines
-	      ((or (char-equal (char line 0) #\C)
-		   (char-equal (char line 0) #\*))
+	      ((member (char line 0) *comment-line-characters*)
 	       (when *comments*
 		 ;; If we don't have anything buffered, we can print
 		 ;; out the comment now.  Otherwise, we need to save
@@ -472,6 +476,13 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.21  2000/09/01 14:07:37  rtoy
+;;; In PARSE-NUMBER, we want to unread CHAR, but, according to the CLHS
+;;; (and Clisp checks for this), unread-char must push back the last
+;;; character that was read.  Because of SKIP-SPACES above, this CHAR is
+;;; not necessarily the last character read anymore.  We have to modify
+;;; the stream directly now.
+;;;
 ;;; Revision 1.20  2000/08/18 15:22:11  rtoy
 ;;; Can't swallow blanks (for now) at the first part of parse-number
 ;;; because it causes things like "6.or." to become the symbol "6OR",
