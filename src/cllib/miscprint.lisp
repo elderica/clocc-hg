@@ -34,7 +34,7 @@
         :initially
         (format
          st "~&char (~~c, ~~@c, ~~:@c, ~~:c)~42toct~52tdec~62thex  macro~%")
-        :for co :from 0 :to char-code-limit
+        :for co :from 0 :below char-code-limit
         :for ch :of-type (or null character) = (code-char co)
         :when ch :do (ascii-char ch st) (terpri st)
         :finally (unless str (return (get-output-stream-string st)))))
