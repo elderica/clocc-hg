@@ -32,7 +32,6 @@
   (ecase char
     (#\{ (read-delimited-list #\} stream t))
     (#\[ (make-c-dim :dim (car (read-delimited-list #\] stream t))))
-    (#\; #\;) (#\, #\,) (#\: #\:) (#\* #\*) (#\| #\|)
     (#\#
      (let ((com (read stream t nil t)))
        (ecase com
@@ -66,17 +65,17 @@
 (defun make-c-readtable (&optional (rt (copy-readtable)))
   "Make the readtable for parsing C."
   (set-macro-character #\/ #'read-c-junk nil rt)
-  (set-macro-character #\| #'read-c-junk nil rt)
+  (set-macro-character #\| #'read-standalone-char nil rt)
   (set-macro-character #\# #'read-c-junk nil rt)
   (set-syntax-from-char #\; #\a rt)
-  (set-macro-character #\; #'read-c-junk nil rt)
+  (set-macro-character #\; #'read-standalone-char nil rt)
   (set-syntax-from-char #\# #\a rt)
   (set-macro-character #\# #'read-c-junk nil rt)
   (set-syntax-from-char #\: #\a rt)
-  (set-macro-character #\: #'read-c-junk nil rt)
+  (set-macro-character #\: #'read-standalone-char nil rt)
   (set-syntax-from-char #\, #\a rt)
-  (set-macro-character #\, #'read-c-junk nil rt)
-  (set-macro-character #\* #'read-c-junk nil rt)
+  (set-macro-character #\, #'read-standalone-char nil rt)
+  (set-macro-character #\* #'read-standalone-char nil rt)
   (set-macro-character #\{ #'read-c-junk nil rt)
   (set-macro-character #\} (get-macro-character #\)) nil rt)
   (set-macro-character #\[ #'read-c-junk nil rt)
