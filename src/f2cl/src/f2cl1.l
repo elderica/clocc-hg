@@ -1366,8 +1366,7 @@ main-loop
 	  ((and (listp v) (listp l)
 		(listp (second v))
 		(numberp (first (second v))))
-	   ;; Initializing one element of an array.  We assume the
-	   ;; lower limit on the array is 1!
+	   ;; Initializing one element of an array.
 
 	   ;;(format t "parse-data1 array~%")
 	   (let* ((vname (check-reserved-lisp-names (first v)))
@@ -1375,7 +1374,7 @@ main-loop
 	     `(fset (fref ,vname
 		          ,(remove '|,| (second v))
 		          ,dims)
-	       ,(fix-up-negative-number (first l)))))
+	       ,(fix-up-negative-number l))))
 	  ((and (listp v) (listp l)
 		(listp (first v))
 		(member '= (first v)))
@@ -1395,7 +1394,8 @@ main-loop
 	  (t
 	   ;;(format t "parse-data1 else: v, l = ~S ~S~%" v l)
 	   ;;(format t "parse-data1 else:  v is array:  ~A~%" (vble-is-array-p (check-reserved-lisp-names (first v))))
-	   (if (vble-is-array-p (check-reserved-lisp-names (first v)))
+	   (if (and (vble-is-array-p (check-reserved-lisp-names (first v)))
+		    (null (rest v)))
 	       `(replace ,(check-reserved-lisp-names (first v))
 		         ',(mapcar #'fix-up-negative-number l))
 	       `(setq ,(check-reserved-lisp-names (first v))
@@ -1812,6 +1812,15 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.47  2000/07/21 21:14:21  rtoy
+;;; The last change to PARSE-DATA broke the case of
+;;;
+;;; 	dimension x(3)
+;;; 	data x/1, 2, 3/
+;;;
+;;; Make sure we are really initializing an array and not just one element
+;;; of the array.
+;;;
 ;;; Revision 1.46  2000/07/21 17:39:27  rtoy
 ;;; PARSE-DATA and friends were mishandling the case
 ;;;
