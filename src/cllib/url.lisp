@@ -737,8 +737,8 @@ For additional servers see http://www.eecis.udel.edu/~mills/ntp/servers.htm")
 ;;;
 
 (defcustom *browsers* list
-  '((:netscape "/usr/bin/netscape" "-remote" "openURL(~a,new-window)")
-    (:emacs-w3 "/usr/bin/gnudoit" "(w3-fetch \"~a\")"))
+  '((:netscape "/usr/local/bin/netscape" "-remote" "openURL(~a,new-window)")
+    (:emacs-w3 "/usr/local/bin/gnudoit" "(w3-fetch \"~a\")"))
   "The ALIST of browsers.")
 
 ;;;###autoload
@@ -754,7 +754,7 @@ For additional servers see http://www.eecis.udel.edu/~mills/ntp/servers.htm")
     (when out
       (format out "~&;; running [~s~{ ~s~}]..." (car command) args)
       (force-output (if (eq out t) *standard-output* out)))
-    (run-program (car command) :arguments args)
+    (run-prog (car command) :args args)
     (when out
       (format out "done~%"))))
 
