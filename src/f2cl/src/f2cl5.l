@@ -2264,10 +2264,14 @@
   (append (list '(fortran_comment "***WARNING:  READ statement may not be translated correctly!"))
 	  (mapcar #'(lambda (var)
 		      (let ((expr (id-expression var)))
-			(if (and (listp expr)
+			(cond ((and (listp expr)
 				 (eq (first expr) 'fref))
-			    `(fset ,expr (read))
-			    `(setf ,expr (read)))))
+			       `(fset ,expr (read)))
+			      ((and (symbolp expr)
+				    (subtypep (lookup-vble-type expr) 'string))
+			       `(f2cl-set-string ,expr (read) ,(lookup-vble-type expr)))
+			      (t
+			       `(setf ,expr (read))))))
 		  (remove nil (list-split '|,| (cddr x))))
 	  (list '(fortran_comment "***WARNING: Preceding READ statements may not be correct!"))))
   
@@ -2819,6 +2823,13 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.115  2003/11/15 05:02:07  rtoy
+;;; Some simple fixups for READ when reading into arrays.  We need to
+;;; identify the expression to generate the correct form for setting the
+;;; variable to what was read.
+;;;
+;;; READ still needs lots of work.
+;;;
 ;;; Revision 1.114  2003/11/14 06:32:43  rtoy
 ;;; In INSERT-DECLARATIONS, we were computing var-type-list and var-decls
 ;;; incorrectly.  The were both too short when the arglist had external
