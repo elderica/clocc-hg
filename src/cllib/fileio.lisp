@@ -19,7 +19,7 @@
 (in-package :cllib)
 
 (export '(file-size-t file-size rename-files save-restore
-          count-sexps code-complexity
+          count-sexps code-complexity load-compile-maybe
           write-list-to-stream write-list-to-file
           read-list-from-stream read-list-from-file
           pr write-to-file read-from-file read-from-stream append-to-file
@@ -312,6 +312,15 @@ By default nothing is printed."
 Non-existent files are assumed to be VERY old."
   (flet ((fwd (ff) (or (file-write-date ff) 0)))
     (> (fwd f0) (fwd f1))))
+
+;;;###autoload
+(defun load-compile-maybe (file &key load-only-if-compiled)
+  "Compile the file if newer than the compiled and load it."
+  (let ((cf (compile-file-pathname file)))
+    (if (file-newer file cf)
+        (load (compile-file file))
+        (unless load-only-if-compiled
+          (load cf)))))
 
 (defsubst file-newest (f0 f1)
   "Returnt the newest of the two existing files."
