@@ -732,9 +732,10 @@ is not included")
    
 ;; Map Fortran logical unit numbers to Lisp streams
 
-(defvar *lun-hash*
+(defparameter *lun-hash*
   (let ((table (make-hash-table)))
     (setf (gethash 6 table) *standard-output*)
+    (setf (gethash 5 table) *standard-input*)
     (setf (gethash t table) *standard-output*)
     table))
 
@@ -988,17 +989,13 @@ is not included")
     ;; really want?
     
     ;; The standard input unit
-    #+nil
-    (1 0)
+    (1 5)
     ;; The standard output unit
-    #+nil
-    (2 1)
+    (2 6)
     ;; The standard punch unit
-    #+nil
-    (3 3)
+    (3 6)
     ;; The standard error message unit
-    #+nil
-    (4 2)
+    (4 6)
 
     ;; The number of bits per integer storage unit.  What does this
     ;; mean in Lisp?
@@ -1006,8 +1003,7 @@ is not included")
      (integer-length most-positive-fixnum))
     ;; The number of characters per integer storage unit.  What does
     ;; this mean in Lisp?
-    #+nil
-    (6 1)
+    (6 4)
 
     ;; The base of integers.  Assume 2's complement
     (7 2)
@@ -1048,6 +1044,11 @@ is not included")
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.35  2002/01/13 16:29:00  rtoy
+;;; o This file is in the f2cl-lib package now
+;;; o Deleted some unused code.
+;;; o Moved *INTRINSIC-FUNCTION-NAMES* to f2cl1.l
+;;;
 ;;; Revision 1.34  2002/01/06 23:11:04  rtoy
 ;;; o Rename *intrinsic_function_names* to use dashes.
 ;;; o Comment out some unused functions and macros.
