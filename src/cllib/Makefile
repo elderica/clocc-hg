@@ -11,7 +11,7 @@ NET = base url gq
 SYSTEM := cllib
 ZIPEXTRA = ../defsystem-3.x/defsystem.lisp ../tools/metering/metering.lisp \
 	../math/clmath/matrix.lisp
-DOCFILES = $(SYSTEM).html
+DOCFILES = $(SYSTEM).html entities.xml
 include $(TOP)/clocc.mk
 
 image:		$(addsuffix .fas,$(BASE))
