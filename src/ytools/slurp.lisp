@@ -140,7 +140,8 @@
 				  (cond ((and default-readtab
 					      (not (eq default-readtab
 						       *readtable*)))
-					 (format t "Readtable ~s will be used for this file operation~%"
+					 (format *error-output*
+						 "Readtable ~s will be used for this file operation~%"
 						 default-readtab)
 					 default-readtab)
 					(t
