@@ -117,6 +117,8 @@
       (setf outfile-name
 	    (translate-pathname compiled-path
 				(make-pathname :host (pathname-host compiled-path)
+					       :directory (pathname-directory compiled-path)
+					       :name (pathname-name compiled-path)
 					       :type (pathname-type compiled-path))
 				(make-pathname :host (pathname-host compiled-path)
 					       :type "p")))))
@@ -607,6 +609,13 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.35  2002/09/13 17:50:19  rtoy
+;;; From Douglas Crosher:
+;;;
+;;; o Make this work with lower-case Lisps
+;;; o Fix a few typos
+;;; o Make a safer fortran reader.
+;;;
 ;;; Revision 1.34  2002/03/11 17:57:32  rtoy
 ;;; Compute the output temp file name better.  (Was failing for logical
 ;;; pathnames.)
