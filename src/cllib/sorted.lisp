@@ -131,7 +131,7 @@ Returns them for possible further processing."
                       (funcall key bot))))
       (values top bot))))
 
-(defun top-bottom-fl (ls &key (val #'value) (label #'date)
+(defun top-bottom-fl (ls &key (val #'value) (label #'identity)
                       (out *standard-output*))
   "Print top/bottom/first/last information about the list."
   (declare (list ls) (type (function (t) double-float) val)
