@@ -156,7 +156,7 @@
                                ("*" . "star") ("**" . "st2") ("***" . "st3")
                                ("/" . "slash") ("//" . "sl2") ("///" . "sl3")
                                ("+" . "plus") ("++" . "pl2") ("+++" . "pl3")
-                               ("-" . "sub") ("1+" . "pl1") ("1-" . "su1"))
+                               ("-" . "subt") ("1+" . "pl1") ("1-" . "su1"))
                              :test #'string=))
                  (string-downcase name)))
         (xml-name name)
