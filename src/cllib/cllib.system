@@ -78,7 +78,7 @@
                                "log" "simple" "tilsla" "date"))
      (:file "withtype" :depends-on ("base"))
      (:file "xml" :depends-on
-            ("base" "string" "withtype" "closio" "log" "fileio")))
+            ("base" "string" "withtype" "closio" "log" "fileio" "url")))
     :initially-do
     (progn (mk:system-source-size :cllib :all)
            (mk:system-source-size :cllib :new-source-and-dependents)
