@@ -187,7 +187,7 @@
 		      (merge-pathnames 
 			 (make-pathname
 			     :name module
-			     :type "lmd")  ;;':unspecific
+			     :type (if (eq filename-case* ':upper) "LMD" "lmd"))
 			 (pathname ytload-directory* ))))))
 	 (cond ((probe-file mod-file)
 		(load mod-file))
@@ -242,7 +242,7 @@
       (cond ((and config-directory* (is-set directory-delimiter*))
 	     (return)))
       (cond ((not config-directory*)
-	     (format t "Directory containing yt-config.lisp (end with slash or other directory delimiter): ")
+	     (format t "Directory containing ytconfig.lisp (end with slash or other directory delimiter): ")
 	     (setq config-directory* (clear-read-line)))
 	    (t
 	     (format t "Assuming ytconfig.lisp is in ~a~%"
