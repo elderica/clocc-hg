@@ -104,10 +104,10 @@ the expected remaining run and real times."
                             (setq ,last-pos pos)
                             (values
                              (time-diff
-                              (/ (+ eta (linear lp lt pos now 1)) 2) ,bt)
+                              (/ (+ eta (linear lp lt pos now 1)) 2) ,now)
                              (time-diff
                               (/ (+ eta1 (linear lp lt1 pos now1 1)) 2)
-                              ,bt1))))))))
+                              ,now1))))))))
              ,@body)
         (when ,%out
           (when ,done (princ "done" ,%out))
