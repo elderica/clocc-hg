@@ -406,17 +406,18 @@ the first character to be read is #\T"
   `(with-open-stream (,var (make-instance 'xml-stream-in :input ,stream))
     (let ((*readtable* (make-xml-readtable))) ,@body)))
 
-(defmacro with-xml-file ((var file &key reset-ent) &body body)
+(defmacro with-xml-file ((var file &key reset-ent (out '*standard-output*))
+                         &body body)
   "Open the XML stream to file."
-  `(with-timing ()
+  `(with-timing (:out ,out)
     (when ,reset-ent (xml-init-entities))
     (with-xml-input (,var (open ,file :direction :input))
-      (format t "~&[~s]~% * [~a ~:d bytes]..." 'with-xml-input
+      (format ,out "~&[~s]~% * [~a ~:d bytes]..." 'with-xml-input
        file (file-length (car (xmlis-all ,var))))
-      (force-output)
+      (force-output ,out)
       (let ((*readtable* (make-xml-readtable)))
         (prog1 (progn ,@body)
-          (format t "done [entities(%/&): ~:d/~:d] [bytes: ~:d]"
+          (format ,out "done [entities(%/&): ~:d/~:d] [bytes: ~:d]"
                   (hash-table-count *xml-per*) (hash-table-count *xml-amp*)
                   (xmlis-size ,var)))))))
 
