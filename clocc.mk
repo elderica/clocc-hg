@@ -22,8 +22,8 @@ ZIP = /usr/local/bin/zip -9uD
 
 default: force
 	@echo " * you must specify a target, such as..."
-	@echo " + all - compile all files in SOURCES ($(SOURCES)) one by one"
 	@echo " + system - run mk:compile-file on SYSTEM ($(SYSTEM))"
+	@echo " + all - compile all files in SOURCES ($(SOURCES)) one by one"
 	@echo " + ChangeLog - create the ChangeLog file using rcs2log"
 	@echo " + $(SYSTEM).list - the list of all functons and variables defined by this system"
 	@echo " + TAGS - Emacs tags"
@@ -57,6 +57,6 @@ $(SYSTEM).zip: $(DOCFILES) $(LISPFILES) $(MAKEFILES)
 	@$(RM) $(SYSTEM) extra $(notdir $(ZIPEXTRA));
 
 clean: force
-	rm -f $(FASLFILES)
+	rm -f $(FASLFILES) core *.core *.mem *.dxl
 
 force:
