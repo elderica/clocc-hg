@@ -80,8 +80,9 @@
     (unless (zerop tbc)
       (in-package :cllib)
       (funcall (intern "TEST-ALL" :cllib))
-      (funcall (intern "AUTOLOAD-GENERATE" :cllib)
-               (mk:files-in-system :cllib) "auto.lisp")
-      (compile-file "auto.lisp")))
+      (let ((auto (translate-logical-pathname "clocc:src;cllib;auto.lisp")))
+        (funcall (intern "AUTOLOAD-GENERATE" :cllib)
+                 (mk:files-in-system :cllib) auto)
+        (compile-file auto))))
 
 )                               ; tbc
