@@ -1,6 +1,6 @@
 ;;; Gray streams
 ;;;
-;;; Copyright (C) 1999 by Sam Steingold
+;;; Copyright (C) 1999-2001 by Sam Steingold
 ;;; This is open-source software.
 ;;; GNU Lesser General Public License (LGPL) is applicable:
 ;;; No warranty; you may copy/modify/redistribute under the same
@@ -14,7 +14,10 @@
 (eval-when (compile load eval)
   #-(or allegro clisp cmu lispworks)
   (error 'not-implemented :proc "Gray streams")
-  (require :ext (translate-logical-pathname "clocc:src;port;ext")))
+  (require :ext (translate-logical-pathname "clocc:src;port;ext"))
+  #+cmu
+  (unless (ignore-errors (find-class 'ext:fundamental-stream))
+    (load "library:subsystems/gray-streams-library")))
 
 (in-package #+allegro :excl
             #+(and clisp      lisp=cl)  :ext
