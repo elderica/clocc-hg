@@ -212,8 +212,9 @@ if T, read until end of file and return a list of objects read."
   (declare (type (or simple-string pathname) file))
   (with-timing (:done t :out out)
     (with-open-file (str file :direction :input)
-      (format out "~&Reading `~a' [~:d bytes]..." file (file-length str))
-      (force-output)
+      (when out
+        (format out "~&Reading `~a' [~:d bytes]..." file (file-length str))
+        (force-output out))
       (with-standard-io-syntax
         (let ((*readtable* readtable))
           (cond ((null repeat) (read str))
