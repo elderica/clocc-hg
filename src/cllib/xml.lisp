@@ -15,7 +15,7 @@
   (require :string (translate-logical-pathname "cllib:string"))
   ;; print CLOS objects readably
   (require :closio (translate-logical-pathname "cllib:closio"))
-  ;; `get-float-time', `elapsed-1'
+  ;; `with-timing'
   (require :log (translate-logical-pathname "cllib:log"))
   (require :gray (translate-logical-pathname "port:gray")))
 
@@ -407,7 +407,7 @@ the first character to be read is #\T"
 (defmacro with-xml-file ((var file &key reset-ent) &body body)
   "Open the XML stream to file."
   (with-gensyms ("WXMLI-" bt bt1)
-    `(let ((,bt (get-float-time)) (,bt1 (get-float-time nil)))
+    `(with-timing ()
       (when ,reset-ent (xml-init-entities))
       (with-xml-input (,var (open ,file :direction :input))
         (format t "~&[~s]~% * [~a ~:d bytes]..." 'with-xml-input
@@ -416,9 +416,9 @@ the first character to be read is #\T"
         (let ((*readtable* (make-xml-readtable)))
           (prog1 (progn ,@body)
             (format
-             t "done [entities(%/&): ~:d/~:d] [bytes: ~:d] [time: ~a/~a]~%"
+             t "done [entities(%/&): ~:d/~:d] [bytes: ~:d]"
              (hash-table-count *xml-per*) (hash-table-count *xml-amp*)
-             (xmlis-size ,var) (elapsed-1 ,bt t) (elapsed-1 ,bt1 nil))))))))
+             (xmlis-size ,var))))))))
 
 (defun xml-read-from-file (file &key (reset-ent t))
   "Read all XML objects from the file."
