@@ -20,6 +20,7 @@
    "MK-ARR" "MAP-IN" "WITH-GENSYMS"
    "GC" "QUIT"
    "+EOF+" "EOF-P" "STRING-TOKENS"
+   #-cmu "REQUIRED-ARGUMENT"
    "COMPOSE" "COMPOSE-F" "COMPOSE-ALL"))
 
 (in-package :port)
@@ -144,8 +145,8 @@ so that the bare symbols are read as keywords."
 #-cmu (progn
         (proclaim '(ftype (function () nil) required-argument))
         (defun required-argument ()
-          "A useful default for required keyword args and DEFSTRUCT slots."
-          (error "A required keyword argument was not supplied.")))
+          "A useful default for required arguments and DEFSTRUCT slots."
+          (error "A required argument was not supplied.")))
 
 ;;;
 ;;; Function Compositions
