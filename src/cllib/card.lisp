@@ -534,7 +534,7 @@ See constants `+card-output-bbdb+', `+card-output-vcard+',
 #+nil (progn
 
 ;;; BBDB i/o
-(let ((*readtable* *elisp-readtable*))
+(let ((*readtable* +elisp-readtable+))
   (setq *user-cards* (read-list-from-file *user-bbdb-file* #'card-read-bbdb)))
 (let ((*card-output-type* +card-output-bbdb+))
   (write-list-to-file *user-cards* *user-bbdb-file*))
@@ -547,7 +547,7 @@ See constants `+card-output-bbdb+', `+card-output-vcard+',
 ;;; native i/o
 (let ((*card-output-type* nil))
   (write-to-file *user-cards* *user-native-file*))
-(let ((*readtable* *clos-readtable*))
+(let ((*readtable* +clos-readtable+))
   (setq *user-cards* (read-from-file *user-native-file*)))
 
 ;;; Pretty printing
