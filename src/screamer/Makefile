@@ -5,6 +5,7 @@
 TOP := $(shell cd ../..; pwd)
 LISPEXT := lisp
 SOURCES := equations iterate primordial screamer screams
+SYSTEM := screamer
 include $(TOP)/clocc.mk
 
 screamer.$(FASLEXT): screamer.$(LISPEXT)
