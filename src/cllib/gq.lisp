@@ -337,9 +337,9 @@ If the file doesn't exist, it is created. If it exists,
 only the data after `*hist-data-file-sep*' is changed."
   (declare (list hold hist))
   (with-open-file (outst file :direction :io :if-exists :overwrite)
-    (cond ((read outst nil nil)         ; file existed
+    (cond ((< 0 (file-length outst)) ; file existed
            (format t "File `~a' exists.  Appending...~%" file)
-           (do (zz)
+           (do (zz (*package* +kwd+))
                ((or (eq zz +eof+) (eq zz *hist-data-file-sep*))
                 (when (eq zz +eof+)
                   (error "File `~a' is corrupted: `~a' not found.~%"
