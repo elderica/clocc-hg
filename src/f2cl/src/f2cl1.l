@@ -278,7 +278,7 @@ INPUT-FILE               File containing Fortran code
 				 (find-package package)
 				 (find-package "CL-USER"))))
 	      ;; Insert in-package and declaim, if needed
-	      #-(and clisp (not xp))
+	      #-clisp
 	      (when options
 		(pprint-logical-block (outport options :per-line-prefix ";;; ")
 		  (format outport "~&Options: ~S" options))
@@ -1829,6 +1829,12 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.50  2000/07/28 16:59:27  rtoy
+;;; o We are in the f2cl package now.
+;;; o Read the preprocessed file in the f2cl package instead of the user
+;;;   package.
+;;; o Convert the Fortran string concatenation operator (//) to f2cl-//.
+;;;
 ;;; Revision 1.49  2000/07/27 16:40:27  rtoy
 ;;; o We want to be in the CL-USER package, not the USER package.
 ;;; o Clisp doesn't have pprint-logical-block.
