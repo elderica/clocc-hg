@@ -426,7 +426,7 @@ See RFC959 (FTP) &c.")
            (type (or (unsigned-byte 10) symbol list) end))
   (when req
     (apply #'format sock req) (fresh-line sock)
-    (mesg :log out "~&url-ask[~s]: `~?'~%" end req))
+    (mesg :log out "~&url-ask[~s]: `~?'~%" end (car req) (cdr req)))
   (loop :with endl :of-type list =
         (typecase end
           (integer (to-list end)) (list end)
