@@ -229,9 +229,9 @@ and allows other processes to run."
   #+Allegro    (mp:process-allow-schedule)
   #+CMU        (mp:process-yield)
   #+CormanLisp FIXME
-  #+Genera     FIXME
+  #+Genera     (scl:process-allow-schedule)
   #+LispWorks  (mp:process-allow-scheduling)
-  #+Lucid      FIXME
+  #+Lucid      (lcl:process-allow-schedule)
   #+MCL        (ccl:process-yield)
   #-threads    (error 'not-implemented :proc (list 'process-yield)))
 
