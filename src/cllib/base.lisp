@@ -11,27 +11,14 @@
   (require :port-ext (translate-logical-pathname "clocc:src;port;ext"))
   (require :port-sys (translate-logical-pathname "port:sys")))
 
-(defpackage "CLLIB"
-  (:use "COMMON-LISP" "PORT")
-  (:nicknames "ORG.CONS.CLOCC/SDS/CLLIB")
-  #+cmu (:shadow defstruct)
-  (:export "VALUE" "CODE" "DEFSTRUCT"
-           "*DATADIR*" "*MAIL-HOST-ADDRESS*" "*USER-MAIL-ADDRESS*"))
+(defpackage #:cllib
+  (:use #:common-lisp #:port)
+  (:nicknames #:org.cons.clocc/sds/cllib)
+  #+cmu (:shadowing-import-from #:port #:defstruct)
+  (:export #:value #:code #:*datadir* #:*mail-host-address*
+           #:*user-mail-address*))
 
 (in-package :cllib)
-
-;;;
-;;; {{{CMUCL structure hack - make them externalizable
-;;;
-
-#+cmu
-(defmacro defstruct (name &rest slots)
-  `(progn
-     (eval-when (compile load eval) (cl:defstruct ,name ,@slots))
-     ,(unless (and (consp name) (assoc :type (cdr name)))
-       `(defmethod make-load-form ((self ,(if (consp name) (first name) name))
-                                   &optional environment)
-          (make-load-form-saving-slots self :environment environment)))))
 
 ;;;
 ;;; }}}{{{paths
