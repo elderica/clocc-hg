@@ -929,7 +929,8 @@ Return 2 values: the mean and the length of the sequence."
 The mean and the length can be pre-computed for speed."
   (declare (sequence seq) (fixnum len) (double-float mean)
            (type (function (t) double-float) key))
-  (when (<= len 1) (return-from standard-deviation (values 0d0 mean len)))
+  (when (<= len 1)
+    (return-from standard-deviation (values 0d0 mean len mean mean)))
   (let (min max)
     (values
      (sqrt (/ (reduce #'+ seq :key
