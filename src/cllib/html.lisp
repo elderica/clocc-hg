@@ -260,10 +260,14 @@ This is mostly a debugging function, to be called interactively."
 (defun xml-read-from-url (url &key (repeat t)
                           (reset-ent (xml-default-reset-entities))
                           (resolve-namespaces *xml-read-balanced*)
-                          (out *standard-output*))
+                          (out *standard-output*)
+                          (max-retry *url-default-max-retry*)
+                          (timeout *url-default-timeout*))
   "Read all XML objects from the stream."
   (when reset-ent (xml-init-entities :out out))
-  (let ((obj (with-open-url (sock url :err out)
+  (let ((obj (with-open-url (sock url :err out :max-retry max-retry
+                                  :timeout timeout)
+               (http-parse-header sock :out out)
                (with-xml-input (xin sock)
                  (read-from-stream xin :repeat repeat)))))
     (if resolve-namespaces
