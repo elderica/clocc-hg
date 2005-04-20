@@ -4,6 +4,9 @@
 ;;;;  Class of Random number generators
 ;;;;
 ;;;;  $Log$
+;;;;  Revision 1.14  2005/03/08 22:50:54  sds
+;;;;  export the interface functions
+;;;;
 ;;;;  Revision 1.13  2005/03/08 21:33:26  sds
 ;;;;  use #+(or) instead of #+nil for portability
 ;;;;
@@ -240,8 +243,7 @@ mean of mu:
 
  STATE is the random state to use.  The logarithmic method is used.
 "
-  (declare (type random-state *random-state*)
-	   (type (double-float (0d0)) mu))
+  (declare (type (double-float (0d0)) mu))
   (* mu (- (log (random 1d0)))))
 
 
@@ -331,8 +333,7 @@ mean of 1:
  STATE is the random state to use.  Knuth's Algorithm S is used to
  generate the variate.
 "
-    (declare (type (double-float (0d0)) mu)
-	     (type random-state *random-state*))
+    (declare (type (double-float (0d0)) mu))
 
     (multiple-value-bind (u j)
 	;; Step S1.  Find the first zero bit by comparing against 1/2.
@@ -577,8 +578,7 @@ mean of 1:
   (defun gen-exponential-variate-ea
       (mu &optional (*random-state* *random-state*))
     (declare (ignore mu))
-    (declare (type random-state *random-state*)
-	     (type (double-float (0d0)) mu)
+    (declare (type (double-float (0d0)) mu)
 	     (optimize (speed 3)))
     (let ((u (random 1d0))
 	  (u1 0d0)
@@ -640,8 +640,7 @@ mean of 1:
 ;; This could probably be optimized further.
 (defun gen-exponential-variate-ratio
     (mu &optional (*random-state* *random-state*))
-  (declare (type random-state *random-state*)
-	   (type (double-float (0d0)) mu))
+  (declare (type (double-float (0d0)) mu))
   (let ((max-v (* mu #.(* 2 (exp -1d0)))))
   (do ((u (random 1d0) (random 1d0))
        (v (random max-v) (random max-v)))
@@ -668,8 +667,7 @@ mean of 1:
       (defun gen-exponential-variate-ziggurat
           (mu &optional (*random-state* *random-state*))
 	(declare (type (double-float 0d0) mu)
-		 (type random-state *random-state*)
-		 (optimize (speed 3)))
+                 (optimize (speed 3)))
 	(loop
 	    (let* ((j (random (ash 1 31)))
 		   (i (logand j 255))
@@ -739,10 +737,8 @@ mean of 1:
 
  for real X.
 "
-  (declare (type random-state *random-state*))
   ;; Instead of using the inverse CDF to generate the random number,
-  ;; we generate an exponential and flip its sign with probability
-  ;; 1/2.
+  ;; we generate an exponential and flip its sign with probability 1/2.
   (if (zerop (random 2))
       (gen-exponential-variate 1d0)
       (- (gen-exponential-variate 1d0))))
@@ -805,7 +801,6 @@ mean of 1:
   (defun gen-cauchy-variate-algorithm-ca-aux
       (u &optional (*random-state* *random-state*))
     (declare (type (non-negative-float double-float (1d0)) u)
-	     (type random-state *random-state*)
 	     (optimize (speed 3) (safety 0) (space 0)))
     (let* ((tt (- u 0.5d0))
 	   (s (- ww (* tt tt))))
@@ -894,8 +889,7 @@ mean of 1:
 	   (fixnum gen))
   (defun gen-gaussian-variate-algorithm-na
       (&optional (*random-state* *random-state*))
-    (declare (type random-state *random-state*)
-	     (optimize (speed 3) (safety 0)))
+    (declare (optimize (speed 3) (safety 0)))
     (setf gen (- gen))
     (cond ((= gen 1)
 	   (let* ((u (random 1d0))
@@ -921,8 +915,7 @@ mean of 1:
 (let ((cache (make-gaussian-generator-cache)))
   (defun gen-gaussian-variate-algorithm-na
       (&optional (*random-state* *random-state*))
-    (declare (type random-state *random-state*)
-	     (optimize (speed 3) (safety 0)))
+    (declare (optimize (speed 3) (safety 0)))
     (cond ((gaussian-generator-cache-cache-valid cache)
 	   (setf (gaussian-generator-cache-cache-valid cache) nil)
 	   (gaussian-generator-cache-cached-value cache))
@@ -966,7 +959,6 @@ of zero and a variance of 1.  The PDF is
  replaced by direct calculation via trigonometric functions..  See
  Knuth, Seminumerical Algorithms.
 "
-    (declare (type random-state *random-state*))
     (cond ((gaussian-generator-cache-cache-valid cache)
 	   (setf (gaussian-generator-cache-cache-valid cache) nil)
 	   (gaussian-generator-cache-cached-value cache))
@@ -1000,7 +992,6 @@ of zero and a variance of 1.
  The ratio of uniform variates method is used.  See Knuth,
  Seminumerical Algorithms, Algorithm R.
 "
-    (declare (type random-state *random-state*))
     (do ((u (random 1d0) (random 1d0)))
 	(nil)
       (declare (double-float u))
@@ -1028,8 +1019,7 @@ of zero and a variance of 1.
 			   (sqrt (* -2 (log x)))))
       (defun gen-gaussian-variate-ziggurat
           (&optional (*random-state* *random-state*))
-	(declare (type random-state *random-state*)
-		 (optimize (speed 3)))
+	(declare (optimize (speed 3)))
 	(loop
 	    ;; We really want a signed 32-bit random number. So make a
 	    ;; 32-bit unsigned number, take the low 31 bits as the
@@ -1172,8 +1162,7 @@ order ORDER.
 
   This uses Marsaglia's squeeze method.
 "
-  (declare (type (double-float 1d0) order)
-	   (type random-state *random-state*))
+  (declare (type (double-float 1d0) order))
   ;; Marsaglia's squeeze method for gamma variates.  This method is
   ;; valid for all order >= 1/3.  However, its efficiency gets better
   ;; with larger orders.  Thus, we want order to be at least 1.
@@ -1225,8 +1214,7 @@ order ORDER.
 
   This uses Marsaglia's squeeze method.
 "
-  (declare (type (double-float 1d0) order)
-	   (type random-state *random-state*))
+  (declare (type (double-float 1d0) order))
   ;; Marsaglia's squeeze method for gamma variates.  This method is
   ;; valid for all order >= 1/3.  However, its efficiency gets better
   ;; with larger orders.  Thus, we want order to be at least 1.
@@ -1283,7 +1271,6 @@ order ORDER.
   This uses Ahrens and Dieter's Algorithm GN
 "
   (declare (type (double-float 1d0) order)
-	   (type random-state *random-state*)
 	   (optimize (speed 3)))
   ;; Ahrens and Dieter Algorithm GN for gamma variates
   (let* ((mu (- order 1d0))
@@ -1341,7 +1328,6 @@ order ORDER.
   This uses Ahrens and Dieter's Algorithm GN
 "
   (declare (type (double-float 1d0) order)
-	   (type random-state *random-state*)
 	   (optimize (speed 3)))
   ;; Ahrens and Dieter Algorithm GN for gamma variates
   (let* ((mu (- order 1d0))
@@ -1406,7 +1392,6 @@ order ORDER.
   This uses Algorithm A, in Knuth, Seminumerical Algorithms.
 "
   (declare (type (double-float 1d0) order)
-	   (type random-state *random-state*)
 	   (optimize (speed 3)))
   ;; The large order case. This is Algorithm A, sec 3.4.1 E.
   (let* ((a order)
@@ -1448,7 +1433,6 @@ order ORDER.
   This uses Algorithm A, in Knuth, Seminumerical Algorithms.
 "
   (declare (type (double-float 1d0) order)
-	   (type random-state *random-state*)
 	   (optimize (speed 3)))
   ;; The large order case. This is Algorithm A, sec 3.4.1 E.
   (let* ((a order)
@@ -1493,8 +1477,7 @@ order ORDER.
  This uses the method given in problem 16, in Knuth, Seminumerical
  Algorithms.
 "
-  (declare (type (double-float (0d0) (1d0)) order)
-	   (type random-state *random-state*))
+  (declare (type (double-float (0d0) (1d0)) order))
   ;; order < 1.  This is the algorithm in problem 16 in Sec. 3.4.1, in
   ;; Knuth.
   (let ((p (/ #.(exp 1d0) (+ order #.(exp 1d0))))
@@ -1533,8 +1516,7 @@ order ORDER.
  how to generate that easily.  This is only good for moderate orders.
  For non-integral orders, the small-order algorithm is called.
 "
-  (declare (type (double-float (0d0) (20d0)) order)
-	   (type random-state *random-state*))
+  (declare (type (double-float (0d0) (20d0)) order))
   ;; Direct generation of Gamma variates using the fact that the sum
   ;; of two gamma's of order A and B is also a gamma of order A +
   ;; B. Note that gamma of order 1 is exponential and we know how to
@@ -1569,7 +1551,6 @@ order ORDER.
 #+(or)
 (defun gen-gamma-variate-algo-go (a &optional (*random-state* *random-state*))
   (declare (type (double-float (2.5327805161251d0)) a)
-	   (type random-state *random-state*)
 	   (optimize (speed 3)))
   (let* ((mu (- a 1))
 	 (v (sqrt a))
@@ -1620,7 +1601,6 @@ order ORDER.
 ;; cons about 10 times less.  I don't know why that is.
 (defun gen-gamma-variate-algo-go (a &optional (*random-state* *random-state*))
   (declare (type (double-float (2.5327805161251d0)) a)
-	   (type random-state *random-state*)
 	   (optimize (speed 3)))
   (let* ((mu (- a 1))
 	 (v (sqrt a))
@@ -1682,7 +1662,6 @@ order ORDER.
 #+(or)
 (defun gen-gamma-variate-ratio (a &optional (*random-state* *random-state*))
   (declare (type (double-float 1.5d0) a)
-	   (type random-state *random-state*)
 	   (optimize (speed 3)))
   (flet ((g (s)
 	   (declare (type (double-float (0d0)) s))
@@ -1753,8 +1732,7 @@ order ORDER.
 
  This is the main routine for generating Gamma variates.
 "
-  (declare (type (double-float (0d0)) order)
-	   (type random-state *random-state*))
+  (declare (type (double-float (0d0)) order))
   ;; We divide the set of possible orders into these ranges:
   ;; order > s, 1 < order <= s, order = 1, 0 < order < 1.
   ;; Select the appropriate value of s to minimize runtime.
@@ -1810,8 +1788,7 @@ with parameters a and b:
  B      = second parameter, B > 0
  STATE  = random state to use.
 "
-  (declare (type (double-float (0d0)) a b)
-	   (type random-state *random-state*))
+  (declare (type (double-float (0d0)) a b))
   (let ((x1 (gen-gamma-variate a))
 	(x2 (gen-gamma-variate b)))
     (/ x1 (+ x1 x2))))
@@ -1848,8 +1825,7 @@ with parameters N and p:
  The output is an integer.
 "
   (declare (type (and (integer 0) fixnum) ntrials)
-	   (type (non-negative-float double-float 1d0) p)
-	   (type random-state *random-state*))
+	   (type (non-negative-float double-float 1d0) p))
   ;; Select some suitable threshold between the direct generation and
   ;; the iterative technique. For a 486-66, the break-even point is
   ;; near 100.  Same is true for a Sparc-20
@@ -1893,8 +1869,7 @@ with mean M:
 
  The output is an integer.
 "
-  (declare (type (double-float 0d0) mean)
-	   (type random-state *random-state*))
+  (declare (type (double-float 0d0) mean))
   (let ((threshold 30d0))
     (cond ((< mean threshold)
 	   ;; Direct generation
