@@ -11,19 +11,23 @@
 ;;; $Id$
 ;;; $Source$
 
-(defpackage "PORT"
-  (:use "COMMON-LISP")
-  (:nicknames "ORG.CONS.CLOCC/SDS/PORT")
-  (:export
-   "CODE" "CASE-ERROR" "NOT-IMPLEMENTED" ; conditions
-   "CODE-PROC" "CODE-MESG" "CODE-ARGS"   ; slot accessors
-   "DEFSUBST" "DEFCUSTOM" "DEFCONST"
-   "MK-ARR" "MAP-IN" "WITH-GENSYMS"
-   "GC" "QUIT"
-   "+EOF+" "EOF-P" "STRING-TOKENS" "REMOVE-PLIST"
-   #-cmu "REQUIRED-ARGUMENT"
-   "UNLOCK-PACKAGE" "RESTORE-PACKAGE-LOCK"
-   "COMPOSE" "COMPOSE-SAFE" "COMPOSE-F" "COMPOSE-ALL"))
+;;; Wrapped by Drew McDermott (so that some prior program can
+;;; define the :port package in Lisps that have lower-case symbols) --
+(eval-when (:compile-top-level :load-top-level :execute)
+   (cond ((not (find-package :port))
+	  (defpackage "PORT"
+	    (:use "COMMON-LISP")
+	    (:nicknames "ORG.CONS.CLOCC/SDS/PORT")
+	    (:export
+	     "CODE" "CASE-ERROR" "NOT-IMPLEMENTED" ; conditions
+	     "CODE-PROC" "CODE-MESG" "CODE-ARGS"   ; slot accessors
+	     "DEFSUBST" "DEFCUSTOM" "DEFCONST"
+	     "MK-ARR" "MAP-IN" "WITH-GENSYMS"
+	     "GC" "QUIT"
+	     "+EOF+" "EOF-P" "STRING-TOKENS" "REMOVE-PLIST"
+	     #-cmu "REQUIRED-ARGUMENT"
+	     "UNLOCK-PACKAGE" "RESTORE-PACKAGE-LOCK"
+	     "COMPOSE" "COMPOSE-SAFE" "COMPOSE-F" "COMPOSE-ALL")))))
 
 (in-package :port)
 
