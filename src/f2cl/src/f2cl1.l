@@ -16,7 +16,7 @@
 (defvar *comments* nil)
 (defparameter *f2cl-version*
   (remove #\$ "2.0 beta $Date$"))
-
+ 
 (defvar *intrinsic-function-names*
   '(int ifix idint real float sngl dble cmplx ichar char aint dint
     anint dnint nint idnint iabs abs dabs cabs mod amod dmod isign sign dsign
@@ -2571,6 +2571,16 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.137  2004/11/09 18:37:12  rtoy
+;;; o Use compile-file-pathname for the output-file instead of T, because
+;;;   that's a CMUCL extension.
+;;; o Recognize real*4 as a declaration of type REAL.  We had forgotten
+;;;   that.
+;;; o When parsing common blocks with arrays in them that were already
+;;;   dimensioned elsewhere, we were calling update_cm_array_dims
+;;;   incorrectly with the parsed dimensions.  "Unparse" them first.  This
+;;;   is really gross.
+;;;
 ;;; Revision 1.136  2004/08/17 16:09:01  rtoy
 ;;; Reinstate make-label here.  This really needs to be cleaned up.
 ;;;
