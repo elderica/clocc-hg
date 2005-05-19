@@ -409,7 +409,7 @@ is not included")
 (defun assigned-goto-aux (tag-list)
   (let ((cases nil))
     (dolist (tag tag-list)
-      (push `(,tag (go ,(f2cl::make-label tag)))
+      (push `(,tag (go ,(f2cl-lib::make-label tag)))
 	    cases))
     (push `(t (error "Unknown label for assigned goto")) cases)
     (nreverse cases)))
@@ -1328,6 +1328,17 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.62  2005/05/16 15:50:25  rtoy
+;;; o Replace single semicolons with multiple semicolons as appropriate.
+;;; o GCL apparently doesn't like some declarations, so comment them out
+;;;   for GCL.
+;;; o GCL doesn't like the defparameter for *lun-hash*.
+;;; o GCL doesn't seem to have least-positive-normalized-double-float, so
+;;;   make it the same as least-positive-double-float.  Likewise for
+;;;   single-float.
+;;;
+;;; These changes come from maxima.
+;;;
 ;;; Revision 1.61  2005/03/28 20:38:18  rtoy
 ;;; Make strings with an element-type of character instead of base-char,
 ;;; in case the Lisp implementation has unicode support.
