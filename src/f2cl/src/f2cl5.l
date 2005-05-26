@@ -1028,7 +1028,6 @@
 	     (setf (f2cl-finfo-arg-types entry) var-type-list)
 	     (setf (gethash (second defun-bit) *f2cl-function-info*)
 		   (make-f2cl-finfo :arg-types var-type-list))))
-       (format t "var-decls        = ~A~%" var-decls)
        (setq formal-arg-decls
 	   (pretty-decls
 	    (append
@@ -1040,8 +1039,7 @@
 	     var-decls))))
        
 
-     (format t "formal-arg-decls = ~A~%" formal-arg-decls)
-     (format t "arg-fcn-decls    = ~A~%" arg-fcn-decls)
+     ;;(format t "formal-arg-decls = ~A~%" formal-arg-decls)
      (when *relaxed-array-decls*
        ;; Old Fortran practice often declared arrays to functions to
        ;; have length 1.  Since Fortran didn't check array bounds,
@@ -2960,6 +2958,11 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.123  2005/05/26 16:00:40  rtoy
+;;; Don't create a declaration for a subprogram parameter if that
+;;; parameter is also used as a function.  This happens if the function
+;;; isn't declared external.
+;;;
 ;;; Revision 1.122  2005/03/28 20:38:02  rtoy
 ;;; Make strings with an element-type of character instead of base-char,
 ;;; in case the Lisp implementation has unicode support.
