@@ -999,10 +999,13 @@
 				 (remove vble *undeclared_vbles*))
 			   decl))
 		     (set-difference arglist *external-function-names*)))))
+     ;;(format t "*functions used* = ~S~%" *functions-used*)
      (let* ((var-decls nil)
 	    (var-type-list
 	      (mapcar #'(lambda (vble)
-			  (if (member vble *external-function-names*)
+			  (if (or (member vble *external-function-names*)
+				  (member vble *functions-used*
+					  :key #'caar))
 			      t
 			      (let ((decl
 				     (make-declaration vble :vble-is-formal-arg t)))
@@ -1025,6 +1028,7 @@
 	     (setf (f2cl-finfo-arg-types entry) var-type-list)
 	     (setf (gethash (second defun-bit) *f2cl-function-info*)
 		   (make-f2cl-finfo :arg-types var-type-list))))
+       (format t "var-decls        = ~A~%" var-decls)
        (setq formal-arg-decls
 	   (pretty-decls
 	    (append
@@ -1036,7 +1040,8 @@
 	     var-decls))))
        
 
-     ;; (format t "formal-arg-decls = ~A~%" formal-arg-decls)
+     (format t "formal-arg-decls = ~A~%" formal-arg-decls)
+     (format t "arg-fcn-decls    = ~A~%" arg-fcn-decls)
      (when *relaxed-array-decls*
        ;; Old Fortran practice often declared arrays to functions to
        ;; have length 1.  Since Fortran didn't check array bounds,
@@ -2955,6 +2960,10 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.122  2005/03/28 20:38:02  rtoy
+;;; Make strings with an element-type of character instead of base-char,
+;;; in case the Lisp implementation has unicode support.
+;;;
 ;;; Revision 1.121  2004/08/15 11:16:14  rtoy
 ;;; Don't want that eval-when there.
 ;;;
