@@ -188,35 +188,45 @@ INPUT-FILE               File containing Fortran code
 
 :VERBOSE                 verbose output. Default = NIL.
 :PRUNE-LABELS            Prune unused labels. Default = NIL.
-:INCLUDE-COMMENTS        Include Fortran comments in the Lisp output (May be buggy.)
+:INCLUDE-COMMENTS        Include Fortran comments in the Lisp output (May be
+                          buggy.)
                          Default = NIL
 :AUTO-SAVE               Variables in DATA statements are automatically SAVE'd.
                          Default = T.
-:RELAXED-ARRAY-DECLS     Declarations of array sizes are relaxed in formal parameters
-                         to functions. That is, any array length declarations are ignored
+:RELAXED-ARRAY-DECLS     Declarations of array sizes are relaxed in formal
+                          parameters
+                         to functions. That is, any array length declarations
+                          are ignored
                          if possible, like old Fortran used to. Default = T.
-:COERCE-ASSIGNS          If T or :ALWAYS, all assignment statements automatically coerce the
-                         RHS to the appropriate type for the assignment.  If NIL or :NEVER,
-                         coercion never happens.  Otherwise, coercion happens as needed.
-                         The Default = :AS-NEEDED
-:EXTENSION               The extension to use for the output file, if needed.  Defaults to
-                         *DEFAULT-LISP-EXTENSION* or \"lisp\"
-:KEEP-TEMP-FILE          If T, the temporary file is not deleted.  Default = NIL.
-:ARRAY-TYPE              The type of array f2cl should use.  Should be :simple-array or
-                         :array.
-:ARRAY-SLICING           When non-NIL, f2cl assumes that, whenever we do an array reference
-                         in a call to a subroutine or function, we are really passing a
-                         subarray to the routine instead of just the single value, unless
-                         f2cl knows the function takes a scalar arg that is not modified.
-:PACKAGE                 A string or symbol specifying what package the result code
-                         should be in. (Basically puts a (in-package <p>) at the top.)
+:COERCE-ASSIGNS          If T or :ALWAYS, all assignment statements
+                          automatically coerce the RHS to the appropriate
+                          type for the assignment.  If NIL or :NEVER,
+                          coercion never happens.  Otherwise, coercion happens
+                          as needed.
+                          The Default = :AS-NEEDED
+:EXTENSION               The extension to use for the output file, if needed.
+                          Defaults to *DEFAULT-LISP-EXTENSION* or \"lisp\"
+:KEEP-TEMP-FILE          If T, the temporary file is not deleted.
+                          Default = NIL.
+:ARRAY-TYPE              The type of array f2cl should use.  Should be
+                          :simple-array or :array.
+:ARRAY-SLICING           When non-NIL, f2cl assumes that, whenever we do an
+                          array reference in a call to a subroutine or
+                          function, we are really passing a subarray to the
+                          routine instead of just the single value, unless
+                          f2cl knows the function takes a scalar arg that
+                          is not modified.
+:PACKAGE                 A string or symbol specifying what package the
+                          resulting code should be in. (Basically puts a
+                          (in-package <p>) at the top.)
 :DECLAIM                 Declaim compilation options  (Basically puts a
-                         (declaim <declaim>) at the top.)
-:DECLARE-COMMON          When non-NIL, any structures defintions for common blocks are
-                         defined here. Otherwise, the structures for the common blocks
-                         are expected to be defined elsewhere.
-:FLOAT-FORMAT            Float format to use when printing the result.  Default is
-                         *READ-DEFAULT-FLOAT-FORMAT*
+                          (declaim <declaim>) at the top.)
+:DECLARE-COMMON          When non-NIL, any structures defintions for common
+                          blocks are defined here. Otherwise, the structures
+                          for the common blocks are expected to be defined
+                          elsewhere.
+:FLOAT-FORMAT            Float format to use when printing the result.
+                          Default is *READ-DEFAULT-FLOAT-FORMAT*
 "
 
 
@@ -466,6 +476,8 @@ FILENAME                 File containing Fortran code
 	    ;; Include the options used to compile the file.
 	    (format outport ";;; Compiled by f2cl version ~A~%"
 		    *f2cl-version*)
+	    (format outport ";;; Using Lisp ~A ~A~%"
+		    (lisp-implementation-type) (lisp-implementation-version))
 	    (let ((*print-case* :downcase))
 	      ;; Insert in-package and declaim, if needed
 	      (when options
@@ -2571,6 +2583,9 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.138  2005/05/19 15:09:32  rtoy
+;;; Gratuitous change to update the rev date.
+;;;
 ;;; Revision 1.137  2004/11/09 18:37:12  rtoy
 ;;; o Use compile-file-pathname for the output-file instead of T, because
 ;;;   that's a CMUCL extension.
