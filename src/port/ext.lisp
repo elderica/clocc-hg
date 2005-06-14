@@ -1,6 +1,6 @@
 ;;; Basic extensions: conditions, compositions &c
 ;;;
-;;; Copyright (C) 1999-2004 by Sam Steingold
+;;; Copyright (C) 1999-2005 by Sam Steingold
 ;;; This is open-source software.
 ;;; GNU Lesser General Public License (LGPL) is applicable:
 ;;; No warranty; you may copy/modify/redistribute under the same
@@ -11,23 +11,18 @@
 ;;; $Id$
 ;;; $Source$
 
-;;; Wrapped by Drew McDermott (so that some prior program can
-;;; define the :port package in Lisps that have lower-case symbols) --
-(eval-when (:compile-top-level :load-top-level :execute)
-   (cond ((not (find-package :port))
-	  (defpackage "PORT"
-	    (:use "COMMON-LISP")
-	    (:nicknames "ORG.CONS.CLOCC/SDS/PORT")
-	    (:export
-	     "CODE" "CASE-ERROR" "NOT-IMPLEMENTED" ; conditions
-	     "CODE-PROC" "CODE-MESG" "CODE-ARGS"   ; slot accessors
-	     "DEFSUBST" "DEFCUSTOM" "DEFCONST"
-	     "MK-ARR" "MAP-IN" "WITH-GENSYMS"
-	     "GC" "QUIT"
-	     "+EOF+" "EOF-P" "STRING-TOKENS" "REMOVE-PLIST"
-	     #-cmu "REQUIRED-ARGUMENT"
-	     "UNLOCK-PACKAGE" "RESTORE-PACKAGE-LOCK"
-	     "COMPOSE" "COMPOSE-SAFE" "COMPOSE-F" "COMPOSE-ALL")))))
+(defpackage #:port
+  (:use #:common-lisp)
+  (:nicknames #:org.cons.clocc/sds/port)
+  (:export #:code #:case-error #:not-implemented ; conditions
+	   #:code-proc #:code-mesg #:code-args   ; slot accessors
+           #:defsubst #:defcustom #:defconst
+           #:mk-arr #:map-in #:with-gensyms
+           #:gc #:quit
+           #:+eof+ #:eof-p #:string-tokens #:remove-plist
+           #-cmu #:required-argument
+           #:unlock-package #:restore-package-lock
+           #:compose #:compose-safe #:compose-f #:compose-all))
 
 (in-package :port)
 
