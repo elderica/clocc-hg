@@ -1,5 +1,8 @@
 $Id$
 	
+2005-06-17: Add feature pre-chunk, so that .lsy files can run under
+            either old YTools or YTools 2. (Version 1.4.9)
+
 2005-01-25: Add utility 'stream-indent' to outin.lisp            
 
 2004-11-07: Resurrected 'intercept' and 'pass' with improved type
