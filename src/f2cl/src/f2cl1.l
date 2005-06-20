@@ -16,7 +16,7 @@
 (defvar *comments* nil)
 (defparameter *f2cl-version*
   (remove #\$ "2.0 beta $Date$"))
- 
+
 (defvar *intrinsic-function-names*
   '(int ifix idint real float sngl dble cmplx ichar char aint dint
     anint dnint nint idnint iabs abs dabs cabs mod amod dmod isign sign dsign
@@ -2583,6 +2583,11 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.139  2005/06/01 15:29:41  rtoy
+;;; o Shorten the length of some lines in docstrings.
+;;; o As part of the header, print out the lisp implementation type and
+;;;   version.
+;;;
 ;;; Revision 1.138  2005/05/19 15:09:32  rtoy
 ;;; Gratuitous change to update the rev date.
 ;;;
