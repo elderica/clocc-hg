@@ -173,7 +173,7 @@
   #+abcl 'to-way-stream
   #+allegro 'excl::socket-stream
   #+clisp 'stream
-  #+(or cmu scl) 'stream:socket-simple-stream
+  #+(or cmu scl) 'stream ; '(or stream:socket-simple-stream sys:fd-stream)
   #+gcl 'stream
   #+lispworks 'comm:socket-stream
   #+openmcl 'ccl::socket
