@@ -10,7 +10,7 @@ SOURCES := animals base card check clhs closio date datedl doall elisp fileio \
 	fin geo gnuplot gq h2lisp html iter laser list log math miscprint \
 	octave rpm server simple sorted stat string symb tilsla url withtype \
 	inspect autoload htmlgen xml prompt matrix getopt tests cvs rng csv \
-	base64
+	base64 lift
 BASE = $(TOP)/clocc base auto
 NET = $(TOP)/clocc base url gq rpm
 SCRIPT = $(TOP)/clocc base getopt
