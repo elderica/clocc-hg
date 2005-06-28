@@ -41,3 +41,11 @@ cvs-stat: cvs.log
 	@fgrep "author:" cvs.log | wc -l;
 	$(RUNLISP) -i clocc -i src/cllib/base -i src/cllib/cvs \
 		-x '(funcall (intern "CVS-STAT-LOG" :cllib) "cvs.log")'
+
+tarname=clocc
+TARFILES=INSTALL Makefile README bin clocc.lisp clocc.mk etc src
+$(tarname).tgz: force
+	$(RM) $(tarname); $(LN) -s . $(tarname)
+	tar -zvhcf $@ $(addprefix $(tarname)/,$(TARFILES)) \
+		$(addprefix --exclude=,$(FASLFILES) $(JUNK) CVS .cvsignore)
+	$(RM) $(tarname)
