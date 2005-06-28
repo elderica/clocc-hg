@@ -24,6 +24,7 @@ DUMPEXT := $(shell $(RUNLISP) -dumpext)
 DO_DUMP := $(filter $(LISPTYPE),$(CLOCC_DUMP))
 FASLFILES = *.fas *.lib *.axpf *.x86f *.hpf *.sgif *.sparcf *.fasl \
 	*.o *.data *.ufsl *.abcl
+JUNK = core *.core *.mem *.dxl *.list *~ *.log
 LISPFILES = $(addsuffix .$(LISPEXT),$(SOURCES))
 DOCFILES += ChangeLog $(SYSTEM).list
 MAKEFILES = Makefile $(SYSTEM).system
@@ -87,7 +88,7 @@ $(SYSTEM).zip: $(DOCFILES) $(LISPFILES) $(MAKEFILES)
 	@$(RM) $(SYSTEM) extra $(notdir $(ZIPEXTRA)) $(notdir $(ZIPEXTRALINK));
 
 clean-all: force
-	$(RM) $(FASLFILES) core *.core *.mem *.dxl TAGS *.list
+	$(RM) $(FASLFILES) TAGS $(JUNK)
 
 clean:
 	$(RM) *.$(FASLEXT) core
