@@ -31,9 +31,9 @@
   (declare (type (simple-array * (*)) s0 s1)
            (type (function (t t) boolean) test lessp)
            (type (function (t) t) key))
-  (loop for v0 across s0 for v1 across s1 with z0 and z1 do
-        (setq z0 (funcall key v0) z1 (funcall key v1))
-        unless (funcall test z0 z1) return (funcall lessp z0 z1)))
+  (loop :for v0 :across s0 :and v1 :across s1
+    :for z0 = (funcall key v0) :and z1 = (funcall key v1)
+    :unless (funcall test z0 z1) :return (funcall lessp z0 z1)))
 
 (defsubst maj2ind (ls ix &optional (ii (make-list (length ls))))
   "Convert the row-major index IX to the list of indexes.
@@ -76,8 +76,9 @@ IDX is a simple vector of fixnums."
       (declare (fixnum ,sz ,len) (type (simple-array fixnum (*)) ,ls ,ii))
       (dotimes (,ix ,sz ,ret)
         (declare (fixnum ,ix))
-        (loop for zz fixnum from (- ,len 1) downto 0 with idx fixnum = ,ix do
-              (setf (values idx (aref ,ii zz)) (floor idx (aref ,ls zz))))
+        (loop :for zz :of-type fixnum :from (- ,len 1) :downto 0
+          :with idx :of-type fixnum = ,ix :do
+          (setf (values idx (aref ,ii zz)) (floor idx (aref ,ls zz))))
         ,@body))))
 
 ;;;
