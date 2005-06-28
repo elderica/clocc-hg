@@ -75,7 +75,7 @@
      (:file "symb" :depends-on ("base"))
      (:file "tests" :depends-on
             ("base" "string" "date" "url" "rpm" "elisp" "xml" "cvs" "munkres"
-             "matrix"))
+             "matrix" "simple" "iter"))
      (:file "tilsla" :depends-on ("base" "withtype"))
      (:file "url" :depends-on ("base" "withtype" "symb" "string" "fileio"
                                "log" "simple" "tilsla" "date"))
