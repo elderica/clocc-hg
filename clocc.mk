@@ -23,7 +23,7 @@ FASLEXT := $(shell $(RUNLISP) -faslext)
 DUMPEXT := $(shell $(RUNLISP) -dumpext)
 DO_DUMP := $(filter $(LISPTYPE),$(CLOCC_DUMP))
 FASLFILES = *.fas *.lib *.axpf *.x86f *.hpf *.sgif *.sparcf *.fasl \
-	*.o *.data *.ufsl
+	*.o *.data *.ufsl *.abcl
 LISPFILES = $(addsuffix .$(LISPEXT),$(SOURCES))
 DOCFILES += ChangeLog $(SYSTEM).list
 MAKEFILES = Makefile $(SYSTEM).system
