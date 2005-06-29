@@ -39,14 +39,11 @@
   "Convert the row-major index IX to the list of indexes.
 E.g.: (maj2ind (reverse (array-dimensions ARRAY)) INDEX LIST)"
   (declare (list ls ii) (fixnum ix))
-  (map-into ii
-            (lambda (dim)
-              (declare (type (unsigned-byte 15) dim))
-              (multiple-value-bind (xx vv) (floor ix dim)
-                (setq ix xx)
-                vv))
-            ls)
-  (nreverse ii))
+  (do ((ir ii (cdr ir)) (lr ls (cdr lr)))
+      ((endp lr) (nreverse ii))
+    (multiple-value-bind (xx vv) (floor ix (car lr))
+      (setq ix xx)
+      (setf (car ir) vv))))
 
 (defmacro do-iter-ls ((ii idx &optional ret) &body body)
   "Iterate over several indexes at once.
