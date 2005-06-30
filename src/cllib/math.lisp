@@ -423,7 +423,7 @@ The order in which the permutations are listed is either
       (0 (error "~S: no elements in the empty sequence ~S" 'draw distrib))
       (1
        (unless (= 1 (elt distrib 0))
-         (error "~S: ~S is not a probability distribution" 'draw distrib))
+         (error "~S: not a probability distribution: ~S" 'draw distrib))
        0)
       (t (let ((random (random 1s0)) (sum 0) (pos 0) (ret nil))
            (map nil (lambda (prob)
@@ -432,9 +432,14 @@ The order in which the permutations are listed is either
                         (setq ret pos))
                       (incf pos))
                 distrib)
-           (unless (= 1 sum)
-             (error "~S: ~S is not a probability distribution" 'draw distrib))
-           ret)))))
+           (when (>= (abs (- 1 sum)) short-float-epsilon)
+             (error "~S: not a probability distribution (~S /= 1): ~S"
+                    'draw sum distrib))
+           ;; the error should never happen:
+           ;; sum>1-short-float-epsilon ==> random<sum
+           (or ret (error "~S: internal error: pos=~D sum=~S random=~S diff=~S"
+                          'draw pos sum random
+                          (- 1 short-float-epsilon sum))))))))
 
 (defun pick (seq &optional distrib)
   "Return a random element from the sequence."
