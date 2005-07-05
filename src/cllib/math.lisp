@@ -31,7 +31,7 @@
    with-permutations-swap with-permutations-lex permutations-list subsets
    draw pick sample eval-cont-fract fract-approx
    *num-tolerance* *relative-tolerance* *absolute-tolerance*
-   dot poly1 poly erf cndf norm normalize rel-dist
+   dot poly1 poly erf cndf log-gamma norm normalize rel-dist
    mean mean-cx mean-weighted mean-geometric mean-geometric-weighted mean-some
    standard-deviation standard-deviation-cx standard-deviation-weighted
    standard-deviation-relative standard-deviation-mdl min+max
@@ -907,6 +907,21 @@ so that (poly 10 '(1 2 3 4 5)) ==> 12345."
 	  (* (/ (sqrt pi))
 	     (exp (- (* z z)))
 	     (continued-fraction 1 z #'num #'den))))))
+
+(defun log-gamma (x)
+  "log(gamma(x)), x>0
+Numerical Recipes 6.1."
+  (let ((tmp (+ x 5.5d0)))
+    (+ (log (/ (* #.(sqrt (* 2 (float pi 1d0)))
+                  (+ 1.000000000190015d0
+                     (/ 76.18009172947146d0 (+ x 1))
+                     (/ -86.50532032941677d0 (+ x 2))
+                     (/ 24.01409824083091d0 (+ x 3))
+                     (/ -1.231739572450155d0 (+ x 4))
+                     (/ 0.1208650973866179d-2 (+ x 5))
+                     (/ -0.5395239384953d-5 (+ x 6))))
+               x))
+       (- tmp) (* (+ x 0.5d0) (log tmp)))))
 
 
 (defun norm (seq &key (key #'value) (order 1))
