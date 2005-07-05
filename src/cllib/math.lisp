@@ -31,7 +31,7 @@
    with-permutations-swap with-permutations-lex permutations-list subsets
    draw pick sample eval-cont-fract fract-approx
    *num-tolerance* *relative-tolerance* *absolute-tolerance*
-   dot poly1 poly erf cndf log-gamma norm normalize rel-dist
+   dot poly1 poly erf cndf log-gamma beta norm normalize rel-dist
    mean mean-cx mean-weighted mean-geometric mean-geometric-weighted mean-some
    standard-deviation standard-deviation-cx standard-deviation-weighted
    standard-deviation-relative standard-deviation-mdl min+max
@@ -922,6 +922,10 @@ Numerical Recipes 6.1."
                      (/ -0.5395239384953d-5 (+ x 6))))
                x))
        (- tmp) (* (+ x 0.5d0) (log tmp)))))
+
+(defun beta (x y)
+  "Beta function = G(x)G(y)/G(x+y)"
+  (exp (- (+ (log-gamma x) (log-gamma y)) (log-gamma (+ x y)))))
 
 
 (defun norm (seq &key (key #'value) (order 1))
