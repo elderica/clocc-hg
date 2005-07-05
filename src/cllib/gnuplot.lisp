@@ -514,10 +514,12 @@ E.g.:
                      :data-style (or data-style (plot-data-style numpts)) opts)
     (format str "plot~{ '-' using 1:2 title \"~a\"~^,~}~%" (mapcar #'car fnl))
     (dolist (fn fnl)
+      (mesg :plot *gnuplot-msg-stream* "~&Plotting ~S..." (car fn))
       (dotimes (ii (1+ numpts) (format str "e~%"))
         (declare (type index-t ii))
         (let ((xx (dfloat (/ (+ (* ii xmax) (* (- numpts ii) xmin)) numpts))))
-          (format str "~f~20t~f~%" xx (funcall (cdr fn) xx)))))))
+          (format str "~f~20t~f~%" xx (funcall (cdr fn) xx))))
+      (mesg :plot *gnuplot-msg-stream* "done~%"))))
 
 ;;;###autoload
 (defun plot-dated-lists-depth (depth dls slot &rest opts)
