@@ -1030,7 +1030,8 @@ Numerical Recipes 6.2 (modified Lentz's method, 5.2)."
              (/ order)))))
 
 (defun normalize (seq &optional (norm #'norm))
-  "Make the SEQ have unit norm. Drop nils."
+  "Make sure the SEQ have unit NORM.
+Return the modified SEQ and the original NORM."
   (declare (sequence seq) (type (or real (function (t) double-float)) norm))
   (setq seq (delete nil seq))
   (let ((nn (etypecase norm
@@ -1038,7 +1039,8 @@ Numerical Recipes 6.2 (modified Lentz's method, 5.2)."
               (function (funcall norm seq)))))
     (declare (double-float nn))
     (assert (> nn 0) (seq) "Zero norm vector: ~a" seq)
-    (map-in (lambda (rr) (declare (double-float rr)) (/ rr nn)) seq)))
+    (values (map-into seq (lambda (rr) (/ rr nn)) seq)
+            nn)))
 
 (defun rel-dist (seq1 seq2 &key (key #'value) (start1 0) (start2 0) depth)
   "Return the square of the relative mismatch between the 2 sequences."
