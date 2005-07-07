@@ -162,8 +162,8 @@ Arguments are 2 sequences instantiating the same (or different?) distributions."
     (values chi2 df)))
 
 (defun chi2-prob (chi2 df)
-  "Return the probability that this CHI2/DF score is NOT a random fluke."
-  (incomplete-gamma (/ df 2) (/ chi2 2)))
+  "Return the probability that this CHI2/DF score is just a random fluke."
+  (- 1 (incomplete-gamma (/ df 2) (/ chi2 2))))
 
 (defun chi2-1-ui (sample distrib &key (out *standard-output*)
                   (sample-name "Sample") (distrib-name "Distribution"))
