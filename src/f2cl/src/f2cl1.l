@@ -260,6 +260,7 @@ INPUT-FILE               File containing Fortran code
 	(*declare-common-blocks* declare-common)
 	(*assigned-variables* nil)
 	(*entry-points* nil)
+	(*equivalenced-vars* nil)
 	(*float-format* float-format)
 	(*common-blocks-as-arrays* common-as-array))
 
@@ -2656,6 +2657,15 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.142  2005/07/14 21:38:58  rtoy
+;;; o Change default array-type in F2CL to be the same as F2CL-COMPILE.
+;;;
+;;; o Add support for some EQUIVALENCE statements.  We can handle
+;;;   equivalence statements that equivalence an array (element) to a
+;;;   simple variable of the same type.  Everything else will cause an
+;;;   error.  This is much better than putting a silly "not-translated"
+;;;   string into the generated lisp file.
+;;;
 ;;; Revision 1.141  2005/07/14 17:29:28  rtoy
 ;;; Make f2cl a little smarter when calling functions if f2cl knows the
 ;;; expected arg types of the function.  If the arg type is a simple
