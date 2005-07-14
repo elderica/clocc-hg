@@ -25,7 +25,7 @@
 (export
  '(mulf divf sqr triangle
    ! !! stirling fibonacci ruler primes-to divisors primep
-   product-from-to binomial *primes* *primes-file*
+   product-from-to binomial binomial-mod2 *primes* *primes-file*
    make-primes-list number-sum-split all-num-split
    vector-shuffle permutation with-permutations-shuffle
    with-permutations-swap with-permutations-lex permutations-list subsets
@@ -105,6 +105,15 @@
     :for jj :downfrom nn
     :do (mulf res (/ jj ii))
     :finally (return res)))
+
+(declaim (ftype (function (integer integer) (values bit)) binomial-mod2))
+(defun binomial-mod2 (nn kk)
+  "Compute the binomial coefficient (mod 2) for two integers.
+This is equivalent to (mod (binomial nn kk) 2) but faster."
+  (declare (integer nn kk))
+  ;; Lucas's Theorem => even iff all non-0 digits of K are also non-0 in N
+  ;; same as (= nn (logior nn kk)), but since K is smaller, this is faster:
+  (if (= kk (logand nn kk)) 1 0))
 
 (declaim (ftype (function (integer) (values integer)) ! !!))
 (defun ! (nn)
