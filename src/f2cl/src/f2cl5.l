@@ -985,6 +985,51 @@
 	(values (nreverse new-saves)
 		(nreverse new-data)))))
 
+(defun verify-and-generate-equivalences ()
+  ;; Look over equivalences and see if we can handle them.  Right now,
+  ;; we can only handle equivalences of the form (array, simple) or
+  ;; (simple, array), and they must have the same type.
+  ;;
+  ;; So, if we have something like (x, y(4)), we can use a
+  ;; symbol-macrolet to make x equivalent to y(4).
+  (flet ((verify-types (array b)
+	   #+nil
+	   (progn
+	     (format t "Type of array: ~A = ~A (~A)~%" array (lookup-vble-type array)
+		     (vble-is-array-p array))
+	     (format t "Type of a: ~A = ~A~%" b (lookup-vble-type b))
+	     (format t "explicit-vars = ~A~%" *explicit_vble_decls*)
+	     (format t "*declared_vbles* = ~A~%" *declared_vbles*))
+	   (assert (vble-is-array-p array))
+	   (let ((a-type (lookup-vble-type array))
+		 (b-type (lookup-vble-type b)))
+	     (unless (eq a-type b-type)
+	       (error "f2cl cannot equivalence variables of different types: ~A (~A) and ~A (~A)"
+		      array a-type b b-type))))
+	 (gen-fref (a)
+	   a))
+    (let (res simple)
+      (dolist (equiv *equivalenced-vars*)
+	(cond ((and (symbolp (first equiv))
+		    (listp (second equiv))
+		    (eq (car (second equiv)) 'fref))
+	       ;; (simple, array)
+	       ;; We want (symbol-macrolet (simple expansion))
+	       (verify-types (second (second equiv)) (first equiv))
+	       (push `(,(first equiv) ,(gen-fref (second equiv))) res)
+	       (push (first equiv) simple))
+	      ((and (symbolp (second equiv))
+		    (listp (first equiv))
+		    (eq (car (first equiv)) 'fref))
+	       ;; (array, simple)
+	       (verify-types (second (first equiv)) (second equiv))
+	       (push `(,(second equiv) ,(gen-fref (first equiv))) res)
+	       (push (second equiv) simple))
+	      (t
+	       (error "f2cl cannot handle EQUIVALENCE of ~A and ~A~%"
+		      (first equiv) (second equiv)))))
+      (values (nreverse res) (nreverse simple)))))
+
 
 (defun insert-declarations (fort-fun) 
   (prog (defun-bit arglist prog-bit formal-arg-decls common_var_decls
@@ -998,7 +1043,7 @@
 		   key-params-decls
 		   all-decls
 		   additional-args
-		   entry-points)
+		   entry-points equivalences)
 
      (setq defun-bit (list (car fort-fun) (cadr fort-fun))
 	   arglist (caddr fort-fun)
@@ -1607,6 +1652,29 @@
 		     ,body)))))
 	 ;;(format t "formal-arg-decls = ~A~%" formal-arg-decls)
 
+	 (when *equivalenced-vars*
+	   (multiple-value-bind (equiv simple-vars)
+	       (verify-and-generate-equivalences)
+	     ;;(setf equivalences equiv)
+	     ;;(format t "equivalences = ~A~%" equivalences)
+
+	     ;; We need to go through prog-bit and remove any
+	     ;; initializations and declarations of the simple-vars
+	     ;; that were equivalenced.  Otherwise the initialization
+	     ;; will very likely mess up the equivalence.
+
+	     ;;(format t "prog = ~A~%" (second prog-bit))
+	     (let ((fixed (remove-if #'(lambda (x)
+					 (member x simple-vars))
+				     (second prog-bit)
+				     :key #'first)))
+	       ;;(format t "inits = ~A~%" (second prog-bit))
+	       ;;(format t "fixed = ~A~%" fixed)
+	       (setf prog-bit `(prog ,fixed ,@(cddr prog-bit))))
+	     
+	     (setf prog-bit `(symbol-macrolet ,equiv
+			       ,prog-bit))))
+
 	 ;; If array-slicing is not used and the array-type is
 	 ;; :simple-array, we don't need the with-array-data stuff
 	 ;; because we couldn't have sliced the array.
@@ -1680,8 +1748,8 @@
 	  (multiple-value-bind (sym-macs sym-lets)
 	      (create-sym-macros)
 	    (setf prog-bit `(let ,sym-lets
-			     (symbol-macrolet ,sym-macs ,prog-bit)))))
-
+			      (symbol-macrolet ,sym-macs ,prog-bit)))))
+	
 	;; Handle entry points.
 	(let* ((defun (if *entry-points* 'labels 'defun))
 	       (defun-name (if *entry-points*
@@ -1711,7 +1779,7 @@
 				  ,@key-params-decls
 				  ,save-stuff)
 				save-stuff)))
-       
+	  ;;(format t "param-stuff = ~A~%" param-stuff)
 	  (return 
 	    (values common-blocks
 		    (when common-blocks
@@ -3040,6 +3108,22 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.125  2005/06/20 01:53:39  rtoy
+;;; Add code to try to merge the data statement initializers into the
+;;; declaration of the saved variable itself instead of generating a bunch
+;;; of fset forms.
+;;;
+;;; See NOTES for more detail.
+;;;
+;;; src/NOTES:
+;;; o Describe change
+;;;
+;;; src/f2cl5.l:
+;;; o (Gross) Implementation
+;;;
+;;; src/f2cl1.l:
+;;; o Update version.
+;;;
 ;;; Revision 1.124  2005/05/26 19:18:00  rtoy
 ;;; Oops.  Remove some extraneous debugging outputs.
 ;;;

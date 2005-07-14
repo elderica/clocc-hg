@@ -141,6 +141,10 @@ generating function calls and setting the argument values
 correctly. If the database is incorrect, the function call will be
 incorrect, so use caution.")
 
+(defvar *equivalenced-vars* nil
+  "List of equivalenced variables.  Each entry of the list is a list
+  consisting of the equivalenced variables.")
+
 (defstruct f2cl-finfo
   arg-types return-values calls)
 
@@ -167,14 +171,15 @@ incorrect, so use caution.")
 
 ;----------------------------------------------------------------------------
 
-(defun f2cl (input-file &key output-file verbose prune-labels include-comments
+(defun f2cl (input-file &key
+	                output-file verbose prune-labels include-comments
 			(auto-save t) (relaxed-array-decls t)
 			(coerce-assigns :as-needed)
 			(extension (or *default-lisp-extension* "lisp"))
 			keep-temp-file
-			(array-type :simple-array array-type-p)
+			(array-type :array array-type-p)
 			(array-slicing t)
-			package
+			(package :common-lisp-user)
 			declaim
 			declare-common
 			(float-format *read-default-float-format*)
@@ -985,6 +990,10 @@ FILENAME                 File containing Fortran code
      (when (eq (car x) 'stop)
        (return nil))
 
+     ;; Equivalence
+     (when (eq (car x) 'equivalence)
+       (return (parse-equivalence x)))
+     
      ;; Handle Fortran comments that were converted by the
      ;; preprocessor to be (fortran_comment "comment string").
      ;;
@@ -2226,6 +2235,32 @@ FILENAME                 File containing Fortran code
          (append *external-function-names* (remove '|,| (cdr x))))
    nil)
 
+;; parse EQUIVALENCE (x1,y1), (x2, y2), ...
+#+nil
+(defun parse-equivalence (x)
+  (format t "equivalence ~A~%" x)
+  (let ((pairs (mapcar #'car (list-split '|,| (cdr x)))))
+    (setf *equivalenced-vars* (mapcar #'(lambda (l)
+					  (list-split '|,| l))
+				      pairs))
+    (format t "~A~%" *equivalenced-vars*)
+    nil))
+
+(defun parse-equivalence (x)
+  ;;(format t "equivalence ~A~%" x)
+  (let ((vars (mapcar #'(lambda (l)
+			  (list-split '|,| l))
+		      (mapcar #'car (list-split '|,| (cdr x))))))
+    ;;(format t "~A~%" *equivalenced-vars*)
+    (setf *equivalenced-vars* vars)
+    (setf *equivalenced-vars* 
+	  (mapcar #'(lambda (l)
+		      `(,(parse-expression (first l))
+			 ,(parse-expression (second l))))
+		  vars))
+    ;;(format t "~A~%" *equivalenced-vars*)
+    nil))
+
 ;=============================================================================
 ;parsing utilities 
 
@@ -2621,6 +2656,12 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.141  2005/07/14 17:29:28  rtoy
+;;; Make f2cl a little smarter when calling functions if f2cl knows the
+;;; expected arg types of the function.  If the arg type is a simple
+;;; variable and the actual arg is an array slice, convert the slice to an
+;;; array reference.
+;;;
 ;;; Revision 1.140  2005/06/20 01:53:39  rtoy
 ;;; Add code to try to merge the data statement initializers into the
 ;;; declaration of the saved variable itself instead of generating a bunch
