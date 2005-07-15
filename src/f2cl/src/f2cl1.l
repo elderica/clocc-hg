@@ -1133,7 +1133,16 @@ FILENAME                 File containing Fortran code
 (defun id-if-goto (x) (unify x '(if %pred goto %label) nil)) 
 ;(defun id-if-assignment (x) (and (eq (car x) 'if) (member '= x :test #'eq))) 
 ;(defun id-if-pause (x) (and (eq (car x) 'if) (member 'pause x :test #'eq))) 
-(defun id-if (x) (eq (car x) 'if))
+
+(defun id-if (x)
+  ;; Is this an IF statement?
+  (cond ((eq (car x) 'if)
+	 ;; But "IF =" is definitely not.  Assume everything else is.
+	 ;; This needs more work.
+	 (not (eq (second x) '=)))
+	(t
+	 nil)))
+
 (defun id-else (x) (eq (car x) 'else)) 
 ;; elseif can be written either as "ELSE IF" or "ELSEIF"
 (defun id-else-if (x)
@@ -2657,6 +2666,10 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.143  2005/07/14 21:44:09  rtoy
+;;; Oops.  Need to clear out *equivalenced-vars* on every call to f2cl, so
+;;; we don't get old info!
+;;;
 ;;; Revision 1.142  2005/07/14 21:38:58  rtoy
 ;;; o Change default array-type in F2CL to be the same as F2CL-COMPILE.
 ;;;
