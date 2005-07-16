@@ -1629,7 +1629,7 @@ FILENAME                 File containing Fortran code
 (defun generate-call-to-routine (routine arglist &optional return)
   (multiple-value-bind (routine-name finfo)
       (if (eq (first routine) 'funcall)
-	  (values routine (gethash (second routine) *f2cl-function-info*))
+	  (values routine nil)
 	  (let ((checked (check-reserved-lisp-names (first routine))))
 	    (values (list checked)
 		    (gethash checked *f2cl-function-info*))))
@@ -2666,6 +2666,10 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.144  2005/07/15 15:28:07  rtoy
+;;; Make the parser for IF statements a little smarter.  "IF =" is not an
+;;; IF statement.
+;;;
 ;;; Revision 1.143  2005/07/14 21:44:09  rtoy
 ;;; Oops.  Need to clear out *equivalenced-vars* on every call to f2cl, so
 ;;; we don't get old info!
