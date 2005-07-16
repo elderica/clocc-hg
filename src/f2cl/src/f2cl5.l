@@ -93,12 +93,18 @@
 	       (t
 		(pushnew (check-reserved-lisp-names exprs) *undeclared_vbles*))))
 	((listp exprs)
-	 ;; Function calls get turned into a MULTIPLE-VALUE-BIND, so
-	 ;; the only possible place for variables is the arg list for
-	 ;; the function.
-	 (if (eq (first exprs) 'multiple-value-bind)
-	     (mapc #'check_new_vbles (cddr (third exprs)))
-	     (mapc #'check_new_vbles exprs)))
+	 (cond ((eq (first exprs) 'multiple-value-bind)
+		;; Function calls get turned into a MULTIPLE-VALUE-BIND, so
+		;; the only possible place for variables is the arg list for
+		;; the function.
+		(mapc #'check_new_vbles (cddr (third exprs))))
+	       ((eq (first exprs) 'array-slice)
+		;; The only place for variables is the array name or
+		;; the indices
+		(check_new_vbles (second exprs))
+		(mapc #'check_new_vbles (cdddr exprs)))
+	       (t
+		(mapc #'check_new_vbles exprs))))
 	(t
 	 (error "What happened?")))
   exprs)
@@ -3108,6 +3114,15 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.126  2005/07/14 21:38:58  rtoy
+;;; o Change default array-type in F2CL to be the same as F2CL-COMPILE.
+;;;
+;;; o Add support for some EQUIVALENCE statements.  We can handle
+;;;   equivalence statements that equivalence an array (element) to a
+;;;   simple variable of the same type.  Everything else will cause an
+;;;   error.  This is much better than putting a silly "not-translated"
+;;;   string into the generated lisp file.
+;;;
 ;;; Revision 1.125  2005/06/20 01:53:39  rtoy
 ;;; Add code to try to merge the data statement initializers into the
 ;;; declaration of the saved variable itself instead of generating a bunch
