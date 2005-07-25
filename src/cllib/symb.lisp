@@ -12,7 +12,7 @@
 
 (in-package :cllib)
 
-(export '(symbol-concat symbol-append re-intern
+(export '(symbol-concat symbol-append re-intern symbol-copy
           +kwd+ kwd keyword-concat read-key keyword= kill-symbol reset-package))
 
 ;;(defmacro symbol-concat (&rest args)
@@ -35,6 +35,25 @@
     (when pack
       (unintern symbol pack)
       (intern (symbol-name symbol) pack))))
+
+(defun symbol-copy (symbol)
+  "Copy a symbol, appending COPY-1 (or incrementing the count)."
+  (let* ((name (symbol-name symbol))
+         (pos-dash (position #\- name :from-end t))
+         (pos-num (and pos-dash (1+ pos-dash)))
+         (pos-copy (and pos-dash
+                        (position #\- name :from-end t :end pos-dash)))
+         (num (and pos-copy
+                   (string-equal name '#:copy :start1 (1+ pos-copy)
+                                 :end1 pos-dash)
+                   (parse-integer name :start pos-num :junk-allowed t))))
+    (intern
+     (if num
+         (with-output-to-string (out)
+           (write-string name out :end pos-num)
+           (write (1+ num) :stream out))
+         (concatenate 'string name (symbol-name '#:-copy-1)))
+     (symbol-package symbol))))
 
 (defconst +kwd+ package (find-package :keyword) "The KEYWORD package.")
 
