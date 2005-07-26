@@ -1052,10 +1052,7 @@
 	      (member vble *functions-used*
 		      :key #'caar))
 	  (push t var-type-list)
-	(let ((decl
-	       (if declare-vars
-		   (make-declaration vble :vble-is-formal-arg t)
-		   nil)))
+	(let ((decl (make-declaration vble :vble-is-formal-arg t)))
 	  (destructuring-bind (declare-sym (type-sym type var))
 	      decl
 	    (declare (ignore declare-sym type-sym var))
@@ -3160,6 +3157,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.129  2005/07/17 02:17:42  rtoy
+;;; Don't try to declare a function if the function was a parameter.  We don't really know anything about the function.
+;;;
 ;;; Revision 1.128  2005/07/16 22:43:48  rtoy
 ;;; Make sure entry points are also entered into the function database.
 ;;;
