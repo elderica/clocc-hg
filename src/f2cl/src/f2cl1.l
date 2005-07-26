@@ -72,7 +72,7 @@
 ;;------------------------------------------------------------------------------
 
 (eval-when (compile load eval)
-  (proclaim '(special *readtable* *sentable*))
+  (proclaim '(special *sentable*))
   (proclaim '(special *external-function-names*
 	      *undeclared_vbles* *declared_vbles* *implicit_vble_decls*
 	      *subprog-arglist* *data-init*
@@ -2666,6 +2666,12 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.145  2005/07/16 15:11:55  rtoy
+;;; In GENERATE-CALL-TO-ROUTINE, if the routine is a parameter, we don't
+;;; really know anything about it even if we know the info about a routine
+;;; of the same name.  Thus, there's nothing we can do except just call it
+;;; and hope it's right.  (We warn the user, though!)
+;;;
 ;;; Revision 1.144  2005/07/15 15:28:07  rtoy
 ;;; Make the parser for IF statements a little smarter.  "IF =" is not an
 ;;; IF statement.
