@@ -32,7 +32,8 @@
    draw pick sample eval-cont-fract fract-approx
    *num-tolerance* *relative-tolerance* *absolute-tolerance*
    dot poly1 poly norm normalize rel-dist
-   erf cndf log-gamma beta incomplete-gamma *max-iterations*
+   erf erfc erfcx cndf cndf-tail
+   log-gamma beta incomplete-gamma *max-iterations*
    mean mean-cx mean-weighted mean-geometric mean-geometric-weighted mean-some
    standard-deviation standard-deviation-cx standard-deviation-weighted
    standard-deviation-relative standard-deviation-mdl min+max
