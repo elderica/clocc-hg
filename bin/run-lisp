@@ -304,6 +304,7 @@ case "$1" in
                     (multiple-value-setq (.res .cond)
                        (ignore-errors (progn $todo
                                         (fresh-line) (finish-output))))
+                    (when .cond (princ .cond))
                     (unix:unix-exit (if .cond 1 0))))"
           test -z "$image" || image="-core ${image}.core";
           exec ${CMUCL-lisp} -noinit ${image} -eval "$todo"
@@ -325,6 +326,7 @@ case "$1" in
                     (multiple-value-setq (.res .cond)
                        (ignore-errors (progn $todo
                                         (fresh-line) (finish-output))))
+                    (when .cond (princ .cond))
                     (sb-ext:quit :unix-status (if .cond 1 0))))"
           test -z "$image" || image="-core ${image}.core";
           exec ${SBCL:-sbcl} --userinit /dev/null ${image} --eval "$todo"
