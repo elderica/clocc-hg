@@ -85,7 +85,7 @@ or does not contain valid compiled code."
   (with-open-file (in file-name :direction :input :if-does-not-exist nil)
     (handler-bind ((error (lambda (c) (declare (ignore c))
                                   (return-from compiled-file-p nil))))
-      (and in (char= #\( (peek-char nil in))
+      (and in (char= #\( (peek-char nil in nil #\a))
            (let ((form (read in nil nil)))
              (and (consp form)
                   (eq (car form) 'SYSTEM::VERSION)
