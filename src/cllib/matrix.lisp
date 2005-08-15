@@ -30,7 +30,7 @@
 (export '(matrix-print matrix-to-file matrix-from-file random-matrix
           matrix-multiply array-copy array-lin-comb dimension
           matrix-id matrix-id-p matrix-transpose matrix-symmetric-p bilinear
-          array-slice array-marginal
+          array-slice array-marginal array-dist
           matrix-solve-lower matrix-solve-upper matrix-solve-lu
           matrix-solve-lup matrix-lup
           matrix-solve matrix-inverse))
