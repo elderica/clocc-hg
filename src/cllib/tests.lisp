@@ -260,7 +260,8 @@
                 (2430 2445 2460 2475 2490 2505)
                 (2880 2895 2910 2925 2940 2955)
                 (3330 3345 3360 3375 3390 3405))))
-      (mesg :test out " ** ~S: ~:D error~:P~2%" 'test-matrix error-count))))
+      (mesg :test out " ** ~S: ~:D error~:P~2%" 'test-matrix error-count))
+    error-count))
 
 (defun test-munkres (&key (out *standard-output*))
   (let ((num-err 0)
