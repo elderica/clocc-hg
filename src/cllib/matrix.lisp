@@ -22,7 +22,7 @@
   (require :cllib-withtype (translate-logical-pathname "cllib:withtype"))
   ;; `do-iter-ls'
   (require :cllib-iter (translate-logical-pathname "cllib:iter"))
-  ;; `divf'
+  ;; `divf', `norm-functions'
   (require :cllib-math (translate-logical-pathname "cllib:math")))
 
 (in-package :cllib)
@@ -192,6 +192,20 @@ Similar to Matlab `:'."
       ;; this AREF in LAMBDA means that we must use DO-ITER and not DO-ITER-LS
       (map-into idx-ret (lambda (idx) (aref ii idx)) index-list)
       (incf (apply #'aref ret idx-ret) (apply #'aref arr idx-arr)))))
+
+(defun array-dist (arr1 arr2 &key (key #'value) (order 1))
+  "Compute the distance between arguments and their norms, pointwise."
+  (unless (equal (array-dimensions arr1) (array-dimensions arr2))
+    (error 'dimension :proc 'array-dist :args
+           (list (array-dimensions arr1) (array-dimensions arr2))))
+  (let ((dist 0) (norm1 0) (norm2 0))
+    (multiple-value-bind (pre combine post) (norm-functions order key)
+      (dotimes (ii (array-total-size arr1))
+        (let ((v1 (row-major-aref arr1 ii)) (v2 (row-major-aref arr2 ii)))
+          (setq dist (funcall combine dist (funcall pre (- v1 v2)))
+                norm1 (funcall combine dist (funcall pre v1))
+                norm2 (funcall combine dist (funcall pre v2)))))
+      (values (funcall post dist) (funcall post norm1) (funcall post norm2)))))
 
 ;;;
 ;;; linear combinations
