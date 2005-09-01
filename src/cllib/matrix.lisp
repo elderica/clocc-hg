@@ -30,7 +30,7 @@
 (export '(matrix-print matrix-to-file matrix-from-file random-matrix
           matrix-multiply array-copy array-lin-comb dimension
           matrix-id matrix-id-p matrix-transpose matrix-symmetric-p bilinear
-          array-slice array-marginal array-dist
+          array-slice array-marginal array-dist list-to-array
           matrix-solve-lower matrix-solve-upper matrix-solve-lu
           matrix-solve-lup matrix-lup
           matrix-solve matrix-inverse))
@@ -207,6 +207,16 @@ Similar to Matlab `:'."
                 norm1 (funcall combine norm1 (funcall pre v1))
                 norm2 (funcall combine norm2 (funcall pre v2)))))
       (values (funcall post dist) (funcall post norm1) (funcall post norm2)))))
+
+(defun list-to-array (list dims)
+  "Convert the list to an array of given dimensions, assuming row-major order."
+  (let* ((arr (make-array dims)) (sz (array-total-size arr)))
+    (unless (= (length list) sz)
+      (error "~S: list/dimension mismatch: ~:D /= ~:D ~S"
+             'list-to-array (length list) sz dims))
+    (loop :for el :in list :for i :upfrom 0
+      :do (setf (row-major-aref arr i) el))
+    arr))
 
 ;;;
 ;;; linear combinations
