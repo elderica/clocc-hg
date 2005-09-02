@@ -464,20 +464,21 @@ The third value is the number of sub-elements"
  (do-xmlo-data (v zz)
     (\"foo\" bar)
     (\"zot\" baz))"
-  (let (names got-t)
+  (let (names got-t (data-name (gensym "DO-XMLO-DATA-")))
     `(dolist (,var (xmlo-data ,obj) ,ret)
-       (cond
-         ,@(mapcar (lambda (form)
-                     (let ((name (car form)))
-                       (cond ((stringp name)
-                              (push name names)
-                              (cons `(string-equal ,name (xmlo-nm ,var))
-                                    (cdr form)))
-                             (t (setq got-t t) form))))
-                   forms)
-         ,@(unless got-t
-             `((t (cerror "ignore" "~S in ~S, expected one of ~S"
-                          ,var ,obj ',names))))))))
+       (let ((,data-name (xmlo-name ,var)))
+         (cond
+           ,@(mapcar (lambda (form)
+                       (let ((name (car form)))
+                         (cond ((stringp name)
+                                (push name names)
+                                (cons `(xmln= ,name ,data-name)
+                                      (cdr form)))
+                               (t (setq got-t t) form))))
+                     forms)
+           ,@(unless got-t
+               `((t (cerror "ignore" "~S in ~S, expected one of ~S"
+                            ,var ,obj ',names)))))))))
 
 ;;;
 ;;; XML streams
