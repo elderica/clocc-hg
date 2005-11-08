@@ -120,8 +120,8 @@ BEWARE!"
   (let ((pack (symbol-package symbol)) var)
     (unintern symbol)
     (setq var (intern (symbol-name symbol) pack))
-    (setf (fdefinition var) (fdefinition symbol)
-          (symbol-plist var) (symbol-plist symbol))
+    (when (fboundp symbol) (setf (fdefinition var) (fdefinition symbol)))
+    (setf (symbol-plist var) (symbol-plist symbol))
     var))
 
 (defun arglist (fn)
