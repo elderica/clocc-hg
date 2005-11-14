@@ -85,13 +85,13 @@ This carries the function name which makes the error message more useful."))
       `(make-array (length ,init) :element-type ,type
         :initial-contents ,init)))
 
-(defmacro with-gensyms (syms &body body)
-  "Bind symbols to gensyms.  First sym is a string - `gensym' prefix.
+(defmacro with-gensyms ((title &rest names) &body body)
+  "Bind symbols in NAMES to gensyms.  TITLE is a string - `gensym' prefix.
 Inspired by Paul Graham, <On Lisp>, p. 145."
   `(let (,@(mapcar (lambda (sy)
-                     `(,sy (gensym ,(concatenate 'string (car syms)
+                     `(,sy (gensym ,(concatenate 'string title
                                                  (symbol-name sy) "-"))))
-                   (cdr syms)))
+                   names))
      ,@body))
 
 (defmacro map-in (fn seq &rest seqs)
