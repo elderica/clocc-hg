@@ -226,7 +226,7 @@
     (when (member ent '("pi") :test #'string=)
       (setq ent (concatenate 'string ent "-v"))) ; variable
     (format
-     out "<!ENTITY ~a \"<ulink url='&clhs;/Body/~a'><~a>~a</~a></ulink>\">~%"
+     out "<!ENTITY ~a '<ulink url=\"&clhs;/Body/~a\"><~a>~a</~a></ulink>'>~%"
      ent html font xml-name font)))
 
 (defun clhs-write-entities (file)
@@ -247,7 +247,7 @@
         (dolist (il *clhs-issues*)
           (incf count-i)
           (let ((path (second il)))
-            (format str "<!ENTITY ~A \"<ulink url='&clhs;~A'>~A</ulink>\">~%"
+            (format str "<!ENTITY ~A '<ulink url=\"&clhs;~A\">~A</ulink>'>~%"
                     (subseq path (1+ (position #\/ path :from-end t))
                             (position #\. path :from-end t))
                     path (xmlize-string (first il)))))
