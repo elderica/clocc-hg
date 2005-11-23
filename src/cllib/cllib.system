@@ -78,7 +78,7 @@
              "matrix" "simple" "iter"))
      (:file "tilsla" :depends-on ("base" "withtype"))
      (:file "url" :depends-on ("base" "withtype" "symb" "string" "fileio"
-                               "log" "simple" "tilsla" "date"))
+                               "log" "simple" "tilsla" "date" "base64"))
      (:file "withtype" :depends-on ("base"))
      (:file "xml" :depends-on
             ("base" "string" "withtype" "closio" "log" "fileio" "url")))
