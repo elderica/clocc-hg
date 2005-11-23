@@ -1,5 +1,4 @@
 ;;; Base64 encoding and decoding
-;;; <http://rfc.net/rfc1421.html>
 ;;; <http://rfc.net/rfc2045.html>
 ;;;
 ;;; Copyright (C) 2004 by Sam Steingold
@@ -68,6 +67,7 @@
 
 ;;;###autoload
 (defun base64-decode (str &optional buffer)
+  "Decode the string into a vector of bytes."
   (let* ((str-len (length str)) quotient remainder vec vec-len full-top
          (=count
           (if (and (> str-len 0) (char= #\= (char str (- str-len 1))))
@@ -107,5 +107,5 @@
         (0))                    ; golden!
       vec)))
 
-(provide :base64)
+(provide :cllib-base64)
 ;;; file base64.lisp ends here
