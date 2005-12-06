@@ -210,7 +210,7 @@
             ((type-is 'dec) ; declaratons
              (setq font "literal" ent (concatenate 'string ent "-dec")))
             ((type-is 'glo) ; glossary
-             (setq font "literal" ent (concatenate 'string ent "-glo")))
+             (setq font "replaceable" ent (concatenate 'string ent "-glo")))
             ((type-is 'any) ; selection
              (setq font "literal" ent (concatenate 'string ent "-any")))
             ((char= #\& (char ent 0))
