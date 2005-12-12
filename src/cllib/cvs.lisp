@@ -280,7 +280,10 @@ Careful - this will return a huge list!"
 ;;;###autoload
 (defun cvs-change-root (root substitutions &key (dry-run nil) (log t))
   "Change Root and Repository files in the CVS directories under ROOT.
-When `DRY-RUN' is non-NIL, no actual changes are done."
+When `DRY-RUN' is non-NIL, no actual changes are done.
+This is a Lisp version of
+  find -path '.*/CVS/Root' -print0 | xargs -0 perl -i -p -e 's/from/to/'
+with some trivial bells and whistles."
   (flet ((change-one-line (file substitutions)
            (let ((line (with-open-file (in file) (read-line in))))
              (mesg :log log "~s:~%" file)
