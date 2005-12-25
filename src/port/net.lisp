@@ -322,7 +322,7 @@
   #+lispworks (let ((mbox (mp:make-mailbox :size 1)))
                 (make-socket-server
                  :mbox mbox :port port
-                 :proc (comm:start-up-server-and-mp
+                 :proc (comm:start-up-server
                         :function (lambda (sock) (mp:mailbox-send mbox sock))
                         :service port)))
   #+mcl
