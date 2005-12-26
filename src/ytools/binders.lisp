@@ -17,19 +17,30 @@
 
 ;; BIND: Like LET, but binds special variables
 
+;;;;(defparameter built-in-globals* 
+;;;;    '(*print-level* *print-length* *print-circle*
+;;;;      *package* *readtable* *print-case*))
+
+;;;;(defparameter lisp-package* (find-package :common-lisp))
+
 (defmacro bind (vars-n-vals &body body)
-  ;; use normal let
-  `(let ,vars-n-vals
-     ;; if bindings, declare variables to be special
-     ,@(if (not (null vars-n-vals))
-         `((cl:declare (special
-                          ,@(mapcar #'(lambda (var-n-val)
-                                        (if (consp var-n-val)
-                                            (car var-n-val)
-                                            var-n-val))
-                                    vars-n-vals))))
-         nil)
-     ,@body))
+   ;; Some Lisps (SBCL in particular) object to declarations of
+   ;; built-in global variables as special.  Sheesh.
+   (let ((touchables
+            (mapcan (lambda (var-n-val)
+                       (let ((var (cond ((consp var-n-val)
+                                         (car var-n-val))
+                                        (t var-n-val))))
+                          (cond ((eq (symbol-package var) lisp-package*)
+                                 ;;(member var built-in-globals*)
+                                 !())
+                                (t (list var)))))
+                    vars-n-vals)))
+      `(let ,vars-n-vals
+         ;; if bindings, declare variables to be special
+         ,@(include-if (not (null touchables))
+              `(cl:declare (special ,@touchables)))
+         ,@body)))
 
 (defmacro letrec (&body b) `(let-fun ,@b))
 

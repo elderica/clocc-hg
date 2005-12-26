@@ -14,7 +14,7 @@
 (eval-when (:compile-toplevel :load-toplevel :execute :slurp-toplevel)
    (export '(dreverse symbol->string symbol->fun
 	     remove1q dremove1 dremove1q adjoinq complementq
-	     lrecord string-concat selq nodupq prop is-fun-name one-value
+	     lrecord selq nodupq prop is-fun-name one-value
 	     string-elt
 ;;;;	     fx+ fx- fx* fx/ fx= fx< fx> fx=< fx>=
 ;;;;	     fl+ fl- fl* fl/ fl= fl< fl> fl=< fl>=
@@ -39,13 +39,6 @@
 (defun nodupq (l) (remove-duplicates (the list l) :test #'eq)   )
 
 (subr-synonym lrecord list)
-
-(defun string-concat (&rest vl)
-  (apply #'concatenate 'string vl))
-
-(define-compiler-macro string-concat (&rest vl)
-   `(concatenate 'string ,@(<# (\\ (v) `(the string ,v))
-			       vl)))
 
 (defmacro selq (&rest stuff) `(case ,@stuff))
 

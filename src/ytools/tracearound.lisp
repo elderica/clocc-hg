@@ -64,7 +64,7 @@
 	        (out (:to *error-output*) "Trace: " name :%))
 	       (t
 		(bind ((*print-level* 3))
-		   (out (:to *error-output*) "Trace: " args :%))))
+		   (out (:to *error-output*) "Trace- " args :%))))
 	 (let-fun ()
 	    `(progn
 

@@ -19,7 +19,7 @@
 ;;;;)
 
 (eval-when (:compile-toplevel :load-toplevel)
-   (export '(!= !=/ *-* switch matchq match-cond match-let
+   (export '(!= !=/ *-* switch matchq match-cond match-let *unbound
 	     make-Qvar is-Qvar is-Qvaroid Qvar-sym Qvar-notes Qvar)))
 
 ;;;;(declaim (special *-*))

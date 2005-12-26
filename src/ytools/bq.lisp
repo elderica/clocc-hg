@@ -1,4 +1,4 @@
-;-*- Mode: Common-lisp; Package: ytools; Readtable: ytools -*-
+;-*- Mode: Common-lisp; Package: ytools; Readtable: ytools; -*-
 (in-package :ytools)
 ;;;$Id$
 

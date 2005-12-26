@@ -13,7 +13,7 @@
    (datafun attach-datafun mapmac #'datafun-on-plist))
 
 (eval-when (:load-toplevel :compile-toplevel :execute :slurp-toplevel)
-   (export '(<# <! <$ <& <v << </ <? mappend mapeltreduce neg mapmac)))
+   (export '(<# <! <$ <& <v << </ <? mappend mapreduce neg mapmac)))
 
 (defmacro <# (&rest l) `(mapcar ,@(mapmacify l)))
 (defmacro <! (&rest l) `(mapcan ,@(mapmacify l)))
@@ -21,7 +21,7 @@
 (defmacro <& (&rest l) `(every ,@(mapmacify l)))
 (defmacro <v (&rest l) `(some ,@(mapmacify l)))
 (defmacro << (&rest l) `(apply ,@(mapmacify l)))
-(defmacro </ (&rest l) `(mapeltreduce ,@(mapmacify l)))
+(defmacro </ (&rest l) `(mapreduce ,@(mapmacify l)))
 
 (defmacro <? (&rest l)
    (match-cond (mapmacify l)
@@ -62,23 +62,31 @@
 	:append (funcall ,fcn ,@listvars))))
 
 
-(defmacro mapeltreduce (proc ident &rest lists)
-   (let ((listvars (mapcar (\\ (_) (gensym)) lists))
-	 (resvar (gensym)))
-      `(repeat :for (,@(mapcar (\\ (v l) `(,v :in ,l))
-			       listvars lists)
-		     (,resvar
-		      = ,ident
-		      :then ,(cons-funcall proc (cons resvar listvars))))
-	:result ,resvar)))
+(defmacro mapreduce (proc ident &rest lists)
+   (cond ((= (len lists) 1)
+          `(reduce ,(cond ((or (atom proc)
+                               (not (memq (car proc)
+                                          '(function funktion lambda \\))))
+                           `#',proc)
+                          (t proc))
+                   ,(car lists)
+                   :initial-value ,ident))
+         (t
+         (let ((listvars (mapcar (\\ (_) (gensym)) lists))
+               (resvar (gensym)))
+            `(repeat :for (,@(mapcar (\\ (v l) `(,v :in ,l))
+                                     listvars lists)
+                           (,resvar
+                            = ,ident
+                            :then ,(cons-funcall proc (cons resvar listvars))))
+              :result ,resvar)))))
 
 (defun cons-funcall (f argl)
    (cond ((and (is-Pair f) (memq (car f) '(function funktion quote)))
           `(,(cadr f) . ,argl))
-         ((and (is-Pair f) (eq (car f) '\\))
+         ((and (is-Pair f) (memq (car f) '(\\ lambda)))
           `((lambda . ,(cdr f)   ) . ,argl))
          (t `(funcall ,f . ,argl))   ))
-
 
 (defun mapmacify (l)
    (let ((mapmac-expander

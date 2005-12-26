@@ -7,13 +7,14 @@
 ;;; This software is released under the terms of the Modified BSD
 ;;; License.  See file COPYING for details.
 
-(depends-on %ytools/ object setter)
+(depends-on %ytools/ object setter repeat)
 
 (needed-by-macros
    (export '(signal-problem signal-condition
 	     breakpoint error-break tr untr tr* local-tr)))
 
-(slurp-whole-file)
+(self-compile-dep :macros)
+;;;;(slurp-whole-file)
 
 (defmacro breakpoint (&rest stuff)
    (multiple-value-let (simple _ who-prints-place condspec
