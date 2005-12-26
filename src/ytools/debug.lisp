@@ -14,7 +14,7 @@
    (export '(s sv ps ss dbg-stack* dbg-save st g gty package seek ev ev-ugly
 	     get-frame-args
 	     symshow =g htab-show file-show test check
-	     condition-display-string)))
+	     condition-display-string sym-val)))
 
 (needed-by-macros
 
@@ -442,6 +442,20 @@
 			  (also-show pkg2))))))
 	    (t
 	     (out "No such symbol in " pkg1 t)))))
+
+(defun sym-val (str &key (pkg *package*) (lev *print-level*))
+   (cond ((is-Symbol str)
+          (!= str (Symbol-name str))))
+   (let ((sym (find-symbol str pkg)))
+      (cond (sym
+             (cond ((boundp sym)
+                    (bind ((*print-level* lev))
+                       (out "Value: " (Symbol-value sym) :%)))
+                   (t
+                    (out "Symbol exists; no value" :%))))
+            (t
+             (out "No such symbol" :%)))
+      (values)))
 
 (defun htab-show (htab)
    (with-hash-table-iterator (ht-iter htab)
