@@ -533,7 +533,8 @@
 			 alist)))))))
 
 (defun repeat-=-analyze (v)
-   (let ((var (car v))
+   (let ((var (cond ((eq (car v) '_) (gensym))
+                    (t (car v))))
 	 (alist
 	    (cons (make-Rep-var-prop 'init (caddr v) 2)
 		  (keyword-args->alist
