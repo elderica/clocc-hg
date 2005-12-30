@@ -134,8 +134,9 @@
 				     module))))
 		    (cond ((really-install module nil)
 			   (setq loadable
-				 (y-or-n-p "Do you want to proceed to load ~a now? "
-					   module))))))
+                                 (or (eq if-not-installed ':install)
+			             (y-or-n-p "Do you want to proceed to load ~a now? "
+                                               module)))))))
 	     (cond (loadable
 		    (let ((lr (call-installer-or-loader ':load module nil)))
 		       (cond (lr
@@ -183,14 +184,19 @@
 	     (string-downcase module))))
    (let ((e (assoc module module-filenames* :test #'equal)))
       (let ((mod-file
+               ;; Kludge --
 	       (cond (e
-		      (pathname (cadr e)))
+		      (->pathname (cadr e)))
+                      ;; -- '->pathname' is not defined yet; by the time
+                      ;; it is needed, YTFM will be loaded and ->pathname
+                      ;; will be defined.
 		     (t
 		      (merge-pathnames 
 			 (make-pathname
 			     :name module
-			     :type (if (eq filename-case* ':upper) "LMD" "lmd"))
-			 (pathname ytload-directory* ))))))
+			     :type (if (eq filename-case* ':upper)
+                                       "LMD" "lmd"))
+			 (pathname ytload-directory*))))))
 	 (cond ((probe-file mod-file)
 		(load mod-file))
 	       ((and (not (check-loaded ':ytools))

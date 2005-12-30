@@ -235,7 +235,7 @@ after YTools file transducers finish.")
 
 (defmacro cleanup-after-file-transduction (&body b)
    `(unwind-protect (progn ,@b)
-       (dolist (h (nreverse post-file-transduce-hooks*))
+       (dolist (h post-file-transduce-hooks*)
 	  (funcall h))))
 
 ;;; Returns three values: filespecs, flags, and readtable.
