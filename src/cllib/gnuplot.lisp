@@ -565,7 +565,7 @@ When :MEAN is non-NIL (default), show mean and mean+-standard deviation
                            (remove-plist opts :key :mean))
       (format str "plot '-' using 1:2~%")
       (loop :for height :across vec
-        :for mid :upfrom (+ (cllib:mdl-mi mdl) (/ width 2)) :by width
+        :for mid :upfrom (+ (mdl-mi mdl) (/ width 2)) :by width
         :do (format str "~F~20T~F~%" mid height))
       (format str "e~%"))))
 
