@@ -300,16 +300,18 @@
 ;------------------------------------------------------------------------------
 
 (defun parse-logl-op (inport outport)
-   (prog (str nxt-char logl-op)
-      (setq nxt-char (peek-char nil inport nil 'eof #+broken-peek-char t))
-      (if (or (member nxt-char `(eof #\space #\' #\.)) 
+  (prog (str nxt-char logl-op)
+      ;; Skip over whitespace in case the code has whitespace
+      ;; surrounding the logical operator, like "ZERO. AND . ONE"
+      (setq nxt-char (peek-char t inport nil 'eof #+broken-peek-char t))
+      (if (or (member nxt-char `(eof #+nil #\space #\' #\.)) 
               (digit-char-p nxt-char))
           (and (write-char '#\. outport)
                (return)))
       (setq str (make-string-output-stream))
       loop
         (write-char (read-char inport nil 'eof t) str)
-        (setq nxt-char (peek-char nil inport nil 'eof #+broken-peek-char t))
+        (setq nxt-char (peek-char t inport nil 'eof #+broken-peek-char t))
         (if (and (not (eql nxt-char 'eof)) 
                       (char/= nxt-char `#\.)) (go loop))
       (cond ((setq str (get-output-stream-string str)
@@ -607,6 +609,24 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.38  2004/08/11 15:53:31  rtoy
+;;; This bit of Fortran code
+;;;
+;;;       COMMON /DLS001/ ROWNS(209),
+;;;      1   CCMAX, EL0, H, HMIN, HMXI, HU, RC, TN, UROUND,
+;;;      2   INIT, MXSTEP, MXHNIL, NHNIL, NSLAST, NYH, IOWNS(6),
+;;;      3   ICF, IERPJ, IERSL, JCUR, JSTART, KFLAG, L,
+;;;      4   LYH, LEWT, LACOR, LSAVF, LWM, LIWM, METH, MITER,
+;;;      5   MAXORD, MAXCOR, MSBP, MXNCF, N, NQ, NST, NFE, NJE, NQU
+;;; C
+;;;       DATA  MORD(1),MORD(2)/12,5/, MXSTP0/500/, MXHNL0/10/
+;;;       IF (ISTATE .LT. 1 .OR. ISTATE .GT. 3) GO TO 601
+;;;       end
+;;;
+;;; causes an end-of-file error because RECURSIVE-P is T (on CMUCL).  I'm
+;;; going to make RECURSIVE-P NIL here.  Don't know if that's right or
+;;; not.
+;;;
 ;;; Revision 1.37  2003/09/20 13:56:55  rtoy
 ;;; [ 807859 ] translate-pathname strangeness in f2cl6.l
 ;;;
