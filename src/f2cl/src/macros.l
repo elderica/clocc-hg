@@ -1128,17 +1128,26 @@ causing all pending operations to be flushed"
 ;; and initialize each element with a string of the appropriate
 ;; length.  The string is initialized with #\Space because it seems
 ;; that's what Fortran initializes it to.
-(defmacro f2cl-init-string (dims len)
-  (let ((init (gensym))
+(defmacro f2cl-init-string (dims len &optional inits)
+  (let ((init (gensym "ARRAY-"))
+	(k (gensym "IDX-"))
 	(new-dims (if (every #'numberp dims)
 		      `',dims
 		      `(list ,@dims))))
     `(let ((,init (make-array ,new-dims
 			      :element-type `(simple-array character (,',@len))
 			      :initial-element (make-string ,@len))))
-       (dotimes (k (array-total-size ,init))
-	 (setf (aref ,init k)
+       (dotimes (,k (array-total-size ,init))
+	 (setf (aref ,init ,k)
 	       (make-string ,@len :initial-element #\Space)))
+       ,@(when inits
+	   (let ((k 0)
+		 (forms nil))
+	     (dolist (val inits)
+	       (push `(replace (aref ,init ,k) ,(car val)) forms)
+	       (incf k))
+	     (nreverse forms)))
+		
        ,init)))
 
 ;; This macro is supposed to set LHS to the RHS assuming that the LHS
@@ -1328,6 +1337,9 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.63  2005/05/19 15:06:24  rtoy
+;;; Oops.  make-label is in the f2cl-lib package.
+;;;
 ;;; Revision 1.62  2005/05/16 15:50:25  rtoy
 ;;; o Replace single semicolons with multiple semicolons as appropriate.
 ;;; o GCL apparently doesn't like some declarations, so comment them out

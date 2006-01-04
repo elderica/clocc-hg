@@ -2228,8 +2228,8 @@ FILENAME                 File containing Fortran code
 		  ;;
 		  ;; FIXME: We should probably do this when we declare
 		  ;; the array instead.
-		  `(replace ,(check-reserved-lisp-names (first v))
-		            ,(first l)))
+		  `(replace ,(check-reserved-lisp-names (first v)) ,l)
+		  )
 		 ((and (vble-is-array-p (check-reserved-lisp-names (first v)))
 			(null (rest v)))
 		  `(replace ,(check-reserved-lisp-names (first v))
@@ -2666,6 +2666,10 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.146  2005/07/26 12:37:15  rtoy
+;;; Don't proclaim *readtable* as special, because it's already in the CL
+;;; package and special.  (For sbcl.)
+;;;
 ;;; Revision 1.145  2005/07/16 15:11:55  rtoy
 ;;; In GENERATE-CALL-TO-ROUTINE, if the routine is a parameter, we don't
 ;;; really know anything about it even if we know the info about a routine
