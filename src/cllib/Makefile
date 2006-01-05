@@ -40,7 +40,7 @@ image-script$(DUMPEXT):	$(addsuffix .$(FASLEXT),$(SCRIPT))
 
 auto.$(LISPEXT):	$(addsuffix .$(LISPEXT),$(SOURCES))
 	touch $@
-	$(RUNLISP) $(CLOCC_TOP) -x '(mk:load-system "cllib")'
+	$(RUNLISP) $(CLOCC_TOP) -x '(mk:load-system "cllib")' \
 	     -x "(funcall (intern \"AUTOLOAD-GENERATE\" \"CLLIB\") \
 			  '($(patsubst %,\"%\",$^)) \"$@\")"
 
