@@ -1328,12 +1328,29 @@ causing all pending operations to be flushed"
 	  (- exp 1)))
     ))
      
+(defun stop (&optional arg)
+  (when arg
+    (format cl::*error-output* "~A~%" arg))
+  (error "STOP reached"))
 
 ;;;-------------------------------------------------------------------------
 ;;; end of macros.l
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.65  2006/01/09 00:37:43  rtoy
+;;; src/f2cl5.l:
+;;; o When looking for initializers, don't just remove initializers when
+;;;   the array is not a 1-D array.  Keep them, and return a second value
+;;;   indicating if the array is 1-D or not.
+;;; o MAKE-CHAR-DECL was not properly declaring and initializing 2-D
+;;;   arrays as 1-D arrays like we're supposed to.  Compute the total size
+;;;   of the array if we can.
+;;;
+;;; src/macros.l:
+;;; o F2CL-INIT-STRING needs to make a 1-D array, even if the string array
+;;;   is multi-dimensional.
+;;;
 ;;; Revision 1.64  2006/01/04 17:53:40  rtoy
 ;;; We were not correctly processing intialization of string arrays in
 ;;; data statements.
