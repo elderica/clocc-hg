@@ -551,7 +551,9 @@ FILENAME                 File containing Fortran code
       (setsyntax #\')
       (setsyntax #\|)
       (setsyntax #\`)
-      (setsyntax #\\))
+      ;; Why do we have to handle \ specially here?
+      #+nil (setsyntax #\\)
+      )
     *readtable*))
 
 (defmacro with-fortran-syntax (&body body)
@@ -2495,6 +2497,7 @@ loop2
 	   (setq rans (nreverse ans))
 	   (return rans)))
     (go loop1)))
+
 ;------------------------------------------------------------------------------
 (defun read-six-chars (stream)
 ; (make-array '(6) :element-type 'string-char :initial-contents
@@ -2667,6 +2670,15 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.148  2006/01/09 03:08:13  rtoy
+;;; src/f2cl1.l:
+;;; o Translate a Fortran STOP to be the stop function.  Was just
+;;;   returning NIL, and this doesn't work so well.
+;;;
+;;; src/macros.l:
+;;; o Add STOP function.  It prints out the any arg, and then signals an
+;;;   error.
+;;;
 ;;; Revision 1.147  2006/01/04 17:53:40  rtoy
 ;;; We were not correctly processing intialization of string arrays in
 ;;; data statements.
