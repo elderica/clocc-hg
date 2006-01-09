@@ -50,15 +50,19 @@
   (let ((len (length line)))
     (incf k)
     (loop
-	(when (char-equal (aref line k) #\')
-	  ;; End of string or quoted quote character?
-	  (if (and (< k len) (char-equal (aref line (1+ k)) #\'))
-	      (incf k)
-	      (return)))
-	(when (>= k len)
-	  (return))
-      (write-char (aref line k) out)
-      (incf k))
+       (when (char-equal (aref line k) #\')
+	 ;; End of string or quoted quote character?
+	 (if (and (< k len) (char-equal (aref line (1+ k)) #\'))
+	     (incf k)
+	     (return)))
+       (when (>= k len)
+	 (return))
+       (when (char-equal (aref line k) #\")
+	 ;; Quote any double-quote characters because we're writing
+	 ;; out a Lisp string.
+	 (write-char #\\ out))
+       (write-char (aref line k) out)
+       (incf k))
     (write-char #\" out)
     (1+ k)))
 
@@ -96,6 +100,11 @@
 			 (incf posn)
 			 (write-char #\" out)
 			 (dotimes (n len)
+			   ;; Need to quote any double-quote
+			   ;; characters because we print out Lisp
+			   ;; strings!
+			   (when (char-equal (aref line posn) #\")
+			     (write-char #\\ out))
 			   (write-char (aref line posn) out)
 			   (incf posn))
 			 (write-char #\" out)
@@ -183,21 +192,10 @@
 			(setf collected-comments nil)))
 		     (t
 		      ;; A continuation line!  Append the line to our
-		      ;; buffer, carefully stripping off leading spaces.
-		      ;; If the last character of the buffer or the
-		      ;; first character of this line is a punctuation,
-		      ;; strip off leading spaces.  Otherwise, leave a
-		      ;; space between.
-		      (let ((punc-list '(#\. #\/))
-			    (new-line (string-left-trim '(#\Space) (subseq line 6))))
-			(setf prev-line
-			      (concatenate 'string prev-line
-					   (if (and prev-line
-						    (or (member (aref prev-line (1- (length prev-line))) punc-list)
-							(member (aref new-line 0) punc-list)))
-					       ""
-					       " ")
-					   new-line)))))))))))))
+		      ;; buffer, after removing any line number or
+		      ;; continuation character.
+		      (setf prev-line (concatenate 'string prev-line
+						   (subseq line 6)))))))))))))
 
 
 ;--------------------------------------------------------------------------
@@ -289,6 +287,10 @@
 			      (write-char #\" outport)
 			      (return))
 			     (t
+			      (when (char= char #\")
+				;; Need to quote any double-quote
+				;; characters!
+				(write-char #\\ outport))
 			      (write-char char outport))))))
 
 		;; check for non-complex number 
@@ -612,6 +614,11 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.40  2006/01/08 16:51:22  rtoy
+;;; We were (stupidly) not recognizing FORMAT statements that didn't start
+;;; in column 7, so we weren't converting any Hollerith strings to strings
+;;; in the format.
+;;;
 ;;; Revision 1.39  2006/01/04 17:39:56  rtoy
 ;;; src/f2cl6.l:
 ;;; o Skip over whitespace when parsing logical operations.  This is meant
