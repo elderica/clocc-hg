@@ -1130,11 +1130,8 @@ causing all pending operations to be flushed"
 ;; that's what Fortran initializes it to.
 (defmacro f2cl-init-string (dims len &optional inits)
   (let ((init (gensym "ARRAY-"))
-	(k (gensym "IDX-"))
-	(new-dims (if (every #'numberp dims)
-		      `',dims
-		      `(list ,@dims))))
-    `(let ((,init (make-array ,new-dims
+	(k (gensym "IDX-")))
+    `(let ((,init (make-array (* ,@dims)
 			      :element-type `(simple-array character (,',@len))
 			      :initial-element (make-string ,@len))))
        (dotimes (,k (array-total-size ,init))
@@ -1337,6 +1334,22 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.64  2006/01/04 17:53:40  rtoy
+;;; We were not correctly processing intialization of string arrays in
+;;; data statements.
+;;;
+;;; src/f2cl1.l:
+;;; o In PARSE-DATA1, return the entire list of initializers instead of
+;;;   just the first, in case we have an array of initializers.
+;;;
+;;; src/f2cl5.l:
+;;; o In MERGE-DATA-AND-SAVE-INITS, we need to recognize the
+;;;   initialization of strings and such.  We don't do anything special
+;;;   right now, like we do for arrays of numbers.
+;;; o In INSERT-DECLARATIONS, we need to handle the case of REPLACE in the
+;;;   *data-init*'s.  We assume it's been handled somewhere else, so
+;;;   there's nothing to do here.
+;;;
 ;;; Revision 1.63  2005/05/19 15:06:24  rtoy
 ;;; Oops.  make-label is in the f2cl-lib package.
 ;;;
