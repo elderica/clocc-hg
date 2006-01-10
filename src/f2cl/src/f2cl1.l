@@ -778,6 +778,7 @@ FILENAME                 File containing Fortran code
 	*function-flag* *program-flag*
 	*subprog-arglist* *data-init* *functions-used* *vble-declaration-done*
 	*parsing-lhs*
+	*equivalenced-vars*
 	)
 
      (setq fort-fun
@@ -2670,6 +2671,13 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.149  2006/01/09 19:19:17  rtoy
+;;; Don't add \ to the Fortran readtable.
+;;;
+;;; I don't know why we do that, but it breaks parsing of strings that
+;;; contain embedded double-quote marks.  I hope removing this doesn't
+;;; break something else, but more testing definitely needed.
+;;;
 ;;; Revision 1.148  2006/01/09 03:08:13  rtoy
 ;;; src/f2cl1.l:
 ;;; o Translate a Fortran STOP to be the stop function.  Was just
