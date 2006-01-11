@@ -1046,6 +1046,7 @@ FILENAME                 File containing Fortran code
        (return (parse-entry-definition bindings)))
 
      ;;fall out the bottom:
+     (warn "F2CL did not translate: ~S" (write-to-string (check_new_vbles x)))
      (return (list (list 'quote (concatenate ' string  "****NOT TRANSLATED: " 
 					       (write-to-string (check_new_vbles x))))))
      ))
@@ -2671,6 +2672,9 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.150  2006/01/10 21:20:59  rtoy
+;;; Oops.  Need to clear out *equivalenced-vars* for every subprogram.
+;;;
 ;;; Revision 1.149  2006/01/09 19:19:17  rtoy
 ;;; Don't add \ to the Fortran readtable.
 ;;;
