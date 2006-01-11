@@ -1045,6 +1045,15 @@ FILENAME                 File containing Fortran code
      (when (not (eq bindings 'fail))
        (return (parse-entry-definition bindings)))
 
+     (when (eq (car x) 'open)
+       (return (parse-open x)))
+
+     (when (eq (car x) 'rewind)
+       (return (parse-rewind x)))
+
+     (when (eq (car x) 'close)
+       (return (parse-close x)))
+     
      ;;fall out the bottom:
      (warn "F2CL did not translate: ~S" (write-to-string (check_new_vbles x)))
      (return (list (list 'quote (concatenate ' string  "****NOT TRANSLATED: " 
@@ -2672,6 +2681,10 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.151  2006/01/11 16:32:15  rtoy
+;;; Print a warning (as well) if we failed to translate something.  (We
+;;; were just leaving a comment in the translated code.)
+;;;
 ;;; Revision 1.150  2006/01/10 21:20:59  rtoy
 ;;; Oops.  Need to clear out *equivalenced-vars* for every subprogram.
 ;;;
