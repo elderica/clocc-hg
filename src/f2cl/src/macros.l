@@ -1031,7 +1031,7 @@ causing all pending operations to be flushed"
     (finish-output)
     (cond ((or (null s) (string-equal s "unknown"))
 	   (open file :direction :io :if-exists :append
-		 :if-does-not-exist nil))
+		 :if-does-not-exist :create))
 	  ((string-equal s "old")
 	   (open file :direction :io :if-does-not-exist nil))
 	  ((string-equal s "new")
@@ -1388,6 +1388,21 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.67  2006/01/11 22:57:58  rtoy
+;;; Add rudimentary support for opening files and reading from files.
+;;;
+;;; src/f2cl1.l:
+;;; o Recognize and handle open, rewind, and close statements.
+;;;
+;;; src/f2cl5.l:
+;;; o Update parser for read to handle unit numbers.  Rudimentary support
+;;;   for implied-do lists too.
+;;; o Add parser for open, rewind, and close statements.
+;;;
+;;; src/macros.l:
+;;; o Add functions and macros to handle opening, rewinding,
+;;;   and closing files.  Needs more work still.
+;;;
 ;;; Revision 1.66  2006/01/09 03:08:13  rtoy
 ;;; src/f2cl1.l:
 ;;; o Translate a Fortran STOP to be the stop function.  Was just
