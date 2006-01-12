@@ -1032,6 +1032,17 @@
     (let (res simple)
       (dolist (equiv *equivalenced-vars*)
 	(cond ((and (symbolp (first equiv))
+		    (symbolp (second equiv)))
+	       ;; Equivalence of two simple vars.  Just make one a
+	       ;; symbol-macrolet of the other, if the types match.
+	       (let ((a-type (lookup-vble-type (first equiv)))
+		     (b-type (lookup-vble-type (second equiv))))
+		 (unless (eq a-type b-type)
+		   (error "f2cl cannot equivalence variables of different types: ~A (~A) and ~A (~A)"
+			  (first equiv) a-type (second equiv) b-type))
+		 (push (first equiv) simple)
+		 (push `(,(first equiv) ,(second equiv)) res)))
+	      ((and (symbolp (first equiv))
 		    (listp (second equiv))
 		    (eq (car (second equiv)) 'fref))
 	       ;; (simple, array)
@@ -3296,6 +3307,21 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.134  2006/01/11 22:57:58  rtoy
+;;; Add rudimentary support for opening files and reading from files.
+;;;
+;;; src/f2cl1.l:
+;;; o Recognize and handle open, rewind, and close statements.
+;;;
+;;; src/f2cl5.l:
+;;; o Update parser for read to handle unit numbers.  Rudimentary support
+;;;   for implied-do lists too.
+;;; o Add parser for open, rewind, and close statements.
+;;;
+;;; src/macros.l:
+;;; o Add functions and macros to handle opening, rewinding,
+;;;   and closing files.  Needs more work still.
+;;;
 ;;; Revision 1.133  2006/01/11 16:30:00  rtoy
 ;;; Allow implied-do loops in read statements.  Still has the f2cl
 ;;; limitations with read, but at least they're parsed and converted into
