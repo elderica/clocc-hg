@@ -71,7 +71,7 @@
 		    (let ((newsrm (make-Out-stream :state 'unindented
 						   :indent 0
 						   :stream srm)))
-		       (stream-is-open srm true)
+		       (stream-is-open srm false)
 		       (setq out-streams*
 			     (cons (list srm newsrm) out-streams*))
 		       newsrm)))))

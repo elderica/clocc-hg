@@ -558,8 +558,8 @@
 					       ((:new-entry new-entry^) 'nil))
    (multiple-value-bind (altemps alvals alstores alist-set alist-acc)
                         (get-setf-expansion alist^)
-      (let ((key-var (gensym)) (new-var (gensym)) (alist-var (gensym))
-	    (entry-var (gensym))
+      (let ((key-var (gensym)) (alist-var (gensym)) (entry-var (gensym))
+	    (new-var (gensym))
             (store-var (car alstores)))
 	 (let ((acc-form (cond ((and (consp acc^)
 				     (memq (car acc^) '(function quote funktion)))
@@ -567,9 +567,9 @@
 			       (t
 				(error "Can't set ~s of alref. entry in ~s"
 				       acc^ alist^)))))
-	    (values `(,key-var ,@altemps ,alist-var
+	    (values `(,@altemps ,key-var ,alist-var
 			       ,entry-var)
-		    `(,key^ ,@alvals ,alist-acc
+		    `(,@alvals ,key^ ,alist-acc
 			    (assoc= ,test^ ,key-var ,alist-var))
 		    `(,new-var)
 		    `(progn
@@ -674,6 +674,8 @@
 
 (defmacro empty-list (&rest _)
   ''())
+
+(define-symbol-macro _ 'nil)
 
 (def-excl-dispatch #\" (srm _)
    (unread-char #\" srm)

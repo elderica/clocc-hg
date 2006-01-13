@@ -3,7 +3,7 @@
 ;;; $Id$
 
 ;;; This file depends on nothing but the facilities introduced
-;;; in base.lisp and datafun.lisp
+;;; in base.lisp
 
 (eval-when (:compile-toplevel :load-toplevel :execute :slurp-toplevel)
    (export '(Chunk Or-chunk Form-chunk Chunk-basis derive print-innards
