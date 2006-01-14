@@ -13,7 +13,7 @@
    (datafun attach-datafun mapmac #'datafun-on-plist))
 
 (eval-when (:load-toplevel :compile-toplevel :execute :slurp-toplevel)
-   (export '(<# <! <$ <& <v </ << <~ <? mappend mapreduce neg mapmac)))
+   (export '(<# <! <$ <& <v </ << >< <? mappend mapreduce neg mapmac)))
 
 (defmacro <# (&rest l) `(mapcar ,@(mapmacify l)))
 (defmacro <! (&rest l) `(mapcan ,@(mapmacify l)))
@@ -22,7 +22,7 @@
 (defmacro <v (&rest l) `(some ,@(mapmacify l)))
 (defmacro </ (&rest l) `(mapreduce ,@(mapmacify l)))
 (defmacro << (&rest l) `(apply ,@(mapmacify l)))
-(defmacro <~ (fcn &rest l) `(funcall ,fcn ,@l))
+(defmacro >< (fcn &rest l) `(funcall ,fcn ,@l))
 
 (defmacro <? (&rest l)
    (match-cond (mapmacify l)
