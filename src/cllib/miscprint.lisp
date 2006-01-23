@@ -148,7 +148,8 @@ If KEY-NUMERIC-P is non-NIL, sort by KEY instead."
    (lambda (st char arg)
      (declare (ignore char arg))
      (alist->hash-table (read st t nil t)))
-   rt))
+   rt)
+  rt)
 
 ;;; beware that some lisps (e.g., CLISP and CMUCL) will not use this
 ;;; method for hash-tables.  it does work with Allegro though.
