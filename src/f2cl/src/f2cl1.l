@@ -850,7 +850,10 @@ FILENAME                 File containing Fortran code
 	  (*print-pretty* t)
 	  (*print-case* :downcase)
 	  (*print-circle* nil)
-	  (*print-readably* t)
+	  ;; Do we need this?  clisp basically ignores all other
+	  ;; settings and tries very, very hard to make sure what's
+	  ;; written is read back in exactly the same way.
+	  #+nil (*print-readably* t)
 	  (*read-default-float-format* *float-format*))
       (write x :stream o))))
 ;------------------------------------------------------------------------------
@@ -2276,12 +2279,13 @@ FILENAME                 File containing Fortran code
 			  (list-split '|,| l))
 		      (mapcar #'car (list-split '|,| (cdr x))))))
     ;;(format t "~A~%" *equivalenced-vars*)
-    (setf *equivalenced-vars* vars)
-    (setf *equivalenced-vars* 
-	  (mapcar #'(lambda (l)
-		      `(,(parse-expression (first l))
-			 ,(parse-expression (second l))))
-		  vars))
+    ;;(setf *equivalenced-vars* vars)
+    (setf *equivalenced-vars*
+	  (append *equivalenced-vars*
+		  (mapcar #'(lambda (l)
+			      `(,(parse-expression (first l))
+				 ,(parse-expression (second l))))
+			  vars)))
     ;;(format t "~A~%" *equivalenced-vars*)
     nil))
 
@@ -2681,6 +2685,21 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.152  2006/01/11 22:57:58  rtoy
+;;; Add rudimentary support for opening files and reading from files.
+;;;
+;;; src/f2cl1.l:
+;;; o Recognize and handle open, rewind, and close statements.
+;;;
+;;; src/f2cl5.l:
+;;; o Update parser for read to handle unit numbers.  Rudimentary support
+;;;   for implied-do lists too.
+;;; o Add parser for open, rewind, and close statements.
+;;;
+;;; src/macros.l:
+;;; o Add functions and macros to handle opening, rewinding,
+;;;   and closing files.  Needs more work still.
+;;;
 ;;; Revision 1.151  2006/01/11 16:32:15  rtoy
 ;;; Print a warning (as well) if we failed to translate something.  (We
 ;;; were just leaving a comment in the translated code.)
