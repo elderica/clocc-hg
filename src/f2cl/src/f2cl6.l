@@ -305,18 +305,16 @@
 ;------------------------------------------------------------------------------
 
 (defun parse-logl-op (inport outport)
-  (prog (str nxt-char logl-op)
-      ;; Skip over whitespace in case the code has whitespace
-      ;; surrounding the logical operator, like "ZERO. AND . ONE"
-      (setq nxt-char (peek-char t inport nil 'eof #+broken-peek-char t))
-      (if (or (member nxt-char `(eof #+nil #\space #\' #\.)) 
+   (prog (str nxt-char logl-op)
+      (setq nxt-char (peek-char nil inport nil 'eof #+broken-peek-char t))
+      (if (or (member nxt-char `(eof #\space #\' #\.)) 
               (digit-char-p nxt-char))
           (and (write-char '#\. outport)
                (return)))
       (setq str (make-string-output-stream))
       loop
         (write-char (read-char inport nil 'eof t) str)
-        (setq nxt-char (peek-char t inport nil 'eof #+broken-peek-char t))
+        (setq nxt-char (peek-char nil inport nil 'eof #+broken-peek-char t))
         (if (and (not (eql nxt-char 'eof)) 
                       (char/= nxt-char `#\.)) (go loop))
       (cond ((setq str (get-output-stream-string str)
@@ -614,6 +612,15 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.41  2006/01/09 19:26:19  rtoy
+;;; o We need to quote any double-quote characters that we might find in a
+;;;   string, so that we can parse it correctly during translation.  (For
+;;;   this to work, we MUST NOT change the syntax of \ in the Fortran
+;;;   readtable.)
+;;; o Don't trim any spaces and such when combining continuation lines.
+;;;   Doing so definitely breaks Hollerith (ick!) strings in format
+;;;   statements.
+;;;
 ;;; Revision 1.40  2006/01/08 16:51:22  rtoy
 ;;; We were (stupidly) not recognizing FORMAT statements that didn't start
 ;;; in column 7, so we weren't converting any Hollerith strings to strings
