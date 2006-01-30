@@ -933,25 +933,43 @@
 ;; look like more idiomatic Lisp and it seems to help out compilers
 ;; quite a bit.
 (defun merge-data-and-save-inits (saves data)
-  (flet ((find-inits (name)
-	   ;; Look through the data init statements to find an array
-	   ;; initializer for our specified variable NAME.  The
-	   ;; initializer will look something like (FSET (FREF VAR
-	   ;; index limits) value).  Return a list of all matches as
-	   ;; the first value.  The scond value indicates if this is a
-	   ;; 1D array.
-	   (let ((inits '())
-		 (1d-array-p t))
-	     (dolist (item data)
-	       (when (eq 'fset (first item))
-		 (destructuring-bind (fset (fref var-name indices &rest dims) value)
-		     item
-		   (declare (ignore fset fref dims value))
-		   (when (and (eq var-name name))
-		     (push item inits)
-		     (unless (= 1 (length indices))
-		       (setf 1d-array-p nil))))))
-	     (values (nreverse inits) 1d-array-p))))
+  (labels ((find-inits (name)
+	     ;; Look through the data init statements to find an array
+	     ;; initializer for our specified variable NAME.  The
+	     ;; initializer will look something like (FSET (FREF VAR
+	     ;; index limits) value).  Return a list of all matches as
+	     ;; the first value.  The scond value indicates if this is a
+	     ;; 1D array.
+	     (let ((inits '())
+		   (1d-array-p t))
+	       (dolist (item data)
+		 (when (eq 'fset (first item))
+		   (destructuring-bind (fset (fref var-name indices &rest dims) value)
+		       item
+		     (declare (ignore fset fref dims value))
+		     (when (and (eq var-name name))
+		       (push item inits)
+		       (unless (= 1 (length indices))
+			 (setf 1d-array-p nil))))))
+	       (values (nreverse inits) 1d-array-p)))
+	   (col-major-index (indices limits)
+	     ;; Compute the column major index given the set of indices and bounds.
+	     ;; Given indicies (i1 i2 ... in) and limits ((l1 h1) (l2 h2) ... (ln hn)), the colum-major index as used by Fortran would be
+	     ;; (i1 - l1) +
+	     ;;   (h1-l1+1)*((i2 - l2) +
+	     ;;                (h2-l2+1)*((i3 - l3) +
+	     ;;                             (h3 - l3 + 1) * ...)))
+	     ;;
+	     ;; See col-major-index in macros.l too.
+	     (if (null indices)
+		 0
+		 (destructuring-bind (lo hi)
+		     (car limits)
+		   (+ (- (car indices)
+			 lo)
+		      (* (1+ (- hi lo))
+			 (col-major-index (rest indices) (rest limits))))))))
+	 
     (let ((new-saves '())
 	  (new-data '()))
       ;; First, save all non-array data initializers.
@@ -978,10 +996,11 @@
 			  ;; didn't initialize it, then it didn't
 			  ;; care.
 			  (dolist (i inits)
-			    (destructuring-bind (fset (fref var (index) ((lo hi))) val)
+			    (destructuring-bind (fset (fref var indices limits) val)
 				i
-			      (declare (ignore fset fref var hi))
-			      (setf (aref init (- index lo)) val)))
+			      (declare (ignore fset fref var))
+			      (setf (aref init (col-major-index indices limits))
+				    val)))
 			  (push (list (car item)
 				      (append (copy-list (second item))
 					      `(:initial-contents ',(coerce init 'list))))
@@ -3307,6 +3326,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.135  2006/01/12 17:19:03  rtoy
+;;; F2CL can handle equivalences of 2 simple variables of the same type.
+;;;
 ;;; Revision 1.134  2006/01/11 22:57:58  rtoy
 ;;; Add rudimentary support for opening files and reading from files.
 ;;;
