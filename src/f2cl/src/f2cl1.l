@@ -16,7 +16,7 @@
 (defvar *comments* nil)
 (defparameter *f2cl-version*
   (remove #\$ "2.0 beta $Date$"))
-
+ 
 (defvar *intrinsic-function-names*
   '(int ifix idint real float sngl dble cmplx ichar char aint dint
     anint dnint nint idnint iabs abs dabs cabs mod amod dmod isign sign dsign
@@ -2685,6 +2685,10 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.154  2006/01/30 22:59:51  rtoy
+;;; o Check in to get new f2cl-version number.
+;;; o Reindented brackets-check to something more typical.
+;;;
 ;;; Revision 1.153  2006/01/27 14:12:55  rtoy
 ;;; o Adjust SPECIAL-PRINT so we don't try to print readably because Clisp
 ;;;   tries very hard to make every truly readable, including escaping all
