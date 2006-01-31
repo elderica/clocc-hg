@@ -2192,9 +2192,12 @@
 				    (+ 1 (- hi lo))
 				    '*)))
 			  bounds)))
-	     (if (every #'numberp dims)
-		 (list (reduce #'* dims))
-		 '*))))
+	     (cond ((every #'numberp dims)
+		    (list (reduce #'* dims)))
+		   ((= 1 (length bounds))
+		    '(*))
+		   (t
+		    '*)))))
     (cond ((null (cdr decl))
 	   ;; scalar, no length spec.
 	   ;;(format t "scalar, no length spec = ~A~%" decl)
@@ -3326,6 +3329,14 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.136  2006/01/30 21:21:25  rtoy
+;;; o Fix bug in MERGE-DATA-AND-SAVE-INITS.  For multidimensional arrays
+;;;   that were fully initialized with data statements, f2cl was
+;;;   forgetting to leave the fsets around to initialize them, and thus,
+;;;   the arrays were never actually initialized.
+;;; o Extend MERGE-DATA-AND-SAVE-INITS to support multidimensional arrays
+;;;   that are fully initialized.
+;;;
 ;;; Revision 1.135  2006/01/12 17:19:03  rtoy
 ;;; F2CL can handle equivalences of 2 simple variables of the same type.
 ;;;
