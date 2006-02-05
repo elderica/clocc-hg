@@ -35,6 +35,9 @@ image$(DUMPEXT):	$(addsuffix .$(FASLEXT),$(BASE))
 image-net$(DUMPEXT):	$(addsuffix .$(FASLEXT),$(NET))
 	$(RUNLISP) $(patsubst %,-i %,$^) -d image-net
 
+image-net.exe:	$(addsuffix .$(FASLEXT),$(NET))
+	$(CLISP) -norc $(patsubst %,-i %,$^) -x '(saveinitmem "$@" :executable t)'
+
 image-script$(DUMPEXT):	$(addsuffix .$(FASLEXT),$(SCRIPT))
 	$(RUNLISP) $(patsubst %,-i %,$^) -d image-script
 
