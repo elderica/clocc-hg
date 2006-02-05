@@ -97,11 +97,10 @@
 
 (defmethod print-object ((dt date) (out stream))
   (cond (*print-readably* (call-next-method))
-        (t (when *print-escape*
-             (write-string "#D\"" out)
-             (format out "~4,'0d-~2,'0d-~2,'0d"
-                     (date-ye dt) (date-mo dt) (date-da dt))
-             (when *print-escape* (write-char #\" out))))))
+        (t (when *print-escape* (write-string "#D\"" out))
+           (format out "~4,'0d-~2,'0d-~2,'0d"
+                   (date-ye dt) (date-mo dt) (date-da dt))
+           (when *print-escape* (write-char #\" out)))))
 
 (defun make-date-readtable (&optional (rt (copy-readtable)))
   "Return a readtable that will read dates as #d"
