@@ -324,10 +324,10 @@ You can disable Y2K fixing with (setf (fdefinition 'fix-y2k) #'identity)"
         ((<= *y2k-cut* ye 99) (+ ye 1900))
         (t ye)))
 
-(defun string->dttm (xx)
+(defun string->dttm (xx &key (start 0) end)
   "Parse the string into a date/time integer."
   (declare (simple-string xx))
-  (or (string-w3-dttm xx)
+  (or (string-w3-dttm xx :start start :end end)
       (multiple-value-bind (v0 v1 v2 v3 v4 v5 v6 v7)
           (values-list
            (delete-if (lambda (st) ; remove week day names
@@ -338,7 +338,7 @@ You can disable Y2K fixing with (setf (fdefinition 'fix-y2k) #'identity)"
                                          ;; kill #\- in yyyy-mm-dd
                                          (substitute #\Space #\- xx :count 2))
                                      ":,/|")
-                       :max 9)))
+                       :max 9 :start start :end end)))
         (flet ((eut (se mi ho da mo ye tz1 tz2)
                  (multiple-value-bind (sec ms) (floor (or se 0))
                    (+ ms (encode-universal-time sec (or mi 0) (or ho 0) da
