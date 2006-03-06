@@ -1,6 +1,6 @@
 ;;; String Utilities
 ;;;
-;;; Copyright (C) 1997-2001 by Sam Steingold.
+;;; Copyright (C) 1997-2006 by Sam Steingold.
 ;;; This is Free Software, covered by the GNU GPL (v2)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
@@ -16,7 +16,7 @@
 
 (export
  '(string-beg-with string-end-with string-beg-with-cs string-end-with-cs
-   edit-distance
+   edit-distance position-limit
    purge-string split-string split-seq substitute-subseq substitute-subseq-if))
 
 ;;;
@@ -43,6 +43,13 @@ See <http://www.merriampark.com/ld.htm>
                      (1+ (if (zerop i) (1+ j) (aref cache-vec (1- i))))))))
     (aref cache-vec (1- l1)))))
 
+(defun position-limit (string string-seq limit)
+  "Find the position of STRING in STRING-SEQ looking at the first LIMIT chars."
+  (position string string-seq
+            :test (lambda (s1 s2)
+                    (string-equal s1 s2
+                                  :end1 (min (length s1) limit)
+                                  :end2 (min (length s2) limit)))))
 
 (defmacro string-beg-with (beg strv &optional (lenv `(length ,strv)))
   "Check whether the string STRV starts with BEG."
