@@ -338,16 +338,16 @@ You can disable Y2K fixing with (setf (fdefinition 'fix-y2k) #'identity)"
                        (purge-string (if (< (count #\- xx) 2) xx
                                          ;; kill #\- in yyyy-mm-dd
                                          (substitute #\Space #\- xx :count 2))
-                                     ":,/")
+                                     ":,/|")
                        :max 9)))
-        (if (numberp v0)
-            (encode-universal-time (round (or v5 0)) (or v4 0) (or v3 0)
-                                   (min v0 v2) (infer-month v1)
-                                   (fix-y2k (max v0 v2))
-                                   (infer-timezone v6 v7))
-            (encode-universal-time (round (or v4 0)) (or v3 0) (or v2 0)
-                                   v1 (infer-month v0) (fix-y2k v5)
-                                   (infer-timezone v6 v7))))))
+        (flet ((eut (se mi ho da mo ye tz1 tz2)
+                 (multiple-value-bind (sec ms) (floor (or se 0))
+                   (+ ms (encode-universal-time sec (or mi 0) (or ho 0) da
+                                                (infer-month mo) (fix-y2k ye)
+                                                (infer-timezone tz1 tz2))))))
+          (if (numberp v0)
+              (eut v5 v4 v3 (min v0 v2) v1 (max v0 v2) v6 v7)
+              (eut v4 v3 v2 v1 v0 v5 v6 v7))))))
 
 (defun infer-month (mon)
   "Get the month from the object, number or name."
