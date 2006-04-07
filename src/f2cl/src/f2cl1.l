@@ -145,8 +145,12 @@ incorrect, so use caution.")
   "List of equivalenced variables.  Each entry of the list is a list
   consisting of the equivalenced variables.")
 
+;; For some reason Allegro needs this eval-when because it complains
+;; about undefined slot accessors without this.
+(eval-when (compile load eval)
 (defstruct f2cl-finfo
   arg-types return-values calls)
+)
 
 ;; Hash table of all known converted functions.  
 (defvar *f2cl-function-info*
@@ -2685,6 +2689,9 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.155  2006/01/31 15:11:05  rtoy
+;;; Checkin to update version id.
+;;;
 ;;; Revision 1.154  2006/01/30 22:59:51  rtoy
 ;;; o Check in to get new f2cl-version number.
 ;;; o Reindented brackets-check to something more typical.
