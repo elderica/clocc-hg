@@ -13,7 +13,7 @@
 (eval-when (:slurp-toplevel :load-toplevel)
    (export '(s sv ps ss dbg-stack* dbg-save st g gty package seek ev ev-ugly
 	     get-frame-args
-	     symshow =g htab-show file-show test check
+	     symshow =g htab-show file-show test check break-on-test-failure*
 	     condition-display-string sym-val)))
 
 (needed-by-macros
@@ -480,7 +480,8 @@
    ((description :reader Test-failure-description
 		 :initarg :description))
    (:report (lambda (tf srm)
-	       (out (:to srm) "TEST FAILURE " (Test-failure-description tf)))))
+	       (out (:to srm) "TEST FAILURE "
+                    :% (Test-failure-description tf)))))
 
 (defvar break-on-test-failure* true)
 
