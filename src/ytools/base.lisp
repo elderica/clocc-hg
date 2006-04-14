@@ -40,7 +40,7 @@
 	     eval-when condense
 	     assoc= alist-entry alist-entry-set alref. alref
 	     include-if series car-eq take drop occurs-in empty-list
-	     on-list on-list-if-new off-list -- loading-bogus
+	     on-list on-list-if-new off-list <expel!= -- loading-bogus
 	     *current-case-mode*)))
 
 ;;;;(eval-when (:compile-toplevel)
@@ -815,12 +815,16 @@
 			  (error "Package not found: ~s" pkg-name))))))))))
 |#
 
-(defmacro on-list (x^ l^) `(push ,x^ ,l^))
+(defmacro on-list (&rest whatever)
+  (setq whatever (remove '>!= whatever))
+  `(push ,@whatever))
 
-(defmacro on-list-if-new (&rest whatever) `(pushnew ,@whatever))
-;;;;(defmacro on-list-if-new (x^ l^) `(pushnew ,x^ ,l^))
+(defmacro on-list-if-new (&rest whatever)
+  (setq whatever (remove '>!= whatever))
+  `(pushnew ,@whatever))
 
 (defmacro off-list (l^) `(pop ,l^))
+(defmacro <expel!= (l^) `(pop ,l^))
 
 (declaim (special constant-condtests-silent*))
 
