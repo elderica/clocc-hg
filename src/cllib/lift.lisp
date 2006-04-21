@@ -16,6 +16,7 @@
 
 (defpackage :lift
   (:documentation "Lift (ROC) curve analysis")
+  (:use #:common-lisp)
   (:export #:discretize #:lift-quality #:plot-lifts #:score2prob
            #:lq-lift-quality #:lq-base-rate #:lq-base-rate-detector
            #:lq-total-count #:lq-target-count #:lq-base-more-detectors
