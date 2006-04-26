@@ -671,7 +671,24 @@ FILENAME                 File containing Fortran code
       ;; extract format-stmts
       ;;(format t "extract format-stmts~%")
 	       
-      (cond ((id-do-while input-list)
+      (cond ((id-extended-do input-list)
+	     ;; Handle extended DO statements.  These are DO
+	     ;; statements that do not have a line number.  The DO
+	     ;; statement is ended with an END-DO statement.
+	     ;;
+	     ;; We handle these by faking it. We create a standard
+	     ;; DO statement with a new label.  The matching ENDDO
+	     ;; statement is converted into a corresponding CONTINUE
+	     ;; statement with the correct label.  The label is just
+	     ;; an integer bigger than any allowable Fortran label
+	     ;; (99999), since Fortran labels are limited to 5
+	     ;; digits.
+
+	     (push extended-label extended-do-label-stack)
+	     (push `(,margin ,(rewrite-extended-do extended-label input-list))
+		   output-list)
+	     (incf extended-label))
+	    ((id-do-while input-list)
 	     ;; Handle do-while statements.
 	     ;;
 	     ;; We handle this by faking it.
@@ -695,24 +712,6 @@ FILENAME                 File containing Fortran code
 	       (push (list label1 label2) extended-do-label-stack)
 	       (push `(,label1 ,(rewrite-do-while label1 label2 input-list))
 		     output-list)))
-	    ((id-extended-do input-list)
-	     ;; Handle extended DO statements.  These are DO
-	     ;; statements that do not have a line number.  The DO
-	     ;; statement is ended with an END-DO statement.
-	     ;;
-	     ;; We handle these by faking it. We create a standard
-	     ;; DO statement with a new label.  The matching ENDDO
-	     ;; statement is converted into a corresponding CONTINUE
-	     ;; statement with the correct label.  The label is just
-	     ;; an integer bigger than any allowable Fortran label
-	     ;; (99999), since Fortran labels are limited to 5
-	     ;; digits.
-
-	     (push extended-label extended-do-label-stack)
-	     (push `(,margin ,(rewrite-extended-do extended-label input-list))
-		   output-list)
-	     (incf extended-label))
-	    
 	    ((id-end-do input-list)
 	     ;; The end of the extended DO statement.  This can either
 	     ;; be the end of an extended do loop or a do-while loop.
@@ -2751,6 +2750,13 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.157  2006/04/26 18:38:11  rtoy
+;;; src/Notes:
+;;; o Update
+;;;
+;;; src/f2cl1.l:
+;;; o Add support for DO-WHILE statements.
+;;;
 ;;; Revision 1.156  2006/04/07 20:38:41  rtoy
 ;;; Wrap eval-when around the defstruct for f2cl-finfo for Allegro.  Bug
 ;;; and fix reported by Richard Fateman.
