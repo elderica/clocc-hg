@@ -599,6 +599,9 @@ is not included")
 (defun cmplx (x &optional y)
   (complex x (if y y 0)))
 
+(defun dcmplx (x &optional y)
+  (coerce (complex x (if y y 0)) '(complex double-float)))
+
 (defun ichar (c)
   (char-int c))
 (defun fchar (i)			;intrinsic function char
@@ -782,8 +785,10 @@ is not included")
 
 ;; AIMAG: imaginary part of a complex number
 ;; CONJG: conjugate of a complex number
-(declaim (inline aimag conjg))
+(declaim (inline aimag conjg dimag))
 (defun aimag (c)
+  (imagpart c))
+(defun dimag (c)
   (imagpart c))
 (defun conjg (c)
   (conjugate c))
@@ -811,11 +816,13 @@ is not included")
 ;; this is not true, the original Fortran code was broken anyway, so
 ;; GIGO (garbage in, garbage out).
 
-(declaim (inline dsqrt csqrt alog dlog clog alog10 dlog10))
+(declaim (inline dsqrt csqrt zsqrt alog dlog clog alog10 dlog10))
 (defun dsqrt (x)
   (declare (type (double-float 0d0) x))
   (sqrt  x))
 (defun csqrt (x)
+  (sqrt x))
+(defun zsqrt (x)
   (sqrt x))
 (defun alog (x)
   (declare (type (or (single-float (0f0)) (member 0f0)) x))
@@ -1388,6 +1395,10 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.68  2006/01/12 01:33:32  rtoy
+;;; If status is not given or unknown, create the file if it doesn't
+;;; exist.
+;;;
 ;;; Revision 1.67  2006/01/11 22:57:58  rtoy
 ;;; Add rudimentary support for opening files and reading from files.
 ;;;

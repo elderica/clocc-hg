@@ -264,6 +264,9 @@
 		   (fortran-contagion (get-fun-arg-type (second arg))
 				      (get-fun-arg-type (third arg)))
 		   'complex8))
+		 ((member fun '(dcmplx))
+		  ;; double complex.  Always returns a complex16
+		  'complex16)
 		 ((member fun '(sin cos tan
 				asin acos atan atan2
 				sinh cosh tanh
@@ -282,10 +285,24 @@
 				dasin dacos datan datan2
 				dexp dlog dlog10
 				dabs dmax1 dmin1
-				dble
+				dble dimag
 				dsqrt))
 		  ;; Double-precision functions
 		  'double-float)
+		 ((member fun '(csin ccos ctan
+				casin cacos catan catan2
+				cexp clog clog10
+				cabs 
+				csqrt))
+		  ;; Complex functions
+		  'complex8)
+		 ((member fun '(zsin zcos ztan
+				zasin zacos zatan zatan2
+				zexp zlog zlog10
+				zabs 
+				zsqrt))
+		  ;; Complex functions
+		  'complex16)
 		 ((member fun '(and or not > >= equal <= < logeqv logxor))
 		  ;; Logical operations
 		  'logical)
@@ -2361,7 +2378,7 @@
   '(t pi nil))
 
 (defparameter +allowed-lisp-names+
-  '(sin cos tan
+  '(abs sin cos tan
     asin acos atan
     sinh cosh tanh
     exp sign max min 
@@ -3329,6 +3346,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.137  2006/01/31 15:09:25  rtoy
+;;; Try to return a 1-D array declaration when possible.
+;;;
 ;;; Revision 1.136  2006/01/30 21:21:25  rtoy
 ;;; o Fix bug in MERGE-DATA-AND-SAVE-INITS.  For multidimensional arrays
 ;;;   that were fully initialized with data statements, f2cl was

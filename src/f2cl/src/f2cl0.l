@@ -52,10 +52,10 @@
    ;; utilities
    #:array-slice #:array-initialize
    ;; intrinsic functions
-   #:abs #:acos #:aimag #:aint #:alog #:alog10 #:amax0 #:amax1
+   #:abs #:acos #:aimag #:dimag #:aint #:alog #:alog10 #:amax0 #:amax1
    #:amin1 #:amod #:anint #:asin #:atan #:atan2
-   #:cabs #:cexp #:fchar #:clog #:cmplx #:conjg #:ccos
-   #:csin #:csqrt #:dabs #:dacos #:dasin
+   #:cabs #:cexp #:fchar #:clog #:cmplx #:dcmplx #:conjg #:ccos
+   #:csin #:csqrt #:zsqrt #:dabs #:dacos #:dasin
    #:datan #:datan2 #:dble #:dcos #:dcosh #:dexp #:dim
    #:dint #:dlog #:dlog10 #:dmax1 #:dmin1 #:dmod
    #:dnint #:dprod #:dsign #:dsin #:dsinh #:dsqrt #:dtan
@@ -83,6 +83,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.16  2003/11/13 05:37:31  rtoy
+;;; Export WITH-MULTI-ARRAY-DATA.
+;;;
 ;;; Revision 1.15  2002/09/13 17:50:18  rtoy
 ;;; From Douglas Crosher:
 ;;;

@@ -18,13 +18,14 @@
   (remove #\$ "2.0 beta $Date$"))
  
 (defvar *intrinsic-function-names*
-  '(int ifix idint real float sngl dble cmplx ichar char aint dint
+  '(int ifix idint real float sngl dble cmplx dcmplx ichar char aint dint
     anint dnint nint idnint iabs abs dabs cabs mod amod dmod isign sign dsign
     idim dim ddim dprod max max0 max1 amax1 dmax1 amax0 amax1 min min0 amin1 dmin1
-    min1 len index lge lgt lle llt aimag conjg sqrt dsqrt csqrt 
+    min1 len index lge lgt lle llt aimag dimag conjg sqrt dsqrt csqrt 
     exp dexp cexp log alog dlog clog log10 alog10 dlog10 sin dsin csin
     cos dcos ccos tan dtan asin dasin acos dacos atan datan atan2 datan2
-    sinh dsinh cosh dcosh tanh dtanh)
+    sinh dsinh cosh dcosh tanh dtanh
+    zsqrt)
   "A list of all the intrinsic functions in Fortran 77")
 
 ;;------------------------------------------------------------------------------
@@ -1444,7 +1445,17 @@ FILENAME                 File containing Fortran code
 (defun parse-implicit-decl (x)
   (cond ((eq (second x) 'none)
 	 ;; implicit none
-	 (setq *implicit_vble_decls* '((:none (a z)))))
+	 ;;
+	 ;; I don't think we need to do anything here.  Besides, this
+	 ;; causes problems later because there's no such Lisp type as
+	 ;; :none.  By leaving this out, I think it means when we
+	 ;; derive types we'll use the standard Fortran types.
+	 ;; However, variables and such should already have been
+	 ;; declared so we should be ok.  (We don't have to check
+	 ;; because the Fortran code is supposed to be valid.)
+	 #+nil
+	 (setq *implicit_vble_decls* '((:none (a z))))
+	 )
 	(t
 	 (let ((decls 
 		(if (eq (third x) '*)
@@ -2750,6 +2761,10 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.158  2006/04/26 19:59:51  rtoy
+;;; Oops.  Need to check for extended DO before DO WHILE.  (This should be
+;;; fixed so it doesn't have to be that way.)
+;;;
 ;;; Revision 1.157  2006/04/26 18:38:11  rtoy
 ;;; src/Notes:
 ;;; o Update
