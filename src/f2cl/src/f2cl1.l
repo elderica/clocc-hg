@@ -1537,9 +1537,11 @@ FILENAME                 File containing Fortran code
 	     (pushnew lhs *assigned-variables*))
 	   (let* ((lhs-type (first (get-upgraded-fun-arg-type (list (list lhs)))))
 		  (rhs-type (first (get-upgraded-fun-arg-type (list (list rhs))))))
-	     ;;(format t "~&")
-	     ;;(format t "lhs = ~A, type ~A~%" lhs lhs-type)
-	     ;;(format t "rhs = ~A, type ~A~%" rhs rhs-type)
+	     #+nil
+	     (progn
+	       (format t "~&")
+	       (format t "lhs = ~A, type ~A~%" lhs lhs-type)
+	       (format t "rhs = ~A, type ~A~%" rhs rhs-type))
 	     (cond ((subtypep lhs-type 'string)
 		    ;; Strings need to be handled carefully
 		    `((f2cl-set-string ,lhs ,rhs ,lhs-type)))
@@ -1550,7 +1552,8 @@ FILENAME                 File containing Fortran code
 				 ((find *coerce-assignments* '(nil :never))
 				  rhs)
 				 (t
-				  ;;(format t "rhs-type, rhs = ~S ~S~%" rhs-type rhs)
+				  #+nil
+				  (format t "rhs-type, rhs = ~S ~S~%" rhs-type rhs)
 				  ;; RHS.  Otherwise, coerce the RHS to the
 				  ;; type of the LHS.  However, we can't coerce
 				  ;; something to an integer.  Use truncate for
@@ -1575,6 +1578,12 @@ FILENAME                 File containing Fortran code
 					 ;; float to an integer value.
 					 ;; Convert to a float.
 					 `(coerce (the integer4 ,rhs) ',lhs-type))
+					((and (subtypep lhs-type 'real)
+					      (subtypep rhs-type 'complex))
+					 ;; Assigning a complex to a
+					 ;; real.  We need to take the
+					 ;; real part.
+					 `(coerce (realpart ,rhs) ',lhs-type))
 					(t
 					 ;; Haven't a clue, so coerce
 					 `(coerce ,rhs ',lhs-type)))))))
@@ -2761,6 +2770,27 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.159  2006/04/27 17:44:01  rtoy
+;;; src/f2cl0.l:
+;;; o Export dimag, dcmplx, zsqrt
+;;;
+;;; src/f2cl1.l:
+;;; o Add dcmplx, dimag, and zsqrt to the list of intrinsic function
+;;;   names.
+;;; o When parsing "implicit none" statements, we don't modify
+;;;   *IMPLICIT_VBLE_DECLS*. I don't think it's needed and it can cause
+;;;   errors later on because :none is not a Lisp type.
+;;;
+;;; src/f2cl5.l:
+;;; o Tell GET-FUN-ARG-TYPE about the result type of dcmplx, dsqrt, the
+;;;   complex*8 and complex*16 special functions.
+;;; o ABS is an allowed lisp name.  This gets rid of the spurious ABS$
+;;;   local variable whenever we use the ABS function.
+;;;
+;;; src/macros.l:
+;;; o Add implementations of dcmplx, dimag, and zsqrt.  (We need to add
+;;;   more, I think.)
+;;;
 ;;; Revision 1.158  2006/04/26 19:59:51  rtoy
 ;;; Oops.  Need to check for extended DO before DO WHILE.  (This should be
 ;;; fixed so it doesn't have to be that way.)
