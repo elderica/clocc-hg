@@ -394,13 +394,25 @@ Tag being parsed:| (cadr x))))
        ))
 
 					; expression:
-    ((and (listp (car l)) (null (cdr l)))
+    ((and (listp (car l))
+	  (null (cdr l))
+	  (not (member '|,| (car l))))
      (id-expression (car l)))
 
 					; complex number:
+    #+nil
     ((and (eq (length l) 3) (eq (second l) '|,|))
      (list 'complex (id-factor (first l)) (id-factor (third l))))
-
+    ((and (listp (car l))
+	  (null (cdr l))
+	  (member '|,| (car l)))
+     ;; Not sure this is the test for a complex number, but a Fortran
+     ;; complex number looks like (<re>, <im>) where <re> and <im> are
+     ;; numbers.  We don't check for that here.
+     (let ((split (list-split '|,| (car l))))
+       (list 'cmplx
+	     (id-expression (list (first split)))
+	     (id-expression (list (second split))))))
 					; error dropping out the bottom:
     (t 
      (princ-reset '|f2cl syntax error| l))
@@ -456,6 +468,10 @@ definition.| l) ))
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.34  2004/08/14 13:45:34  rtoy
+;;; Handle OR and AND expressions.  (Maybe.  This probably needs a lot
+;;; more work.)
+;;;
 ;;; Revision 1.33  2004/08/11 16:51:32  rtoy
 ;;; A possible fix for the parsing bug wherein x .le. y*z was parsed as (x
 ;;; .le. y) * z.
