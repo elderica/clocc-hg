@@ -1761,8 +1761,10 @@
 			  (o-name (array-offset-name a))
 			  (d-type (find-type a)))
 		      (push `(,a ,d-type ,d-name ,o-name) array-data-forms)))
-		  `(with-multi-array-data ,array-data-forms
-		     ,body)))))
+		  (if array-data-forms
+		      `(with-multi-array-data ,array-data-forms
+			,body)
+		      body)))))
 	 ;;(format t "formal-arg-decls = ~A~%" formal-arg-decls)
 
 	 (when *equivalenced-vars*
@@ -3346,6 +3348,27 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.138  2006/04/27 17:44:01  rtoy
+;;; src/f2cl0.l:
+;;; o Export dimag, dcmplx, zsqrt
+;;;
+;;; src/f2cl1.l:
+;;; o Add dcmplx, dimag, and zsqrt to the list of intrinsic function
+;;;   names.
+;;; o When parsing "implicit none" statements, we don't modify
+;;;   *IMPLICIT_VBLE_DECLS*. I don't think it's needed and it can cause
+;;;   errors later on because :none is not a Lisp type.
+;;;
+;;; src/f2cl5.l:
+;;; o Tell GET-FUN-ARG-TYPE about the result type of dcmplx, dsqrt, the
+;;;   complex*8 and complex*16 special functions.
+;;; o ABS is an allowed lisp name.  This gets rid of the spurious ABS$
+;;;   local variable whenever we use the ABS function.
+;;;
+;;; src/macros.l:
+;;; o Add implementations of dcmplx, dimag, and zsqrt.  (We need to add
+;;;   more, I think.)
+;;;
 ;;; Revision 1.137  2006/01/31 15:09:25  rtoy
 ;;; Try to return a 1-D array declaration when possible.
 ;;;
