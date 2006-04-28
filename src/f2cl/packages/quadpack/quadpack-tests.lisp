@@ -3,6 +3,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.4  2002/03/19 23:12:33  rtoy
+;;; It's f2cl-lib:integer4, not just plain integer4.
+;;;
 ;;; Revision 1.3  2000/09/01 16:31:46  rtoy
 ;;; Add DO-TESTS to run all tests.
 ;;;
@@ -1513,7 +1516,7 @@ Expect no non-zero error codes
 ;; DQAWC
 ;;
 ;; Failures: none
-(defun tst17 (&key (limit 200) (relerr 1d-8))
+(defun tst17 (&key (limit 200) (relerr 1d-8) (abserr 1d-15))
   (labels ((soln (alpha)
 	     (declare (type (double-float 0d0) alpha))
 	     (/ (- (* (expt 2 (- alpha))
@@ -1534,7 +1537,7 @@ Expect no non-zero error codes
 				 (+ (expt (- x 1) 2)
 				    (expt 4 (- alpha)))))
 			  0d0 5d0 2d0
-			  0d0 relerr
+			  abserr relerr
 			  0d0 0d0 0 0
 			  limit lenw 0 iwork work)
 		 (declare (ignorable junk a b c z-eps z-rel result abserr neval ier z-lim z-lenw last))
