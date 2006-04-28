@@ -241,7 +241,7 @@
 		 ((eq 'fref fun)
 		  ;; Look up array references.
 		  (let ((result (get-fun-arg-type (second arg))))
-		    (values (get-fun-arg-type (second arg)) nil)))
+		    (values result nil)))
 		 ((member fun '(+ -))
 		  ;; Basic arithmetic operations that might be unary
 		  ;; operators.
@@ -257,6 +257,16 @@
 		  ;; Complex conjugate
 		  (fortran-contagion (get-fun-arg-type (second arg))
 				     'complex8))
+		 ((eq fun 'abs)
+		  ;; Absolute value
+		  (let ((arg-type (get-fun-arg-type (second arg))))
+		    (case arg-type
+		      (complex8
+		       'single-float)
+		      (complex16
+		       'double-float)
+		      (otherwise
+		       arg-type))))
 		 ((member fun '(cmplx))
 		  ;; Complex.  Figure out the type of complex we
 		  ;; should return.
@@ -3348,6 +3358,10 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.139  2006/04/28 01:36:13  rtoy
+;;; If there are no array data forms, don't emit a WITH-MULTI-ARRAY-DATA
+;;; form either.
+;;;
 ;;; Revision 1.138  2006/04/27 17:44:01  rtoy
 ;;; src/f2cl0.l:
 ;;; o Export dimag, dcmplx, zsqrt
