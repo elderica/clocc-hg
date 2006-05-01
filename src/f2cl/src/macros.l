@@ -1388,13 +1388,34 @@ causing all pending operations to be flushed"
 (defun stop (&optional arg)
   (when arg
     (format cl::*error-output* "~A~%" arg))
-  (error "STOP reached"))
+  (cerror "Continue anyway" "STOP reached"))
 
 ;;;-------------------------------------------------------------------------
 ;;; end of macros.l
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.69  2006/04/27 17:44:01  rtoy
+;;; src/f2cl0.l:
+;;; o Export dimag, dcmplx, zsqrt
+;;;
+;;; src/f2cl1.l:
+;;; o Add dcmplx, dimag, and zsqrt to the list of intrinsic function
+;;;   names.
+;;; o When parsing "implicit none" statements, we don't modify
+;;;   *IMPLICIT_VBLE_DECLS*. I don't think it's needed and it can cause
+;;;   errors later on because :none is not a Lisp type.
+;;;
+;;; src/f2cl5.l:
+;;; o Tell GET-FUN-ARG-TYPE about the result type of dcmplx, dsqrt, the
+;;;   complex*8 and complex*16 special functions.
+;;; o ABS is an allowed lisp name.  This gets rid of the spurious ABS$
+;;;   local variable whenever we use the ABS function.
+;;;
+;;; src/macros.l:
+;;; o Add implementations of dcmplx, dimag, and zsqrt.  (We need to add
+;;;   more, I think.)
+;;;
 ;;; Revision 1.68  2006/01/12 01:33:32  rtoy
 ;;; If status is not given or unknown, create the file if it doesn't
 ;;; exist.
