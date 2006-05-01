@@ -970,6 +970,9 @@
 	     (let ((inits '())
 		   (1d-array-p t))
 	       (dolist (item data)
+		 ;; FIXME: This critically depends on FSET being used
+		 ;; to initialize the values for DATA statements.  If
+		 ;; this is changed, we need to change this!  (Gross!)
 		 (when (eq 'fset (first item))
 		   (destructuring-bind (fset (fref var-name indices &rest dims) value)
 		       item
@@ -3358,6 +3361,10 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.140  2006/04/28 13:28:39  rtoy
+;;; Add type-derivation for ABS.  Otherwise, we end up with COERCE calls
+;;; wherever ABS is used.
+;;;
 ;;; Revision 1.139  2006/04/28 01:36:13  rtoy
 ;;; If there are no array data forms, don't emit a WITH-MULTI-ARRAY-DATA
 ;;; form either.

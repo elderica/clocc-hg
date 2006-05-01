@@ -1609,7 +1609,7 @@ FILENAME                 File containing Fortran code
 				rhs)
 			       (t
 				(coerce-rhs-to-lhs lhs-type rhs-type rhs)))))
-		    `((fset ,lhs ,new-rhs)))))))
+		    `((setf ,lhs ,new-rhs)))))))
 	((eq (car lhs) 'fref-string)
 	 ;; Fortran string ref
 	 `((fset-string ,lhs ,rhs)))
@@ -1788,7 +1788,7 @@ FILENAME                 File containing Fortran code
 				  nil)
 				 (t
 				  ;; Definitely is returned
-				  `(fset ,arg ,var))))
+				  `(setf ,arg ,var))))
 			  (t
 			   ;; This means it's either a number or some
 			   ;; expression, so obviously we can't modify
@@ -2273,6 +2273,10 @@ FILENAME                 File containing Fortran code
 	   ;;(format t "parse-data1 array~%")
 	   (let* ((vname (check-reserved-lisp-names (first v)))
 		  (dims (lookup-array-bounds vname)))
+	     ;; FIXME: DO NOT change this to SETF.  Other code uses
+	     ;; this FSET to figure out how to initialize the DATA
+	     ;; array nicely.  When this is fixed, we can use plain
+	     ;; SETF.
 	     `(fset (fref ,vname
 		          ,(remove '|,| (second v))
 		          ,dims)
@@ -2745,6 +2749,12 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.161  2006/04/28 15:42:01  rtoy
+;;; o Forgot to apply the same change to PARSE-ARRAYREF-OR-STMTFN that was
+;;;   needed for PARSE-ASSIGNMENT for assigning a complex to a real.
+;;; o Add new common function COERCE-RHS-TO-LHS to be used by of these
+;;;   routines so we don't forget again.
+;;;
 ;;; Revision 1.160  2006/04/28 13:27:42  rtoy
 ;;; o When assigning a complex to a real variable, we need to take the
 ;;;   realpart.  We weren't doing that.
