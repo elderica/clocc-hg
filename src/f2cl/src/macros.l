@@ -61,10 +61,10 @@ is not included")
 ;; below, such as INT and AINT!
 
 #+(or cmu scl)
-(deftype integer4 ()
-  `(signed-byte 32))
+(deftype integer4 (&optional (low #x-80000000) (high #x7fffffff))
+  `(integer ,low ,high))
 #-(or cmu scl)
-(deftype integer4 ()
+(deftype integer4 (&rest p)
   'fixnum)
 
 (deftype integer2 ()
@@ -1395,6 +1395,11 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.70  2006/05/01 17:40:05  rtoy
+;;; Change STOP to produce a continuable error instead of an error so that
+;;; we can continue from the STOP statement, if we choose to.  It's not
+;;; necessarily an error in a converted program to reach a STOP statement.
+;;;
 ;;; Revision 1.69  2006/04/27 17:44:01  rtoy
 ;;; src/f2cl0.l:
 ;;; o Export dimag, dcmplx, zsqrt
