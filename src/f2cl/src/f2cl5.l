@@ -1375,6 +1375,10 @@
 			 (make-declaration v :parameterp (if (numberp val) val nil))))
 		   key-params))
      ;;(format t "key-params-decl = ~S~%" key-params-decls)
+     ;; Clean up the declarations
+     (setf key-params-decls
+	   `((declare ,@(mapcan #'cdr key-params-decls))))
+     ;;(format t "key-params-decl = ~S~%" key-params-decls)
      
 
      ;; Initialize local variables
@@ -3382,6 +3386,22 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.142  2006/05/02 22:12:02  rtoy
+;;; src/f2cl5.l:
+;;; o Try to make better declarations for variables defined in parameter
+;;;   statements.  We'll declare them as (double-float 42d0 42d0) if the
+;;;   parameter was initialized to 42d0.
+;;; o MAKE-DECLARATION updated to take an extra keyword argument to
+;;;   indicate if this is a parameter variable and to give the initial
+;;;   value of the parameter so we can make the appropriate declaration.
+;;; o When initializing simple variables in data statements, try to bind
+;;;   the variable with the initial value instead binding a default 0 zero
+;;;   and setq'ing it later.
+;;;
+;;; src/macros.l:
+;;; o Change DEFTYPE for INTEGER4 to allow parameters so we can specify
+;;;   tight bounds if desired.
+;;;
 ;;; Revision 1.141  2006/05/01 17:38:27  rtoy
 ;;; Replace some uses of FSET with plain ol' SETF because SETF does
 ;;; everything we want it to do.  But leave some FSET's around because we
