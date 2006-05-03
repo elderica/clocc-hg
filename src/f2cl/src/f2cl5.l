@@ -2228,7 +2228,7 @@
 	       (if (setq decl (member vble (cdar type-clauses) :key #'car))
 		   (return
 		     (if (cdar decl) 
-			 `(declare (type (,*array-type* logical ,(f2cl-array-total-size (cadar decl)))
+			 `(declare (type (,*array-type* logical ,(f2cl-array-total-size (cdar decl)))
 				    ,vble_name))
 			 `(declare (type logical ,vble))))))
 	      (t
@@ -3442,6 +3442,12 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.146  2006/05/03 17:37:23  rtoy
+;;; o A better implementation, I think, of the separate nP edit
+;;;   descriptor.
+;;; o Forgot to declare *scale-factor* as special in the F, D, and G
+;;;   descriptor parser functions.
+;;;
 ;;; Revision 1.145  2006/05/03 17:22:46  rtoy
 ;;; src/f2cl5.l
 ;;; o We weren't handling formats like "1P,E15.8", which is the same as
