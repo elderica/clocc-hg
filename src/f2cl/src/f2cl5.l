@@ -2898,7 +2898,14 @@
 ;--------------------------------------------------------------------------------
 
 (defun parse-format1 (format &optional (newlinep t))
-  (let ((x (list-split '|,| (fix-slashes format))))
+  (let ((x (list-split '|,| (fix-slashes format)))
+	*scale-factor*
+	process-p-desc)
+    (declare (special *scale-factor*))
+    ;; It's valid to have a format like "1p,e15.8" instead of
+    ;; "1pe15.8".  So the variable *scale-factor* is used to handle
+    ;; this case.  The parser for P sets *scale-factor* appropriately
+    ;; for use by other edit descriptors.
     (do ((desc-lists x (cdr desc-lists))
 	 (directive) (dl)
 	 (directive-list nil (append directive-list directive)))
@@ -2907,6 +2914,11 @@
 	     (append directive-list '("~%"))
 	     directive-list))
       (setq dl (car desc-lists))
+      (when *scale-factor*
+	;; We previously seen a lone nP descriptor.  Make a note of
+	;; it.  This also means that the following descriptor gets a
+	;; non-NIL value for *scale-factor*.
+	(setf process-p-desc t))
       (setq directive 
 	    (cond ((null dl) nil)	;(list nil))
 		  ((stringp (car dl))
@@ -2928,7 +2940,12 @@
 		   (parse-format-descriptor-list (car dl) 
 						 (destruct-descriptor-list (cdr dl))))
 		  (t (parse-format-descriptor-list 1 
-						   (destruct-descriptor-list dl))))))))
+						   (destruct-descriptor-list dl)))))
+      (when process-p-desc
+	;; We're done processing the nP descriptor.  Reset the
+	;; scale-factor and our mark.
+	(setf *scale-factor* nil)
+	(setf process-p-desc nil)))))
 
 ;--------------------------------------------------------------------------------
 
@@ -3036,6 +3053,8 @@
           (parse-format-descriptor-TR right))
          ((pattern-match-and-bind '((> left) #\X) x)
           (parse-format-descriptor-X left))
+         ((pattern-match-and-bind '((> left) #\P) x)
+          (parse-format-descriptor-P left))
          ((pattern-match-and-bind '((> left) #\S (> right)) x)
           (parse-format-descriptor-S right))
 	 ((pattern-match-and-bind '((> left) #\A (+ right)) x)
@@ -3092,6 +3111,8 @@
     (or (pattern-match-and-bind '((> k) #\P (> a)) left)
 	(pattern-match-and-bind '((> k) #\P) left)
 	(pattern-match-and-bind '((> a)) left))
+    (when *scale-factor*
+      (setf k *scale-factor*))
     (let ((directive
 	   (list (concatenate 'string 
 			      "~" (fixnum-string (car right)) "," ;w
@@ -3107,54 +3128,60 @@
 ;; don't handle that here!
 (defun parse-format-descriptor-E (left right)
   (let ((k 0) (a 1) w d (e 2))
-     (declare (special k a w d e))
-     (or (pattern-match-and-bind '((> k) #\P (> a)) left)
-         (pattern-match-and-bind '((> k) #\P) left)
-         (pattern-match-and-bind '((> a)) left))
-     (or (pattern-match-and-bind '((> w) (> d)) right)
-         (pattern-match-and-bind '((> w) (> d) #\E (> e)) right))
-     (let ((directive 
-	    (list (concatenate 'string
-			       "~" (fixnum-string w) ","
-			       (fixnum-string d) ","
-			       (fixnum-string e) ","
-			       (fixnum-string k) ",'*,,'E"
-			       (if *SP* "@E" "E")))))
-       (list a (list directive)))))
+    (declare (special k a w d e *scale-factor*))
+    (or (pattern-match-and-bind '((> k) #\P (> a)) left)
+	(pattern-match-and-bind '((> k) #\P) left)
+	(pattern-match-and-bind '((> a)) left))
+    (or (pattern-match-and-bind '((> w) (> d)) right)
+	(pattern-match-and-bind '((> w) (> d) #\E (> e)) right))
+    (when *scale-factor*
+      (setf k *scale-factor*))
+    (let ((directive 
+	   (list (concatenate 'string
+			      "~" (fixnum-string w) ","
+			      (fixnum-string d) ","
+			      (fixnum-string e) ","
+			      (fixnum-string k) ",'*,,'E"
+			      (if *SP* "@E" "E")))))
+      (list a (list directive)))))
 
 (defun parse-format-descriptor-D (left right)
   (let ((k 0) (a 1) w d (e 2))
-     (declare (special k a w d e))
-     (or (pattern-match-and-bind '((> k) #\P (> a)) left)
-         (pattern-match-and-bind '((> k) #\P) left)
-         (pattern-match-and-bind '((> a)) left))
-     (or (pattern-match-and-bind '((> w) (> d)) right)
-         (pattern-match-and-bind '((> w) (> d) #\E (> e)) right))
-     (let ((directive 
-	    (list (concatenate 'string
-			       "~" (fixnum-string w) ","
-			       (fixnum-string d) ","
-			       (fixnum-string e) ","
-			       (fixnum-string k) ",'*,,'D"
-			       (if *SP* "@E" "E")))))
-       (list a (list directive)))))
+    (declare (special k a w d e))
+    (or (pattern-match-and-bind '((> k) #\P (> a)) left)
+	(pattern-match-and-bind '((> k) #\P) left)
+	(pattern-match-and-bind '((> a)) left))
+    (or (pattern-match-and-bind '((> w) (> d)) right)
+	(pattern-match-and-bind '((> w) (> d) #\E (> e)) right))
+    (when *scale-factor*
+      (setf k *scale-factor*))
+    (let ((directive 
+	   (list (concatenate 'string
+			      "~" (fixnum-string w) ","
+			      (fixnum-string d) ","
+			      (fixnum-string e) ","
+			      (fixnum-string k) ",'*,,'D"
+			      (if *SP* "@E" "E")))))
+      (list a (list directive)))))
 
 (defun parse-format-descriptor-G (left right)
   (let ((k 0) (a 1) w d (e 2))
-     (declare (special k a w d e))
-     (or (pattern-match-and-bind '((> k) #\P (> a)) left)
-         (pattern-match-and-bind '((> k) #\P) left)
-         (pattern-match-and-bind '((> a)) left))
-     (or (pattern-match-and-bind '((> w) (> d)) right)
-         (pattern-match-and-bind '((> w) (> d) #\E (> e)) right))
-     (let ((directive 
-	    (list (concatenate 'string
-			       "~" (fixnum-string w) ","
-			       (fixnum-string d) ","
-			       (fixnum-string e) ","
-			       (fixnum-string k) ",'*"
-			       (if *SP* "@G" "G")))))
-       (list a (list directive)))))
+    (declare (special k a w d e))
+    (or (pattern-match-and-bind '((> k) #\P (> a)) left)
+	(pattern-match-and-bind '((> k) #\P) left)
+	(pattern-match-and-bind '((> a)) left))
+    (or (pattern-match-and-bind '((> w) (> d)) right)
+	(pattern-match-and-bind '((> w) (> d) #\E (> e)) right))
+    (when *scale-factor*
+      (setf k *scale-factor*))
+    (let ((directive 
+	   (list (concatenate 'string
+			      "~" (fixnum-string w) ","
+			      (fixnum-string d) ","
+			      (fixnum-string e) ","
+			      (fixnum-string k) ",'*"
+			      (if *SP* "@G" "G")))))
+      (list a (list directive)))))
 
 (defun parse-format-descriptor-/ ()
    '("~%"))
@@ -3165,6 +3192,12 @@
 
 (defun parse-format-descriptor-X (w)
    (list (concatenate 'string "~" (fixnum-string w) "@T")))
+
+(defun parse-format-descriptor-P (w)
+  (declare (special *scale-factor*))
+  (setf *scale-factor* (fixnum-string w))
+  (format t "P: scale = ~A ~A~%" *scale-factor* w)
+  nil)
 
 (defun parse-format-descriptor-S (right)
    (setq *SP* (if (eq right #\P) t nil))
@@ -3412,6 +3445,27 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.144  2006/05/03 02:31:10  rtoy
+;;; src/f2cl1.l:
+;;; o When parsing an entry point, keep track of the actual parent
+;;;   function so we can generate the correct calling info.  (We only
+;;;   support entry points with exactly the same number and type of
+;;;   arguments so the calling info has to be the same.)
+;;;
+;;;   Do this by adding the parent to the list pushed on *entry-points*.
+;;;
+;;; o Set *subprog_name* to the function name.  (Is this right?)
+;;;
+;;; src/f2cl5.l:
+;;; o If possible, use the parent name to figure out the calling info for
+;;;   the entry point.
+;;;
+;;;
+;;; With these changes hompack can be compiled twice, successfully.
+;;; Previously polyp.f would call polynf correctly the first time, but
+;;; when everything is recompiled, polyp.f would incorrectly call polynf
+;;; with no args!
+;;;
 ;;; Revision 1.143  2006/05/02 22:17:17  rtoy
 ;;; Clean declarations for parameters by combining all declarations int
 ;;; one.
