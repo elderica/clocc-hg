@@ -1286,6 +1286,7 @@ FILENAME                 File containing Fortran code
               (list (list (convert-data-type (variable-value '%type bindings))
                           (list fun-name))))
    (setq *subprog-arglist* (remove '|,| (variable-value '%arg-list bindings)))
+   (setf *subprog_name* fun-name)
    (return
    (list 'defun 
          fun-name 
@@ -1296,7 +1297,8 @@ FILENAME                 File containing Fortran code
    (setq *function-flag* t)
    (setq *subprog-arglist* (remove '|,| (variable-value '%arg-list bindings)))
    (list 'defun 
-         (check-reserved-lisp-names (variable-value '%name bindings))
+         (setf *subprog_name*
+	       (check-reserved-lisp-names (variable-value '%name bindings)))
          (remove '|,| (variable-value '%arg-list bindings))))
 
 
@@ -1305,7 +1307,8 @@ FILENAME                 File containing Fortran code
   (let* ((entry-name (variable-value '%name bindings))
 	 (arglist (remove '|,| (variable-value '%arg-list bindings)))
 	 (args (mapcar #'check-reserved-lisp-names arglist)))
-    (push (list entry-name args) *entry-points*)
+    ;;(format t "parent = ~A~%" *subprog_name*)
+    (push (list entry-name args *subprog_name*) *entry-points*)
     (list entry-name)))
 
 ;goto
@@ -2749,6 +2752,12 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.162  2006/05/01 17:38:27  rtoy
+;;; Replace some uses of FSET with plain ol' SETF because SETF does
+;;; everything we want it to do.  But leave some FSET's around because we
+;;; need them later to generate initializers for DATA statements, and
+;;; such.
+;;;
 ;;; Revision 1.161  2006/04/28 15:42:01  rtoy
 ;;; o Forgot to apply the same change to PARSE-ARRAYREF-OR-STMTFN that was
 ;;;   needed for PARSE-ASSIGNMENT for assigning a complex to a real.

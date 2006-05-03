@@ -1535,14 +1535,40 @@
        ;; Add entry points to the function database
 
        (dolist (f *entry-points*)
-	 (destructuring-bind (name args)
+	 ;;(format t "Adding entry point ~A to database~%" f)
+	 (destructuring-bind (name args &optional parent)
 	     f
+	   ;;(format t "name, args, parent = ~A ~A ~A~%" name args parent)
 	   (let ((entry (gethash name *f2cl-function-info*))
 		 (var-type-list (get-var-types args)))
-	     (if entry
-		 (setf (f2cl-finfo-arg-types entry) var-type-list)
-	       (setf (gethash name *f2cl-function-info*)
-		     (make-f2cl-finfo :arg-types var-type-list))))))
+	     #+nil
+	     (progn
+	       (format t "entry = ~A~%" entry)
+	       (format t "var-type-list = ~A~%" var-type-list)
+	       (format t "parent info = ~A~%" (gethash parent *f2cl-function-info*)))
+	     (cond
+	       (parent
+		;; If we know parent of the entry point function, we
+		;; copy the information from the parent to this entry.
+		;; (Because we only support entry points with the same
+		;; number and type of args.)
+		(let ((pe (gethash parent *f2cl-function-info*)))
+		  (cond
+		    (entry
+		     (setf (f2cl-finfo-arg-types entry)
+			   (f2cl-finfo-arg-types pe))
+		     (setf (f2cl-finfo-return-values entry)
+			   (f2cl-finfo-return-values pe)))
+		    (t
+		     (setf (gethash name *f2cl-function-info*)
+			   (make-f2cl-finfo :arg-types (f2cl-finfo-arg-types pe)
+					    :return-values (f2cl-finfo-return-values pe)))))))
+	       (t
+		(warn "Got entry point for which we have no parent!")
+		(if entry
+		    (setf (f2cl-finfo-arg-types entry) var-type-list)
+		    (setf (gethash name *f2cl-function-info*)
+			  (make-f2cl-finfo :arg-types var-type-list))))))))
        
        (setf entry-points
 	     (mapcar #'(lambda (x)
@@ -3386,6 +3412,10 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.143  2006/05/02 22:17:17  rtoy
+;;; Clean declarations for parameters by combining all declarations int
+;;; one.
+;;;
 ;;; Revision 1.142  2006/05/02 22:12:02  rtoy
 ;;; src/f2cl5.l:
 ;;; o Try to make better declarations for variables defined in parameter
