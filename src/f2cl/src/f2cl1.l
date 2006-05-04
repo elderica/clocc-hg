@@ -174,6 +174,18 @@ incorrect, so use caution.")
 	(make-f2cl-finfo :arg-types '(integer4) :return-values '(nil)))
   *f2cl-function-info*)
 
+(defun save-f2cl-finfo (path)
+  "Save *F2CL-FUNCTION-INFO* to PATH.  This file can be reloaded
+later to provide the function information for f2cl to compile functions
+correctly"
+  (with-open-file (s path :direction :output :if-exists :supersede)
+    (maphash #'(lambda (key val)
+		 (write `(setf (gethash ',key f2cl::*f2cl-function-info*)
+			  ,val)
+			:stream s
+			:pretty t)
+		 (terpri s))
+	     *f2cl-function-info*)))
 ;----------------------------------------------------------------------------
 
 (defun f2cl (input-file &key
@@ -2752,6 +2764,27 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.163  2006/05/03 02:31:09  rtoy
+;;; src/f2cl1.l:
+;;; o When parsing an entry point, keep track of the actual parent
+;;;   function so we can generate the correct calling info.  (We only
+;;;   support entry points with exactly the same number and type of
+;;;   arguments so the calling info has to be the same.)
+;;;
+;;;   Do this by adding the parent to the list pushed on *entry-points*.
+;;;
+;;; o Set *subprog_name* to the function name.  (Is this right?)
+;;;
+;;; src/f2cl5.l:
+;;; o If possible, use the parent name to figure out the calling info for
+;;;   the entry point.
+;;;
+;;;
+;;; With these changes hompack can be compiled twice, successfully.
+;;; Previously polyp.f would call polynf correctly the first time, but
+;;; when everything is recompiled, polyp.f would incorrectly call polynf
+;;; with no args!
+;;;
 ;;; Revision 1.162  2006/05/01 17:38:27  rtoy
 ;;; Replace some uses of FSET with plain ol' SETF because SETF does
 ;;; everything we want it to do.  But leave some FSET's around because we
