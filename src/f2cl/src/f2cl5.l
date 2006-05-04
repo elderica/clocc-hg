@@ -822,7 +822,8 @@
 		     (if (subtypep var-type 'array)
 			 (values (first (third var-type)) t)
 			 (values 1 nil))
-		   (unless (eq prev-type el-type)
+		   (unless (and (subtypep el-type prev-type)
+				(subtypep prev-type el-type))
 		     (setf prev-type el-type)
 		     (incf part)
 		     (setf total-len 0)
@@ -3317,8 +3318,8 @@
 	     (dims (cond ((and (listp var-type)
 			       (subtypep var-type 'array)
 			       (not (subtypep var-type 'string)))
-			  ;;(format t "array var-type = ~A ~A~%" var var-type)
-			  ;;(format t "lookup-array-bounds ~A = ~A~%" var (lookup-array-bounds var))
+			  ;;(format t "array var-type = ~A ~A~%" v var-type)
+			  ;;(format t "lookup-array-bounds ~A = ~A~%" v (lookup-array-bounds v))
 
 			  ;; If the dimension of the array is
 			  ;; a number, use the actual
@@ -3332,7 +3333,8 @@
 	(let ((len (if (subtypep var-type 'array)
 			      (first (third var-type))
 			      1)))
-	  (cond ((eq prev-type el-type)
+	  (cond ((and (subtypep prev-type el-type)
+		      (subtypep el-type prev-type))
 		 ;; Keep accumulating
 		 (incf total-len len))
 		(t
@@ -3442,6 +3444,10 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.147  2006/05/03 20:06:42  rtoy
+;;; Was not correctly handling handling the dimensions for a logical
+;;; array when computing the declaration for the array.
+;;;
 ;;; Revision 1.146  2006/05/03 17:37:23  rtoy
 ;;; o A better implementation, I think, of the separate nP edit
 ;;;   descriptor.
