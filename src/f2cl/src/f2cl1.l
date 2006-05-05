@@ -249,6 +249,10 @@ INPUT-FILE               File containing Fortran code
                           elsewhere.
 :FLOAT-FORMAT            Float format to use when printing the result.
                           Default is *READ-DEFAULT-FLOAT-FORMAT*
+:COMMON-AS-ARRAY         Common blocks are created as a set of arrays, and the
+                          common block variables are offsets into the arrays.
+                          This mimics Fortran common block layouts.
+                          Default = NIL.
 "
 
 
@@ -363,6 +367,10 @@ FILENAME                 File containing Fortran code
                          Otherwise, the structures for the common blocks are not declared.
 :FLOAT-FORMAT            Float format to use when printing the result.  Default is
                          *READ-DEFAULT-FLOAT-FORMAT*
+:COMMON-AS-ARRAY         Common blocks are created as a set of arrays, and the
+                         common block variables are offsets into the arrays.
+                         This mimics Fortran common block layouts.
+                         Default = NIL.
 "
   (let ((lisp-file
 	 (f2cl filename :prune-labels prune-labels :include-comments include-comments
@@ -2764,6 +2772,10 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.164  2006/05/04 04:02:09  rtoy
+;;; Add a function, SAVE-F2CL-FINFO to save the compiled function info to
+;;; a file which can be reloaded later.
+;;;
 ;;; Revision 1.163  2006/05/03 02:31:09  rtoy
 ;;; src/f2cl1.l:
 ;;; o When parsing an entry point, keep track of the actual parent
