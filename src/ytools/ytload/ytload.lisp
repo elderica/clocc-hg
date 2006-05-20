@@ -82,11 +82,13 @@
    (load-yt-config-file)
    (cond ((or start-over
 	      (not (check-installed module))
-	      (eq if-installed ':reinstall)
+	      (member if-installed '(:reinstall :start-over))
 	      (and (eq if-installed ':warn)
 		   (y-or-n-p "Module ~s already installed; reinstall?"
 			     module)))
-	  (cond ((really-install module start-over)
+	  (cond ((really-install module
+                                 (or start-over
+                                     (eq if-installed ':start-over)))
 		 (format t "~a is installed~%" module)
 		 t)
 		(t nil)))
@@ -529,8 +531,8 @@
                       (t nil)))
                (t nil)))))
 
-(defun version-num-from-changelog (direc)
-   (or (find-version-num (strings-concat direc "CHANGELOG"))
+(defun version-num-from-changelog (direc &optional (prefix ""))
+   (or (find-version-num (strings-concat direc prefix "CHANGELOG"))
        "??"))
 
 (defvar version-header* "[- Version ")

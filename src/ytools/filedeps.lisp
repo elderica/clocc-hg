@@ -2,6 +2,9 @@
 (in-package :ytools)
 ;$Id$
 
+;;; This stuff is for use with CVSified/prog/misc/filedag.lisp.
+;;; See 'module-deps-display' in that file.
+
 (depends-on %module/ ytools)
 
 (eval-when (:compile-toplevel :load-toplevel :execute :slurp-toplevel)
