@@ -19,7 +19,7 @@
 ;;;;)
 
 (eval-when (:compile-toplevel :load-toplevel)
-   (export '(!= !=/ *-* switch matchq match-cond match-let *unbound
+   (export '(!= !=/ *-* switch matchq matches match-cond match-let *unbound
 	     make-Qvaroid make-Qvar is-Qvar is-Qvaroid Qvar-sym Qvar-notes Qvar
              setter)))
 
@@ -240,6 +240,10 @@
    (match-code-cleanup
       `(let ((\ dat ,dat))
 	  ,(match-code pat '\ dat))))
+
+;;; Sometimes this is a lot more readable --
+(defmacro matches (datum pattern)
+   `(matchq ,pattern ,datum))
 
 (needed-by-macros
 

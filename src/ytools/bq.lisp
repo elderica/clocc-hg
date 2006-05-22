@@ -38,6 +38,7 @@
 		    (t e)))
 	     (t
 	      `(bq-comma ,lv ,spl ,(bq-expand lev e)))))
+;;; Does it really make sense to expand into Qvaroids?
       ((is-Qvaroid exp)
 ;;;;       (let ((sym-note-exp 
 ;;;;		(cond ((eq (Qvaroid-sym exp) 'bq-comma)
