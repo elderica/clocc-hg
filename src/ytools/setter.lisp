@@ -645,8 +645,10 @@
                     (cddr exp)))))
 
 (defmacro setter (x)
-   `(\\ (new-val fcn)
-       (!= ,x (>< fcn new-val *-*))))
+   (let ((new-val-var (gensym))
+         (fcn-var (gensym)))
+      `(\\ (,new-val-var ,fcn-var)
+          (!= ,x (>< ,fcn-var ,new-val-var *-*)))))
 
 ;;; For use as second arg of 'setter'
 (defvar ^-this-val (\\ (new-val _) new-val))
