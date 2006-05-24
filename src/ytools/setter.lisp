@@ -21,7 +21,7 @@
 (eval-when (:compile-toplevel :load-toplevel)
    (export '(!= !=/ *-* switch matchq matches match-cond match-let *unbound
 	     make-Qvaroid make-Qvar is-Qvar is-Qvaroid Qvar-sym Qvar-notes Qvar
-             setter)))
+             setter <-this-val ^-this-val)))
 
 ;;;;(declaim (special *-*))
 
