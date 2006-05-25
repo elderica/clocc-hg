@@ -772,7 +772,7 @@
 				  (or (not ask-about-fload-version-mgt*)
 				      (y-or-n-p !"Begin management of ~s ~
 						  ~%     [probably yes]? "
-						old-cfc)))
+						new-cfc)))
 			     (on-list new-cfc changing-chunks)))))))
 	 (do ((oldl (filespecs->ytools-pathnames reset-olds)
 		    (tail oldl)))
