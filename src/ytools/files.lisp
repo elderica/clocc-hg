@@ -1492,4 +1492,4 @@
    (let ((l-ch (flchunk pn)))
       (let ((f-ch (Loaded-chunk-loadee l-ch)))
 	 (let ((c-ch (place-compiled-chunk f-ch)))
-	    (list f-ch l-ch c-ch)))))
+	    (values f-ch l-ch c-ch)))))

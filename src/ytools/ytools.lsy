@@ -247,9 +247,7 @@
    (in-package :ytools))
 
 (defparameter +ytools-version+
-    "2.1.9c"
-    ;; The fact that sourceforge cvs is down
-    ;; keeps us from using the CHANGELOG version-number trick
-    ;;(version-num-from-changelog ytools-home-dir*)
+     ;;;; "2.1.9c"
+    (version-num-from-changelog ytools-home-dir*)
     )
 
