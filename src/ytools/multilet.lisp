@@ -10,7 +10,7 @@
 (depends-on %ytools/ setter signal misc)
 
 (eval-when (:compile-toplevel :load-toplevel :execute :slurp-toplevel)
-   (export '(multi-let with-open-files gen-var 
+   (export '(multi-let with-open-files gen-var with-gen-vars
 	     keyword-args-extract
 	     control-nest track-extra-vals extra-vals)))
 
@@ -29,7 +29,15 @@
 
    (defun gen-var (sym)
       (build-symbol (:package false) (< sym) - (++ symno*)))
+
 )
+
+(defmacro with-gen-vars (varnames &body body)
+   `(let ,(<# (\\ (varname)
+                 `(,(build-symbol - (:< varname) -)
+                   (gen-var ',varname)))
+              varnames)
+      ,@body))
 
 (defmacro redundant-args-check (arg-alist-var form^)
    (cond ((not (is-Symbol arg-alist-var))
