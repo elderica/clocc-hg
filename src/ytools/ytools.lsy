@@ -229,7 +229,8 @@
 	 (load fasl-file))))
      
 (cl:defun use-ytools (&optional (pkg *package*))
-   (shadowing-import '(ytools::defun ytools::defmacro ytools::eval-when)
+   (shadowing-import '(ytools::defun ytools::defmacro
+                       ytools::defmethod ytools::eval-when)
 		     pkg)
    (use-package :ytools pkg))
 

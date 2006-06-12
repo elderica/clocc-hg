@@ -500,6 +500,8 @@
    (cond ((atom e)
 	  (cond ((eq e '\ dat) 1)
 		(t 0)))
+         ((eq (car e) 'quote)
+          0)
 	 ((memq (car e) '(setq setf !=))
 	  (cond ((eq (cadr e) '\ dat)
 		 false)
