@@ -9,7 +9,7 @@
 ;;; which relies on BLAS (http://www.netlib.org/blas) and
 ;;; LAPACK (http://www.netlib.org/lapack) for heavy-duty computations.
 ;;;
-;;; Copyright (C) 2000-2005 by Sam Steingold
+;;; Copyright (C) 2000-2006 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
