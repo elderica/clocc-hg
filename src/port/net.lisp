@@ -600,7 +600,7 @@ Kind can be :stream or :datagram."
   (name "" :type simple-string) ; official name of service
   (aliases nil :type list)      ; alias list
   (port -1 :type fixnum)        ; port service resides at
-  (proto "tcp" :type simple-string)) ; protocol to use
+  (proto :tcp :type symbol))    ; protocol to use
 
 (defun socket-service-port (&optional service (protocol "tcp"))
   "Return the SERVENT structure corresponding to the SERVICE.
