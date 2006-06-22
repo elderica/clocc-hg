@@ -351,7 +351,7 @@
   (let ((num-err 0) actual expected)
     (setq expected '(#(0 0) #(0 1) #(0 2) #(1 0) #(1 1) #(1 2))
           actual (with-collect (c)
-                   (do-iter (z #(2 3))
+                   (do-iter (z (mk-arr 'fixnum '(2 3)))
                      (c (copy-seq z)))))
     (unless (equalp expected actual)
       (mesg :test out "~& * error in ~S:~% actual:   ~S~% expected: ~S~%"
