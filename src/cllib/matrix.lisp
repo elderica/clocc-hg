@@ -187,7 +187,7 @@ Similar to Matlab `:'."
          (idx-ret (make-list (length index-list))) ; running index into ret
          (idx-arr (make-list (array-rank arr)))    ; running index into arr
          (ret (make-array dims :initial-element 0)))
-    (do-iter (ii (coerce (array-dimensions arr) 'vector) ret)
+    (do-iter (ii (mk-arr 'fixnum (array-dimensions arr)) ret)
       (replace idx-arr ii)
       ;; this AREF in LAMBDA means that we must use DO-ITER and not DO-ITER-LS
       (map-into idx-ret (lambda (idx) (aref ii idx)) index-list)
