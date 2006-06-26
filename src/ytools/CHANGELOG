@@ -5,7 +5,7 @@ $Id$
             newer than earliest disjunct, stick with current date.
             setter.lisp: In 'simple-dat-match', any quoted expression
             should return value 0, because it can contain no free
-            occurrenes of | dat|.
+            occurrences of | dat|.
 
             [- Version 2.1.17 2006/05/30 13:54:47 airfoyle Exp -]
 2006-05-30: Defined 'with-gen-vars', around cool new convention that

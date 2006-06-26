@@ -506,6 +506,8 @@
 	  (cond ((eq (cadr e) '\ dat)
 		 false)
 		(t (simple-dat-match (caddr e)))))
+         ((eq (car e) 'quote)
+          0)
 	 ((eq (car e) 'let)
 	  (repeat :for ((bv :in (cadr e))
 			(numoccs 0)
