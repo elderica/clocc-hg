@@ -144,10 +144,11 @@
                               (begins-with (head (tail sl))
                                            directory-delimiter*))
                          (format str-srm
+                           "~a"
                            (subseq s 0 (- (length s)
                                           (length directory-delimiter*)))))
                         (t
-                         (format str-srm s))))
+                         (format str-srm "~a" s))))
                  (t
                   (format str-srm "~a" s)
                   (cond ((or (null (tail sl))
