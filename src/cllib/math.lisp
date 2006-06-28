@@ -469,24 +469,17 @@ The order in which the permutations are listed is either
 (defun sample (seq count &key complement)
   "Return a random subset of size COUNT from sequence SEQ.
 When :COMPLEMENT is non-NIL, the second value is the complement of the sample."
-  (let* ((good '()) (drop '()) (len (length seq)) (leeway (- len count))
-         (prob (float (/ count len) 0s0)))
-    (cond ((minusp leeway)
-           (error "~S(~S ~S): too few elements: ~:D"
-                  'sample seq count len))
-          ((zerop leeway) (values (coerce seq 'list) '()))
-          ((zerop count) (values '() (and complement (coerce seq 'list))))
-          (t
-           (map nil (lambda (elt)
-                      (cond ((and (plusp count)
-                                  (or (zerop leeway)
-                                      (> prob (random 1s0))))
-                             (push elt good)
-                             (decf count))
-                            (t (when complement (push elt drop))
-                               (decf leeway))))
-                seq)
-           (values (nreverse good) (nreverse drop))))))
+  (let* ((good '()) (drop '()) (len (length seq)) (got 0) (left len))
+    (when (minusp count)
+      (error "~S(~S ~S): cannot select a negative number of elements"
+             'sample seq count))
+    (map nil (lambda (elt)
+               (cond ((> (* left (random 1s0)) (- count got))
+                      (when complement (push elt drop)))
+                     (t (push elt good) (incf got)))
+               (decf left))
+         seq)
+    (values (nreverse good) (nreverse drop))))
 
 ;;;
 ;;; Ratios
