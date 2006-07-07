@@ -534,10 +534,10 @@ OPTS is passed to `plot-lists-arg'."
          opts))
 
 ;;;###autoload
-(defun plot-histogram (list nbins &rest opts &key (title "histogram") (mean t)
-                       (key #'value) (xlabel "x") (ylabel "count")
+(defun plot-histogram (list nbins &rest opts &key (mean t) (key #'value)
                        (mdl (standard-deviation-mdl list :key key))
-                       &allow-other-keys)
+                       (title (princ-to-string mdl))
+                       (xlabel "x") (ylabel "count") &allow-other-keys)
   "Plot the data in the list as a histogram.
 When :MEAN is non-NIL (default), show mean and mean+-standard deviation
  with vertical lines."
