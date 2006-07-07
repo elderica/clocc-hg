@@ -46,8 +46,8 @@
           (mesg :log out "~3D ~15@A" i name)
           (if plot
               (plot-histogram lines 100 :key key :plot plot
-                              :xlabel (format nil "~A(~D)" name i))
-              (mesg :log out "~A~%"
+                              :xlabel (format nil "~A -- ~A(~D)" file name i))
+              (mesg :log out " ~A~%"
                     (standard-deviation-mdl lines :key key))))))))
 
 
