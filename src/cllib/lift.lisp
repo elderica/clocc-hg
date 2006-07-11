@@ -470,5 +470,5 @@ and cut-offs (x) for the given recalls (y)"
         (ppv-out y-ret mdl out)))
     (values x-ret y-ret)))
 
-(provide :lift)
+(provide :cllib-lift)
 ;;; file lift.lisp ends here
