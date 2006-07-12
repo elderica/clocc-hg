@@ -24,7 +24,7 @@
 
 (defcustom *buckets* (or null (cons lift:bucket)) ()
   "The list of buckets to fill in `analyse-csv'.")
-(defcustom *columns* (or (eql t) (cons (or fixnum string symbol))) t
+(defcustom *columns* (or (eql t) (cons (or fixnum string (eql NOT)))) t
   "The list of column specs to study in `analyse-csv'.")
 
 (defun column-spec-list (col-specs names ncol)
@@ -32,7 +32,7 @@
   (delete
    nil (mapcar (lambda (spec)
                  (etypecase spec
-                   ((or string symbol)
+                   (string
                     (assert names (names)
                             "column spec ~S requires a names line" spec)
                     (or (position spec names :test #'string-equal)
@@ -50,7 +50,7 @@
     ((eql t) (loop :for i :from 0 :below ncol :collect i))
     ((cons (eql not))           ; exclude specified columns
      (set-difference (loop :for i :from 0 :below ncol :collect i)
-                     (column-spec-list col-specs names ncol)))
+                     (column-spec-list (rest col-specs) names ncol)))
     (cons                       ; include specified columns
      (column-spec-list col-specs names ncol))))
 
