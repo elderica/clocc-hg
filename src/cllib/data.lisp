@@ -23,9 +23,9 @@
 
 (export '(analyse-csv *buckets* *columns* evaluate-predictor))
 
-(defcustom *buckets* list ()    ; of lift:bucket
+(defcustom *buckets* (or null (cons lift:bucket)) ()
   "The list of buckets to fill in `analyse-csv'.")
-(defcustom *columns* (or (eql t) (list (or fixnum string symbol))) t
+(defcustom *columns* (or (eql t) (cons (or fixnum string symbol))) t
   "The list of column specs to study in `analyse-csv'.")
 
 (defun unroll-column-specs (col-specs names ncol)
