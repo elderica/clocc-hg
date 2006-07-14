@@ -118,7 +118,8 @@
       (list* col name mdl bl))))
 
 ;;;###autoload
-(defun analyse-csv (file &key plot (first-line-names t) (out *standard-output*)
+(defun analyse-csv (file &key plot (first-line-names :default)
+                    (out *standard-output*)
                     ((:columns *columns*) *columns*)
                     ((:buckets *buckets*) *buckets*))
   "Analyse columns in the CSV file."
