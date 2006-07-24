@@ -530,7 +530,7 @@
 			      (signal-problem control-nest
 				 "Expression should have exactly one"
 				 " occurrence of " (cadr lbes) ": "
-				 (car lbes)
+				 :% (car lbes)
 				 (:proceed "I'll replace all occurrences"))))
 		       (subst (fold (cddr lbes))
 			      (cadr lbes)

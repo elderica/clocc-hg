@@ -25,7 +25,7 @@
 
 (depends-on (:at :run-time) %clocc-port/ shell path)
 
-(defvar really-copy-ytools* true)
+(defvar really-copy-files* true)
 
 ;;; This file is not intended to be compiled, but it won't
 ;;; hurt to do so.
@@ -330,11 +330,12 @@
 			target-dir)))
       (dir-pns-file-copy source-dpn target-dpn fname)))
 	   
-(defun dir-pns-file-copy (source-dpn target-dpn fname)
+(defun dir-pns-file-copy (source-dpn target-dpn fname
+                          &key (really really-copy-files*))
    (let ((file-pn (parse-namestring fname)))
       (let ((from-pn (merge-pathnames file-pn source-dpn))
 	    (to-pn (merge-pathnames file-pn target-dpn)))
-	 (cond (really-copy-ytools*
+	 (cond (really
 		(sys::copy-file from-pn to-pn :overwrite true))
 	       (t
 		(out "Copy: " from-pn
