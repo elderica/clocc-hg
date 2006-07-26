@@ -20,7 +20,8 @@
 
 (in-package :cllib)
 
-(export '(analyse-csv *buckets* *columns* evaluate-predictor))
+(export '(analyse-csv *buckets* *columns* evaluate-predictor
+          stat-column sc-pos sc-name sc-mdl sc-median sc-buckets))
 
 (defcustom *buckets* (or null (cons lift:bucket)) ()
   "The list of buckets to fill in `analyse-csv'.")
@@ -97,6 +98,13 @@
                            drop len (/ (* 1d2 drop) len))))
       (values lines (- len drop)))))
 
+(defstruct (stat-column (:conc-name sc-))
+  (pos 0 :type index-t)
+  (name "" :type string)
+  (mdl +bad-mdl+ :type mdl)
+  (buckets nil :type list)      ; of buckets
+  (median nil :type (or null real)))
+
 (defun stat-column (lines col buckets names plot file
                     &key (len (length lines)) (out *standard-output*)
                     (max-name-length (max-name-length names)))
@@ -115,7 +123,7 @@
         (dolist (b bl)
           (mesg :log out "  -  ~A  ~4F%~%"
                 b (/ (* 1d2 (lift:bucket-size b)) len))))
-      (list* col name mdl bl))))
+      (make-stat-column :pos col :name name :mdl mdl :buckets bl))))
 
 ;;;###autoload
 (defun analyse-csv (file &key plot (first-line-names :default)
