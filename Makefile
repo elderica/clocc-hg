@@ -35,6 +35,12 @@ recursive-clean: force
 cvs.log: force
 	cvs log > $@ 2>/dev/null
 
+clocc.diff: force
+	(cvs diff > $@ && $(RM) $@) || true
+
+clocc.diff.gz: clocc.diff
+	gzip -9vf $^
+
 cvs-stat: cvs.log
 	@fgrep "author:" cvs.log | sed 's/^.*author: \([^;]*\);.*$$/\1/' | \
 		sort | uniq -c | sort | sed 's/^/    /';
