@@ -102,21 +102,29 @@
 ;;; histograms
 ;;;
 
-(defun histogram (list nbins &key (key #'value) (out *standard-output*)
-                  (mdl (standard-deviation-mdl list :key key)))
+(defun histogram (list nbins &key (key #'value) (out *standard-output*) logscale
+                  (mdl (standard-deviation-mdl list :key key))
+                  (min (mdl-mi mdl)) (max (mdl-ma mdl)))
   "Return 2 values: vector of length NBINS, bin WIDTH and MDL.
 The vector contains the counts in the Ith bin."
-  (let ((min (mdl-mi mdl)) (max (mdl-ma mdl)))
     (mesg :log out "~&~S: ~S~%" 'histogram mdl)
     (assert (/= min max) (min max) "~S: min=max=~A" 'histogram min)
-    (let ((width (/ (- max min) nbins)) (last (1- nbins))
-          (vec (make-array nbins :initial-element 0)))
-      (loop :for x :in list :for v = (floor (- (funcall key x) min) width)
-        :do (incf (aref vec (min v last))))
+  (assert (or (null logscale) (plusp (* min max))) (logscale min max)
+          "~S: mixed sign data [~A;~A] incompatible with logscale=~S"
+          'histogram min max logscale)
+  (let* ((width (if logscale
+                    (exp (/ (log (/ max min)) nbins))
+                    (/ (- max min) nbins)))
+         (last (1- nbins)) (vec (make-array nbins :initial-element 0))
+         (bin (if logscale
+                  (lambda (x) (floor (log (/ (funcall key x) min) width)))
+                  (lambda (x) (floor (- (funcall key x) min) width)))))
+    (loop :for x :in list :for v = (funcall bin x)
+      :do (incf (aref vec (min (max 0 v) last))))
       (loop :for s :across vec :minimize s :into i :maximize s :into a
         :finally (mesg :log out "~S: bin size from ~:D to ~:D~%"
                        'histogram i a))
-      (values vec width mdl))))
+    (values vec width mdl)))
 
 ;;;
 ;;; Chi square
