@@ -227,6 +227,17 @@
 		     ytools-bin-dir-pathname*))))
 	 (compile-file lisp-file :output-file fasl-file)
 	 (load fasl-file))))
+
+(cl:defun delete-core-files ()
+   (dolist (bf ytools-core-files*)
+      (let ((fasl-file
+	       (ensure-directories-exist
+		  (merge-pathnames
+		     (make-pathname :name bf :type lisp-object-extn*)
+		     ytools-bin-dir-pathname*))))
+         (cond ((probe-file fasl-file)
+;;;;                (out "Pretending to delete " fasl-file :%)
+                (delete-file fasl-file))))))
      
 (cl:defun use-ytools (&optional (pkg *package*))
    (shadowing-import '(ytools::defun ytools::defmacro

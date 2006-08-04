@@ -9,12 +9,20 @@
 
 (defun install-ytools (start-over)
                       (declare (ignore start-over))
-   (cond ((yt-load :ytfm :if-loaded nil :if-not-installed ':install)
-	  (format *query-io* "Compiling all YTools~%")
-	  (let ((fload-compile-flag* ':compile))
-	     (ytools-module-load 'ytools))
-	  t)
-	 (t nil)))
+   (cond ((yt-install :ytfm
+                      :if-installed
+                         (cond (start-over ':start-over)
+                               (t ':reinstall)))
+          (cond ((yt-load :ytfm
+                          :if-loaded (cond (start-over
+                                            ':force)
+                                           (t nil)))
+                 (format *query-io* "Compiling all YTools~%")
+                 (let ((fload-compile-flag* ':compile))
+                    (ytools-module-load 'ytools))
+                 (format *query-io* "YTools version: ~s~%" +ytools-version+)
+                 t)
+                (t nil)))))
 
 (defun load-ytools ()      
    (cond ((yt-load :ytfm :if-loaded nil :if-not-installed ':install)
@@ -42,6 +50,7 @@
 		    (load-if-there (merge-pathnames
 				      "ytinit.lisp"
 				      (user-homedir-pathname))))
+                 (format *query-io* "YTools version: ~s~%" +ytools-version+)
 		 (list ytools-package*
 		       ytools-readtable*))))
 	 (t nil)))
