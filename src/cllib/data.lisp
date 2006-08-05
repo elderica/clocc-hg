@@ -181,7 +181,7 @@
       (setf (table-stats tab)
             (mapcar (lambda (i)
                       (stat-column (table-lines tab) i *buckets* names
-                                     :max-name-length max-name-length
+                                   :max-name-length max-name-length
                                    :out out :table tab))
                     columns))
       tab)))

@@ -253,7 +253,7 @@ according to the given backend")
                   (unless (eq logscale t) logscale))
           (format out "unset logscale ~a~%" name)))
     (let ((range (plax-range pa)))
-        (format out "set ~arange [~a:~a]~%" name
+      (format out "set ~arange [~a:~a]~%" name
               (%plotout (car range)) (%plotout (cdr range))))))
 
 (defmethod plot-output ((ps plot-spec) (out stream) (backend (eql :gnuplot)))
