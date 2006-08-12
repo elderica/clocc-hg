@@ -23,7 +23,7 @@
 (export '(analyse-csv *buckets* *columns* evaluate-predictor
           stat-column sc-pos sc-name sc-mdl sc-median sc-buckets sc-table
           table table-path table-lines table-stats table-names aref-i
-          compress-tables *tables*
+          compress-tables *tables* table-lines$
           table-stats-refresh column-histogram add-column plot-columns))
 
 (defcustom *buckets* (or null (cons lift:bucket)) ()
