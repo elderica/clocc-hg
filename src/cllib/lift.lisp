@@ -212,8 +212,8 @@ Buckets may overlap and not cover the whole range."
 (defun bucketize (seq buckets &key (key #'identity) (out *standard-output*))
   "Copy BUCKETS, fill them from SEQ, print them and return."
   (let ((bl (mapcar (port:compose bucket-empty copy-bucket) buckets)))
-    (lift:fill-buckets seq bl :key key)
-    (lift:show-buckets bl (length seq) :out out)
+    (fill-buckets seq bl :key key)
+    (show-buckets bl (length seq) :out out)
     bl))
 
 (defun discretize (seq &key (buckets *default-buckets*) (key #'identity)
