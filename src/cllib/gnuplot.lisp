@@ -328,7 +328,8 @@ Should not be called directly but only through `with-plot-stream'."
           "~&~s: plot directive ~s is deprecated; use ~s~%"
           'internal-with-plot-stream t :plot)
     (setq plot :plot))
-  (let* ((plot-out (make-plot-stream plot))
+  (let* ((*print-pretty* nil)  ; ensure no unwanted newlines in commands
+         (plot-out (make-plot-stream plot))
          (plot-stream (if dribble
                           (make-broadcast-stream plot-out dribble)
                           plot-out))
