@@ -1,6 +1,6 @@
 ;;; Math utilities (Arithmetical / Statistical functions)
 ;;;
-;;; Copyright (C) 1997-2005 by Sam Steingold.
+;;; Copyright (C) 1997-2006 by Sam Steingold.
 ;;; This is Free Software, covered by the GNU GPL (v2)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
@@ -1280,8 +1280,8 @@ NIL result stands for infinity."
 
 (defun covariance (seq0 seq1 &key (key0 #'value) (key1 #'value))
   "Compute the covariance between the data in the two sequences.
-Return 6 values: covariance, mean0, mean1, dispersion0,
-dispersion1, number of elements considered.
+Return 6 values: covariance, mean0, mean1, variance0,
+variance1, number of elements considered.
 Uses the fast but numerically unstable algorithm
 without pre-computing the means."
   (declare (sequence seq0 seq1) (type (function (t) double-float) key0 key1))
@@ -1305,8 +1305,8 @@ without pre-computing the means."
 
 (defun covariance1 (seq0 seq1 &key (key0 #'value) (key1 #'value))
   "Compute the covariance between the data in the two sequences.
-Return 6 values: covariance, mean0, mean1, dispersion0,
-dispersion1, number of elements considered.
+Return 6 values: covariance, mean0, mean1, variance0,
+variance1, number of elements considered.
 Uses the numerically stable algorithm with pre-computing the means."
   (declare (sequence seq0 seq1) (type (function (t) double-float) key0 key1))
   (let ((m0 (dfloat (mean seq0 :key key0)))
