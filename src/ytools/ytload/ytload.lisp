@@ -132,7 +132,7 @@
    (load-yt-config-file)
 ;;;;   (format t "Before attempting load, config-directory* = ~s~%"
 ;;;;	   config-directory*)
-   (cond ((or (memq if-loaded '(:force :reload))
+   (cond ((or (member if-loaded '(:force :reload))
 	      (not (check-loaded module)))
 	  (load-module-file module)
 	  (let ((loadable (check-installed module)))
