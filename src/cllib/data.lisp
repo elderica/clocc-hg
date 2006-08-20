@@ -226,7 +226,7 @@
       (push tab *tables*)
       (setf (table-stats tab)
             (mapcar (lambda (i)
-                      (table-stat-column tab i :out out
+                      (table-stat-column i tab :out out
                                          :max-name-length max-name-length))
                     columns))
       tab)))
@@ -234,7 +234,7 @@
 (defun table-stats-refresh (table)
   "Update TABLE-STATS."
   (let ((stats (table-stats table)))
-    (map-into stats (lambda (sc) (table-stat-column table (sc-pos sc)))
+    (map-into stats (lambda (sc) (table-stat-column (sc-pos sc) table))
               stats)))
 
 (defun add-column (table1 function name)
