@@ -92,7 +92,7 @@
                (incf line) (progress (/ line total))
                (dolist (i col-specs t)
                  (handler-bind ((error (lambda (c)
-                                         (warn "~A -- line dropped" c)
+                                         (warn "~A -- line ~:D dropped" c line)
                                          (incf (aref dnum i))
                                          (incf drop) (return nil))))
                    (setf (aref v i) (numeric v i names)))))
