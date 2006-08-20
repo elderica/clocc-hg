@@ -1,8 +1,9 @@
 $Id$
             
-            [- Version 2.1.23 -]
+            [- Version 2.1.24 -]
 2006-08-19: ytload/ytload.lisp: Replaced occurrence of 'memq' with
-            'member' in 'yt-load'.
+            'member' in 'yt-load'.  Added comment to clarify how
+            :if-installed ':start-over works.
 
             [- Version 2.1.22 2006/08/04 14:08:07 airfoyle Exp -]
 2006-08-02: YTools loader and installer now print version number.
