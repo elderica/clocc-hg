@@ -398,6 +398,7 @@ Everything is allocated anew."
                  ht))
       (restat-table table ret :out out :label 'summarize)
       (mesg :log out "~S: ~A..." 'summarize ret)
+      (push ret *tables*)
       ret)))
 
 (defun table-select (table column value &key (out *standard-output*))
@@ -415,6 +416,7 @@ Everything is allocated anew."
                                      :collect (remove-subseq v pos (1+ pos))))))
       (restat-table table ret :out out :label 'table-select)
       (mesg :log out "~S: ~A..." 'table-select ret)
+      (push ret *tables*)
       ret)))
 
 ;;;###autoload
