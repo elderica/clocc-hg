@@ -74,11 +74,11 @@ If FMT is non-NIL, return the corresponding string too."
   "Call format -- conditionally.
 This has to be a macro to avoid needless evaluating the args."
   (with-gensyms ("MESG-" out typ)
-    `(let ((,out ,str) (,typ ,type))
-      (declare (type (or stream (member nil t)) ,out))
-      (when (and ,out (print-log-p ,typ))
-        (format ,out ,@args)
-        (force-output (if (eq t ,out) *standard-output* ,out))))))
+    `(let ((,out ,str) (,typ ,type) (*print-pretty* nil))
+       (declare (type (or stream (member nil t)) ,out))
+       (when (and ,out (print-log-p ,typ))
+         (format ,out ,@args)
+         (force-output (if (eq t ,out) *standard-output* ,out))))))
 
 (defmacro with-timing ((&key (terpri t) (done nil) (run t) (real t)
                              (count nil) (units "bytes")
