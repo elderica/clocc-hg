@@ -85,5 +85,5 @@
               tot out (file-length outs))
       tot)))
 
-(provide "autoload")
+(provide :cllib-autoload)
 ;;; file autoload.lisp ends here

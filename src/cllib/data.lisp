@@ -13,7 +13,7 @@
   (require :cllib-math (translate-logical-pathname "cllib:math"))
   ;; `with-csv'
   (require :cllib-csv (translate-logical-pathname "cllib:csv"))
-  ;; `fill-buckets'
+  ;; `fill-buckets', `bucketize'
   (require :cllib-lift (translate-logical-pathname "cllib:lift"))
   ;; `plot-histogram'
   (require :cllib-gnuplot (translate-logical-pathname "cllib:gnuplot")))
@@ -442,5 +442,5 @@ File: CSV, 1st column: actuals, 2nd column: predicted."
           (mesg :log out "diff  : ~a  r2=~f~%"
                 mdl (/ (- s1 (mdl-sd mdl)) s1)))))))
 
-(provide :data)
+(provide :cllib-data)
 ;;; file data.lisp ends here
