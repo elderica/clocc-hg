@@ -34,7 +34,7 @@
   "The list of buckets to fill in `analyse-csv'.")
 (defcustom *columns* (or (eql t) (cons (or fixnum string (eql NOT)))) t
   "The list of column specs to study in `analyse-csv'.")
-(defcustom *levels* simple-vector
+(defcustom *levels* list
   '(0.1 0.2 0.25 0.3 0.4 0.5 0.6 0.7 0.75 0.8 0.9)
   "The percentile levels for order statistics.")
 
