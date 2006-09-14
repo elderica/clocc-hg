@@ -128,7 +128,7 @@ The inverse is `hash-table->alist'."
     (values value present-p)))
 
 (defun print-counts (seq &key (out *standard-output*) (key #'value)
-                     (key-numeric-p nil)
+                     (key-numeric-p nil) (test 'equal)
                      (format (if key-numeric-p
                                  (formatter ";; ~5:D --> ~5:D~%")
                                  (formatter ";; ~5A --> ~5:D~%"))))
@@ -136,7 +136,7 @@ The inverse is `hash-table->alist'."
 If KEY-NUMERIC-P is non-NIL, sort by KEY instead."
   (when out
     (loop :for (object . count)
-      :in (sort (cdr (hash-table->alist (count-all seq :key key)))
+      :in (sort (cdr (hash-table->alist (count-all seq :key key :test test)))
                 #'< :key (if key-numeric-p #'car #'cdr))
       :do (format out format object count))))
 
