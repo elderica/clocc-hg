@@ -39,7 +39,7 @@
    standard-deviation-relative standard-deviation-mdl min+max
    entropy-sequence entropy-distribution kullback-leibler
    information mutual-information dependency proficiency correlation
-   mdl make-mdl +bad-mdl+ mdl-mn mdl-sd mdl-le mdl-mi mdl-ma
+   mdl make-mdl +bad-mdl+ mdl-mn mdl-sd mdl-le mdl-mi mdl-ma mdl-mi$ mdl-ma$
    mdl-normalize mdl-denormalize mdl-normalize-function
    normalizer-table normalize-function-list
    kurtosis-skewness kurtosis-skewness-weighted
