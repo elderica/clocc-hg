@@ -19,7 +19,7 @@
 (in-package :cllib)
 
 (export '(get-int-time elapsed time-diff with-timing eta progress
-          *print-log* mesg list-format))
+          *print-log* mesg list-format fmt%))
 
 ;;;
 ;;;
@@ -30,6 +30,10 @@
 See CLtL2 p602 and <http://www.lisp.org/HyperSpec/Body/sec_22-3-7-2.html>"
   (format nil "~~#[ none~~; ~a~~; ~a and ~a~~:;~~@{~~#[~~; and~~] ~a~~^,~~}~~]"
           item-fmt item-fmt item-fmt item-fmt))
+
+(defun fmt% (number)
+  "Format the number as percent."
+  (format nil "~5F%" (* 1d2 number)))
 
 ;;;
 ;;; {{{ progress reporting
