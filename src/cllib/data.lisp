@@ -362,8 +362,8 @@ Everything is allocated anew."
                      &key by (out *standard-output*) &allow-other-keys
                      &aux (*gnuplot-msg-stream* out))
   "Plot one column vs the other."
-  (multiple-value-bind (c1 n1) (column-name-sc col1 table)
-    (multiple-value-bind (c2 n2) (column-name-sc col2 table)
+  (multiple-value-bind (c1 n1 s1) (column-name-sc col1 table)
+    (multiple-value-bind (c2 n2 s2) (column-name-sc col2 table)
       (flet ((f (l) (mapcar (lambda (v) (cons (aref v c1) (aref v c2))) l)))
         (apply #'plot-lists-arg
                (if by
@@ -375,9 +375,12 @@ Everything is allocated anew."
                    (list (cons (format nil "~A vs ~A" n1 n2)
                                (f (table-lines table)))))
                (append (remove-plist options :by :out)
-                       (list :xlabel n1 :ylabel n2
-                             :data-style :points
-                             :title (princ-to-string table))))))))
+                       (let ((xmdl (sc-mdl s1)) (ymdl (sc-mdl s2)))
+                         (list :xlabel n1 :ylabel n2
+                               :xb (mdl-mi xmdl) :xe (mdl-ma xmdl)
+                               :yb (mdl-mi ymdl) :ye (mdl-ma ymdl)
+                               :data-style :points
+                               :title (princ-to-string table)))))))))
 
 (defun restat-table (old-table new-table &key (out *standard-output*)
                      (label 'restat-table))
