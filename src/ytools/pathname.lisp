@@ -3,7 +3,7 @@
 
 ;;;$Id$
 
-;;; Copyright (C) 1976-2003 
+;;; Copyright (C) 1976-2006
 ;;;     Drew McDermott and Yale University.  All rights reserved
 ;;; This software is released under the terms of the Modified BSD
 ;;; License.  See file COPYING for details.

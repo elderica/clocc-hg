@@ -1,6 +1,10 @@
 $Id$
             
             [- Version 2.1.24 -]
+2006-11-09: debug.lisp: Changed conventions so all values of form in
+            (ev form -vars-) are returned, except for vars enclosed in
+            parens. 
+
 2006-08-19: ytload/ytload.lisp: Replaced occurrence of 'memq' with
             'member' in 'yt-load'.  Added comment to clarify how
             :if-installed ':start-over works.
