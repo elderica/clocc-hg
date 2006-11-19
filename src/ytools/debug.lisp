@@ -323,8 +323,35 @@
 	  (!= sym '*)))
    `(Dbg-entry-type (get-and-pull-nth-dbg-entry dbg-stack* ',sym ,n)))
 
-(defsetf g (&optional (sym '*) (n 0)) (val)
-   `(set-dbg-entry-object ',sym ',n ,val))
+;;; Arguments are screwy, because in reality everything is optional
+;;; except val.
+;;; If all three arguments are supplied, this _changes_ an existing
+;;; dbg-entry (which must exist).
+;;; Otherwise, it's just a synonym for 'ev', but useful when
+;;; we want to supply a place.
+(defmacro set-g (&optional (sym '* sym-supplied)
+                           (n 0 n-supplied)
+                           (val false val-supplied))
+   (cond ((not sym-supplied)
+          (signal-problem set-g
+             "'set-g' given no arguments")))
+   (cond (val-supplied
+          ;; Change an existing place
+          `(set-dbg-entry-object ',sym ',n ,val))
+         (n-supplied
+          ;; "'n'" is really val'
+          (cond ((not (is-Symbol sym))
+                 (signal-problem set-g
+                    "First argument to set-g must be a symbol, not: " sym)))
+          `(ev ,n ,sym))
+         (t
+          ;; "'sym'" is really 'val'
+          `(ev ,sym))))
+
+(defsetf g set-g)
+;;; This doesn't work because 'sym' gets evaluated --
+;;;;(defsetf g (&optional (sym '*) (n 0)) (val)
+;;;;   `(set-dbg-entry-object ',sym ',n ,val))
 
 (defun set-dbg-entry-object (sym n val)
    (let ((e (get-and-pull-nth-dbg-entry dbg-stack* sym n)))
