@@ -103,14 +103,48 @@
 ;;;;             (cond ((null stuff)
 ;;;;                    (!= stuff '(*))))
              (let ((vals (values->list (eval (subst-with-stack-vars form)))))
-                (cond ((shorter stuff (len vals))
-                       (!= stuff `(,@*-* ,@(<# (\\ (_) '_)
-                                               (series (- (len vals) (len stuff))))))))
+                (let ((extra-labels (extra-ev-labels vals stuff)))
+                   (cond ((not (null extra-labels))
+                          (!= stuff `(,@*-* ,@extra-labels)))))
+
+;;;;                (cond ((shorter stuff (len vals))
+;;;;                       (!= stuff `(,@*-* ,@(<# (\\ (_) '_)
+;;;;                                               (series (- (len vals)
+;;;;                                                          (len stuff))))))))
                 (values
-                     vals
-                     stuff
-                     (<# (\\ (_) 'nil)
-                         stuff)))))))
+                   vals
+                   stuff
+                   (<# (\\ (_) 'nil)
+                       stuff)))))))
+
+(defparameter base-extra-label* "*")
+(defparameter extra-label-mark* "/")
+(defparameter max-extra-label-marks* 3)
+
+(defun extra-ev-labels (vals labels)
+   (let ((num-vals (len vals))
+         (num-labels (len labels)))
+      (cond ((< num-labels num-vals)
+             (let ((extra-label-list
+                      (repeat :for ((i = 0 :to (- num-vals 1))
+                                    (unary-label
+                                        = base-extra-label*
+                                        :then (string-concat unary-label
+                                                             extra-label-mark*)))
+                       :collect (tuple i
+                                       (out-to-string
+                                          (:a base-extra-label*)
+                                          (:a extra-label-mark*)
+                                          i)
+                                       unary-label))))
+                (let ((use-labels (nthcdr num-labels extra-label-list)))
+                   (repeat :for ((trip :in use-labels))
+                    :collect
+                       (build-symbol
+                          (:< (cond ((=< (first trip) max-extra-label-marks*)
+                                     (third trip))
+                                    (t (second trip)))))))))
+            (t !()))))
 
 (defvar absent-dbg-entry* (make-Dbg-entry nil "?" nil))
 
