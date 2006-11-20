@@ -64,7 +64,10 @@
 
 
 (defmacro mapreduce (proc ident &rest lists)
-   (cond ((= (len lists) 1)
+   (cond ((null lists)
+          (error "mapreduce (= '</') with no lists: init = ~s, ~%  proc = ~s"
+                 ident proc))
+         ((= (len lists) 1)
           `(reduce ,(cond ((or (atom proc)
                                (not (memq (car proc)
                                           '(function funktion lambda \\))))
@@ -73,14 +76,14 @@
                    ,(car lists)
                    :initial-value ,ident))
          (t
-         (let ((listvars (mapcar (\\ (_) (gensym)) lists))
-               (resvar (gensym)))
-            `(repeat :for (,@(mapcar (\\ (v l) `(,v :in ,l))
-                                     listvars lists)
-                           (,resvar
-                            = ,ident
-                            :then ,(cons-funcall proc (cons resvar listvars))))
-              :result ,resvar)))))
+          (let ((listvars (mapcar (\\ (_) (gensym)) lists))
+                (resvar (gensym)))
+             `(repeat :for (,@(mapcar (\\ (v l) `(,v :in ,l))
+                                      listvars lists)
+                            (,resvar
+                             = ,ident
+                             :then ,(cons-funcall proc (cons resvar listvars))))
+               :result ,resvar)))))
 
 (defun cons-funcall (f argl)
    (cond ((and (is-Pair f) (memq (car f) '(function funktion quote)))
