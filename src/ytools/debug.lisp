@@ -116,15 +116,15 @@
 
 (defmacro get-and-pull-nth-dbg-entry (place^ sym^ n^)
    (with-gen-vars (n entry new-stack)
-      `(let ((,-n- ,n^))
-          (multi-let (((,-entry- ,-new-stack-)
-                       (nth-dbg-entry ,place^ ,sym^ ,-n-)))
-             (cond ((not (eq ,-entry- absent-dbg-entry*))
+      `(let ((,n$ ,n^))
+          (multi-let (((,entry$ ,new-stack$)
+                       (nth-dbg-entry ,place^ ,sym^ ,n$)))
+             (cond ((not (eq ,entry$ absent-dbg-entry*))
                     (!= ,place^
-                        (cond ((= ,-n- 0)
-                               (cons ,-entry- ,-new-stack-))
-                              (t ,-new-stack-)))))
-             ,-entry-))))
+                        (cond ((= ,n$ 0)
+                               (cons ,entry$ ,new-stack$))
+                              (t ,new-stack$)))))
+             ,entry$))))
 
 (defvar stack-subst-exempt-vars* '(*))
 
