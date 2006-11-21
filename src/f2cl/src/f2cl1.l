@@ -25,7 +25,9 @@
     exp dexp cexp log alog dlog clog log10 alog10 dlog10 sin dsin csin
     cos dcos ccos tan dtan asin dasin acos dacos atan datan atan2 datan2
     sinh dsinh cosh dcosh tanh dtanh
-    zsqrt)
+    zsqrt
+    cdabs dconjg
+    )
   "A list of all the intrinsic functions in Fortran 77")
 
 ;;------------------------------------------------------------------------------
@@ -1440,6 +1442,7 @@ FILENAME                 File containing Fortran code
   #+nil
   (setf *declared_vbles*
 	(set-difference *declared_vbles* *intrinsic-function-names*))
+
   (let ((type (find (first x) '((integer integer4)
 				(integer4 integer4)
 				(integer2 integer2)
@@ -1950,9 +1953,24 @@ FILENAME                 File containing Fortran code
 
 ;------------------------------------------------------------------------------
 (defun parse-do-loop (x)
+  ;; Sometimes we get stuff like "DO 10, X = 1...".  Strictly speaking
+  ;; the comma after the line number is illegal, but Fortran compilers
+  ;; seem to accept this.  So if we find it, we need to remove that
+  ;; extra comma.
+  (when (eq (third x) '|,|)
+    ;; Copy the list and remove the extra comma
+    (setf x (list* (first x)
+		   (second x)
+		   (cdddr x))))
   (let* ((limits (list-split '|,| (cddddr x)))
 	 (step (third limits))
 	 (loop-var (check-reserved-lisp-names (third x))))
+    #+nil
+    (progn
+      (format t "x = ~A~%" x)
+      (format t "limits = ~A~%" limits)
+      (format t "step   = ~A~%" step)
+      (format t "var    = ~A~%" loop-var))
     `((fdo (,loop-var
 	    ,(id-expression (first limits))
 	    (+ ,loop-var ,(if (null step) 1 (id-expression step))))
@@ -2520,6 +2538,8 @@ Senac syntax:... | op '| ...|)))
   (let ((subseq3 (subsequence x 0 3)))
     (cond ((equalp (subsequence x 0 2) '(double precision))
 	   (remove 'precision x))
+	  ((equalp (subsequence x 0 2) '(double complex))
+	   (append '(complex16) (subsequence x 2)))
 	  ((equalp subseq3 '(real * 4))
 	   (append '(real) (subsequence x 3)))
 	  ((equalp subseq3 '(real * 8))
@@ -2772,6 +2792,15 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.165  2006/05/05 20:28:21  rtoy
+;;; README:
+;;; o Document the options.
+;;; o Add some info about what the :common-as-array parameter really
+;;;   means.  (Because I couldn't remember either!)
+;;;
+;;; src/f2cl1.l:
+;;; o Add :common-as-array to the docstring for f2cl and f2cl-compile.
+;;;
 ;;; Revision 1.164  2006/05/04 04:02:09  rtoy
 ;;; Add a function, SAVE-F2CL-FINFO to save the compiled function info to
 ;;; a file which can be reloaded later.
