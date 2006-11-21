@@ -5,6 +5,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.6  2006/05/03 02:21:48  rtoy
+;;; Fix missing dependency.  hfun1p depends on ffunp.
+;;;
 ;;; Revision 1.5  2005/07/18 16:37:17  rtoy
 ;;; Make some of the files :compile-only because the user is supposed to
 ;;; supply the definitions, and these are just templates for the user to
@@ -31,10 +34,12 @@
     :source-extension "f")
 
 (mk:defsystem hompack
-    :source-pathname (translate-logical-pathname "clocc:src;f2cl;packages;hompack;")
+    :source-pathname ;;(translate-logical-pathname "clocc:src;f2cl;packages;hompack;")
+      (merge-pathnames (make-pathname :directory '(:relative "hompack"))
+		       (make-pathname :directory (pathname-directory *load-pathname*)))
     :source-extension "f"
     :language :f2cl
-    :depends-on ("blas")
+    :depends-on ("blas-hompack")
     :components
     (
      ;; The following are :compile-only here because HOMPACK only
@@ -117,7 +122,9 @@
      ))
 
 (mk:defsystem hompack-test-mainp
-    :source-pathname (translate-logical-pathname "clocc:src;f2cl;packages;hompack;")
+    :source-pathname ;; (translate-logical-pathname "clocc:src;f2cl;packages;hompack;")
+      (merge-pathnames (make-pathname :directory '(:relative "hompack"))
+		       (make-pathname :directory (pathname-directory *load-pathname*)))
     :source-extension "f"
     :language :f2cl
     :depends-on ("hompack")
