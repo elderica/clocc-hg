@@ -607,7 +607,7 @@ is not included")
 (defun fchar (i)			;intrinsic function char
   (char-int i))
 
-(declaim (inline iabs dabs cabs amod dmod))
+(declaim (inline iabs dabs cabs cdabs amod dmod))
 #-aclpc
 (defun iabs (x)
   (declare (type integer4 x))
@@ -617,6 +617,9 @@ is not included")
   (abs x))
 (defun cabs (x)
   (declare (type complex x))
+  (abs x))
+(defun cdabs (x)
+  (declare (type (complex double-float) x))
   (abs x))
 
 (defun amod (x y)
@@ -785,12 +788,16 @@ is not included")
 
 ;; AIMAG: imaginary part of a complex number
 ;; CONJG: conjugate of a complex number
-(declaim (inline aimag conjg dimag))
+(declaim (inline aimag conjg dconjg dimag))
 (defun aimag (c)
   (imagpart c))
 (defun dimag (c)
+  (declare (type (complex double-float) c))
   (imagpart c))
 (defun conjg (c)
+  (conjugate c))
+(defun dconjg (c)
+  (declare (type (complex double-float) c))
   (conjugate c))
 
 (declaim (inline fsqrt flog))
@@ -1395,6 +1402,22 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.71  2006/05/02 22:12:02  rtoy
+;;; src/f2cl5.l:
+;;; o Try to make better declarations for variables defined in parameter
+;;;   statements.  We'll declare them as (double-float 42d0 42d0) if the
+;;;   parameter was initialized to 42d0.
+;;; o MAKE-DECLARATION updated to take an extra keyword argument to
+;;;   indicate if this is a parameter variable and to give the initial
+;;;   value of the parameter so we can make the appropriate declaration.
+;;; o When initializing simple variables in data statements, try to bind
+;;;   the variable with the initial value instead binding a default 0 zero
+;;;   and setq'ing it later.
+;;;
+;;; src/macros.l:
+;;; o Change DEFTYPE for INTEGER4 to allow parameters so we can specify
+;;;   tight bounds if desired.
+;;;
 ;;; Revision 1.70  2006/05/01 17:40:05  rtoy
 ;;; Change STOP to produce a continuable error instead of an error so that
 ;;; we can continue from the STOP statement, if we choose to.  It's not
