@@ -603,7 +603,9 @@ is not included")
   (coerce (complex x (if y y 0)) '(complex double-float)))
 
 (defun ichar (c)
-  (char-int c))
+  (if (stringp c)
+      (char-int (aref c 0))
+      (char-int c)))
 (defun fchar (i)			;intrinsic function char
   (char-int i))
 
@@ -1402,6 +1404,10 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.72  2006/11/21 18:21:37  rtoy
+;;; o Add CDABS and DCONJG functions.
+;;; o Add some type declarations for DIMAG
+;;;
 ;;; Revision 1.71  2006/05/02 22:12:02  rtoy
 ;;; src/f2cl5.l:
 ;;; o Try to make better declarations for variables defined in parameter
