@@ -64,6 +64,7 @@
    #:lge #:lgt #:flog #:log10 #:lt #:max #:max0
    #:max1 #:min0 #:min1 #:nint #:freal
    #:sign #:sngl #:fsqrt
+   #:dcabs #:dconjg
    ;; other functions
    #:d1mach #:r1mach #:i1mach
    ))
@@ -83,6 +84,27 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.17  2006/04/27 17:43:58  rtoy
+;;; src/f2cl0.l:
+;;; o Export dimag, dcmplx, zsqrt
+;;;
+;;; src/f2cl1.l:
+;;; o Add dcmplx, dimag, and zsqrt to the list of intrinsic function
+;;;   names.
+;;; o When parsing "implicit none" statements, we don't modify
+;;;   *IMPLICIT_VBLE_DECLS*. I don't think it's needed and it can cause
+;;;   errors later on because :none is not a Lisp type.
+;;;
+;;; src/f2cl5.l:
+;;; o Tell GET-FUN-ARG-TYPE about the result type of dcmplx, dsqrt, the
+;;;   complex*8 and complex*16 special functions.
+;;; o ABS is an allowed lisp name.  This gets rid of the spurious ABS$
+;;;   local variable whenever we use the ABS function.
+;;;
+;;; src/macros.l:
+;;; o Add implementations of dcmplx, dimag, and zsqrt.  (We need to add
+;;;   more, I think.)
+;;;
 ;;; Revision 1.16  2003/11/13 05:37:31  rtoy
 ;;; Export WITH-MULTI-ARRAY-DATA.
 ;;;
