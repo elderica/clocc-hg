@@ -1474,7 +1474,7 @@
 					    (let ((init (make-declaration v)))
 					      (second (second (second init)))))
 					vars)))
-				  
+
 		       (cond #+nil
 			     ((eq 'fset (first init))
 			      ;; We need to get the dimensions for this array
@@ -2044,13 +2044,26 @@
 		 ((eq type 'logical)
 		  (if (setq decl (member vble (cdar type-clauses) :key #'car))
 		      (return
-			(if (cdar decl) 
-			    `(,vble_name
-			      ,(make_make-array_stmt (cdar decl) t))
+			(if (cdar decl)
+			    (flet ((fixup-logical (init)
+				     ;; Replace %false% with NIL and
+				     ;; %true% with T so we can
+				     ;; initialize the logical array
+				     ;; correctly.
+				     (list 'quote
+					   (mapcar #'(lambda (x)
+						       (ecase x
+							 (%false% nil)
+							 (%true% t)))
+						   (cadr init)))))
+			      (let ((init (make_make-array_stmt (cdar decl) t
+								(fixup-logical (cadr init-val))
+								vble_name)))
+				`(,vble_name ,init)))
 			    `(,vble_name nil)))))
 		 (t
-		  ;;(format t "default decl = ~S~%" (member vble (cdar type-clauses) :key #'car))
-		  ;;(format t "default init-val = ~S~%" init-val)
+ 		  ;;(format t "default decl = ~S~%" (member vble (cdar type-clauses) :key #'car))
+ 		  ;;(format t "default init-val = ~S~%" init-val)
 		  (if (setq decl (member vble (cdar type-clauses) :key #'car))
 		      (return 
 			(if (cdar decl) 
@@ -3444,6 +3457,14 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.148  2006/05/04 19:10:11  rtoy
+;;; We were not correctly testing for the variable types in the common
+;;; block when we are using common-as-array feature.  This was caused by a
+;;; previous change where our type declarations sometimes come out as
+;;; (type (double-float) foo) instead of (type double-float foo).
+;;;
+;;; This fix allows odepack to compile and run again.
+;;;
 ;;; Revision 1.147  2006/05/03 20:06:42  rtoy
 ;;; Was not correctly handling handling the dimensions for a logical
 ;;; array when computing the declaration for the array.
