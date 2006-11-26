@@ -2050,14 +2050,9 @@
 				     ;; %true% with T so we can
 				     ;; initialize the logical array
 				     ;; correctly.
-				     (list 'quote
-					   (mapcar #'(lambda (x)
-						       (ecase x
-							 (%false% nil)
-							 (%true% t)))
-						   (cadr init)))))
+				     (subst t '%true% (subst nil '%false% init))))
 			      (let ((init (make_make-array_stmt (cdar decl) t
-								(fixup-logical (cadr init-val))
+								(fixup-logical init-val)
 								vble_name)))
 				`(,vble_name ,init)))
 			    `(,vble_name nil)))))
@@ -3457,6 +3452,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.149  2006/11/24 05:06:58  rtoy
+;;; Logical arrays were not getting initialized from data statements.
+;;;
 ;;; Revision 1.148  2006/05/04 19:10:11  rtoy
 ;;; We were not correctly testing for the variable types in the common
 ;;; block when we are using common-as-array feature.  This was caused by a
