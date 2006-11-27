@@ -364,8 +364,25 @@
       (format t "Optimum workspace required = ~D~%" (truncate (aref work 0)))
       (format t "Workspace provided = ~D~%" lwork))))
   
-  
+
+(defun do-all-lapack-tests ()
+  (test-dgeev)
+  (test-dgeevx)
+  (test-dgesv)
+  (test-dgesdd))
+
 ;;; $Log$
+;;; Revision 1.6  2006/11/26 23:26:47  rtoy
+;;; packages/lapack.system:
+;;; o Add DGESDD and dependencies
+;;; o Add DDISNA to compute condition number of singular vectors
+;;;
+;;; packages/lapack/.cvsignore:
+;;; o Ignore new generated Lisp files.
+;;;
+;;; packages/lapack/lapack-tests.lisp:
+;;; o Add test for DGESDD
+;;;
 ;;; Revision 1.5  2006/11/26 14:26:42  rtoy
 ;;; Add expected results for DGESV.
 ;;;
