@@ -64,7 +64,7 @@
    #:lge #:lgt #:flog #:log10 #:lt #:max #:max0
    #:max1 #:min0 #:min1 #:nint #:freal
    #:sign #:sngl #:fsqrt
-   #:dcabs #:dconjg
+   #:cdabs #:dconjg
    ;; other functions
    #:d1mach #:r1mach #:i1mach
    ))
@@ -84,6 +84,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.18  2006/11/21 22:04:07  rtoy
+;;; Export dcabs and dconjg.
+;;;
 ;;; Revision 1.17  2006/04/27 17:43:58  rtoy
 ;;; src/f2cl0.l:
 ;;; o Export dimag, dcmplx, zsqrt
