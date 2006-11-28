@@ -925,7 +925,21 @@ FILENAME                 File containing Fortran code
 
        (setf fun (fixup-f2cl-lib fun))
 
-       (special-print fun outport))
+       (special-print fun outport)
+       (format outport "~2&(in-package #:cl-user)~%#+#.(cl:if (cl:find-package '#:f2cl) '(:and) '(:or))~%")
+       (let* ((*package* (find-package '#:cl-user))
+	      (fname (second fort-fun))
+	      (info (gethash fname *f2cl-function-info*)))
+	 (write `(eval-when (:load-toplevel :compile-toplevel :execute)
+		   (setf (gethash ',fname *f2cl-function-info*)
+			 (make-f2cl-finfo :arg-types ',(f2cl-finfo-arg-types info)
+					  :return-values ',(f2cl-finfo-return-values info)
+					  :calls ',(f2cl-finfo-calls info))))
+		:stream outport
+		:pretty t
+		:case :downcase
+		:circle t
+		:readably t)))
      (print (cadr fort-fun))		;indicate which subprogram is being translated
      (write-char '#\newline outport)
      (write-char '#\newline outport)
@@ -2792,6 +2806,15 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.166  2006/11/21 18:20:17  rtoy
+;;; o Add CDABS and DCONJG to the list of intrinsic functions.
+;;; o Modify PARSE-DO-LOOP to be a little more forgiving to handle some
+;;;   issues in BLAS routines.  We recognize things like "DO 10, X=1,10"
+;;;   and treat it as if it were "DO 10 X=1,10".  Strictly speaking, the
+;;;   former is illegal, but it seems many compilers accept it.
+;;; o Make REDUCE-DATA-TYPE recognize "double complex" as if it were
+;;;   "complex*16".  Some BLAS routines use "double complex".
+;;;
 ;;; Revision 1.165  2006/05/05 20:28:21  rtoy
 ;;; README:
 ;;; o Document the options.
