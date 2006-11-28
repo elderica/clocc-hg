@@ -21,7 +21,7 @@
 
 (defmacro def-sexp-to (class-name)
   "Define a function `sexp-to-...'."
-  (let* ((class (find-class struct-name))
+  (let* ((class (find-class class-name))
          (slots (port:class-slots class))
          (names (mapcar #'port:slot-definition-name slots)))
     (labels ((parser-name (name) (intern (format nil "SEXP-TO-~S" name)))
@@ -31,7 +31,7 @@
              (parser-function (name)
                (let ((parser (parser-name name)))
                  (if (fboundp parser) (fdefinition parser) #'identity))))
-      `(defun ,(parser-name struct-name) (sexp)
+      `(defun ,(parser-name class-name) (sexp)
          (let ,(mapcar #'port:slot-definition-name slots)
            (dolist (pair sexp)
              (ecase (car pair)
