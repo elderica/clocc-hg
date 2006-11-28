@@ -53,11 +53,12 @@
 (defun fix-slot (name line &key (start 0) (end (length line)))
   "Convert a `list' representation to a `string' one;
 \(NAME(.....)) --> (NAME\".....\")"
-  (loop :with term = (concatenate 'string "(" name "(")
-    :and len = (length name)
-    :for pos = (search term line :start2 start)
-    :while (and pos (< pos end)) :do
-    (incf pos (1+ len))
+  (loop :with len = (length name)
+    :for pos = (search name line :start2 start)
+    :while (and pos (< 0 pos (- end len 1))
+                (char= #\( (char line (1- pos))) ; must be '(foo('
+                (char= #\( (char line (+ pos len)))) :do
+    (incf pos len)
     (setf (aref line pos) #\"
           pos (position #\) line :start pos)
           (aref line pos) #\"
