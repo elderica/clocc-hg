@@ -152,7 +152,7 @@ is not included")
   `(subseq ,s (1- ,(first range)) ,(second range)))
 
 (defmacro fset-string (a b)
-  `(setf (fref-string ,(second a) ,(third a)) ,b))
+  `(setf (fref-string ,(second a) ,(third a)) (string ,b)))
 
 (defmacro f2cl-// (a b)
   `(concatenate 'string ,a ,b))
@@ -618,7 +618,7 @@ is not included")
       (char-int (aref c 0))
       (char-int c)))
 (defun fchar (i)			;intrinsic function char
-  (char-int i))
+  (code-char i))
 
 (declaim (inline iabs dabs cabs cdabs amod dmod))
 #-aclpc
@@ -1101,9 +1101,10 @@ causing all pending operations to be flushed"
 (defmacro fformat (dest-lun format-cilist &rest args)
   (let ((stream (gensym)))
     `(let ((,stream (lun->stream ,dest-lun)))
-      (execute-format-main ,stream ',format-cilist ,@args)
-      (when (stringp ,dest-lun)
-	(replace ,dest-lun (get-output-stream-string ,stream))))))
+       (execute-format-main ,stream ',format-cilist ,@args)
+       ,@(unless (or (eq t dest-lun) (numberp dest-lun))
+	  `((when (stringp ,dest-lun)
+	     (replace ,dest-lun (get-output-stream-string ,stream))))))))
 
 (defun execute-format (top stream format arg-list)
   (do ((formats format (if (and top (null formats))
@@ -1415,6 +1416,14 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.74  2006/11/27 19:09:51  rtoy
+;;; In some places in LAPACK, an array slice is taken where the slice
+;;; exceeds the bounds of the array.  However, the array is never
+;;; accessed.  What are we to do?  We could modify the LAPACK routines
+;;; (everywhere!) to check for this, or we can silently make array-slice
+;;; make a 0-element array.  If the array is then accessed, we should get
+;;; an error at the point of access, not the point of creation.
+;;;
 ;;; Revision 1.73  2006/11/21 22:05:03  rtoy
 ;;; Fix ichar to accept either a real character or (more likely) a
 ;;; string.
