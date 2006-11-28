@@ -75,6 +75,7 @@
 	 nil)
 	((symbolp exprs)
 	 (cond ((or (member exprs '(\, \' + - * / ** // ^ = equal > < >= <= >< |:|
+				    f2cl-//
 				    fref fref-string f2cl/
 				    flog fsqrt ffloat freal
 				    expt
@@ -3452,6 +3453,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.150  2006/11/26 04:43:55  rtoy
+;;; Replace %false% and %true% in a different way and fix a typo.
+;;;
 ;;; Revision 1.149  2006/11/24 05:06:58  rtoy
 ;;; Logical arrays were not getting initialized from data statements.
 ;;;
