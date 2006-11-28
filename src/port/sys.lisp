@@ -243,7 +243,7 @@ initargs for all slots are returned, otherwise only the slots with
 
 (defun structure-keyword-constructor (struct)
   "Return the structure keyword constructor name."
-  #+clisp (sys::structure-keyword-constructor struct)
+  #+clisp (sys::structure-kconstructor struct)
   #-clisp                       ; LAME!!!
   (intern (concatenate 'string "MAKE-" (symbol-string struct))
           (symbol-package struct)))
