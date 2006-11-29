@@ -15,6 +15,8 @@
 
 (in-package :cllib)
 
+(export '(def-sexp-to fix-slot))
+
 ;;;
 ;;; sexp parsing
 ;;;
@@ -22,23 +24,22 @@
 (defmacro def-sexp-to (class-name)
   "Define a function `sexp-to-...'."
   (let* ((class (find-class class-name))
-         (slots (port:class-slots class))
-         (names (mapcar #'port:slot-definition-name slots)))
+         (slots (port:class-slots class)))
     (labels ((parser-name (name) (intern (format nil "SEXP-TO-~S" name)))
              (parser-form (name arg)
                (let ((parser (parser-name name)))
-                 (if (fboundp parser) `(,parser ,arg) arg)))
+                 (if (fboundp parser) `(,parser ,arg) `(the ,name ,arg))))
              (parser-function (name)
                (let ((parser (parser-name name)))
                  (if (fboundp parser) (fdefinition parser) #'identity))))
       `(defun ,(parser-name class-name) (sexp)
-         (let ,(mapcar #'port:slot-definition-name slots)
-           (dolist (pair sexp)
+         (let ((ret (make-instance ',class-name)))
+           (dolist (pair sexp ret)
              (ecase (car pair)
                ,@(mapcar
-                  (lambda (slot name)
+                  (lambda (slot &aux (name (port:slot-definition-name slot)))
                     `(,name
-                      (setq ,name
+                      (setf (slot-value ret ',name)
                             ,(let ((type (port:slot-definition-type slot)))
                                (if (symbolp type)
                                    (parser-form type '(second pair))
@@ -46,9 +47,7 @@
                                      (array `(map 'vector ,(parser-function
                                                             (second type))
                                                   (second pair)))))))))
-                  slots names)))
-           (,(sys::structure-kconstructor class)
-             ,@(mapcan (lambda (name) (list (cllib:kwd name) name)) names)))))))
+                  slots))))))))
 
 (defun fix-slot (name line &key (start 0) (end (length line)))
   "Convert a `list' representation to a `string' one;
