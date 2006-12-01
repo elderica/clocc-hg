@@ -171,3 +171,7 @@
 
 (defmacro depends-on (&rest _)
    ''"depends-on is unimplemented")
+
+(defun gen-var (sym)
+   (build-symbol (:package false) (< sym) - (++ symno*)))
+

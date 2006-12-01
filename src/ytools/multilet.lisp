@@ -26,10 +26,6 @@
             (:a macro-announce)
             :% exp :%))
       exp)
-
-   (defun gen-var (sym)
-      (build-symbol (:package false) (< sym) - (++ symno*)))
-
 )
 
 ;;; Because the naming convention for the new variables has changed,
