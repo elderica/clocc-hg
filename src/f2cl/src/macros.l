@@ -1207,8 +1207,8 @@ causing all pending operations to be flushed"
 ;; length.  The string is initialized with #\Space because it seems
 ;; that's what Fortran initializes it to.
 (defmacro f2cl-init-string (dims len &optional inits)
-  (let ((init (gensym "ARRAY-"))
-	(k (gensym "IDX-")))
+  (let ((init (gensym (symbol-name '#:array-)))
+	(k (gensym (symbol-name '#:idx-))))
     `(let ((,init (make-array (* ,@dims)
 			      :element-type `(simple-array character (,',@len))
 			      :initial-element (make-string ,@len))))
@@ -1416,6 +1416,14 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.75  2006/11/28 19:06:18  rtoy
+;;; o Make sure the second arg to FSET-STRING is a string.
+;;; o FCHAR was using the wrong function.
+;;; o Cleanup FFORMAT so there are no compiler warnings about REPLACE
+;;;   being called on constant data.  (This is probably a compiler bug in
+;;;   CMUCL, but we should get rid of the stuff ourselves, anyway, instead
+;;;   of depending on the compiler to do it for us.)
+;;;
 ;;; Revision 1.74  2006/11/27 19:09:51  rtoy
 ;;; In some places in LAPACK, an array slice is taken where the slice
 ;;; exceeds the bounds of the array.  However, the array is never
