@@ -4,6 +4,8 @@
 ;;; $Id$
 ;;;
 
+(in-package "LAPACK")
+
 ;; Convert the eigenvalues returned by DGEEV into an array
 (defun make-eigval (wr wi)
   (let ((e-val (make-array (length wr))))
@@ -509,6 +511,9 @@
   (test-dgesvd))
 
 ;;; $Log$
+;;; Revision 1.10  2006/11/28 15:49:01  rtoy
+;;; Print out short title for each test.
+;;;
 ;;; Revision 1.9  2006/11/27 22:22:23  rtoy
 ;;; Add expected results.
 ;;;

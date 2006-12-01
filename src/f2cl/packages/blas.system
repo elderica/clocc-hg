@@ -6,6 +6,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.5  2006/11/29 16:59:10  rtoy
+;;; Split defsystems for blas and lapack into real and complex versions.
+;;;
 ;;; Revision 1.4  2006/11/29 14:45:50  rtoy
 ;;; Update dependencies based on info saved by f2cl.
 ;;;
@@ -35,6 +38,7 @@
 		     :relaxed-array-decls nil
 		     :array-type :array
 		     :array-slicing t
+		     :package "BLAS"
 		     )
   :components
   (;; These are the ones needed for HOMPACK
@@ -56,6 +60,7 @@
 		     :relaxed-array-decls t
 		     :array-type :array
 		     :array-slicing t
+		     :package "BLAS"
 		     )
   :components
   (;; Here are the rest of the BLAS routines
@@ -129,6 +134,7 @@
 		     :relaxed-array-decls t
 		     :array-type :array
 		     :array-slicing t
+		     :package "BLAS"
 		     )
   :components
   (
@@ -167,15 +173,16 @@
    (:file "ztrsm")
    (:file "ztrsv")))
 
+(mk:defsystem blas-package
+  :source-pathname
+  (merge-pathnames (make-pathname :directory '(:relative "blas"))
+		   (make-pathname :directory (pathname-directory *load-pathname*)))
+  :components
+  ((:file "blas-package")))
+
 (mk:defsystem blas
   :source-pathname
   (merge-pathnames (make-pathname :directory '(:relative "blas"))
 		   (make-pathname :directory (pathname-directory *load-pathname*)))
   :source-extension "f"
-  :depends-on ("blas-real" "blas-complex")
-  :language :f2cl
-  :compiler-options (:keep-lisp-file t
-		     :relaxed-array-decls t
-		     :array-type :array
-		     :array-slicing t
-		     ))
+  :depends-on ("blas-package" "blas-real" "blas-complex"))
