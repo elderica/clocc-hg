@@ -25,7 +25,7 @@
           show-sc show-sc-list aref-i ensure-buckets ensure-levels
           table table-path table-lines table-stats table-names write-table
           table-accessor table-column-pos table-lines$ compress-tables *tables*
-          table-stat-column ensure-table-stat-column column-histogram
+          table-stat-column table-p ensure-table-stat-column column-histogram
           analyse-csv table-stats-refresh add-column column-name-sc
           plot-columns table-to-hash summarize table-select purge-columns
           evaluate-predictor))
