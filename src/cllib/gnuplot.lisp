@@ -596,7 +596,7 @@ E.g.:
   (declare (list fnl) (real xmin xmax) (type index-t numpts))
   (with-plot-stream (str :xb xmin :xe xmax :title title
                      :data-style (or data-style (plot-data-style numpts)) opts)
-    (format str "plot~{ '-' using 1:2 title ~s~^,~}~%" (mapcar #'car fnl))
+    (format str "plot~{ '-' using 1:2 title '~a'~^,~}~%" (mapcar #'car fnl))
     (dolist (fn fnl)
       (mesg :plot *gnuplot-msg-stream* "~&Plotting ~S..." (car fn))
       (dotimes (ii (1+ numpts) (format str "e~%"))
