@@ -938,7 +938,7 @@ FILENAME                 File containing Fortran code
 		:stream outport
 		:pretty t
 		:case :downcase
-		:circle t
+		:circle nil
 		:readably t)))
      (print (cadr fort-fun))		;indicate which subprogram is being translated
      (write-char '#\newline outport)
@@ -2806,6 +2806,11 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.168  2006/12/21 03:18:39  rtoy
+;;; GCL doesn't like our IN-PACKAGE forms that we produce.  It also
+;;; doesn't like (:and) or (:or), so replace them with (and) and (or),
+;;; respectively.
+;;;
 ;;; Revision 1.167  2006/11/28 21:41:12  rtoy
 ;;; After each function is translated, save the function info too so that
 ;;; we can reload the correct info.  This is useful when we want to
