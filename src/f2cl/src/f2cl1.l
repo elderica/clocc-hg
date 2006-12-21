@@ -926,7 +926,7 @@ FILENAME                 File containing Fortran code
        (setf fun (fixup-f2cl-lib fun))
 
        (special-print fun outport)
-       (format outport "~2&(in-package #:cl-user)~%#+#.(cl:if (cl:find-package '#:f2cl) '(:and) '(:or))~%")
+       (format outport "~2&(in-package #-gcl #:cl-user #+gcl \"CL-USER\")~%#+#.(cl:if (cl:find-package '#:f2cl) '(and) '(or))~%")
        (let* ((*package* (find-package '#:cl-user))
 	      (fname (second fort-fun))
 	      (info (gethash fname *f2cl-function-info*)))
@@ -2806,6 +2806,13 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.167  2006/11/28 21:41:12  rtoy
+;;; After each function is translated, save the function info too so that
+;;; we can reload the correct info.  This is useful when we want to
+;;; recompile just a single file that calls other functions.  Then f2cl
+;;; can do a good job compiling the new function, without warnings about
+;;; calls to unknown functions.
+;;;
 ;;; Revision 1.166  2006/11/21 18:20:17  rtoy
 ;;; o Add CDABS and DCONJG to the list of intrinsic functions.
 ;;; o Modify PARSE-DO-LOOP to be a little more forgiving to handle some
