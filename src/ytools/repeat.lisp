@@ -70,6 +70,8 @@
           ((or (null l)
                (atom (car l))
                (not (memq (cadar l) '(in :in))))
+           (cond ((null vars)
+                  (error "forall or exists with no vars: ~s" stuff)))
            (values (nreverse vars) (nreverse lists) l))   ))
 )
 
