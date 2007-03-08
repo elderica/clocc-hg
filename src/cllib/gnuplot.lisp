@@ -1,6 +1,6 @@
 ;;; Gnuplot (http://www.gnuplot.info/) interface
 ;;;
-;;; Copyright (C) 1997-2006 by Sam Steingold.
+;;; Copyright (C) 1997-2007 by Sam Steingold.
 ;;; This is Free Software, covered by the GNU GPL (v2)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
@@ -219,7 +219,7 @@ according to the given backend")
   (timefmt nil :type (or null string))
   (title "" :type string)
   (legend nil :type list)
-  (grid nil :type boolean)
+  (grid t :type boolean)
   (arrows nil :type list)
   (multiplot nil :type (or null (cons integer integer))) ; (nrow . ncol)
   (labels nil :type list)
