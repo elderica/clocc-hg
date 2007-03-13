@@ -64,7 +64,7 @@
 (defcustom *print-weight-bold* simple-string "(s3B"
   "*The string to print bold.")
 (defcustom *print-weight-medium* simple-string "(s0B"
-  "*The string to print bold.")
+  "*The string to print medium.")
 (defcustom *print-weight-light* simple-string "(s-3B"
   "*The string to print light.")
 (defcustom *print-weight-boldness* simple-string
@@ -107,6 +107,14 @@ to the stream before BODY and can be a string or a sequence thereof."
     ,(when pre `(if (stringp ,pre) (write-string ,pre ,out)
                  (map nil (lambda (ll) (write-string ll ,out)) ,pre)))
     ,@body))
+
+(defun test-printing ()
+  (with-printing (prn)
+    (format prn "~Abold~Amedium~Alight~A~%"
+            *print-weight-bold* *print-weight-medium*
+            *print-weight-light* *print-weight-medium*)
+    (format prn "~Aunderline~A~%" *print-underline-on* *print-underline-off*)
+    (format prn "~Aitalic~A~%" *print-style-italic* *print-style-upright*)))
 
 (provide :cllib-laser)
 ;;; file laser.lisp ends here
