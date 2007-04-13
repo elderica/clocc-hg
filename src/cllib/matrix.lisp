@@ -9,7 +9,7 @@
 ;;; which relies on BLAS (http://www.netlib.org/blas) and
 ;;; LAPACK (http://www.netlib.org/lapack) for heavy-duty computations.
 ;;;
-;;; Copyright (C) 2000-2006 by Sam Steingold
+;;; Copyright (C) 2000-2007 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
@@ -489,7 +489,7 @@ If one of the principal minors of A is 0, `matrix-solve-lu'
   "Invert the matrix in-place.
 Return the log determinant of the matrix, parity, and the matrix argument."
   (let* ((dim (array-dimension mx 0))
-         (logdet 1) (parity 1)  ; log determinant & its sign
+         (logdet 0) (parity 1)  ; log determinant & its sign
          (l (make-array dim))   ; row permutation vector
          (m (make-array dim)))  ; column permutation vector
     (unless (and (= 2 (array-rank mx)) (= dim (array-dimension mx 1)))
