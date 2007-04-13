@@ -248,7 +248,7 @@
       (division-by-zero (c)
         (mesg :test out " ** degenerate matrix~%~S~%"
               (first (arithmetic-error-operands c)))))
-    (mesg :test out " ** det = ~S~%" det)
+    (mesg :test out " ** log det = ~S~%" det)
     (matrix-multiply mx m1 i1)
     (dotimes (i dim)
       (dotimes (j dim)
