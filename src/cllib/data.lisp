@@ -120,7 +120,7 @@
                                   (< *print-bad-number-limit* drop-count))
                        (warn "~A -- line ~:D dropped" c line))
                      (when (eql drop-count *print-bad-number-limit*)
-                       (warn "~:D line~:P dropped, suppress firther warnings"
+                       (warn "~:D line~:P dropped, suppress further warnings"
                              drop-count))
                      (incf (aref dnum i))
                      (incf (gethash (aref v i) drop-values 0))
