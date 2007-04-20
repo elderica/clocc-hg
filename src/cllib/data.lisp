@@ -267,14 +267,15 @@
 
 ;;;###autoload
 (defun analyse-csv (file &key (first-line-names :default)
-                    (out *standard-output*) medians
+                    (out *standard-output*) medians junk-allowed
                     ((:value-boundary *value-boundary*) *value-boundary*)
                     ((:columns *columns*) *columns*)
                     ((:levels *levels*) *levels*)
                     ((:buckets *buckets*) *buckets*))
   "Analyse columns in the CSV file."
   (multiple-value-bind (lines len file-size names)
-      (csv-read-file file :first-line-names first-line-names)
+      (csv-read-file file :first-line-names first-line-names
+                     :junk-allowed junk-allowed)
     (declare (ignore file-size))
     (let* ((column-count (length (or names (car lines))))
            (columns (unroll-column-specs *columns* names column-count))
