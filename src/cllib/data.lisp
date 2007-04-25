@@ -414,7 +414,7 @@ Everything is allocated anew."
                          (list :xlabel n1 :ylabel n2
                                :xb (mdl-mi xmdl) :xe (mdl-ma xmdl)
                                :yb (mdl-mi ymdl) :ye (mdl-ma ymdl)
-                               :data-style :points
+                               :data-style :points :lines t :quads t
                                :title (write-to-string table :escape nil
                                                        :pretty nil)))))))))
 
@@ -473,11 +473,15 @@ Everything is allocated anew."
 (defun table-select (table &key column (value t) predicate
                      (title (and column (format nil "~S=~S" column value)))
                      (out *standard-output*))
-  "Create a new table - a subset of the original."
+  "Create a new table - a subset of the original.
+If COLUMN is supplied, remove it and keep lines with (STRING= COLUMN VALUE).
+If it is not supplied, keep lines such that (EQUAL (PREDICATE line) VALUE).
+In the latter case TITLE should be supplied."
   (with-timing (:out out :done t)
     (mesg :log out "~S(~A:~A)~%" 'table-select table title)
     (let ((ret (make-table
-                :path (format nil "[~A]@~A" (write-table table nil) title)
+                :path (format nil "[~A]@~A" (write-table table nil)
+                              (or title value))
                 :names (if column
                            (remove column (table-names table) :test #'string=)
                            (copy-seq (table-names table)))
