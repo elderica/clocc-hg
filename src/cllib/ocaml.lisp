@@ -2,7 +2,7 @@
 ;;; http://www.ocaml.info/home/ocaml_sources.html#toc8
 ;;; http://www.janestcapital.com/ocaml/index.html
 ;;;
-;;; Copyright (C) 2006 by Sam Steingold
+;;; Copyright (C) 2006, 2007 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
@@ -21,7 +21,7 @@
 ;;; sexp parsing
 ;;;
 
-(defmacro def-sexp-to (class-name)
+(defmacro def-sexp-to (class-name &key junk-allowed)
   "Define a function `sexp-to-...'."
   (let* ((class (find-class class-name))
          (slots (port:class-slots class)))
@@ -36,12 +36,14 @@
                (if (symbolp type)
                    (parser-form type place)
                    (ecase (first type)
-                     (array `(map 'vector ,(parser-function (second type))
-                                  ,place))))))
+                     ((array vector)
+                      `(map 'vector ,(parser-function (second type)) ,place))
+                     (list `(map-into ,place ,(parser-function (second type))
+                                      ,place))))))
       `(defun ,(parser-name class-name) (sexp)
          (let ((ret (make-instance ',class-name)))
            (dolist (pair sexp ret)
-             (ecase (car pair)
+             (,(if junk-allowed 'case 'ecase) (car pair)
                ,@(mapcar
                   (lambda (slot &aux (name (port:slot-definition-name slot)))
                     `(,name
