@@ -908,6 +908,7 @@ FILENAME                 File containing Fortran code
 			       ;; arguments of the subroutine.
 			       `(end_label (return (values 
 						    ,@(maybe-nullify-returns (second fort-fun) (caddr fort-fun)))))))))))
+
      ;; check for missing PROGRAM stmt
      (if (not (eq (car fort-fun) 'defun))
          (setq fort-fun (append '(defun *main* nil) fort-fun)))
@@ -915,8 +916,11 @@ FILENAME                 File containing Fortran code
 
      (multiple-value-bind (spec-proc spec-decl fun)
 	 (insert-declarations (prune-labels (fix-structure fort-fun labels)))
-       ;;(format t "spec-proc = ~S~%" spec-proc)
-       ;;(format t "spec-decl = ~S~%" spec-decl)
+       #+nil
+       (let ((*package* (find-package '#:cl-user)))
+	 (format t "spec-proc = ~S~%" spec-proc)
+	 (format t "spec-decl = ~S~%" spec-decl)
+	 (format t "fun = ~S~%" fun))
        (when spec-proc
 	 (mapc #'(lambda (s-proc s-decl)
 		   (unless (find (caadr s-proc) *common-block-initialized*)
@@ -933,8 +937,17 @@ FILENAME                 File containing Fortran code
 	       spec-decl)
 	 (terpri outport))
 
-       (setf fun (fixup-f2cl-lib fun *external-function-names*))
-
+       #+nil
+       (let ((*package* (find-package '#:cl-user)))
+	 (format t "fun = ~S~%" fun))
+       
+       ;; Add the function name to the list of external function names
+       ;; because we don't want to mangle the function name.  This is
+       ;; to prevent some Fortran code from redefining our library
+       ;; functions, in case the Fortran code has declared them as
+       ;; external.
+       (setf fun (fixup-f2cl-lib fun (cons (cadr fort-fun) *external-function-names*)))
+       
        (special-print fun outport)
        (format outport "~2&(in-package #-gcl #:cl-user #+gcl \"CL-USER\")~%#+#.(cl:if (cl:find-package '#:f2cl) '(and) '(or))~%")
        (let* ((*package* (find-package '#:cl-user))
@@ -2816,6 +2829,19 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.170  2007/05/04 17:29:50  rtoy
+;;; In FIXUP-F2CL-LIB, we need to honor external declarations.  That is,
+;;; if a function is declared external, we should not use the version from
+;;; f2cl-lib, because the Fortran code implies we're using something else.
+;;;
+;;; We make an exception for d1mach, r1mach, and i1mach, since these are
+;;; standard SLATEC functions for which f2cl-lib has its own portable Lisp
+;;; implementation.
+;;;
+;;; This change fixes an issue when compiling some SLATEC code which
+;;; declares ZSQRT external.  Previously, f2cl would use f2cl-lib:zqrt,
+;;; which was wrong; the version from SLATEC was the desired version.
+;;;
 ;;; Revision 1.169  2006/12/21 03:42:11  rtoy
 ;;; GCL doesn't like some of the circular objects printed out in the f2cl
 ;;; info.  Turn off :circle t.
