@@ -91,7 +91,10 @@
   (reduce #'max names :key #'length :initial-value *min-name-length*))
 (defun get-column-name (col) (format nil "C~D" col))
 (defun get-column-names (column-count)
-  (loop :for col :from 0 :below column-count :collect (get-column-name col)))
+  (loop :with names = (make-array column-count)
+    :for col :from 0 :below column-count
+    :do (setf (aref names col) (get-column-name col))
+    :finally (return names)))
 (defun column-name (names col)
   (if names (aref names col) (get-column-name col)))
 
