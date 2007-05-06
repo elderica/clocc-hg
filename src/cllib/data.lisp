@@ -132,14 +132,14 @@
              lines))
       (if (zerop drop-count) (mesg :log out "done")
           (loop :for i :in col-specs :for d = (aref dnum i) :unless (zerop d)
-            :do (mesg :log out "~%~3D ~V@A:  ~:D lines dropped"
+            :do (mesg :log out "~%~3D ~V@A:  ~:D line~:P dropped"
                       i max-name-length (column-name names i) d)
             :finally
             (when (print-log-p :log)
-              (format out "~&;; -- ~:D different non-number~:P"
+              (format out "~&;; -- ~:D different bad value~:P"
                       (hash-table-count drop-values))
               (print-counts drop-values :out out))
-            (mesg :log out "~&...dropped ~:D lines (out of ~:D, ~4F%)"
+            (mesg :log out "~&...dropped ~:D line~:P (out of ~:D, ~4F%)"
                   drop-count len (/ (* 1d2 drop-count) len))))
       (values lines (- len drop-count)))))
 
