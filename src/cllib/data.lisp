@@ -370,7 +370,10 @@ Everything is allocated anew."
      (let ((name (aref (table-names table) obj)))
        (values obj name (maybe-ensure-table-stat-column obj name table))))
     (string
-     (let ((pos (position obj (table-names table) :test #'string=)))
+     (let (pos)
+       (assert (setq pos (position obj (table-names table) :test #'string=))
+               (obj) "No ~S in ~S (candidates: ~S)" obj (table-names table)
+               (remove obj (table-names table) :test-not #'search))
        (values pos obj (maybe-ensure-table-stat-column pos obj table))))
     (stat-column
      (unless (eq table (sc-table obj))
