@@ -44,7 +44,7 @@
      (:file "doall" :depends-on ("base"))
      (:file "elisp" :depends-on ("base" "closio" "list"))
      (:file "fileio" :depends-on ("base" "withtype" "symb" "log" "string"))
-     (:file "fin" :depends-on ("base" "math" "tilsla" "withtype"))
+     (:file "fin" :depends-on ("base" "math" "tilsla" "withtype" "gnuplot"))
      (:file "geo" :depends-on
             ("base" "withtype" "symb" "fileio" "html" "tilsla" "url"))
      (:file "getopt" :depends-on ("base" "symb"))
