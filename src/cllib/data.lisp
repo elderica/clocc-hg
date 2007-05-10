@@ -419,9 +419,12 @@ Everything is allocated anew."
                                (f (table-lines table)))))
                (append (remove-plist options :by :out)
                        (let ((xmdl (sc-mdl s1)) (ymdl (sc-mdl s2)))
+                         (declare (ignore xmdl ymdl))
                          (list :xlabel n1 :ylabel n2
-                               :xb (mdl-mi xmdl) :xe (mdl-ma xmdl)
-                               :yb (mdl-mi ymdl) :ye (mdl-ma ymdl)
+                               ;; do not pass ranges because of possible
+                               ;; logscale problems
+                               ;; :xb (mdl-mi xmdl) :xe (mdl-ma xmdl)
+                               ;; :yb (mdl-mi ymdl) :ye (mdl-ma ymdl)
                                :data-style :points :lines t :quads t
                                :title (write-to-string table :escape nil
                                                        :pretty nil)))))))))
