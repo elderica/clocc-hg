@@ -671,8 +671,8 @@
 
 (defmacro def-op (name argl &rest body)
    (!= < argl body > (ignore-smooth argl body))
-   (multi-let (((options body)
-                (generic-options-extract body)))
+   (multiple-value-let (options body)
+                      (generic-options-extract body)
       (multiple-value-let (d body) (declarations-separate body)
          `(defgeneric ,name ,argl
              ,@options

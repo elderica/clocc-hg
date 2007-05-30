@@ -1,5 +1,9 @@
 $Id$
             
+2007-05-30: object.lisp: Replaced occurrence of 'multi-let' with
+            'multiple-value-let', because 'multi-let' is not defined
+            until a later file.
+
             [- Version 2.1.30 -]
 2007-05-29: files.lisp: Stopped system from asking infuriating
             question about nonexistent files (in
