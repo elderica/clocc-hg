@@ -8,7 +8,7 @@
 ;;; License.  See file COPYING for details.
 
 (eval-when (:load-toplevel)
-   (export '(datafun
+   (export '(datafun datafun-key-sym datafun-task-id
 	     datafun-table datafun-alist datafun-from-plist
 	     attach-datafun datafun-on-plist)))
 
@@ -42,7 +42,9 @@
 			      (cddr def))
 			     (t (cdr def)))))
 	      `(progn
-		  (,definer ,funame ,@definiens)
+		  (symbol-macrolet ((datafun-key-sym ,sym)
+                                     (datafun-task-id ,master))
+                     (,definer ,funame ,@definiens))
 		  (declare-datafun ',funame ',master
 				   ',sym t)))))))
 
@@ -94,6 +96,7 @@
             (setf (alref ,name sym) (symbol-function fname))))))
 
 (defmacro datafun-from-plist (ind)
+   (out "Hello from datafun-from-plist: " ind :%)
    `(eval-when  (:compile-toplevel :load-toplevel :execute :slurp-toplevel)
        (datafun attach-datafun ,ind #'datafun-on-plist)))
 
