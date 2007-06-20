@@ -106,7 +106,7 @@
                          (y-or-n-p "Currently unbound; set anyway? "))
                      (setq now* ,rgt)
                      (!= ,lft now*)
-                     `((,print-was* ,was*) (,print-now* ,now*)))
+                     `((,+print-was+ ,was*) (,+print-now+ ,now*)))
                     (t +cancelled+)))))
 
 ;; More efficient than MATCHQ when you know it will match.
