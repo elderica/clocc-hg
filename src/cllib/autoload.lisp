@@ -36,7 +36,6 @@
               (format t "; ~s is being autoloaded from `~a'~%" symb file)
               (require file path)
               (apply (fdefinition symb) args))
-            #+clisp (documentation symb 'sys::file) #+clisp path
             (documentation symb 'function)
             (format nil "Autoloaded (from ~a)~@[:~%~a~]" file comment)))))
 
