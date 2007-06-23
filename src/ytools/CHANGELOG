@@ -1,5 +1,9 @@
 $Id$
             
+            [- Version 2.1.36 -]
+2007-06-23: datafun.lisp: Introduce "hooked macros" so the 'datafun'
+            macros can all have hooks to be used by Nisp.
+
 2007-06-19: misc.lisp, multilet.lisp: Moved 'datafun-match' from
             misc.lisp to multilet.lisp 
 
