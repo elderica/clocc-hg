@@ -1,6 +1,6 @@
 ;;;; Meta-Object Protocol
 ;;;
-;;; Copyright (C) 2006 by Sam Steingold
+;;; Copyright (C) 2006-2007 by Sam Steingold
 ;;; This is open-source software.
 ;;; GNU Lesser General Public License (LGPL) is applicable:
 ;;; No warranty; you may copy/modify/redistribute under the same
@@ -19,7 +19,7 @@
   (require :port-ext (translate-logical-pathname "clocc:src;port;ext")))
 
 (in-package
-  #+(and allegro (not (version>= 6))) :clos
+  #+(and allegro (version>= 6)) :clos
   #+(and clisp mop) :clos
   #+cmu :pcl
   #+lucid :clos
