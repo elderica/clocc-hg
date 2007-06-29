@@ -169,6 +169,11 @@
 ;;;;	    (\\ (_ sym funame)
 ;;;;	       (setf (table-entry ,name sym) 
 
+;;; Alist of (hook-name new-expander) pairs
+;;;(datafun-alist macro-hooks* macro-hook)
+;;; -- Can't use 'datafun-alist' because it is a hooked macro, and so
+;;; 'macro-hooks*' must be set before it is used.
+
 (datafun attach-datafun macro-hook
    (defun :^ (ind sym fname)
       (ignore ind)
