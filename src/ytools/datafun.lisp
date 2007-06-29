@@ -62,9 +62,10 @@
 ;;;;       ',hook-name ,whole^
 ;;;;       (\\ (,whole^) ,@body)))
 
-(declaim (special macro-hooks*))
-
 (eval-when (:compile-toplevel :load-toplevel)
+
+   ;;; Alist of (hook-name new-expander) pairs
+   (defvar macro-hooks* !())
 
    (defun check-for-macro-hook (name whole env expander)
       (let ((h (alref macro-hooks* name)))
@@ -158,7 +159,6 @@
             (setf (alref ,name sym) (symbol-function fname))))))
 
 (def-hooked-macro datafun-from-plist (ind)
-   (out "Hello from datafun-from-plist: " ind :%)
    `(eval-when  (:compile-toplevel :load-toplevel :execute :slurp-toplevel)
        (datafun attach-datafun ,ind #'datafun-on-plist)))
 
@@ -169,5 +169,7 @@
 ;;;;	    (\\ (_ sym funame)
 ;;;;	       (setf (table-entry ,name sym) 
 
-;;; Alist of (hook-name new-expander) pairs
-(datafun-alist macro-hooks* macro-hook)
+(datafun attach-datafun macro-hook
+   (defun :^ (ind sym fname)
+      (ignore ind)
+      (setf (alref macro-hooks* sym) (symbol-function fname))))
