@@ -319,7 +319,7 @@
 					    `(>= (length ,dat-name) ,l))
 				       ,(qvaroid-decode-match
 						 a `(butlast ,dat-name ,l))
-				       (let ((\ dat (last ,dat-name ,l)))
+				       (let ((\ dat (endtail ,l ,dat-name)))
 					  ,(match-code d '\ dat)))))))
 		      (t
 		       `(and (is-Pair ,dat-name)

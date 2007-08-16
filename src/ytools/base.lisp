@@ -388,6 +388,11 @@
 (subr-synonym nthrest nthcdr nil)
 (subr-synonym nthtail nthcdr nil)
 
+(declaim (inline endtail))
+
+(defun endtail (n l)
+   (last l n))
+
 ;;;;(subr-synonym one first)
 ;;;;(subr-synonym two second t)
 ;;;;(subr-synonym three third t)
@@ -450,7 +455,7 @@
 	     (setq l (remove p l))))
       (let ((pkg (cond ((memq (cadr p) '(false nil))
 			false)
-		       (t `(find-package ',(cadr p))))))
+		       (t `(find-package ,(cadr p))))))
 	 (cond (p
 		(cond (pkg
 		       `(values (intern ,(symstuff l) ,pkg)))
