@@ -367,8 +367,8 @@
 
 (defun dump-yt-config-file ()
    (cond ((not (null new-config-variables*))
-	  (format t "Before dump, new-config-vars = ~s~%   config-vars = ~s~%"
-		  new-config-variables* config-variables*)
+;;;;	  (format t "Before dump, new-config-vars = ~s~%   config-vars = ~s~%"
+;;;;		  new-config-variables* config-variables*)
 	  (setq config-variables*
 	        (union new-config-variables*
 		       config-variables*
