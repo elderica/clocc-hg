@@ -2786,15 +2786,19 @@
       ;; it to the latter form.
       (setf (car options) `(unit = ,(caar options))))
     ;; Convert the list of options into Lisp-style keyword options.
-    `((f2cl-lib::open-file
-       ,@(flatten-list
-	  (mapcar #'(lambda (opt)
-		      (destructuring-bind (key = val)
-			  opt
-			(declare (ignore =))
-			`(,(intern (string-upcase (string key)) :keyword)
-			   ,val)))
-		  options))))))
+    (let ((res nil))
+      (dolist (opt options)
+	(destructuring-bind (key = &rest val)
+	    opt
+	  (declare (ignore =))
+	  ;; Convert the key into a keyword, and parse the value since
+	  ;; it can be an arbitrary expression.  (Well, not always,
+	  ;; but we're not going to check for that because that's not
+	  ;; valid Fortran.
+	  (push (intern (string-upcase (string key)) :keyword) res)
+	  (push (parse-expression val) res)))
+      (setf res (nreverse res))
+      `((f2cl-lib::open-file ,@res)))))
 
 (defun parse-rewind (x)
   (let ((options (if (listp (second x))
@@ -3454,6 +3458,10 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.152  2006/11/28 19:04:07  rtoy
+;;; o fchar and cmplx shouldn't be Fortran variables.
+;;; o Clean up some compiler warnings about unused vars and functions.
+;;;
 ;;; Revision 1.151  2006/11/28 17:43:53  rtoy
 ;;; f2cl-// can't be a Fortran variable.
 ;;;
