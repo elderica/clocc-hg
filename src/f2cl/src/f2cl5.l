@@ -3287,16 +3287,22 @@
 					  (third var-type)
 					  0))
 				     (t nil)))
-			 (var-init (cond ((and (listp var-type)
-					       (subtypep (first var-type) 'array))
-					  `(make-array ',dims :element-type ',(second var-type)
-						       :initial-element ,(if (subtypep (second var-type) 'logical)
-									     nil
-									     (coerce 0 (second var-type)))))
-					 ((subtypep var-type 'logical)
-					  nil)
-					 (t
-					  (coerce 0 var-type)))))
+			 (var-init
+			  (cond ((and (listp var-type)
+				      (subtypep (first var-type) 'array))
+				 `(make-array ',dims :element-type ',(second var-type)
+					      :initial-element
+					      ,(cond
+						((subtypep (second var-type) 'logical)
+						 nil)
+						((subtypep (second var-type) 'character)
+						 #\space)
+						(t
+						 (coerce 0 (second var-type))))))
+				((subtypep var-type 'logical)
+				 nil)
+				(t
+				 (coerce 0 var-type)))))
 		    ;; Initialize the slot with a 0 of the appropriate
 		    ;; type (for scalars) or a zero element array of the
 		    ;; appropriate dimensions for array slots.
@@ -3458,6 +3464,14 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.153  2007/09/19 18:28:52  rtoy
+;;; Was not correctly handling things like
+;;;
+;;;  (OPEN UNIT = 1, FILE = path // '.dat')
+;;;
+;;; because we expected the value of each option to be a single item.  We
+;;; now parse the value to get the correct expression.
+;;;
 ;;; Revision 1.152  2006/11/28 19:04:07  rtoy
 ;;; o fchar and cmplx shouldn't be Fortran variables.
 ;;; o Clean up some compiler warnings about unused vars and functions.
