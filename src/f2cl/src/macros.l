@@ -254,7 +254,7 @@ is not included")
   (let ((data-list (gensym))
 	(data-len (length data))
 	(total-length (gensym)))
-    `(let* ((,data-list ',data)
+    `(let* ((,data-list (list ,@data))
 	    (,total-length (reduce #'* (list ,@dims))))
        (cond ((< ,data-len ,total-length)
 	      ;; Need to append some data.
@@ -1422,6 +1422,12 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.77  2007/06/18 15:50:16  rtoy
+;;; Bug [ 1709300 ] unused key parameters
+;;;
+;;; o In %open-file, ignore UNIT, and produce an error if FORM is UNFORMATTED
+;;; o In %close, produce an error if STATUS is specified.
+;;;
 ;;; Revision 1.76  2006/12/01 04:23:43  rtoy
 ;;; Minor cleanups
 ;;;
