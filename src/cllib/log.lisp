@@ -139,7 +139,7 @@ When :PROGRESS-1 is not NIL, it should be a number indicating after how
                                             (= ,',pro1 (incf ,',pro1-count)))
                                    (show-eta ,pos ,bad)
                                    (setq ,',pro1-count 0)))
-                              '(ignore pos bad))))
+                              '(declare (ignore pos bad)))))
                 ,@body))
          (when ,%out
            (when ,done (princ "done" ,%out))
