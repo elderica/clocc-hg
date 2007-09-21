@@ -90,7 +90,7 @@ See <http://www.merriampark.com/ld.htm>
         `(let ((,len (length ,end)) (,ll ,lenv))
           (and (>= ,ll ,len) (string= ,end ,strv :start2 (- ,ll ,len)))))))
 
-(defcustom *string-junk* (simple-string 5) ":-,./"
+(defcustom *string-junk* string ":-,./"
   "The characters removed from a string by `purge-string'.")
 
 (defsubst purge-string (str &optional (*string-junk* *string-junk*))
