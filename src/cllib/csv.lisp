@@ -88,10 +88,10 @@ Return 3 values:
   fraction of bytes read
   vector of column names if FIRST-LINE-NAMES is non-NIL
     or if it is :DEFAULT and the first line starts with a +COMMENTS+ character."
-  (with-gensyms ("WITH-CSV-" in fn fsize ln len cols lim l1 fln pro drop ja)
+  (with-gensyms ("WITH-CSV-" in fn fsize ln len cols lim l1 fln drop ja)
     `(with-timing (:out ,out :count ,len :units "records" :progress ,progress
                    :progress-1 ,progress-1)
-       (let* ((,fn ,file) (,pro ,progress) ,fsize ,l1
+       (let* ((,fn ,file) ,fsize ,l1
               (,fln ,first-line-names) (,cols ,columns)
               (,ja ,junk-allowed) (,drop 0)
               ,@(when limit `((,lim ,limit))))
