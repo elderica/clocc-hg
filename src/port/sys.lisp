@@ -250,6 +250,7 @@ initargs for all slots are returned, otherwise only the slots with
 
 (defun structure-boa-constructors (struct)
   "Return the list of structure BOA constructor names."
+  (declare (ignorable struct))
   #+clisp (sys::structure-boa-constructors struct)
   #-clisp nil)                  ; what else?
 
