@@ -1,13 +1,13 @@
 ;;; Date-related structures
 ;;;
-;;; Copyright (C) 1997-2006 by Sam Steingold.
+;;; Copyright (C) 1997-2007 by Sam Steingold.
 ;;; This is Free Software, covered by the GNU GPL (v2)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
 ;;; $Id$
 ;;; $Source$
 
-(eval-when (compile load eval)
+(eval-when (:compile-toplevel :load-toplevel :execute)
   (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `skip-to-new'
   (require :cllib-simple (translate-logical-pathname "cllib:simple"))
@@ -370,7 +370,8 @@ You can disable Y2K fixing with (setf (fdefinition 'fix-y2k) #'identity)"
 ;;; generic
 ;;;
 
-(eval-when (compile load eval) (fmakunbound 'date))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (fmakunbound 'date))          ; because of autoload
 (declaim (ftype date-f-t date))
 ;;;###autoload
 (defgeneric date (xx)

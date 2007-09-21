@@ -1,6 +1,6 @@
 ;;; Gray streams
 ;;;
-;;; Copyright (C) 1999-2003 by Sam Steingold
+;;; Copyright (C) 1999-2003, 2007 by Sam Steingold
 ;;; This is open-source software.
 ;;; GNU Lesser General Public License (LGPL) is applicable:
 ;;; No warranty; you may copy/modify/redistribute under the same
@@ -11,7 +11,7 @@
 ;;; $Id$
 ;;; $Source$
 
-(eval-when (compile load eval)
+(eval-when (:compile-toplevel :load-toplevel :execute)
   #-(or allegro clisp cmu lispworks openmcl sbcl scl)
   (error 'not-implemented :proc "Gray streams")
   (require :port-ext (translate-logical-pathname "clocc:src;port;ext"))

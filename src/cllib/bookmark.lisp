@@ -1,14 +1,14 @@
 ;;; Bookmarks for WWW and other purposes
 ;;; Netscape bookmarks, Opera hotlist, IE favorites
 ;;;
-;;; Copyright (C) 2001 by Sam Steingold
+;;; Copyright (C) 2001, 2007 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
 ;;; $Id$
 ;;; $Source$
 
-(eval-when (compile load eval)
+(eval-when (:compile-toplevel :load-toplevel :execute)
   (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   (require :cllib-url (translate-logical-pathname "clocc:src;cllib;url"))
   (require :cllib-card (translate-logical-pathname "clocc:src;cllib;card")))

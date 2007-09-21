@@ -1,13 +1,13 @@
 ;;; Prompt
 ;;;
-;;; Copyright (C) 1997-2004 by Sam Steingold.
+;;; Copyright (C) 1997-2004, 2007 by Sam Steingold.
 ;;; This is Free Software, covered by the GNU GPL (v2)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
 ;;; $Id$
 ;;; $Source$
 
-(eval-when (compile load eval)
+(eval-when (:compile-toplevel :load-toplevel :execute)
   (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `getenv'
   (require :port-sys (translate-logical-pathname "port:sys")))
@@ -15,7 +15,7 @@
 (in-package :cllib)
 
 #+(and clisp lisp=cl)
-(eval-when (compile load eval)
+(eval-when (:compile-toplevel :load-toplevel :execute)
   (let (s)
     (cond ((setq s (find-symbol "PACKAGE-SHORT-NAME" "EXT"))
            (import s "CLLIB"))

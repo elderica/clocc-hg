@@ -8,7 +8,7 @@
 ;;; $Id$
 ;;; $Source$
 
-(eval-when (compile load eval)
+(eval-when (:compile-toplevel :load-toplevel :execute)
   (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `mean', `divf', `dot', `d/', `incomplete-gamma', `approx=-abs'
   (require :cllib-math (translate-logical-pathname "cllib:math"))

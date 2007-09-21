@@ -11,7 +11,7 @@
 ;;; $Id$
 ;;; $Source$
 
-(eval-when (compile load eval)
+(eval-when (:compile-toplevel :load-toplevel :execute)
   #-(or (and allegro (version>= 6))
         (and clisp mop)
         cmu lucid lispworks sbcl scl)

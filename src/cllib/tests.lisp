@@ -7,7 +7,7 @@
 ;;; $Id$
 ;;; $Source$
 
-(eval-when (load compile eval)
+(eval-when (:compile-toplevel :load-toplevel :execute)
   (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `mesg'
   (require :cllib-log (translate-logical-pathname "cllib:log"))

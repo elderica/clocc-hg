@@ -10,7 +10,7 @@
 ;;; the main entry point is WITH-PLOT-STREAM
 ;;; (see also other exported functions)
 
-(eval-when (compile load eval)
+(eval-when (:compile-toplevel :load-toplevel :execute)
   (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `date2time', `+day-sec+', `days-between', `date>'
   (require :cllib-date (translate-logical-pathname "cllib:date"))
@@ -47,7 +47,7 @@
 This must be either a full path or a name of an executable in your PATH.")
 (defconst +gnuplot-epoch+ integer (encode-universal-time 0 0 0 1 1 2000 0)
   "*The gnuplot epoch - 2000-01-01.")
-(eval-when (compile load eval)  ; CMUCL
+(eval-when (:compile-toplevel :load-toplevel :execute) ; CMUCL
 (defcustom *gnuplot-printer* simple-string
   (format nil
           #+(or win32 mswindows) "//SEATTLE/4th Floor NE"
@@ -56,7 +56,7 @@ This must be either a full path or a name of an executable in your PATH.")
   "*The printer to print the plots."))
 (defcustom *gnuplot-stream* (or null stream) nil
   "The current gnuplot output stream.")
-(eval-when (compile load eval)  ; CMUCL
+(eval-when (:compile-toplevel :load-toplevel :execute) ; CMUCL
 (defcustom *gnuplot-file* pathname (merge-pathnames "plot.tmp" *datadir*)
   "*The tmp file for gnuplot."))
 (defcustom *gnuplot-msg-stream* (or stream null) *standard-output*

@@ -2,14 +2,14 @@
 ;;; Load this file and you will be able to print CLOS objects with #[] format,
 ;;; bind `*readtable*' to `+clos-readtable+' and `read' will read #[]
 ;;;
-;;; Copyright (C) 1997-2004 by Sam Steingold
+;;; Copyright (C) 1997-2004, 2007 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
 ;;; $Id$
 ;;; $Source$
 
-(eval-when (compile load eval)
+(eval-when (:compile-toplevel :load-toplevel :execute)
   (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `class-slot-list', `class-slot-initargs'
   (require :port-sys (translate-logical-pathname "clocc:src;port;sys")))
@@ -33,7 +33,8 @@ Acceptable values are:
 This variable should have the same value when reading and writing,
 otherwise you will probably get an error.")
 
-(eval-when (compile load eval)  ; CMUCL for `+clos-readtable+'
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  ;; CMUCL for `+clos-readtable+'
 (defun read-object (st char arg)
   "Read an instance of a CLOS class printed as #[name{ slot val}]"
   (declare (ignore char arg))

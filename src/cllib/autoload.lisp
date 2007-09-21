@@ -1,13 +1,13 @@
 ;;; generate and use autoloads
 ;;;
-;;; Copyright (C) 2000-2003, 2006 by Sam Steingold
+;;; Copyright (C) 2000-2003, 2006, 2007 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
 ;;; $Id$
 ;;; $Source$
 
-(eval-when (compile load eval)
+(eval-when (:compile-toplevel :load-toplevel :execute)
   (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `skip-to-line', `timestamp'
   (require :cllib-fileio (translate-logical-pathname "cllib:fileio")))

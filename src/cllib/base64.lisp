@@ -1,14 +1,14 @@
 ;;; Base64 encoding and decoding
 ;;; <http://rfc.net/rfc2045.html>
 ;;;
-;;; Copyright (C) 2004-2005 by Sam Steingold
+;;; Copyright (C) 2004-2005, 2007 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
 ;;; $Id$
 ;;; $Source$
 
-(eval-when (compile load eval)
+(eval-when (:compile-toplevel :load-toplevel :execute)
   (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base")))
 
 (in-package :cllib)

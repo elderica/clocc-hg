@@ -7,7 +7,7 @@
 ;;; $Id$
 ;;; $Source$
 
-(eval-when (compile load eval)
+(eval-when (:compile-toplevel :load-toplevel :execute)
   (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `index-t'
   (require :cllib-withtype (translate-logical-pathname "cllib:withtype"))
@@ -32,7 +32,7 @@
 ;;; {{{ file misc
 ;;;
 
-(eval-when (compile load eval)  ; ACL
+(eval-when (:compile-toplevel :load-toplevel :execute) ; ACL
 (deftype file-size-t () '(unsigned-byte 32))
 )
 
