@@ -131,14 +131,15 @@ When :PROGRESS-1 is not NIL, it should be a number indicating after how
               (declare (ignorable (function eta) (function show-eta)))
               (macrolet ((progress (pos &optional (bad ""))
                            ;; has to be a macro to avoid computing pos too often
-                           ,(when count
+                           ,(if count
                               ``(when (and ,',%out ,',pro
                                            (zerop (mod ,',count ,',pro)))
                                  (princ "." ,',%out) (force-output ,',%out)
                                  (when (and ,',pro1
                                             (= ,',pro1 (incf ,',pro1-count)))
                                    (show-eta ,pos ,bad)
-                                   (setq ,',pro1-count 0))))))
+                                   (setq ,',pro1-count 0)))
+                              '(ignore pos bad))))
                 ,@body))
          (when ,%out
            (when ,done (princ "done" ,%out))
