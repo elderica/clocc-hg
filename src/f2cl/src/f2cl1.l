@@ -400,7 +400,6 @@ FILENAME                 File containing Fortran code
 	       :common-as-array common-as-array))
 	(*read-default-float-format* float-format))
     (let ((compiler-keys (remove-f2cl-keys all-keys)))
-      (format t "compiler-keys = ~A~%" compiler-keys)
       (multiple-value-prog1
 	  #+(or cmu scl)
 	  (apply #'compile-file lisp-file :output-file output-file
@@ -2879,6 +2878,13 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.174  2007/09/21 00:48:31  rtoy
+;;; We were not correctly handling WRITE statements of the form
+;;;
+;;; WRITE(<unit>, FMT = '<string>') ...
+;;;
+;;; Identify and parse these correctly now.  (Still needs work.)
+;;;
 ;;; Revision 1.173  2007/09/20 21:26:29  rtoy
 ;;; Simple attempt to allow passing additional keyword parameters from
 ;;; f2cl-compile to compile-file.
