@@ -380,7 +380,7 @@
       (incf num-err))
     (setq expected '((0 0) (0 1) (0 2) (1 0) (1 1) (1 2))
           actual (with-collect (c)
-                   (do-iter-ls (z (nreverse '(2 3)))
+                   (do-iter-ls (z (reverse '(2 3)))
                      (c (copy-seq z)))))
     (unless (equalp expected actual)
       (mesg :test out "~& * error in ~S:~% actual:   ~S~% expected: ~S~%"
