@@ -1238,7 +1238,7 @@ causing all pending operations to be flushed"
 	   (let ((k 0)
 		 (forms nil))
 	     (dolist (val inits)
-	       (push `(replace (aref ,init ,k) ,(car val)) forms)
+	       (push `(replace (aref ,init ,k) ,val) forms)
 	       (incf k))
 	     (nreverse forms)))
 		
@@ -1435,6 +1435,9 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.80  2007/09/21 17:45:13  rtoy
+;;; INDEX was calling SEARCH with the arguments in the wrong order.
+;;;
 ;;; Revision 1.79  2007/09/20 21:27:12  rtoy
 ;;; Was not handling atoms correctly.  This needs more work.
 ;;;

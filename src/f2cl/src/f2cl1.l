@@ -2304,10 +2304,14 @@ FILENAME                 File containing Fortran code
 			    (third item))))
 	       (dotimes (k (first item))
 		 (push val result))))
+	    ((and (listp item)
+		  (null (cdr item)))
+	     (push (car item) result))
 	    (t
 	     (push item result))))
     ;;(format t "result = ~A~%" x)
     (nreverse result)))
+
 ; DATA stmts 
 ;           DATA nlist/clist[,nlist/clist/]...
 ; restricted to 
@@ -2352,8 +2356,9 @@ FILENAME                 File containing Fortran code
 				   (and (listp var) (listp vals)
 					(listp (caar var))
 					(member '= (caar var)))))
+		     (rep-vals (handle-data-reps vals))
 		     (result (mapcar #'parse-data1 var
-				     (handle-data-reps (if is-array (list vals) vals)))))
+				     (if is-array (list rep-vals) rep-vals))))
 		;;(format t "result = ~a~%" result)
 		(setf *data-init* (append *data-init* (if (consp (first result))
 							result
@@ -2395,7 +2400,7 @@ FILENAME                 File containing Fortran code
 		     (t
 		      nil))))
 
-    (cond ((and (listp (car l))
+    (cond ((and (listp l) (listp (car l))
 		(eq (second (car l)) '*))
 	   ;;(format t "parse-data1 1 l = ~A~%" l)
 	   `(fill ,(check-reserved-lisp-names (first v))
@@ -2891,6 +2896,16 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.176  2007/09/21 15:09:34  rtoy
+;;; o Add #\# to the Fortran syntax table.
+;;; o Fix bug in parsing of FMT expressions in WRITE statements.  We
+;;;   need to call PROCESS-FORMAT-LINE to get things in the right form,
+;;;   since the preprocessor did not do it.
+;;; o Need to call HANDLE-REPS in more places, so moved the function out
+;;;   and renamed to HANDLE-DATA-REPS.
+;;; o Make HANDLE-DATA-REPS handle the case of something like (3 * - 1.1)
+;;;   which means 3 copies of -1.1.
+;;;
 ;;; Revision 1.175  2007/09/21 04:20:43  rtoy
 ;;; Remove debugging print.
 ;;;

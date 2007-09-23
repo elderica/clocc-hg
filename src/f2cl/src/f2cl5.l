@@ -2332,9 +2332,9 @@
 	((atom (cadr decl))		; scalar, length spec.
 	 ;;(format t "scalar, length spec~%")
 	 (if init
-	     (if (= (length (car init)) (cadr type))
+	     (if (= (length init) (cadr type))
 		 `(make-array '(,(cadr type)) :element-type 'character
-			      :initial-contents ,(car init))
+			      :initial-contents ,init)
 		 `(replace (make-array '(,(cadr type)) :element-type 'character
 				       :initial-element #\space)
 			   ,(car init)))
@@ -3492,6 +3492,12 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.156  2007/09/21 20:41:16  rtoy
+;;; MAKE-CHAR-INIT was not correctly handling a scalar character variable
+;;; with a known length.
+;;;
+;;; (This might need more work still.)
+;;;
 ;;; Revision 1.155  2007/09/20 17:44:45  rtoy
 ;;; Was not constructing the initializer for strings in a common block
 ;;; correctly.  This may need some more work.
