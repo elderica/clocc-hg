@@ -1463,7 +1463,9 @@
 		       (flet ((get-dims (var)
 				(mapcar #'caar
 					(mapcar #'(lambda (v)
-						    (lookup-array-bounds (find-data-var v)))
+						    (lookup-array-bounds
+						     (check-reserved-lisp-names
+						      (find-data-var v))))
 						(if (listp var) var (list var)))))
 			      (get-types (vars)
 				;; I'm lazy.  Use make-declaration
@@ -3085,6 +3087,11 @@
 	      (parse-format-descriptor-A left right))
 	     ((equal (cadr x) '#\/)
 	      (parse-format-descriptor-/))
+	     ((equal (cadr x) #\:)
+	      ;; The colon descriptor terminates format control if
+	      ;; there are no more items in the input/outpu list.
+	      ;; What should we do here?
+	      '(""))
 	     (t (parse-default-format-descriptor x)))))
       (unless matched-p
 	;; Need to reset *scale-factor* if this wasn't a P descriptor.
@@ -3493,6 +3500,10 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.158  2007/09/24 20:07:15  rtoy
+;;; o Extract the actual variable name in implied do loops.  (Was messing
+;;;   this up in some data statements.)
+;;;
 ;;; Revision 1.157  2007/09/23 20:51:43  rtoy
 ;;; Previous checkin changed how character strings are initialized.
 ;;; Modify code accordingly.  (This needs to be rethought and made less
