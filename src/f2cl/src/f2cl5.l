@@ -2873,7 +2873,7 @@
 	  ((or (eq fmt-num '*)
 	       (not (numberp fmt-num)))
 	   ;; Format is * (or something else unknown).  Just use ~A.
-	   '(t (("~A ")) "~%"))
+	   '("~1@T" t (("~A ")) "~%"))
 	  (t
 	   (do ((lis *format_stmts* (cdr lis)))
 	       ((null lis)
@@ -3155,7 +3155,9 @@
 		       (format nil "~~~D,~D/f2cl:print-i-format/" width (second w))
 		       (format nil "~~~DD" width)
 		       )))
-    (list a (list (list directive)))))
+    (if (= a 1)
+	(list (list directive))
+	(list a (list (list directive))))))
 
 ;<kP><a>Fw.d -> ~a{~w,d,k,,,[@]F}
 (defun parse-format-descriptor-F (left right)
@@ -3174,7 +3176,9 @@
 			      (fixnum-string k) "," ;k
 			      "'*,"
 			      (if *SP* "@F" "F")))))
-      (list a (list directive)))))
+      (if (= a 1)
+	  (list directive)
+	  (list a (list directive))))))
 
 ;; Note: The Fortran standard says that, for a format like Ew.d, if
 ;; the the exponent is three digits long, the exponent indicator (E or
@@ -3197,10 +3201,12 @@
 			      (fixnum-string e) ","
 			      (fixnum-string k) ",'*,,'E"
 			      (if *SP* "@E" "E")))))
-      (list a (list directive)))))
+      (if (= a 1)
+	  (list directive)
+	  (list a (list directive))))))
 
 (defun parse-format-descriptor-D (left right)
-  (let ((k 0) (a 1) w d (e 2))
+  (let ((k 0) (a nil) w d (e 2))
     (declare (special k a w d e *scale-factor*))
     (or (pattern-match-and-bind '((> k) #\P (> a)) left)
 	(pattern-match-and-bind '((> k) #\P) left)
@@ -3216,7 +3222,9 @@
 			      (fixnum-string e) ","
 			      (fixnum-string k) ",'*,,'D"
 			      (if *SP* "@E" "E")))))
-      (list a (list directive)))))
+      (if (= a 1)
+	  (list directive)
+	  (list a (list directive))))))
 
 (defun parse-format-descriptor-G (left right)
   (let ((k 0) (a 1) w d (e 2))
@@ -3235,7 +3243,9 @@
 			      (fixnum-string e) ","
 			      (fixnum-string k) ",'*"
 			      (if *SP* "@G" "G")))))
-      (list a (list directive)))))
+      (if (= a 1)
+	  (list directive)
+	  (list a (list directive))))))
 
 (defun parse-format-descriptor-/ ()
    '("~%"))
@@ -3520,6 +3530,15 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.161  2007/09/25 18:48:13  rtoy
+;;; f2cl1.l:
+;;; o Comment out the ill-designed ID-WRITE-FORMAT stuff.  This is now
+;;;   handled in a much better way when parsing WRITE statements.
+;;;
+;;; f2cl5.l:
+;;; o Handle FMT=<string> cases in WRITE statements here.  We just go get
+;;;   the string, parse it as a format statement and return the result.
+;;;
 ;;; Revision 1.160  2007/09/25 17:31:05  rtoy
 ;;; f2cl5.l:
 ;;; o Return #\: when encountering a colon edit descriptor.
