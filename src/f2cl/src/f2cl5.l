@@ -3089,9 +3089,8 @@
 	      (parse-format-descriptor-/))
 	     ((equal (cadr x) #\:)
 	      ;; The colon descriptor terminates format control if
-	      ;; there are no more items in the input/outpu list.
-	      ;; What should we do here?
-	      '(""))
+	      ;; there are no more items in the input/output list.
+	      '(#\:))
 	     (t (parse-default-format-descriptor x)))))
       (unless matched-p
 	;; Need to reset *scale-factor* if this wasn't a P descriptor.
@@ -3500,6 +3499,12 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.159  2007/09/25 17:23:52  rtoy
+;;; o Need to check for reserved lisp names when looking up array bounds
+;;;   in data initializers.
+;;; o Recognize colon format descriptors.  Currently, just return the
+;;;   empty string, but it's supposed to terminate format control.
+;;;
 ;;; Revision 1.158  2007/09/24 20:07:15  rtoy
 ;;; o Extract the actual variable name in implied do loops.  (Was messing
 ;;;   this up in some data statements.)
