@@ -680,6 +680,7 @@ FILENAME                 File containing Fortran code
 
 ;; Find a WRITE statement where the format is not a statement number
 ;; but a string giving the format itself.
+#+nil
 (defun id-write-format (input-list)
   (when (eq (car input-list) 'write)
     ;; A write statement looks like the following, so try to match one
@@ -779,6 +780,7 @@ FILENAME                 File containing Fortran code
 			  label
 			(push `(nil (goto ,l1)) output-list)
 			(push `(,l2 (continue)) output-list))))))
+	    #+nil
 	    ((id-write-format input-list)
 	     ;; We have a write statement where the format isn't a
 	     ;; label but a string.  Convert this to a label and add
@@ -2917,6 +2919,13 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.178  2007/09/24 20:05:55  rtoy
+;;; o Need to clear out *common_array_dims* on each subprogram!
+;;; o Add FIND-DATA-VAR to return the data variable for DATA
+;;;   statements. (The nesting is dependent on the whether the variable is
+;;;   being initialized in an implied do loop or not, and on how the do
+;;;   loop is arranged.)
+;;;
 ;;; Revision 1.177  2007/09/23 20:51:43  rtoy
 ;;; Previous checkin changed how character strings are initialized.
 ;;; Modify code accordingly.  (This needs to be rethought and made less

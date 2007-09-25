@@ -2844,15 +2844,36 @@
 			      (list-split '|,| (second x)))))))
     `((f2cl-lib::close$ ,@options))))
 
-;; Handle things like FMT = number
+;; Get the appropriate format string.
+;;
+;; LABEL is the label portion of a WRITE statement, and is one of the
+;; following forms:
+;;
+;; (<number>)
+;; (*)
+;; (FMT = <number>) or (FMT = *)
+;; (FMT = <string>)
 (defun get_format_stmt (label)
   (let ((fmt-num (first label)))
     (cond ((eq fmt-num 'fmt)
-	   ;; We have something like "FMT = number"
+	   ;; We have something like "FMT = number".  Pretend it was
+	   ;; just "number" and look up the format string.
 	   (get_format_stmt (list (third label))))
+	  ((stringp fmt-num)
+	   ;; We have something like FMT = "string".  Process the
+	   ;; format string and return the result.
+	   (let ((*sp* nil)
+		 (fmt (with-fortran-syntax
+			(lineread
+			 (make-string-input-stream
+			  (process-format-line
+			   fmt-num))))))
+	     (declare (special *sp*))
+	     (parse-format1 (brackets-check (concat-operators fmt)))))
 	  ((or (eq fmt-num '*)
 	       (not (numberp fmt-num)))
-	   '(("~A~%")))
+	   ;; Format is * (or something else unknown).  Just use ~A.
+	   '(t (("~A ")) "~%"))
 	  (t
 	   (do ((lis *format_stmts* (cdr lis)))
 	       ((null lis)
@@ -3499,6 +3520,14 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.160  2007/09/25 17:31:05  rtoy
+;;; f2cl5.l:
+;;; o Return #\: when encountering a colon edit descriptor.
+;;;
+;;; macros.l:
+;;; o Recognize #\: and terminate processing if there are no arguments
+;;;   left.
+;;;
 ;;; Revision 1.159  2007/09/25 17:23:52  rtoy
 ;;; o Need to check for reserved lisp names when looking up array bounds
 ;;;   in data initializers.
