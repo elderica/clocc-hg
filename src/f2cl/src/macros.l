@@ -1159,9 +1159,9 @@ causing all pending operations to be flushed"
 	    ;; Repeat "forever" (until we run out of data)
 	    (loop while arg-list do
 		  (setf arg-list
-			(execute-format nil stream (second formats) arg-list))
-		  ;; Output a newline after the repeat (I think Fortran says this)
-		  (format stream "~%")))
+			(execute-format nil stream (second formats) arg-list)))
+	    ;; Output a newline after the repeat (I think Fortran says this)
+	    (format stream "~%"))
 	  (t
 	   (format stream (car formats))))))
 	   
@@ -1439,6 +1439,10 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.83  2007/09/25 18:17:50  rtoy
+;;; Oops.  We should always process #\: and exit only if there is more
+;;; args to process.
+;;;
 ;;; Revision 1.82  2007/09/25 17:31:05  rtoy
 ;;; f2cl5.l:
 ;;; o Return #\: when encountering a colon edit descriptor.
