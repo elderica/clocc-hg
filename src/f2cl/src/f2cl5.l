@@ -1687,9 +1687,9 @@
      ;;(format t "new save-inits  = ~S~%" save-inits)
      
      ;;(format t "prog-bit = ~a~%" prog-bit)
-     ;; Clean up key params by removing any unused key params
-     (format t "save-inits = ~A~%" save-inits)
-     (format t "data-init = ~A~%" *data-init*)
+     
+     ;; Clean up key params by removing any unused key params. This
+     ;; means not used in the code or for intializing data statements.
      (setf code-key-params (remove-unused-key-params key-params
 						     (list *data-init*
 							   save-inits
@@ -3619,6 +3619,18 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.167  2007/09/26 16:31:06  rtoy
+;;; o Revert to old version of PARSE-IMPLIED-DO.  The new version doesn't
+;;;   work in some situations.
+;;; o Add function MAKE-KEY-PARAM-DECLS to create the appropriate
+;;;   declarations for parameter keyword args.  Use it in the appropriate
+;;;   places.
+;;; o Preserve value key-params.  Use new code-key-params that has unused
+;;;   values removed for use with code.
+;;; o Add support for removing unused parameter keywords in initializing
+;;;   common blocks.  This reduces the number of Lis pcompiler warnings
+;;;   quite a bit.
+;;;
 ;;; Revision 1.166  2007/09/26 15:21:45  rtoy
 ;;; o Use push instead of append in creating the lists for implied-do
 ;;;   loops.
