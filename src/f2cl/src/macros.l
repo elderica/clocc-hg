@@ -1154,7 +1154,6 @@ causing all pending operations to be flushed"
 	     ;;(format t "k = ~A, format = ~S~%" k (second formats))
 	     (setf arg-list
 		   (execute-format nil stream (second formats) arg-list)))
-	   (format stream "~%")
 	   (setf formats (rest formats))
 	   ;; Output a newline after the repeat (I think Fortran says this)
 	   ;;(format stream "~&")
@@ -1166,26 +1165,42 @@ causing all pending operations to be flushed"
 	   ;;(format t " formats    = ~S~%" (second formats))
 	   (loop while arg-list do
 		(setf arg-list
-		      (execute-format nil stream (second formats) arg-list t))
+		      (execute-format nil stream (second formats) arg-list ))
 	      ;; Output a newline after the repeat (I think Fortran says this)
 		(format stream "~%")))
 	  (t
 	   (format stream (car formats))))))
 	   
-       
+(defun flatten-list (x)
+  (labels ((flatten-helper (x r);; 'r' is the stuff to the 'right'.
+	     (cond ((null x) r)
+		   ((atom x)
+		    (cons x r))
+		   (t (flatten-helper (car x)
+				      (flatten-helper (cdr x) r))))))
+    (flatten-helper x nil)))
+
 (defun execute-format-main (stream format &rest args)
-  (let ((format-list (copy-tree format))
-	(arg-list (apply #'append (map 'list #'(lambda (x)
-						 (cond ((numberp x)
-							(list x))
-						       ((stringp x)
-							(list x))
-						       ((atom x)
-							(list x))
-						       (t
-							(coerce x 'list))))
-				       args))))
-    (execute-format t stream format-list arg-list)))
+  (cond
+    ((eq format :list-directed)
+     ;; Is something better needed here?
+     ;;(format t "args = ~S~%" args)
+     ;; This prints out the args separated by spaces and puts a line
+     ;; break after about 80 columns.
+     (format stream "~& ~{~<~% ~1,80:;~A~>~^ ~}~%" (flatten-list args)))
+    (t
+     (let ((format-list (copy-tree format))
+	   (arg-list (apply #'append (map 'list #'(lambda (x)
+						    (cond ((numberp x)
+							   (list x))
+							  ((stringp x)
+							   (list x))
+							  ((atom x)
+							   (list x))
+							  (t
+							   (coerce x 'list))))
+					  args))))
+       (execute-format t stream format-list arg-list)))))
 
 
 #||
@@ -1446,6 +1461,19 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.85  2007/09/25 21:31:32  rtoy
+;;; f2cl5.l:
+;;; o Slight change in the format used for "*" format.
+;;; o Change the repeatable descriptors to remove the repeat count if the
+;;;   count is 1.  This was confusing the execute-format when determining
+;;;   when to print out newlines.  This change applied to I, F, E, D, and
+;;;   G descriptors.
+;;;
+;;; macros.l:
+;;; o Handle printing of "repeat forever" loops better.  An extra arg to
+;;;   EXECUTE-FORMAT tells us to repeat "forever".
+;;; o Output a newline at the end of a repeated specification.
+;;;
 ;;; Revision 1.84  2007/09/25 18:46:42  rtoy
 ;;; For repeated descriptors, we were printing a new line after each item
 ;;; instead of after all items had been printed.  Output new line only

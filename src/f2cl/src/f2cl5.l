@@ -2872,8 +2872,8 @@
 	     (parse-format1 (brackets-check (concat-operators fmt)))))
 	  ((or (eq fmt-num '*)
 	       (not (numberp fmt-num)))
-	   ;; Format is * (or something else unknown).  Just use ~A.
-	   '("~1@T" t (("~A ")) "~%"))
+	   ;; List-directed output
+	   :list-directed)
 	  (t
 	   (do ((lis *format_stmts* (cdr lis)))
 	       ((null lis)
@@ -3520,6 +3520,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.163  2007/09/25 21:58:42  rtoy
+;;; Revert previous change.
+;;;
 ;;; Revision 1.162  2007/09/25 21:31:32  rtoy
 ;;; f2cl5.l:
 ;;; o Slight change in the format used for "*" format.
