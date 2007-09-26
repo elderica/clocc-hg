@@ -2427,7 +2427,7 @@ FILENAME                 File containing Fortran code
 		(numberp (first (second v))))
 	   ;; Initializing one element of an array.
 
-	   (format t "parse-data1 array~%")
+	   ;;(format t "parse-data1 array~%")
 	   (let* ((vname (check-reserved-lisp-names (first v)))
 		  (dims (lookup-array-bounds vname)))
 	     ;; FIXME: DO NOT change this to SETF.  Other code uses
@@ -2483,7 +2483,7 @@ FILENAME                 File containing Fortran code
 			    ',(mapcar #'fix-up-negative-number
 				      (handle-data-reps l))))
 		 (t
-		  (format t "t case~%")
+		  ;;(format t "t case~%")
 		  `(setq ,(check-reserved-lisp-names (first v))
 		      ,(fix-up-negative-number l))))))))
 
@@ -2919,6 +2919,15 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.179  2007/09/25 18:48:13  rtoy
+;;; f2cl1.l:
+;;; o Comment out the ill-designed ID-WRITE-FORMAT stuff.  This is now
+;;;   handled in a much better way when parsing WRITE statements.
+;;;
+;;; f2cl5.l:
+;;; o Handle FMT=<string> cases in WRITE statements here.  We just go get
+;;;   the string, parse it as a format statement and return the result.
+;;;
 ;;; Revision 1.178  2007/09/24 20:05:55  rtoy
 ;;; o Need to clear out *common_array_dims* on each subprogram!
 ;;; o Add FIND-DATA-VAR to return the data variable for DATA
