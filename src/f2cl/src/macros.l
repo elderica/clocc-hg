@@ -1123,13 +1123,12 @@ causing all pending operations to be flushed"
 	  `((when (stringp ,dest-lun)
 	     (replace ,dest-lun (get-output-stream-string ,stream))))))))
 
-(defun execute-format (top stream format arg-list &optional forever)
+(defun execute-format (top stream format arg-list)
   (do ((formats format (if (and top (null formats))
 			   format
 			   (rest formats))))
       ((or (null arg-list)
-	   (and (not forever)
-		(not top)
+	   (and (not top)
 		(null formats)))
        ;;(format t "~&end formats = ~S~%" formats)
        (do ((more formats (rest more)))
@@ -1165,7 +1164,7 @@ causing all pending operations to be flushed"
 	   ;;(format t " formats    = ~S~%" (second formats))
 	   (loop while arg-list do
 		(setf arg-list
-		      (execute-format nil stream (second formats) arg-list ))
+		      (execute-format nil stream (second formats) arg-list))
 	      ;; Output a newline after the repeat (I think Fortran says this)
 		(format stream "~%")))
 	  (t
@@ -1461,6 +1460,20 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.86  2007/09/26 13:10:15  rtoy
+;;; Better list-directed output.
+;;;
+;;; f2cl5.l:
+;;; o For list-directed output (format is *), return :list-directed to
+;;;   tell format that we're using list-directed output.  (The previous
+;;;   scheme didn't really work well.)
+;;;
+;;; macros.l:
+;;; o Add FLATTEN-LIST function
+;;; o Don't output a newline for repeated items.  We shouldn't do that.
+;;; o Add support for :list-directed output.  We recognize that and then
+;;;   just output all the args in a special way.
+;;;
 ;;; Revision 1.85  2007/09/25 21:31:32  rtoy
 ;;; f2cl5.l:
 ;;; o Slight change in the format used for "*" format.
