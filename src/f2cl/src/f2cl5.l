@@ -1934,7 +1934,7 @@
 	;; data-init part needs to be moved inside the body and
 	;; massaged to initialize the data.  
 	(multiple-value-bind (sym-macs sym-lets)
-	    (create-sym-macros nil)
+	    (create-sym-macros (list save-inits *data-init*))
 	  #+nil
 	  (format t "save-inits = ~A~%" (mapcar #'(lambda (x)
 						    `(setf ,@x))
@@ -1960,6 +1960,8 @@
 					    `(setf ,@(rest x))
 					    x))
 				    *data-init*))))))
+	(setf code-key-params (remove-unused-key-params key-params prog-bit))
+	(setf code-key-params-decls (make-key-param-decls code-key-params))
 	(let* ((defun-stuff `(defun ,(cadr defun-bit) ,arglist
 			      ,prog-bit))
 	       (param-stuff (if code-key-params
@@ -3619,6 +3621,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.168  2007/09/26 16:32:45  rtoy
+;;; Remove debugging prints.
+;;;
 ;;; Revision 1.167  2007/09/26 16:31:06  rtoy
 ;;; o Revert to old version of PARSE-IMPLIED-DO.  The new version doesn't
 ;;;   work in some situations.
