@@ -2422,7 +2422,7 @@ FILENAME                 File containing Fortran code
 	   `(fill ,(check-reserved-lisp-names (first v))
 	          ,(fix-up-negative-number (cddar l))
 	          :end ,(first (car l))))
-	  ((and (listp v) (listp l)
+	  ((and (listp v) ;;(not (listp l))
 		(listp (second v))
 		(numberp (first (second v))))
 	   ;; Initializing one element of an array.
@@ -2919,6 +2919,9 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.180  2007/09/26 15:22:39  rtoy
+;;; Oops.  Comment out debugging prints accidentally left in.
+;;;
 ;;; Revision 1.179  2007/09/25 18:48:13  rtoy
 ;;; f2cl1.l:
 ;;; o Comment out the ill-designed ID-WRITE-FORMAT stuff.  This is now
