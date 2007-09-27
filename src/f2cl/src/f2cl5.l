@@ -2748,22 +2748,32 @@
       (list-split '|,| (second x))
     ;;(format t "lun-part = ~A~%" lun-part)
     ;;(format t "fmt-part = ~A~%" fmt-part)
-    
-    `((fformat ,(parse_format_dest lun-part)
-       ,(if (null fmt-part) 
-	    '(("~A~%"))
-	    (get_format_stmt fmt-part))
-       ,@(mapcar #'parse-output-argument 
-		 (list-split '|,| (cdddr x)))))))
+
+    (let ((args (if (cdddr x)
+		    (mapcar #'parse-output-argument 
+			    (list-split '|,| (cdddr x)))
+		    nil)))
+      ;; If there are no items to be written, make sure args is NIL,
+      ;; so fformat knows there are no items.
+      `((fformat ,(parse_format_dest lun-part)
+		 ,(if (null fmt-part) 
+		      '(("~A~%"))
+		      (get_format_stmt fmt-part))
+		 ,@args)))))
 
 ;; x is of the form: '(PRINT * |,| X |,| Y)
 ;;               or: '(PRINT 9000 |,| X |,| Y)
 
 (defun parse-print (x)
-  `((fformat t
-     ,(get_format_stmt (list (second x)))
-     ,@(mapcar #'parse-output-argument 
-		       (list-split '|,| (cdddr x))))))
+  (let ((args (if (cdddr x)
+		  (mapcar #'parse-output-argument 
+			  (list-split '|,| (cdddr x)))
+		  nil)))
+    ;; If there are no items to be written, make sure args is NIL,
+    ;; so fformat knows there are no items.
+    `((fformat t
+	       ,(get_format_stmt (list (second x)))
+	       ,@args))))
 
 ;; x is of the form '(read (lun |,| format) var |,| var)
 ;;
@@ -3639,6 +3649,16 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.171  2007/09/27 02:12:12  rtoy
+;;; Support the L edit descriptor better.
+;;;
+;;; f2cl5.l:
+;;; o Recognize the L descriptor and convert it to ~wA.
+;;;
+;;; macros.l:
+;;; o Convert T and NIL to :T and :F, respectively.  When coupled with ~A,
+;;;   this prints as T and F, as desired.
+;;;
 ;;; Revision 1.170  2007/09/26 17:57:09  rtoy
 ;;; Fix up new PARSE-IMPLIED-DO that uses push instead of append to create
 ;;; the arg list.  This version is used now and donlp2 compiles and runs
