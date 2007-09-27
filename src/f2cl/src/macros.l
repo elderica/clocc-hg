@@ -1189,16 +1189,27 @@ causing all pending operations to be flushed"
      (format stream "~& ~{~<~% ~1,80:;~A~>~^ ~}~%" (flatten-list args)))
     (t
      (let ((format-list (copy-tree format))
-	   (arg-list (apply #'append (map 'list #'(lambda (x)
-						    (cond ((numberp x)
-							   (list x))
-							  ((stringp x)
-							   (list x))
-							  ((atom x)
-							   (list x))
-							  (t
-							   (coerce x 'list))))
-					  args))))
+	   (arg-list
+	    (apply #'append
+		   (map 'list #'(lambda (x)
+				  (cond ((numberp x)
+					 (list x))
+					((stringp x)
+					 (list x))
+					((atom x)
+					 ;; Convert T and NIL to :T
+					 ;; and :F so we print out T
+					 ;; and F, respectively.
+					 (case x
+					   ((t)
+					    (list :t))
+					   ((nil)
+					    (list :f))
+					   (t
+					    (list x))))
+					(t
+					 (coerce x 'list))))
+			args))))
        (execute-format t stream format-list arg-list)))))
 
 
@@ -1460,6 +1471,9 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.87  2007/09/26 13:11:06  rtoy
+;;; Remove the unused FOREVER parameter from EXECUTE-FORMAT.
+;;;
 ;;; Revision 1.86  2007/09/26 13:10:15  rtoy
 ;;; Better list-directed output.
 ;;;
