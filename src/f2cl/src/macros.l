@@ -969,7 +969,7 @@ is not included")
 	     (declare (type integer4 ,do-var))
 	     ,(process-implied-do (remove '|,| array) low-bnds init))))))
 
-(defun process-implied-do (ido low-bnds var-types init)
+(defun process-implied-do (ido array-bnds var-types init)
   (destructuring-bind (data-vars (index-var start end &optional step))
       ido
     (labels
@@ -979,9 +979,9 @@ is not included")
 	       `(coerce (pop ,init) ',type)))
 	 (map-vars (v)
 	   (mapcar #'(lambda (x b vt)
-		       `(fset (fref ,(first x) ,(second x) ((,b)))
+		       `(fset (fref ,(first x) ,(second x) ,b)
 			 ,(convert-type vt)))
-		   v low-bnds var-types)))
+		   v array-bnds var-types)))
     `(do ((,index-var ,start (+ ,index-var ,(or step 1))))
          ((> ,index-var ,end))
        ,@(map-vars data-vars))
@@ -989,10 +989,10 @@ is not included")
 
 
 ;; Process implied do loops for data statements
-(defmacro data-implied-do (implied-do low-bnds var-types vals)
+(defmacro data-implied-do (implied-do array-bnds var-types vals)
   (let ((v (gensym)))
     `(let ((,v ',vals))
-      ,(process-implied-do implied-do low-bnds var-types v))))
+      ,(process-implied-do implied-do array-bnds var-types v))))
 
 ;;-----------------------------------------------------------------------------  ; end of macros.l
    
@@ -1482,6 +1482,14 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.89  2007/09/27 14:56:39  rtoy
+;;; When we run out of format specs, but there are still items to print,
+;;; we go back and find the first repeat spec and start there.
+;;;
+;;; If there is no such thing, we just reuse the entire format spec.  Not
+;;; sure if this is right or if it's a bug.  Maybe we should signal an
+;;; error?
+;;;
 ;;; Revision 1.88  2007/09/27 02:12:12  rtoy
 ;;; Support the L edit descriptor better.
 ;;;

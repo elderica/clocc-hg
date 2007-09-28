@@ -1523,22 +1523,31 @@
      (setq *data-init*
 	   (mapcar #'(lambda (init)
 		       (flet ((get-dims (var)
-				(mapcar #'(lambda (array-dims)
-					    (mapcar #'car array-dims))
-					(mapcar #'(lambda (v)
-						    (lookup-array-bounds
-						     (check-reserved-lisp-names
-						      (find-data-var v))))
-						(if (listp var) var (list var)))))
+				(mapcar #'(lambda (v)
+					    (lookup-array-bounds
+					     (check-reserved-lisp-names
+					      (find-data-var v))))
+					(if (listp var) var (list var))))
 			      (get-types (vars)
 				;; I'm lazy.  Use make-declaration
 				;; to figure out the type of the array
 				;; element.
+				#+nil
 				(mapcar #'(lambda (v)
 					    (let ((init (make-declaration
 							 (find-data-var (check-reserved-lisp-names v)))))
 					      (second (second (second init)))))
-					vars)))
+					vars)
+				;; Look through explicit_vble_decls
+				(mapcar #'(lambda (v)
+					    (let ((v (find-data-var (check-reserved-lisp-names v))))
+					      (dolist (d *explicit_vble_decls*)
+						(destructuring-bind (vtype &rest vars)
+						    d
+						  (when (member v vars :key #'car)
+						    (return-from get-types (list vtype)))))))
+					vars)
+				))
 
 		       (cond #+nil
 			     ((eq 'fset (first init))
@@ -3651,6 +3660,17 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.173  2007/09/28 03:48:56  rtoy
+;;; Handle implied do loops better in DATA statements.
+;;;
+;;; f2cl1.l:
+;;; o Handle implied do loops where the array is multidimensional.
+;;;
+;;; f2cl5.l:
+;;; o Make sure we get all the lower bounds of the array dimensions.
+;;; o Make sure we check for reserved Lisp names when we figure out the
+;;;   type of the array.
+;;;
 ;;; Revision 1.172  2007/09/27 14:53:22  rtoy
 ;;; If there are no items to be printed in a WRITE or PRINT statement,
 ;;; make sure no args are given to FFORMAT.  This confuses FFORMAT.
