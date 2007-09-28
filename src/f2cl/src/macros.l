@@ -1097,6 +1097,7 @@ causing all pending operations to be flushed"
 (defmacro rewind (&key unit iostat err)
   (let ((result (gensym)))
     `(prog ((,result (%rewind ,unit)))
+	(declare (ignorable ,result))
 	,(if err `(unless ,result (go ,(f2cl-lib::make-label err))))
 	,(if iostat `(setf ,iostat (if ,result 0 1))))))
 	  
@@ -1109,6 +1110,7 @@ causing all pending operations to be flushed"
 (defmacro close$ (&key unit iostat err status)
   (let ((result (gensym)))
     `(prog ((,result (%close :unit ,unit  :status ,status)))
+	(declare (ignorable ,result))
 	,(if err `(unless ,result (go ,(f2cl-lib::make-label err))))
 	,(if iostat `(setf ,iostat (if ,result 0 1))))))
 
@@ -1205,6 +1207,8 @@ causing all pending operations to be flushed"
 			  (typecase v
 			    (complex
 			     (list #\( (realpart v) #\, (imagpart v) #\)))
+			    (string
+			     v)
 			    (array
 			     (coerce v 'list))
 			    (t
@@ -1494,6 +1498,12 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.91  2007/09/28 15:41:14  rtoy
+;;; Some cleanup for list-directed output:
+;;;
+;;; o Complex numbers should be printed in the form (r, i), not #c(r, i)
+;;; o Arrays should print out only the elements instead of #(...).
+;;;
 ;;; Revision 1.90  2007/09/28 05:00:58  rtoy
 ;;; To support multidimensional arrays in implied do loops better, we need
 ;;; to pass the entire array bounds, including upper and lower limits so
