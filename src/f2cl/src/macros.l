@@ -987,11 +987,33 @@ is not included")
        ,@(map-vars data-vars))
     )))
 
+(defun process-implied-do (ido array-bnds var-types init)
+  (destructuring-bind (data-vars &rest looping)
+      ido
+    (labels
+	((convert-type (type)
+	   (if (eq type 'integer4)
+	       `(truncate (pop ,init))
+	       `(coerce (pop ,init) ',type)))
+	 (map-vars (v)
+	   (mapcar #'(lambda (x b vt)
+		       `(fset (fref ,(first x) ,(second x) ,b)
+			      ,(convert-type vt)))
+		   v array-bnds var-types)))
+      (let ((body (map-vars data-vars)))
+	(dolist (loopvar looping)
+	  (destructuring-bind (index-var start end &optional step)
+	      loopvar
+	    (setf body `((do ((,index-var ,start (+ ,index-var ,(or step 1))))
+			    ((> ,index-var ,end))
+			  ,@body)))))
+	(car body)))))
+
 
 ;; Process implied do loops for data statements
 (defmacro data-implied-do (implied-do array-bnds var-types vals)
   (let ((v (gensym)))
-    `(let ((,v ',vals))
+    `(let ((,v (list ,@vals)))
       ,(process-implied-do implied-do array-bnds var-types v))))
 
 ;;-----------------------------------------------------------------------------  ; end of macros.l
@@ -1197,7 +1219,7 @@ causing all pending operations to be flushed"
     ((eq format :list-directed)
      ;; This prints out the args separated by spaces and puts a line
      ;; break after about 80 columns.
-     (format stream "~& ~{~<~% ~1,80:;~A~>~^ ~}~%"
+     (format stream "~& ~{~<~% ~1,81:;~A~>~^ ~}~%"
 	     (flatten-list
 	      (mapcar #'(lambda (v)
 			  ;; Some special cases.  Complex numbers
@@ -1498,6 +1520,11 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.92  2007/09/28 20:26:13  rtoy
+;;; o For REWIND and CLOSE$, declare the result as ignorable.
+;;; o For list-directed output, don't print out strings as an array with
+;;;   spaces between each element.  Strings should go out as strings.
+;;;
 ;;; Revision 1.91  2007/09/28 15:41:14  rtoy
 ;;; Some cleanup for list-directed output:
 ;;;

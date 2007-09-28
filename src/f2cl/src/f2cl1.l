@@ -2382,6 +2382,27 @@ FILENAME                 File containing Fortran code
 	      )))
       ((null (cdr list)))))
 
+(defun parse-data-implied-do (v l)
+  (let ((loops nil))
+    (loop
+       (cond ((and (listp (car v))
+		   (find '= (car v)))
+	      (let ((split (list-split '|,| (car v))))
+		(destructuring-bind (info (loopvar = start) (stop))
+		    split
+		  (declare (ignore =))
+		  (setf loopvar (check-reserved-lisp-names loopvar))
+		  (push `(,loopvar ,start ,stop) loops)
+		  (setf v info))))
+	     (t (return))))
+    (destructuring-bind (var indices)
+	v
+      (setf indices (remove '|,| indices))
+      (setf v `(,var ,indices))
+      (let ((result v))
+	(setf result `((,v) ,@loops))
+	`(data-implied-do ,result (,var) ,l)))))
+
 ; parse a (vble_name data1 data2 ...) list
 ;    or a (vble_name n*x) list
 (defun parse-data1 (v l)
@@ -2443,32 +2464,7 @@ FILENAME                 File containing Fortran code
 		(member '= (first v)))
 	   ;; Implied do loop.  Extract out the important parts of the
 	   ;; implied do and construct what we need from it.
-	   (flet ((process-implied-do (v l)
-		    ;; By the time we get here an implied-do loop looks something like this:
-		    ;; 
-		    ;; (x (i) '|,| i = 1 '|,| 8)
-		    ;;
-		    ;; List-split will produce
-		    ;;
-		    ;; ((x (i)) (i = 1) (8))
-		    ;;
-		    ;; We want to produce a new list of the form
-		    ;;
-		    ;; (data-implied-do (((x i)) (i 0 8)) (x) <data>)
-		    (destructuring-bind ((var index) (loopvar = start) (stop))
-			(list-split '|,| (first v))
-		      (declare (ignore =))
-		      (setf var (check-reserved-lisp-names var))
-		      (setf loopvar (check-reserved-lisp-names loopvar))
-		      (setf index (remove '|,| index))
-		      (let ((res 
-			     `(data-implied-do
-			       (((,var ,index)) (,loopvar ,start ,stop))
-			       (,var)
-			       ,l
-			       )))
-			res))))
-	     (process-implied-do v (fix-up-data-reps l))))
+	     (parse-data-implied-do v (fix-up-data-reps l)))
 	  ((and (listp v) (listp l)
 		(= (length v) (length l))
 		(> (length v) 1))
@@ -2939,6 +2935,17 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.182  2007/09/28 03:48:55  rtoy
+;;; Handle implied do loops better in DATA statements.
+;;;
+;;; f2cl1.l:
+;;; o Handle implied do loops where the array is multidimensional.
+;;;
+;;; f2cl5.l:
+;;; o Make sure we get all the lower bounds of the array dimensions.
+;;; o Make sure we check for reserved Lisp names when we figure out the
+;;;   type of the array.
+;;;
 ;;; Revision 1.181  2007/09/27 04:02:07  rtoy
 ;;; Was not correctly parsing data statements that initialize one element
 ;;; of an array.
