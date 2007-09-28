@@ -1523,7 +1523,8 @@
      (setq *data-init*
 	   (mapcar #'(lambda (init)
 		       (flet ((get-dims (var)
-				(mapcar #'caar
+				(mapcar #'(lambda (array-dims)
+					    (mapcar #'car array-dims))
 					(mapcar #'(lambda (v)
 						    (lookup-array-bounds
 						     (check-reserved-lisp-names
@@ -1534,7 +1535,8 @@
 				;; to figure out the type of the array
 				;; element.
 				(mapcar #'(lambda (v)
-					    (let ((init (make-declaration (find-data-var v))))
+					    (let ((init (make-declaration
+							 (find-data-var (check-reserved-lisp-names v)))))
 					      (second (second (second init)))))
 					vars)))
 
@@ -3649,6 +3651,10 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.172  2007/09/27 14:53:22  rtoy
+;;; If there are no items to be printed in a WRITE or PRINT statement,
+;;; make sure no args are given to FFORMAT.  This confuses FFORMAT.
+;;;
 ;;; Revision 1.171  2007/09/27 02:12:12  rtoy
 ;;; Support the L edit descriptor better.
 ;;;
