@@ -1193,11 +1193,23 @@ causing all pending operations to be flushed"
 (defun execute-format-main (stream format &rest args)
   (cond
     ((eq format :list-directed)
-     ;; Is something better needed here?
-     ;;(format t "args = ~S~%" args)
      ;; This prints out the args separated by spaces and puts a line
      ;; break after about 80 columns.
-     (format stream "~& ~{~<~% ~1,80:;~A~>~^ ~}~%" (flatten-list args)))
+     (format stream "~& ~{~<~% ~1,80:;~A~>~^ ~}~%"
+	     (flatten-list
+	      (mapcar #'(lambda (v)
+			  ;; Some special cases.  Complex numbers
+			  ;; should be printed out like (r, i).
+			  ;; Arrays should be printed out as if it
+			  ;; were a long list of numbers.
+			  (typecase v
+			    (complex
+			     (list #\( (realpart v) #\, (imagpart v) #\)))
+			    (array
+			     (coerce v 'list))
+			    (t
+			     v)))
+		      (flatten-list args)))))
     (t
      (let ((format-list (copy-tree format))
 	   (arg-list
@@ -1482,6 +1494,21 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.90  2007/09/28 05:00:58  rtoy
+;;; To support multidimensional arrays in implied do loops better, we need
+;;; to pass the entire array bounds, including upper and lower limits so
+;;; that array indexing can work.
+;;;
+;;; f2cl5.l:
+;;; o Find the entire array bounds.
+;;; o Don't use make-declaration to get the array type.  Explicitly look
+;;;   through *explicit_vble_decls* to find the type.  (Are there other
+;;;   places we need to look?)
+;;;
+;;; macros.l:
+;;; o Pass the entire list of array bounds to fref so we can handle
+;;;   multidimensional arrays.
+;;;
 ;;; Revision 1.89  2007/09/27 14:56:39  rtoy
 ;;; When we run out of format specs, but there are still items to print,
 ;;; we go back and find the first repeat spec and start there.
