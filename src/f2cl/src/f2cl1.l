@@ -2397,7 +2397,9 @@ FILENAME                 File containing Fortran code
 	     (t (return))))
     (destructuring-bind (var indices)
 	v
+      ;; We probably need to run check-reserved-lisp-names over the indices
       (setf indices (remove '|,| indices))
+      (setf var (check-reserved-lisp-names var))
       (setf v `(,var ,indices))
       (let ((result v))
 	(setf result `((,v) ,@loops))
@@ -2935,6 +2937,22 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.183  2007/09/28 22:01:07  rtoy
+;;; First attempt at getting implied-do loops in data statements working
+;;; with nested loops.
+;;;
+;;; f2cl1.l:
+;;; o PARSE-DATA-IMPLIED-DO handles implied do loops even when the loops
+;;;   are nested.
+;;;
+;;; macros.l:
+;;; o Update PROCESS-IMPLIED-DO to handle the new forms returned by
+;;;   PARSE-DATA-IMPLIED-DO.
+;;; o Don't create constants out of the initializer since we use POP to
+;;;   access them one by one.
+;;; o Minor tweak for list-directed output to allow a slightly longer line
+;;;   length. This matches what g77 produces for one simple test case.
+;;;
 ;;; Revision 1.182  2007/09/28 03:48:55  rtoy
 ;;; Handle implied do loops better in DATA statements.
 ;;;

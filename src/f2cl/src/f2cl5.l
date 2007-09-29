@@ -1437,11 +1437,9 @@
        ;; save all local variables.
        (setf *save_vbles* (concatenate 'list *declared_vbles* *undeclared_vbles*)))
 
-     ;; No need to save common vars
-     (setf *save_vbles* (set-difference *save_vbles* *subprog_common_vars*))
      ;; No need to save key-params
      (setf *save_vbles* (set-difference *save_vbles* (mapcar #'first *key_params*)))
-       
+
      ;; Initialize local variables
      (setq local-vbles
 	   (remove-duplicates
@@ -1449,7 +1447,7 @@
 		    (mapcar #'make-initialisation 
 			    (remove-if 
 			     #'(lambda (x)
-				 (or (member x *save_vbles*) 
+				 (or (member x *save_vbles*)
 				     (member x key-params :key #'car)))
 			     (set-difference (append *declared_vbles*
 						     *undeclared_vbles*)
@@ -1504,7 +1502,8 @@
 			(eq (third (second a))
 			    (third (second b))))))))
 
-     ;; Initialize SAVE'd variables appropriately
+     ;; Initialize SAVE'd variables appropriately.  But don't need to
+     ;; initialize SAVE'd variables that are in common blocks.
      (setq save-inits
 	   (remove-duplicates
 	    (remove nil
@@ -1512,7 +1511,8 @@
 			    (remove-if 
 			     #'(lambda (x)
 				 (member x key-params :key #'car))
-			     *save_vbles*)))
+			     (set-difference *save_vbles*
+					     *subprog_common_vars*))))
 	    :test #'(lambda (a b)
 		      (eq (first a) (first b)))))
 
@@ -3660,6 +3660,21 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.174  2007/09/28 05:00:58  rtoy
+;;; To support multidimensional arrays in implied do loops better, we need
+;;; to pass the entire array bounds, including upper and lower limits so
+;;; that array indexing can work.
+;;;
+;;; f2cl5.l:
+;;; o Find the entire array bounds.
+;;; o Don't use make-declaration to get the array type.  Explicitly look
+;;;   through *explicit_vble_decls* to find the type.  (Are there other
+;;;   places we need to look?)
+;;;
+;;; macros.l:
+;;; o Pass the entire list of array bounds to fref so we can handle
+;;;   multidimensional arrays.
+;;;
 ;;; Revision 1.173  2007/09/28 03:48:56  rtoy
 ;;; Handle implied do loops better in DATA statements.
 ;;;
