@@ -1161,13 +1161,19 @@ causing all pending operations to be flushed"
        arg-list)
     (when (null formats)
       ;; We're out of formats but not arguments.  I think Fortran says
-      ;; we should start over at the first repeat spec.  So we look
+      ;; we should start over at the last repeat spec.  So we look
       ;; over all the formats until we find the first number.  That
       ;; means it's a repeat spec.
-      (do ((f format (cdr f)))
-	  ((or (eq (car f) t)
-	       (numberp (car f)))
-	   (setf formats f)))
+      ;;
+      ;; This is probably wrong for complicated format statements.
+      (do ((f format (cdr f))
+	   (last-rep nil))
+	  ((null f)
+	   (setf formats last-rep))
+	(when (or (eq (car f) t)
+		  (numberp (car f)))
+	  (setf last-rep f)))
+
       (when (null formats)
 	;; Now what?  We couldn't find a repeat spec, so should we
 	;; just start over?
@@ -1520,6 +1526,22 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.93  2007/09/28 22:01:08  rtoy
+;;; First attempt at getting implied-do loops in data statements working
+;;; with nested loops.
+;;;
+;;; f2cl1.l:
+;;; o PARSE-DATA-IMPLIED-DO handles implied do loops even when the loops
+;;;   are nested.
+;;;
+;;; macros.l:
+;;; o Update PROCESS-IMPLIED-DO to handle the new forms returned by
+;;;   PARSE-DATA-IMPLIED-DO.
+;;; o Don't create constants out of the initializer since we use POP to
+;;;   access them one by one.
+;;; o Minor tweak for list-directed output to allow a slightly longer line
+;;;   length. This matches what g77 produces for one simple test case.
+;;;
 ;;; Revision 1.92  2007/09/28 20:26:13  rtoy
 ;;; o For REWIND and CLOSE$, declare the result as ignorable.
 ;;; o For list-directed output, don't print out strings as an array with
