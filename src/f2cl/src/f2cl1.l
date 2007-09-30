@@ -6,7 +6,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;check
 ;functions:
-;errorset - commented out
 ;	f2cl
 ;	concaten
 ;	f-to-l
@@ -15,7 +14,7 @@
 (defvar *verbose* nil)
 (defvar *comments* nil)
 (defparameter *f2cl-version*
-  (remove #\$ "2.0 beta $Date$"))
+  (remove #\$ "2.0 beta $Date$."))
  
 (defvar *intrinsic-function-names*
   '(int ifix idint real float sngl dble cmplx dcmplx ichar char aint dint
@@ -2937,6 +2936,10 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.184  2007/09/29 02:27:07  rtoy
+;;; Need to check for reserved Lisp names for the variable in the implied
+;;; do loop.
+;;;
 ;;; Revision 1.183  2007/09/28 22:01:07  rtoy
 ;;; First attempt at getting implied-do loops in data statements working
 ;;; with nested loops.
