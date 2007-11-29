@@ -6,7 +6,7 @@
 ;;; in base.lisp
 
 (eval-when (:compile-toplevel :load-toplevel :execute :slurp-toplevel)
-   (export '(Chunk Or-chunk Form-chunk Chunk-basis derive print-innards
+   (export '(Chunk Or-chunk Form-chunk Chunk-basis derive
 	     find-chunk chunk-with-name chunk-destroy
 	     chunk-request-mgt chunk-terminate-mgt
 	     chunk-up-to-date chunk-declare-updated
@@ -157,11 +157,6 @@
 	     :initarg :default
 	     :initform false)))
 ;;;;; >>>> Or-chunk
-
-(defgeneric print-innards (x srm)
-  (:method ((x t) srm)
-     (declare (ignore srm))
-     (values)))
 
 (defmethod print-object ((c Chunk) srm)
    (print-unreadable-object (c srm)

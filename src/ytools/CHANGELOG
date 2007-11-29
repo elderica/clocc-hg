@@ -1,6 +1,9 @@
 $Id$
             
-            [- Version 2.1.40 -]
+            [- Version 2.1.41 -]
+2007-11-29: Moved 'print-innards' from chunk.lisp to util.lisp.
+
+            [- Version 2.1.40 2007/08/28 18:14:57 airfoyle Exp -]
 2007-08-28: ytload/ytfm.lmd, ytools.lmd: Improvements to the
               sequence of questions asked regarding bin directories.
 

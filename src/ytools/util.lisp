@@ -7,7 +7,7 @@
 (eval-when (:load-toplevel)
    (export '(make-Printable printable-as-string eof* funktion
 	     debuggable debuggability* begins-with ends-with
-             dir-strings-concat)))
+             dir-strings-concat print-innards)))
 
 ;;; Return the printed representation of 'x', snipped
 (defun printed-snip (x n)
@@ -174,4 +174,11 @@
 
 (defun gen-var (sym)
    (build-symbol (:package false) (< sym) - (++ symno*)))
+
+;;; Handy abstraction for printing stuff between the #<...> of
+;;; an unreadable object.--
+(defgeneric print-innards (x srm)
+  (:method ((x t) srm)
+     (declare (ignore srm))
+     (values)))
 
