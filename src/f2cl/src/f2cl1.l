@@ -17,7 +17,7 @@
   "Use (f2cl-version) instead")
 
 (defparameter *f2cl1-version*
-  "$Id$"
+  "$Id$")
 
 (defun f2cl-version ()
   (list *f2cl1-version*
@@ -2956,6 +2956,9 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.190  2008/02/22 22:17:32  rtoy
+;;; Use Id as version.
+;;;
 ;;; Revision 1.189  2008/02/22 22:16:36  rtoy
 ;;; Add RCSfile
 ;;;

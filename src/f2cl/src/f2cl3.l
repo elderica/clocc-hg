@@ -25,7 +25,7 @@
 (in-package :f2cl)
 
 (defparameter *f2cl3-version*
-  "$Date$")
+  "$Id$")
 
 ;(declare (localf atomcar atomcdr))
 
@@ -165,6 +165,12 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.5  2008/02/22 22:13:18  rtoy
+;;; o Add function F2CL-VERSION to get version info.
+;;; o Add version string to each of the files so F2CL-VERSION can get the
+;;;   version info.  The version string is basically the date of when the
+;;;   file was last checked in.
+;;;
 ;;; Revision 1.4  2000/07/28 17:02:14  rtoy
 ;;; o We are in the f2cl package now.
 ;;;

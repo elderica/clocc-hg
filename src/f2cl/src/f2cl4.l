@@ -14,7 +14,7 @@
 (in-package :f2cl)
 
 (defparameter *f2cl4-version*
-  "$Date$")
+  "$Id$")
 
 (defun memberq (x l) (member x l :test #'eq))
 
@@ -116,6 +116,12 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.6  2008/02/22 22:13:18  rtoy
+;;; o Add function F2CL-VERSION to get version info.
+;;; o Add version string to each of the files so F2CL-VERSION can get the
+;;;   version info.  The version string is basically the date of when the
+;;;   file was last checked in.
+;;;
 ;;; Revision 1.5  2002/09/13 17:50:19  rtoy
 ;;; From Douglas Crosher:
 ;;;

@@ -6,7 +6,7 @@
 (in-package :f2cl-lib)
 
 (defparameter *f2cl-macros-version*
-  "$Date$")
+  "$Id$")
 
 ;; macros:
 ;;	rexpt
@@ -1529,6 +1529,12 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.95  2008/02/22 22:13:18  rtoy
+;;; o Add function F2CL-VERSION to get version info.
+;;; o Add version string to each of the files so F2CL-VERSION can get the
+;;;   version info.  The version string is basically the date of when the
+;;;   file was last checked in.
+;;;
 ;;; Revision 1.94  2007/09/30 03:47:47  rtoy
 ;;; When we're out of formats, we restart with the last repeat spec.
 ;;;

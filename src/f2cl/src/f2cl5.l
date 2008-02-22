@@ -50,7 +50,7 @@
 (in-package :f2cl)
 
 (defparameter *f2cl5-version*
-  "$Date$")
+  "$Id$")
 
 ;; functions for setting up varaible declarations and initialisations
 (eval-when (compile load eval)
@@ -3736,6 +3736,12 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.179  2008/02/22 22:13:18  rtoy
+;;; o Add function F2CL-VERSION to get version info.
+;;; o Add version string to each of the files so F2CL-VERSION can get the
+;;;   version info.  The version string is basically the date of when the
+;;;   file was last checked in.
+;;;
 ;;; Revision 1.178  2008/02/22 16:03:42  rtoy
 ;;; Fix MERGE-DATA-AND-SAVE-INITS.  This was causing f2cl to miscompile
 ;;; dparck.f in TOMS 717.
