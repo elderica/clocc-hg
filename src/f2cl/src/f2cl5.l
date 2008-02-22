@@ -101,7 +101,7 @@
 		;; Function calls get turned into a MULTIPLE-VALUE-BIND, so
 		;; the only possible place for variables is the arg list for
 		;; the function.
-		(mapc #'check_new_vbles (cddr (third exprs))))
+		(mapc #'check_new_vbles (cdr (third exprs))))
 	       ((eq (first exprs) 'array-slice)
 		;; The only place for variables is the array name or
 		;; the indices
@@ -3736,6 +3736,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.180  2008/02/22 22:19:34  rtoy
+;;; Use RCS Id as version.
+;;;
 ;;; Revision 1.179  2008/02/22 22:13:18  rtoy
 ;;; o Add function F2CL-VERSION to get version info.
 ;;; o Add version string to each of the files so F2CL-VERSION can get the
