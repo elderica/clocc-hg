@@ -14,7 +14,20 @@
 (defvar *verbose* nil)
 (defvar *comments* nil)
 (defparameter *f2cl-version*
-  (remove #\$ "2008-02 $Date$."))
+  "Use (f2cl-version) instead")
+
+(defparameter *f2cl1-version*
+  "$Date$")
+
+(defun f2cl-version ()
+  (list *f2cl1-version*
+	*f2cl2-version*
+	*f2cl3-version*
+	*f2cl4-version*
+	*f2cl5-version*
+	*f2cl6-version*
+	f2cl-lib::*f2cl-macros-version*))
+
  
 (defvar *intrinsic-function-names*
   '(int ifix idint real float sngl dble cmplx dcmplx ichar char aint dint
@@ -2943,6 +2956,9 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.187  2008/02/22 22:01:49  rtoy
+;;; Update version.
+;;;
 ;;; Revision 1.186  2007/10/01 12:58:21  rtoy
 ;;; Make docstring line lengths shorter.
 ;;;

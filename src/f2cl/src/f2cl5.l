@@ -49,6 +49,9 @@
 ;;-----------------------------------------------------------------------------
 (in-package :f2cl)
 
+(defparameter *f2cl5-version*
+  "$Date$")
+
 ;; functions for setting up varaible declarations and initialisations
 (eval-when (compile load eval)
   (proclaim '(special *intrinsic-function-names* *external-function-names*
@@ -3733,6 +3736,16 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.178  2008/02/22 16:03:42  rtoy
+;;; Fix MERGE-DATA-AND-SAVE-INITS.  This was causing f2cl to miscompile
+;;; dparck.f in TOMS 717.
+;;;
+;;; o Initialize the array even if we don't have enough initializers for
+;;;   the full array.  Should be ok.  The missing elements are initialized
+;;;   to zero (for numbers)
+;;; o Handle string initializers too.  Missing elements are initialized to
+;;;   a string of spaces.
+;;;
 ;;; Revision 1.177  2007/10/02 14:44:23  rtoy
 ;;; MERGE-DATA-AND-SAVE-INITS was mishandling initializers to arrays.  If
 ;;; the initializers didn't initialize all of the elements of the arrays,

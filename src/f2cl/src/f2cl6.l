@@ -26,6 +26,10 @@
 ;--------------------------------------------------------------------------
 (in-package :f2cl)
 (eval-when (compile load eval) (proclaim '(special *verbose* *comments*)))
+
+(defparameter *f2cl6-version*
+  "$Date$")
+
 ;--------------------------------------------------------------------------  
 ; global stream input for parse-number:
 (defvar *inp* nil)
@@ -641,6 +645,19 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.43  2007/09/20 15:22:05  rtoy
+;;; Add support to the preprocessor to recognize INCLUDE lines.  This is
+;;; an extension of Fortran.  The included file must be relative to the
+;;; location of the current file.
+;;;
+;;; Moved the major functionality of PREPROCESS to PREPROCESS-STREAMS,
+;;; which takes stream arguments so we can do recursive INCLUDE's.  Modify
+;;; PREPROCESS-STREAMS to recognize INCLUDE so we can include them during
+;;; preprocessing and send the output to the right place.
+;;;
+;;; Fixed a bug in preprocessing where the last line never had all of the
+;;; normal processing done.  (This might need more work!)
+;;;
 ;;; Revision 1.42  2006/01/30 21:23:34  rtoy
 ;;; Revert change made in 1.39 for logical operations.  This was causing
 ;;; f2cl to delete all spaces after the logical operation and that really

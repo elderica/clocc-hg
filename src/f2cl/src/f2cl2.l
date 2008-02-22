@@ -19,6 +19,10 @@
   (proclaim '(special *intrinsic-function-names* *external-function-names*
 	      *subprog_name* *subprog-stmt-fns*
 	      *functions-used*)))
+
+(defparameter *f2cl2-version*
+  "$Date$")
+
 ;-----------------------------------------------------------------------------
 ; subst-splice substitutes the list b for the atom a in the list c via splicing
 (defun subst-splice (b a c) 
@@ -468,6 +472,14 @@ definition.| l) ))
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.35  2006/04/28 00:35:29  rtoy
+;;; Modify how expressions and Fortran complex numbers are recognized.  An
+;;; expression should not contain a comma, and a Fortran complex number
+;;; must have a comma.
+;;;
+;;; Not sure this is correct for an expression, but a complex number must
+;;; have a comma.
+;;;
 ;;; Revision 1.34  2004/08/14 13:45:34  rtoy
 ;;; Handle OR and AND expressions.  (Maybe.  This probably needs a lot
 ;;; more work.)

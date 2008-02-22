@@ -12,6 +12,10 @@
 ;	memberq
 ;-----------------------------------------------------------------------------
 (in-package :f2cl)
+
+(defparameter *f2cl4-version*
+  "$Date$")
+
 (defun memberq (x l) (member x l :test #'eq))
 
 (defun id-logical (l)
@@ -112,6 +116,13 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.5  2002/09/13 17:50:19  rtoy
+;;; From Douglas Crosher:
+;;;
+;;; o Make this work with lower-case Lisps
+;;; o Fix a few typos
+;;; o Make a safer fortran reader.
+;;;
 ;;; Revision 1.4  2000/07/28 17:03:40  rtoy
 ;;; o We are in the f2cl package now.
 ;;;

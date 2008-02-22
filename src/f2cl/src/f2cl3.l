@@ -24,6 +24,9 @@
 ;-----------------------------------------------------------------------------
 (in-package :f2cl)
 
+(defparameter *f2cl3-version*
+  "$Date$")
+
 ;(declare (localf atomcar atomcdr))
 
 (defun sub-string (x index &optional len) 
@@ -162,6 +165,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.4  2000/07/28 17:02:14  rtoy
+;;; o We are in the f2cl package now.
+;;;
 ;;; Revision 1.3  2000/07/27 16:39:17  rtoy
 ;;; We want to be in the CL-USER package, not the USER package.
 ;;;

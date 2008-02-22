@@ -5,6 +5,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (in-package :f2cl-lib)
 
+(defparameter *f2cl-macros-version*
+  "$Date$")
+
 ;; macros:
 ;;	rexpt
 ;;	fexport
@@ -1526,6 +1529,9 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.94  2007/09/30 03:47:47  rtoy
+;;; When we're out of formats, we restart with the last repeat spec.
+;;;
 ;;; Revision 1.93  2007/09/28 22:01:08  rtoy
 ;;; First attempt at getting implied-do loops in data statements working
 ;;; with nested loops.

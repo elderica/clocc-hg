@@ -78,6 +78,7 @@
    ;; main routines
    #:f2cl
    #:f2cl-compile
+   #:f2cl-version
    ))
 
 ;;;-------------------------------------------------------------------------
@@ -85,6 +86,15 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.20  2006/12/01 04:23:43  rtoy
+;;; Minor cleanups
+;;;
+;;; src/f2cl0.l:
+;;; o Cosmetic changes
+;;;
+;;; src/macros.l:
+;;; o Make code work with "modern"-mode lisps.  (Ported from maxima.)
+;;;
 ;;; Revision 1.19  2006/11/27 15:15:19  rtoy
 ;;; Fix typo.
 ;;;
