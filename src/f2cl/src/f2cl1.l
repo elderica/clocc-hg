@@ -14,7 +14,7 @@
 (defvar *verbose* nil)
 (defvar *comments* nil)
 (defparameter *f2cl-version*
-  (remove #\$ "2.0 beta $Date$."))
+  (remove #\$ "2008-02 $Date$."))
  
 (defvar *intrinsic-function-names*
   '(int ifix idint real float sngl dble cmplx dcmplx ichar char aint dint
@@ -2943,6 +2943,9 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.186  2007/10/01 12:58:21  rtoy
+;;; Make docstring line lengths shorter.
+;;;
 ;;; Revision 1.185  2007/09/30 13:08:59  rtoy
 ;;; NOTES:
 ;;; o Update
