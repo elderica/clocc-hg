@@ -6,6 +6,20 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.6  2006/12/01 04:29:29  rtoy
+;;; Create packages for BLAS and LAPACK routines.
+;;;
+;;; blas.system:
+;;; o Converted files are in the BLAS package.
+;;; o Add blas-package defsystem to load the package definition.
+;;;
+;;; lapack.system:
+;;; o Converted files are in the LAPACK package.
+;;; o Add lapack-package defsystem to load the package definition.
+;;;
+;;; lapack/lapack-tests.lisp:
+;;; o Tests are in the LAPACK package
+;;;
 ;;; Revision 1.5  2006/11/29 16:59:10  rtoy
 ;;; Split defsystems for blas and lapack into real and complex versions.
 ;;;
@@ -28,12 +42,20 @@
     :compiler #'f2cl:f2cl-compile
     :source-extension "f")
 
+(mk:defsystem blas-package
+  :source-pathname
+  (merge-pathnames (make-pathname :directory '(:relative "blas"))
+		   (make-pathname :directory (pathname-directory *load-pathname*)))
+  :components
+  ((:file "blas-package")))
+
 (mk:defsystem blas-hompack
   :source-pathname ;;(translate-logical-pathname "clocc:src;f2cl;packages;blas;")
   (merge-pathnames (make-pathname :directory '(:relative "blas"))
 		   (make-pathname :directory (pathname-directory *load-pathname*)))
   :source-extension "f"
   :language :f2cl
+  :depends-on ("blas-package")
   :compiler-options (:keep-lisp-file t
 		     :relaxed-array-decls nil
 		     :array-type :array
@@ -172,13 +194,6 @@
    (:file "ztrmv")
    (:file "ztrsm")
    (:file "ztrsv")))
-
-(mk:defsystem blas-package
-  :source-pathname
-  (merge-pathnames (make-pathname :directory '(:relative "blas"))
-		   (make-pathname :directory (pathname-directory *load-pathname*)))
-  :components
-  ((:file "blas-package")))
 
 (mk:defsystem blas
   :source-pathname
