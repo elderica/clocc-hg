@@ -544,9 +544,11 @@ FILENAME                 File containing Fortran code
 	    ;; Print a header to the file indicating when this was
 	    ;; compiled and the version of f2cl used to compile it.
 	    ;; Include the options used to compile the file.
-	    (format outport ";;; Compiled by f2cl version ~A~%"
-		    *f2cl-version*)
-	    (format outport ";;; Using Lisp ~A ~A~%"
+	    (let ((version-info (f2cl-version)))
+	      (pprint-logical-block (outport version-info :per-line-prefix ";;; ")
+		(format outport "Compiled by f2cl version:~%")
+		(write version-info :stream outport)))
+	    (format outport "~%;;; Using Lisp ~A ~A~%"
 		    (lisp-implementation-type) (lisp-implementation-version))
 	    (let ((*print-case* :downcase))
 	      ;; Insert in-package and declaim, if needed
@@ -2956,6 +2958,9 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.191  2008/02/22 22:19:33  rtoy
+;;; Use RCS Id as version.
+;;;
 ;;; Revision 1.190  2008/02/22 22:17:32  rtoy
 ;;; Use Id as version.
 ;;;
