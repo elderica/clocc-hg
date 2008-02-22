@@ -548,7 +548,7 @@ FILENAME                 File containing Fortran code
 	      (pprint-logical-block (outport version-info :per-line-prefix ";;; ")
 		(format outport "Compiled by f2cl version:~%")
 		(write version-info :stream outport)))
-	    (format outport "~%;;; Using Lisp ~A ~A~%"
+	    (format outport "~2%;;; Using Lisp ~A ~A~%"
 		    (lisp-implementation-type) (lisp-implementation-version))
 	    (let ((*print-case* :downcase))
 	      ;; Insert in-package and declaim, if needed
@@ -2958,6 +2958,9 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.192  2008/02/22 22:27:37  rtoy
+;;; Print out f2cl-version info correctly using (f2cl-version).
+;;;
 ;;; Revision 1.191  2008/02/22 22:19:33  rtoy
 ;;; Use RCS Id as version.
 ;;;
