@@ -1114,8 +1114,14 @@
 				 array-element-inits
 				 :key #'cadar)))))
 	      ((and (listp (second item))
-		    (eq 'f2cl-init-string (first (second item))))
-	       ;; Initializing an array of strings.  We don't do
+		    (eq 'f2cl-init-string (first (second item)))
+		    (not (fourth (second item))))
+	       ;; We have something like
+	       ;;
+	       ;; (<var> (f2cl-init-string (<dims>) (<stringlen>) <inits>))
+	       ;;
+	       ;; Initializing an array of strings, but only if the
+	       ;; initializer isn't already given.  We don't do
 	       ;; anything special right now.
 	       (let ((inits (find-inits (first item))))
 		 #+nil
@@ -3736,6 +3742,10 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.181  2008/02/22 22:52:33  rtoy
+;;; Oops.  check_new_vbles was skipping over the first arg in a function
+;;; call.
+;;;
 ;;; Revision 1.180  2008/02/22 22:19:34  rtoy
 ;;; Use RCS Id as version.
 ;;;
