@@ -1254,7 +1254,7 @@ causing all pending operations to be flushed"
 					 (list x))
 					((stringp x)
 					 (list x))
-					((atom x)
+					((member x '(t nil))
 					 ;; Convert T and NIL to :T
 					 ;; and :F so we print out T
 					 ;; and F, respectively.
@@ -1529,6 +1529,9 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.96  2008/02/22 22:19:34  rtoy
+;;; Use RCS Id as version.
+;;;
 ;;; Revision 1.95  2008/02/22 22:13:18  rtoy
 ;;; o Add function F2CL-VERSION to get version info.
 ;;; o Add version string to each of the files so F2CL-VERSION can get the
