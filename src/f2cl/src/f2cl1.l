@@ -19,6 +19,14 @@
 (defparameter *f2cl1-version*
   "$Id$")
 
+;; Forward declarations.
+(defvar *f2cl2-version*)
+(defvar *f2cl3-version*)
+(defvar *f2cl4-version*)
+(defvar *f2cl5-version*)
+(defvar *f2cl6-version*)
+(defvar f2cl-lib::*f2cl-macros-version*)
+
 (defun f2cl-version ()
   (list *f2cl1-version*
 	*f2cl2-version*
@@ -2958,6 +2966,9 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.193  2008/02/22 22:37:02  rtoy
+;;; Cosmetic change to output comments.
+;;;
 ;;; Revision 1.192  2008/02/22 22:27:37  rtoy
 ;;; Print out f2cl-version info correctly using (f2cl-version).
 ;;;
