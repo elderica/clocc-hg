@@ -5,6 +5,11 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.8  2008/02/22 18:57:05  rtoy
+;;; o Add system for hompack-package to build the HOMPACK package.
+;;; o Add compiler option to make generated code go in the HOMPACK
+;;;   package.
+;;;
 ;;; Revision 1.7  2006/11/21 18:28:40  rtoy
 ;;; o Use *load-truename*
 ;;; o Depend on blas-hompack instead of blas so we don't load up all of
@@ -38,17 +43,21 @@
     :compiler #'f2cl:f2cl-compile
     :source-extension "f")
 
+(setf (logical-pathname-translations "hompack")
+      (list (list "**;*.*.*"
+		  (merge-pathnames (make-pathname :host (pathname-host *load-pathname*)
+						  :directory '(:relative "hompack" :wild-inferiors)
+						  :name :wild :type :wild)
+				   *load-pathname*))))
+
 (mk:defsystem hompack-package
-    :source-pathname ;;(translate-logical-pathname "clocc:src;f2cl;packages;hompack;")
-      (merge-pathnames (make-pathname :directory '(:relative "hompack"))
-		       (make-pathname :directory (pathname-directory *load-pathname*)))
+    :source-pathname (pathname "hompack:")
+    :depends-on ("blas-hompack")
     :components
     ((:file "hompack-package")))
 
 (mk:defsystem hompack
-    :source-pathname ;;(translate-logical-pathname "clocc:src;f2cl;packages;hompack;")
-      (merge-pathnames (make-pathname :directory '(:relative "hompack"))
-		       (make-pathname :directory (pathname-directory *load-pathname*)))
+    :source-pathname (pathname "hompack:")
     :source-extension "f"
     :language :f2cl
     :depends-on ("hompack-package" "blas-hompack")
@@ -125,7 +134,7 @@
      ))
 
 (mk:defsystem hompack-test-mainf
-    :source-pathname (translate-logical-pathname "clocc:src;f2cl;packages;hompack;")
+    :source-pathname (pathname "hompack:")
     :source-extension "f"
     :language :f2cl
     :depends-on ("hompack")
@@ -135,16 +144,21 @@
 				       :package "HOMPACK"))
      ))
 
+;; This wants to read from innhp.dat in the hompack directory, so you
+;; have to be in that directory when running this test.  The output is
+;; placed in OUTHP.DAT.  You may need to close the output file to see
+;; the results since the main program doesn't.  Use something like
+;; (close (f2cl-lib:lun->stream 6)).
+
 (mk:defsystem hompack-test-mainp
-    :source-pathname ;; (translate-logical-pathname "clocc:src;f2cl;packages;hompack;")
-      (merge-pathnames (make-pathname :directory '(:relative "hompack"))
-		       (make-pathname :directory (pathname-directory *load-pathname*)))
+    :source-pathname (pathname "hompack:")
     :source-extension "f"
     :language :f2cl
     :depends-on ("hompack")
     :components
     (
-     (:file "mainp")
+     (:file "mainp" :compiler-options (:declare-common t
+				       :package "HOMPACK"))
      ))
 
 (mk:defsystem hompack-test-mains
@@ -154,5 +168,6 @@
     :depends-on ("hompack")
     :components
     (
-     (:file "mains")
+     (:file "mains" :compiler-options (:declare-common t
+				       :package "HOMPACK"))
      ))
