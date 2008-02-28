@@ -3,6 +3,25 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.13  2008/02/25 17:11:43  rtoy
+;;; Updates to make hybrd test work.  The Lisp translation works.
+;;;
+;;; minpack.system:
+;;; o Cleanup definition of logical pathname
+;;; o Add some comments
+;;; o Add new defsystem to compile hybrd test.  This test defines some
+;;;   functions and structures that are incompatible with lmdif test.
+;;;
+;;; minpack/Makefile
+;;; o tst-hybrd uses a different input file.
+;;;
+;;; minpack/hybrd-ref.txt
+;;; o Update with correct values.
+;;;
+;;; minpack/run-minpack-tests.lisp:
+;;; o Add new function to run the hybrd test.  (Should add hybrj test
+;;;   too.)
+;;;
 ;;; Revision 1.12  2008/02/22 18:51:35  rtoy
 ;;; Add tst-hybrd.
 ;;;
@@ -132,9 +151,7 @@
 				 :declare-common t)
 	      :components
 	      ((:file "tst-lmdif")
-	       (:file "tst-lmder")
-	       ;; HYBRD doesn't seem to be working.
-	       (:file "tst-hybrd")))))
+	       (:file "tst-lmder")))))
 
 ;; This test defines things that are incompatible with tst-lmdif and
 ;; tst-lmder.  Hence, you can't run this test with others.
