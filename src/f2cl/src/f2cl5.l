@@ -1059,7 +1059,20 @@
 		   (+ (- (car indices)
 			 lo)
 		      (* (1+ (- hi lo))
-			 (col-major-index (rest indices) (rest limits))))))))
+			 (col-major-index (rest indices) (rest limits)))))))
+	   (find-array-dims (dims)
+	     ;; If the dimensions are numbers return them.  If they're
+	     ;; not, we could look in the parameter variables to see
+	     ;; if we can figure it out.  Return NIL if we can't
+	     ;; figure out the dimensions.
+	     (cond ((listp dims)
+		    ;; Must be of the form (quote (a ...)).  Strip of quote
+		    (when (every #'integerp (cdr dims))
+		      dims))
+		   ((integerp dims)
+		    dims)
+		   (t
+		    nil))))
 	 
     (let ((new-saves '())
 	  (new-data '())
@@ -1081,38 +1094,45 @@
 		    (eq 'make-array (first (second item))))
 	       ;; Got an array.  Look for initializers in DATA.
 	       (let ((type (second (fourth (second item))))
-		     (inits (find-inits (first item))))
+		     (inits (find-inits (first item)))
+		     (array-dims (find-array-dims (second (second item)))))
 		 #+nil
 		 (progn
 		   (format t "~D inits for ~S: ~S~%" (length inits) (first item) inits)
 		   (format t "dims = ~S: ~A~%" (second (second item))
-			   (second (second item))))
-		 (let ((init (make-array (second (second item))
-					 :element-type type
-					 :initial-element
-					 (coerce 0 type))))
-		   ;; Gather up the values into an array to be
-		   ;; used for initializing the variable.  The
-		   ;; array is initialized to zero (of the
-		   ;; appropriate type).  If the original code
-		   ;; didn't initialize it, then it didn't
-		   ;; care.
-		   (dolist (i inits)
-		     (destructuring-bind (fset (fref var indices limits) val)
-			 i
-		       (declare (ignore fset fref var))
-		       (setf (aref init (col-major-index indices limits))
-			     val)))
-		   (push (list (car item)
-			       (append (copy-list (second item))
-				       `(:initial-contents ',(coerce init 'list))))
-			 new-saves))
-		 ;; Remove these from array-element-inits
-		 (let ((array-name (first item)))
-		   (setf array-element-inits
-			 (remove array-name
-				 array-element-inits
-				 :key #'cadar)))))
+			   array-dims))
+		 (cond ((and inits array-dims)
+			(let ((init (make-array array-dims
+						:element-type type
+						:initial-element
+						(if (subtypep type 'character)
+						    #\space
+						    (coerce 0 type)))))
+			  ;; Gather up the values into an array to be
+			  ;; used for initializing the variable.  The
+			  ;; array is initialized to zero (of the
+			  ;; appropriate type).  If the original code
+			  ;; didn't initialize it, then it didn't
+			  ;; care.
+			  (dolist (i inits)
+			    (destructuring-bind (fset (fref var indices limits) val)
+				i
+			      (declare (ignore fset fref var))
+			      (setf (aref init (col-major-index indices limits))
+				    val)))
+			  (push (list (car item)
+				      (append (copy-list (second item))
+					      `(:initial-contents ',(coerce init 'list))))
+				new-saves))
+			;; Remove these from array-element-inits
+			(let ((array-name (first item)))
+			  (setf array-element-inits
+				(remove array-name
+					array-element-inits
+					:key #'cadar))))
+		       (t
+			;; Save it as is.
+			(push item new-saves)))))
 	      ((and (listp (second item))
 		    (eq 'f2cl-init-string (first (second item)))
 		    (not (fourth (second item))))
@@ -1129,31 +1149,35 @@
 		   (format t "inits for ~S: ~S~%" (first item) inits)
 		   (format t "dims = ~S: ~A~%" (second (second item))
 			   (reduce #'* (second (second item)))))
-		 (let ((init (make-array (length inits)
-					 :initial-element
-					 (make-string (car (third (second item)))))))
-		   ;; Gather up the values into an array to be
-		   ;; used for initializing the variable.  The
-		   ;; array is initialized to zero (of the
-		   ;; appropriate type).  If the original code
-		   ;; didn't initialize it, then it didn't
-		   ;; care.
-		   (dolist (i inits)
-		     (destructuring-bind (fset (fref var indices limits) val)
-			 i
-		       (declare (ignore fset fref var))
-		       (setf (aref init (col-major-index indices limits))
-			     val)))
-		   (push (list (car item)
-			       (append (butlast (copy-list (second item)))
-				       (list (coerce init 'list))))
-			 new-saves))
-		 ;; Remove these from array-element-inits
-		 (let ((array-name (first item)))
-		   (setf array-element-inits
-			 (remove array-name
-				 array-element-inits
-				 :key #'cadar)))))
+		 (cond
+		   (inits
+		    (let ((init (make-array (length inits)
+					    :initial-element
+					    (make-string (car (third (second item)))))))
+		      ;; Gather up the values into an array to be
+		      ;; used for initializing the variable.  The
+		      ;; array is initialized to zero (of the
+		      ;; appropriate type).  If the original code
+		      ;; didn't initialize it, then it didn't
+		      ;; care.
+		      (dolist (i inits)
+			(destructuring-bind (fset (fref var indices limits) val)
+			    i
+			  (declare (ignore fset fref var))
+			  (setf (aref init (col-major-index indices limits))
+				val)))
+		      (push (list (car item)
+				  (append (butlast (copy-list (second item)))
+					  (list (coerce init 'list))))
+			    new-saves))
+		    ;; Remove these from array-element-inits
+		    (let ((array-name (first item)))
+		      (setf array-element-inits
+			    (remove array-name
+				    array-element-inits
+				    :key #'cadar))))
+		   (t
+		    (push item new-saves)))))
 	      (t
 	       ;; Not an array
 	       (push item new-saves))))
@@ -1748,8 +1772,17 @@
      ;;(format t "save-inits  = ~S~%" save-inits)
 
      (when *enable-merging-data-and-save-init*
-       (multiple-value-setq (save-inits *data-init*)
-	 (merge-data-and-save-inits save-inits *data-init*)))
+       ;; Common variables are always SAVE'd in f2cl, so remove those
+       ;; from the save-inits list.
+       
+       ;;(format t "*subprog_common_vars* = ~A~%" *subprog_common_vars*)
+       (let ((non-common-save-inits
+	      (remove-if #'(lambda (item)
+			     (member (first item) *subprog_common_vars*))
+			 save-inits)))
+	 ;;(format t "non-common-save-inits  = ~S~%" non-common-save-inits)
+	 (multiple-value-setq (save-inits *data-init*)
+	   (merge-data-and-save-inits non-common-save-inits *data-init*))))
      
      ;;(format t "new *data-init* = ~S~%" *data-init*)
      ;;(format t "new save-inits  = ~S~%" save-inits)
@@ -3742,6 +3775,11 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.182  2008/02/26 04:18:25  rtoy
+;;; If an initializer for a string array is already given, don't do
+;;; anything.  (Do we need to do the same for an number array
+;;; initializer?)
+;;;
 ;;; Revision 1.181  2008/02/22 22:52:33  rtoy
 ;;; Oops.  check_new_vbles was skipping over the first arg in a function
 ;;; call.
