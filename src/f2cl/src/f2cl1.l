@@ -1793,7 +1793,8 @@ FILENAME                 File containing Fortran code
 
 ;; This routine takes the actual arglist and the saved function
 ;; information about the arg types and tries to convert array-slicing
-;; to array reference if necessary.
+;; to array reference if necessary.  It will also deref an array if
+;; the function wants a scalar but the actual argument is an array.
 ;;
 ;; That is if the actual arg is an array slice, but the function wants
 ;; a simple variable, we convert the array slice to an array
@@ -1814,9 +1815,15 @@ FILENAME                 File containing Fortran code
 	     ;; the slice with the actual value.
 	     (destructuring-bind (slice var type indices limits)
 		 (car arg)
+	       (declare (ignore slice type))
 	       (push `(fref ,var ,indices ,limits)
-		     new-arglist))
-	     )
+		     new-arglist)))
+	    ((and (not (subtypep (car arg-type) 'array))
+		  (vble-is-array-p (car arg)))
+	     ;; The arg type is not an array, but the actual argument
+	     ;; is.  We want the first element of the array as the
+	     ;; arg.
+	     (push `(aref ,(car arg) 0) new-arglist))
 	    (t
 	     (push (car arg) new-arglist))))
     (setf new-arglist (nreverse new-arglist))
@@ -2966,6 +2973,9 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.194  2008/02/26 18:41:35  rtoy
+;;; Add defvars for the version variables so we don't get complaints.
+;;;
 ;;; Revision 1.193  2008/02/22 22:37:02  rtoy
 ;;; Cosmetic change to output comments.
 ;;;
