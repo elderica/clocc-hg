@@ -1824,6 +1824,13 @@ FILENAME                 File containing Fortran code
 	     ;; is.  We want the first element of the array as the
 	     ;; arg.
 	     (push `(aref ,(car arg) 0) new-arglist))
+	    ((and (subtypep (car arg-type) 'array)
+		  (not (vble-is-array-p (car arg))))
+	     ;; Function wants an array, but we're passing in a
+	     ;; scalar.  Make an array out of that variable.
+	     (push `(make-array 1 :element-type (type-of ,(car arg))
+				:initial-element ,(car arg))
+		   new-arglist))
 	    (t
 	     (push (car arg) new-arglist))))
     (setf new-arglist (nreverse new-arglist))
@@ -2973,6 +2980,12 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.195  2008/03/02 03:26:07  rtoy
+;;; o Ignore some variables
+;;; o In MASSAGE-ARGLIST, if the argument of a function is a scalar, but
+;;;   the actual argument is an array, we want to pass in the first
+;;;   element of the array instead.
+;;;
 ;;; Revision 1.194  2008/02/26 18:41:35  rtoy
 ;;; Add defvars for the version variables so we don't get complaints.
 ;;;
