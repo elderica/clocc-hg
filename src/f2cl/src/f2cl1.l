@@ -1825,9 +1825,11 @@ FILENAME                 File containing Fortran code
 	     ;; arg.
 	     (push `(aref ,(car arg) 0) new-arglist))
 	    ((and (subtypep (car arg-type) 'array)
-		  (not (vble-is-array-p (car arg))))
+		  (not (vble-is-array-p (car arg)))
+		  (not (eq (caar arg) 'array-slice)))
 	     ;; Function wants an array, but we're passing in a
 	     ;; scalar.  Make an array out of that variable.
+	     ;;(format t "arg ~S: ~%" (car arg))
 	     (push `(make-array 1 :element-type (type-of ,(car arg))
 				:initial-element ,(car arg))
 		   new-arglist))
@@ -2980,6 +2982,11 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.196  2008/03/03 18:00:05  rtoy
+;;; If a function wants an array but we are passing in a scalar (which is
+;;; valid Fortran), we make a 1-element array initialized to the value of
+;;; the scalar.
+;;;
 ;;; Revision 1.195  2008/03/02 03:26:07  rtoy
 ;;; o Ignore some variables
 ;;; o In MASSAGE-ARGLIST, if the argument of a function is a scalar, but
