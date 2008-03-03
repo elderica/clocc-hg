@@ -112,6 +112,11 @@
 			   (write-char (aref line posn) out)
 			   (incf posn))
 			 (write-char #\" out)
+			 ;; Output a comma to separate the Hollerith
+			 ;; from any following stuff.  I think it's ok
+			 ;; to have extra commas in the output, so we
+			 ;; con't need to check.
+			 (write-char #\, out)
 			 (setf k posn))
 		       ;; Not a hollerith.  Copy the digits out
 		       (loop while (< k posn) do
@@ -645,6 +650,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.45  2008/02/22 22:19:34  rtoy
+;;; Use RCS Id as version.
+;;;
 ;;; Revision 1.44  2008/02/22 22:13:18  rtoy
 ;;; o Add function F2CL-VERSION to get version info.
 ;;; o Add version string to each of the files so F2CL-VERSION can get the
