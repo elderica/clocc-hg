@@ -2875,10 +2875,11 @@
     ;;(format t "lun-part = ~A~%" lun-part)
     ;;(format t "fmt-part = ~A~%" fmt-part)
 
-    (let ((args (if (cdddr x)
-		    (mapcar #'parse-output-argument 
-			    (list-split '|,| (cdddr x)))
-		    nil)))
+    (let ((args (check_new_vbles
+		 (if (cdddr x)
+		     (mapcar #'parse-output-argument 
+			     (list-split '|,| (cdddr x)))
+		     nil))))
       ;; If there are no items to be written, make sure args is NIL,
       ;; so fformat knows there are no items.
       `((fformat ,(parse_format_dest lun-part)
@@ -2891,10 +2892,11 @@
 ;;               or: '(PRINT 9000 |,| X |,| Y)
 
 (defun parse-print (x)
-  (let ((args (if (cdddr x)
-		  (mapcar #'parse-output-argument 
-			  (list-split '|,| (cdddr x)))
-		  nil)))
+  (let ((args (check_new_vbles
+	       (if (cdddr x)
+		   (mapcar #'parse-output-argument 
+			   (list-split '|,| (cdddr x)))
+		   nil))))
     ;; If there are no items to be written, make sure args is NIL,
     ;; so fformat knows there are no items.
     `((fformat t
@@ -3775,6 +3777,22 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.183  2008/02/28 20:06:47  rtoy
+;;; MERGE-DATA-AND-SAVE-INITS:
+;;; o Extract the array dimensions carefully.  We can only the the
+;;;   initializing if the array dimensions are all numbers.  (Could extend
+;;;   to some parameter values).
+;;; o Only do the initialization stuff if we have initial values and if
+;;;   the dimensions are known.
+;;;
+;;; INSERT-DECLARATIONS:
+;;; o Before calling MERGE-DATA-AND-SAVE-INITS, remove any SAVE'd
+;;;   variables that are also in common blocks because in this
+;;;   implementation, common block vars are always saved.
+;;;
+;;; These changes allow donlp2 to build, run, and pass many tests.
+;;; (Didn't try them all.)
+;;;
 ;;; Revision 1.182  2008/02/26 04:18:25  rtoy
 ;;; If an initializer for a string array is already given, don't do
 ;;; anything.  (Do we need to do the same for an number array
