@@ -1648,8 +1648,14 @@
 				(declare (ignore ido))
 				`(data-implied-do ,loop ,(get-dims var) ,(get-types var)
 						  ,vals)))
-			     ((eq 'replace (first init))
-			      ;; These are initialized by f2cl-init-string (I hope).
+			     ((and (eq 'replace (first init))
+				   (not (search "/blockdata" (string (second defun-bit))
+						:test #'equalp)))
+			      ;; These are initialized by
+			      ;; f2cl-init-string (I hope).  But for
+			      ;; block data subprograms, we want to
+			      ;; initialize it, to be sure.  (See
+			      ;; donlp2, boxparam test, for example.)
 			      nil)
 			     (t
 			      init))))
@@ -3780,6 +3786,15 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.185  2008/03/03 19:27:20  rtoy
+;;; o Skip over make-array forms in CHECK_NEW_VBLES
+;;; o SYM-IS-NUMBER-P is more careful about matching the EXPR
+;;;   to an f2cl-hacked number.
+;;; o Check for new variables in PARSE-WRITE and PARSE-PRINT has
+;;;   been moved to PARSE-OUTPUT-ARGUMENT where it belongs.  We need
+;;;   to do it there so we can properly handle implied do loops and
+;;;   such
+;;;
 ;;; Revision 1.184  2008/03/03 17:03:09  rtoy
 ;;; Need to check for new variables in WRITE and PRINT statements.
 ;;;
