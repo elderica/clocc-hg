@@ -1826,7 +1826,8 @@ FILENAME                 File containing Fortran code
 	     (push `(aref ,(car arg) 0) new-arglist))
 	    ((and (subtypep (car arg-type) 'array)
 		  (not (vble-is-array-p (car arg)))
-		  (not (eq (caar arg) 'array-slice)))
+		  (not (and (listp (car arg))
+			    (eq (caar arg) 'array-slice))))
 	     ;; Function wants an array, but we're passing in a
 	     ;; scalar.  Make an array out of that variable.
 	     ;;(format t "arg ~S: ~%" (car arg))
@@ -2982,6 +2983,9 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.197  2008/03/03 19:28:29  rtoy
+;;; Handle the case where of array-slice being passed as an arg.
+;;;
 ;;; Revision 1.196  2008/03/03 18:00:05  rtoy
 ;;; If a function wants an array but we are passing in a scalar (which is
 ;;; valid Fortran), we make a 1-element array initialized to the value of
