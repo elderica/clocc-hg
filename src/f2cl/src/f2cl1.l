@@ -1846,16 +1846,21 @@ FILENAME                 File containing Fortran code
 		   ((symbolp sym)
 		    ;; Look through explicit_vble_decls for sym and
 		    ;; see if it's a character array.
+		    ;;(format t "explicit-vble-decls = ~S~%" *explicit_vble_decls*)
 		    (do ((type-clauses *explicit_vble_decls* (cdr type-clauses)))
 			((null type-clauses))
-		      (let ((decl (car type-clauses)))
-			(when (member sym decl :key #'car)
+		      (let ((vars (cdar type-clauses)))
+			;;(format t "type-clauses = ~S~%" type-clauses)
+			;;(format t "vars = ~S~%" vars)
+			(when (and (member sym vars :key #'car)
+				   (and (listp (car type-clauses))
+					(member 'character (caar type-clauses))))
 			  (return-from fortran-string-p t)))))
 		   (t
 		    ;; I think all other cases can't be strings,
 		    ;; including array-slice, which should have been
 		    ;; handled elsewhere.
-		    nil))))
+		    t))))
       (do ((arg-type arg-types (cdr arg-type))
 	   (arg arglist (cdr arg)))
 	  ((null arg-type))
@@ -3040,6 +3045,10 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.201  2008/03/05 01:26:40  rtoy
+;;; Be more careful in FORTRAN-STRING-P.  Was barfing when given an
+;;; array-slice in hompack.
+;;;
 ;;; Revision 1.200  2008/03/04 22:04:44  rtoy
 ;;; o No need to check for new variables before parsing if statements.
 ;;;   Don't think there can be new vars in if-then or else-if statements.
