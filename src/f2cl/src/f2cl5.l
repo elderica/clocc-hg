@@ -2997,6 +2997,7 @@
   (let* ((read-opts (list-split '|,| (second x)))
 	 (lun (caar read-opts)))
     ;;(format t "read-opts = ~S~%" read-opts)
+    ;;(format t "vars = ~S~%" (cddr x))
     (labels ((handle-simple-var (expr)
 	       (cond ((and (listp expr)
 			   (eq (first expr) 'fref))
@@ -3006,6 +3007,7 @@
 		      `(f2cl-set-string ,expr (read (f2cl-lib::lun->stream ,lun))
 					,(lookup-vble-type expr)))
 		     (t
+		      (check_new_vbles expr)
 		      `(setf ,expr (read (f2cl-lib::lun->stream ,lun))))))
 	     (handle-implied-do (do-list)
 	       ;; Like parse-implied-do
@@ -3808,6 +3810,11 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.188  2008/03/06 18:19:24  rtoy
+;;; When merging data and save inits, we clean up the declarations too
+;;; because the merging may end up removing lots of variables.  (See
+;;; donlp2/o8msg for an example.)
+;;;
 ;;; Revision 1.187  2008/03/06 17:39:25  rtoy
 ;;; Declare Fortran PARAMETER variables as ignorable since we can't always
 ;;; tell if they're used or not.  Gets rid of some compiler warnings.
