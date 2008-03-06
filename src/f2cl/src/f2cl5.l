@@ -1285,7 +1285,8 @@
 		 keys)))
 
     (setf code-key-params-decls
-	  `((declare ,@(mapcan #'cdr code-key-params-decls))))
+	  `((declare ,@(mapcan #'cdr code-key-params-decls)
+		     (ignorable ,@(mapcar #'car keys)))))
     code-key-params-decls))
 
 (defun insert-declarations (fort-fun) 
@@ -3786,6 +3787,10 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.186  2008/03/04 18:00:48  rtoy
+;;; In block data subprograms, we were inadvertently deleting the
+;;; initializer for strings.  Not sure if this gets all of the cases.
+;;;
 ;;; Revision 1.185  2008/03/03 19:27:20  rtoy
 ;;; o Skip over make-array forms in CHECK_NEW_VBLES
 ;;; o SYM-IS-NUMBER-P is more careful about matching the EXPR
