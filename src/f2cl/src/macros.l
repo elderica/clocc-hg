@@ -1097,7 +1097,7 @@ causing all pending operations to be flushed"
   (let ((s (and status (string-right-trim " " status))))
     (finish-output)
     (cond ((or (null s) (string-equal s "unknown"))
-	   (open file :direction :io :if-exists :append
+	   (open file :direction :io :if-exists :supersede
 		 :if-does-not-exist :create))
 	  ((string-equal s "old")
 	   (open file :direction :io :if-does-not-exist nil))
@@ -1529,6 +1529,13 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.98  2008/03/06 20:04:10  rtoy
+;;; Use ~G for list-directed I/O so that numbers come out reasonably.
+;;; (F77 standard says E or F is used, depending on the magnitude of the
+;;; number.  The parameters for E and F are processer dependent as is the
+;;; magnitude used to select between E or F.  This is pretty close to how
+;;; ~G works in Lisp.)
+;;;
 ;;; Revision 1.97  2008/02/26 04:14:31  rtoy
 ;;; Explicitly check for T and NIL.
 ;;;
