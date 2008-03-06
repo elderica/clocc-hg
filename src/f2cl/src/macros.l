@@ -1228,7 +1228,7 @@ causing all pending operations to be flushed"
     ((eq format :list-directed)
      ;; This prints out the args separated by spaces and puts a line
      ;; break after about 80 columns.
-     (format stream "~& ~{~<~% ~1,81:;~A~>~^ ~}~%"
+     (format stream "~& ~{~<~% ~1,81:;~G~>~^ ~}~%"
 	     (flatten-list
 	      (mapcar #'(lambda (v)
 			  ;; Some special cases.  Complex numbers
@@ -1529,6 +1529,9 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.97  2008/02/26 04:14:31  rtoy
+;;; Explicitly check for T and NIL.
+;;;
 ;;; Revision 1.96  2008/02/22 22:19:34  rtoy
 ;;; Use RCS Id as version.
 ;;;
