@@ -1585,6 +1585,7 @@
 	      :test #'(lambda (a b)
 			(eq (third (second a))
 			    (third (second b))))))))
+     ;;(format t "saved-decls = ~S~%" saved-decls)
 
      ;; Initialize SAVE'd variables appropriately.  But don't need to
      ;; initialize SAVE'd variables that are in common blocks.
@@ -1792,7 +1793,27 @@
 			 save-inits)))
 	 ;;(format t "non-common-save-inits  = ~S~%" non-common-save-inits)
 	 (multiple-value-setq (save-inits *data-init*)
-	   (merge-data-and-save-inits non-common-save-inits *data-init*))))
+	   (merge-data-and-save-inits non-common-save-inits *data-init*)))
+       ;; Clean up saved-decls
+       (let ((all-inits (append save-inits *data-init*))
+	     (new-decls))
+	 #+(or)
+	 (progn
+	   (format t "all-inits = ~S~%" all-inits)
+	   (format t "saved-decls = ~S~%" (car saved-decls))
+	   (format t "cddr saved-decls = ~S~%" (cdar saved-decls)))
+	 (dolist (d (cdar saved-decls))
+	   (let ((vars (remove-if-not #'(lambda (v)
+					  (member (car v) (cddr d)))
+				      all-inits)))
+	     (when vars
+	       (push `(,(car d) ,(second d)
+			,@(mapcar #'car vars))
+		     new-decls))))
+	 (when new-decls
+	   (setf saved-decls `((declare ,@new-decls))))
+	 ;;(format t "new-saved-decls = ~S~%" saved-decls)
+	 ))
      
      ;;(format t "new *data-init* = ~S~%" *data-init*)
      ;;(format t "new save-inits  = ~S~%" save-inits)
@@ -3787,6 +3808,10 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.187  2008/03/06 17:39:25  rtoy
+;;; Declare Fortran PARAMETER variables as ignorable since we can't always
+;;; tell if they're used or not.  Gets rid of some compiler warnings.
+;;;
 ;;; Revision 1.186  2008/03/04 18:00:48  rtoy
 ;;; In block data subprograms, we were inadvertently deleting the
 ;;; initializer for strings.  Not sure if this gets all of the cases.
