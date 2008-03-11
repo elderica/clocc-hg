@@ -2552,6 +2552,7 @@ FILENAME                 File containing Fortran code
 				    (mapcar #'list (remove '|,| indices)))
 			    (list (parse-expression indices))))
 	  ;;(format t "indices = ~S~%" indices)
+	  (setf var (check-reserved-lisp-names var))
 	  (push `(,var ,indices) body)
 	  (push var var-list)))
       (setf body (nreverse body))
@@ -3091,6 +3092,10 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.204  2008/03/11 17:39:13  rtoy
+;;; Oops.  Weren't correctly setting up the indices in the data
+;;; implied-do.
+;;;
 ;;; Revision 1.203  2008/03/11 16:54:21  rtoy
 ;;; f2cl1.l:
 ;;; o Support data statements of the form (from hs109.f):
