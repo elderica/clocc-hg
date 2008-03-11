@@ -1631,7 +1631,7 @@
 						(destructuring-bind (vtype &rest vars)
 						    d
 						  (when (member v vars :key #'car)
-						    (return-from get-types (list vtype)))))))
+						    (return (list vtype)))))))
 					vars)
 				))
 
@@ -1648,7 +1648,9 @@
 			      (destructuring-bind (ido loop var vals)
 				  init
 				(declare (ignore ido))
-				`(data-implied-do ,loop ,(get-dims var) ,(get-types var)
+				`(data-implied-do ,loop
+						  ,@(mapcar #'get-dims var)
+						  ,@(mapcar #'get-types var)
 						  ,vals)))
 			     ((and (eq 'replace (first init))
 				   (not (search "/blockdata" (string (second defun-bit))
@@ -3810,6 +3812,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.189  2008/03/06 22:02:26  rtoy
+;;; Check for new variables in READ statements.
+;;;
 ;;; Revision 1.188  2008/03/06 18:19:24  rtoy
 ;;; When merging data and save inits, we clean up the declarations too
 ;;; because the merging may end up removing lots of variables.  (See

@@ -2411,8 +2411,14 @@ FILENAME                 File containing Fortran code
 	     ;; So we need to be a little careful in extracting the value.
 	     (let ((val (if (eq (third item) '-)
 			    `(- ,(nthcdr 3 item))
-			    (third item))))
-	       (dotimes (k (first item))
+			    (third item)))
+		   ;; Figure out how many repetitions.  The number of
+		   ;; reps can be a value from a parameter statement,
+		   ;; so we use EVAL to compute it for us.
+		   (nreps (if (numberp (first item))
+			      (first item)
+			      (eval `(let ,*key_params* ,(first item))))))
+	       (dotimes (k nreps)
 		 (push val result))))
 	    ((and (listp item)
 		  (null (cdr item)))
@@ -2490,12 +2496,15 @@ FILENAME                 File containing Fortran code
 	      )))
       ((null (cdr list)))))
 
+#+nil
 (defun parse-data-implied-do (v l)
   (let ((loops nil))
     (loop
        (cond ((and (listp (car v))
 		   (find '= (car v)))
 	      (let ((split (list-split '|,| (car v))))
+		(format t "split comma = ~S~%" split)
+		(format t "split =     = ~S~%" (list-split '= (car v)))
 		(destructuring-bind (info (loopvar = start) (stop))
 		    split
 		  (declare (ignore =))
@@ -2512,6 +2521,38 @@ FILENAME                 File containing Fortran code
       (let ((result v))
 	(setf result `((,v) ,@loops))
 	`(data-implied-do ,result (,var) ,l)))))
+
+(defun parse-data-implied-do (v l)
+  (let ((loops nil))
+    (loop
+       (cond ((and (listp (car v))
+		   (find '= (car v)))
+	      (let ((split (list-split '|,| (car v)))
+		    (split= (list-split '= (car v))))
+		;;(format t "split comma = ~S~%" split)
+		;;(format t "split =     = ~S~%" split=)
+		(let ((loopvar (car (last (car split=))))
+		      (start (first (second split=)))
+		      (stop (third (second split=)))
+		      (info (butlast (car split=) 2)))
+		  (setf loopvar (check-reserved-lisp-names loopvar))
+		  (push `(,loopvar ,start ,stop) loops)
+		  (setf v info))))
+	     (t (return))))
+    ;;(format t "v = ~S~%" v)
+    ;;(format t "loops = ~S~%" loops)
+    (let (body var-list)
+      (dolist (data-var (list-split '|,| v))
+	(destructuring-bind (var indices)
+	    data-var
+	  ;; We probably need to run check-reserved-lisp-names over the indices
+	  (setf indices (parse-expression (remove '|,| indices)))
+	  (push `(,var (,indices)) body)
+	  (push var var-list)))
+      (setf body (nreverse body))
+      (setf var-list (nreverse var-list))
+      ;;(format t "body = ~S~%" body)
+      `(data-implied-do (,body ,@loops) (,var-list) ,l))))
 
 ; parse a (vble_name data1 data2 ...) list
 ;    or a (vble_name n*x) list
@@ -3045,6 +3086,9 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.202  2008/03/05 03:29:07  rtoy
+;;; Wasn't processing character strings correctly in MASSAGE-ARGLIST.
+;;;
 ;;; Revision 1.201  2008/03/05 01:26:40  rtoy
 ;;; Be more careful in FORTRAN-STRING-P.  Was barfing when given an
 ;;; array-slice in hompack.
