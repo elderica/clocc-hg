@@ -2546,8 +2546,13 @@ FILENAME                 File containing Fortran code
 	(destructuring-bind (var indices)
 	    data-var
 	  ;; We probably need to run check-reserved-lisp-names over the indices
-	  (setf indices (parse-expression (remove '|,| indices)))
-	  (push `(,var (,indices)) body)
+	  ;;(format t "indices = ~S~%" indices)
+	  (setf indices (if (member '|,| indices)
+			    (mapcar #'parse-expression
+				    (mapcar #'list (remove '|,| indices)))
+			    (list (parse-expression indices))))
+	  ;;(format t "indices = ~S~%" indices)
+	  (push `(,var ,indices) body)
 	  (push var var-list)))
       (setf body (nreverse body))
       (setf var-list (nreverse var-list))
@@ -3086,6 +3091,24 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.203  2008/03/11 16:54:21  rtoy
+;;; f2cl1.l:
+;;; o Support data statements of the form (from hs109.f):
+;;;
+;;;      data x /nx*0/
+;;;
+;;;   where nx is initialized in a PARAMETER statement.
+;;; o Recognize and handle implied-do loops in data statements like the
+;;;   following (from tp383mod.f):
+;;;
+;;;      data (a(j), a(j+1), j=1,7) /.../
+;;;
+;;;
+;;; f2cl5.l:
+;;; o Support changes in f2cl1.l to support those kinds of data implied-do
+;;;   loops.  Basically just need to get the dimensions and types for
+;;;   lists of variables instead of just one variable.
+;;;
 ;;; Revision 1.202  2008/03/05 03:29:07  rtoy
 ;;; Wasn't processing character strings correctly in MASSAGE-ARGLIST.
 ;;;
