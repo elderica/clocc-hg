@@ -2818,6 +2818,9 @@
 	 ((null exprs)
 	  (error "A DO statement without a matching label?!"))
 	 ((multiple-do-labelp (car exprs) labels)
+	  ;; Sometimes we get duplicated labels, so remove them.  Is
+	  ;; REMOVE-DUPLICATES to general?  Should we be more careful?
+	  (setf loop-body (remove-duplicates loop-body))
 	  (values (append do-expr 
 			  (list (reverse loop-body))) exprs))
 
@@ -2853,8 +2856,29 @@
 		 (t (setq subclause (car exprs)
 			  exprs (cdr exprs)))))
 	  ((eq (car exprs) 'continue_place_holder)
-	   (setq subclause nil
-		 exprs (cdr exprs)))
+	   ;; Not really sure about this.  Basically we look to find
+	   ;; the next label, and make that the label for our do-loop.
+	   #+(or)
+	   (progn
+	     (format t "continue_place_holder~%")
+	     (format t "cdr exprs = ~S~%" (cdr exprs)))
+	   (let ((clabel 
+		  (dolist (item (cdr exprs))
+		    (unless (symbolp item)
+		      ;; Once an item isn't a symbol, our label can't
+		      ;; appear later, so give up.
+		      (return nil))
+		    (when (search (string '#:label)
+				       (string item))
+		      ;;(format t "continue label = ~S~%" item)
+		      (return item)))))
+
+	     ;; We only want clabel if there are do loops with the
+	     ;; same end label.  Otherwise, everything is ok.
+	     (setq subclause (if (multiple-do-labelp clabel labels)
+				 clabel
+				 nil)
+		   exprs (cdr exprs))))
 	  (t (setq subclause (car exprs)
 		   exprs (cdr exprs))))))
 
@@ -3812,6 +3836,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.191  2008/03/14 13:11:46  rtoy
+;;; Use E as the exponent marker for Fortran G format descriptor.
+;;;
 ;;; Revision 1.190  2008/03/11 16:54:21  rtoy
 ;;; f2cl1.l:
 ;;; o Support data statements of the form (from hs109.f):
