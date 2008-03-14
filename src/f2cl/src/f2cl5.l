@@ -3522,7 +3522,7 @@
 			      "~" (fixnum-string w) ","
 			      (fixnum-string d) ","
 			      (fixnum-string e) ","
-			      (fixnum-string k) ",'*"
+			      (fixnum-string k) ",'*,,'E"
 			      (if *SP* "@G" "G")))))
       (list a (list directive)))))
 
@@ -3812,6 +3812,24 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.190  2008/03/11 16:54:21  rtoy
+;;; f2cl1.l:
+;;; o Support data statements of the form (from hs109.f):
+;;;
+;;;      data x /nx*0/
+;;;
+;;;   where nx is initialized in a PARAMETER statement.
+;;; o Recognize and handle implied-do loops in data statements like the
+;;;   following (from tp383mod.f):
+;;;
+;;;      data (a(j), a(j+1), j=1,7) /.../
+;;;
+;;;
+;;; f2cl5.l:
+;;; o Support changes in f2cl1.l to support those kinds of data implied-do
+;;;   loops.  Basically just need to get the dimensions and types for
+;;;   lists of variables instead of just one variable.
+;;;
 ;;; Revision 1.189  2008/03/06 22:02:26  rtoy
 ;;; Check for new variables in READ statements.
 ;;;
