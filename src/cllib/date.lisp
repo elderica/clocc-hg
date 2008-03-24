@@ -25,6 +25,7 @@
 (export '(string->dttm dttm->string date-formatter +day-sec+ print-date-month
           date date2time date2num date2days time2date days2date mk-date
           date-da date-mo date-ye unix-date infer-timezone infer-month
+          span->string string->span
           days-week-day date-week-day black-days working-day-p
           days-to-next-working-day next-working-day previous-working-day
           days-since days-since-f *y2k-cut* make-date-readtable
@@ -353,6 +354,23 @@ You can disable Y2K fixing with (setf (fdefinition 'fix-y2k) #'identity)"
           (if (numberp v0)
               (eut v5 v4 v3 (min v0 v2) v1 (max v0 v2) v6 v7)
               (eut v4 v3 v2 v1 v0 v5 v6 v7))))))
+
+(defun span->string (xx &aux (ax (abs xx)))
+  (cond ((< ax 200) (format nil "~Fs" xx))
+        ((< ax 7200) (format nil "~Fm" (/ xx 60)))
+        ((< ax (* 24 60 60)) (format nil "~Fh" (/ xx 60 60)))
+        (t (format nil "~Fd" (/ xx 24 60 60)))))
+
+(defun string->span (st &key (start 0) (end (length st)))
+  (multiple-value-bind (mul end)
+    (case (aref st (1- end))
+      (#\m (values 60 (1- end)))
+      (#\h (values (* 60 60) (1- end)))
+      (#\d (values (* 24 60 60) (1- end)))
+      (t (values 1 end)))
+    (* mul
+       (or (read-from-string st nil nil :start start :end end)
+           (error "~S(~S:~:D:~:D): not a span" 'string->span st start end)))))
 
 (defun infer-month (mon)
   "Get the month from the object, number or name."
