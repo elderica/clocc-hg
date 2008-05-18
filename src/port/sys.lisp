@@ -1,6 +1,6 @@
 ;;; Environment & System access
 ;;;
-;;; Copyright (C) 1999-2007 by Sam Steingold
+;;; Copyright (C) 1999-2008 by Sam Steingold
 ;;; This is open-source software.
 ;;; GNU Lesser General Public License (LGPL) is applicable:
 ;;; No warranty; you may copy/modify/redistribute under the same
@@ -240,12 +240,12 @@ initargs for all slots are returned, otherwise only the slots with
 
 (defun structure-slots (struct)
   "Return the list of structure slot names."
-  #+clisp (mapcar #'clos:slot-definition-name (sys::structure-slots struct))
+  #+clisp (mapcar #'clos:slot-definition-name (ext:structure-slots struct))
   #-clisp (class-slot-list (find-class struct)))
 
 (defun structure-keyword-constructor (struct)
   "Return the structure keyword constructor name."
-  #+clisp (sys::structure-kconstructor struct)
+  #+clisp (ext:structure-keyword-constructor struct)
   #-clisp                       ; LAME!!!
   (intern (concatenate 'string "MAKE-" (symbol-string struct))
           (symbol-package struct)))
@@ -253,19 +253,19 @@ initargs for all slots are returned, otherwise only the slots with
 (defun structure-boa-constructors (struct)
   "Return the list of structure BOA constructor names."
   (declare (ignorable struct))
-  #+clisp (sys::structure-boa-constructors struct)
+  #+clisp (ext:structure-boa-constructors struct)
   #-clisp nil)                  ; what else?
 
 (defun structure-copier (struct)
   "Return the structure copier name."
-  #+clisp (sys::structure-copier struct)
+  #+clisp (ext:structure-copier struct)
   #-clisp                       ; LAME!!!
   (intern (concatenate 'string "COPY-" (symbol-string struct))
           (symbol-package struct)))
 
 (defun structure-predicate (struct)
   "Return the structure predicate name."
-  #+clisp (sys::structure-predicate struct)
+  #+clisp (ext:structure-predicate struct)
   #-clisp                       ; LAME!!!
   (intern (concatenate 'string (symbol-string struct) "-P")
           (symbol-package struct)))
