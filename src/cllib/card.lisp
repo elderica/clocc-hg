@@ -5,8 +5,8 @@
 ;;;  http://www.cis.ohio-state.edu/htbin/rfc/rfc2426.html
 ;;;  http://www.imc.org/pdi
 ;;;
-;;; Copyright (C) 1999-2004, 2007 by Sam Steingold
-;;; This is Free Software, covered by the GNU GPL (v2)
+;;; Copyright (C) 1999-2004, 2007-2008 by Sam Steingold
+;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
 ;;; $Id$

@@ -1,7 +1,7 @@
 ;;; Octave interface
 ;;;
-;;; Copyright (C) 1997-2001, 2007 by Sam Steingold.
-;;; This is Free Software, covered by the GNU GPL (v2)
+;;; Copyright (C) 1997-2001, 2007-2008 by Sam Steingold
+;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
 ;;; $Id$
