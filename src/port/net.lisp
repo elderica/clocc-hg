@@ -1,6 +1,6 @@
 ;;; Network Access
 ;;;
-;;; Copyright (C) 1999-2007 by Sam Steingold
+;;; Copyright (C) 1999-2008 by Sam Steingold
 ;;; This is open-source software.
 ;;; GNU Lesser General Public License (LGPL) is applicable:
 ;;; No warranty; you may copy/modify/redistribute under the same
@@ -134,6 +134,15 @@
             (integer host)))
          (name (ccl:ipaddr-to-hostname ipaddr)))
     (make-hostent :name name :addr-list (list (ccl:lookup-hostname ipaddr))))
+  #+(and sbcl sb-bsd-sockets)
+  (let ((he (sb-bsd-sockets:get-host-by-name host)))
+    (make-hostent :name (sb-bsd-sockets:host-ent-name he)
+                  :addr-list
+                  (loop for ipaddr in (sb-bsd-sockets:host-ent-addresses he)
+                    collect (format nil "~{~a~^.~}"
+                                    (loop for octect
+                                      being the elements of ipaddr
+                                      collect octect)))))
   #+(and sbcl db-sockets)
   (let* ((ipaddr
           (etypecase host
@@ -164,7 +173,7 @@
                                      (net.sbcl.sockets:host-entry-addr-list he))
                   :addr-type (net.sbcl.sockets::host-entry-addr-type he)))
   #-(or allegro (and clisp syscalls) cmu gcl lispworks openmcl
-        (and sbcl (or db-sockets net.sbcl.sockets)) scl)
+        (and sbcl (or db-sockets net.sbcl.sockets sb-bsd-sockets)) scl)
   (error 'not-implemented :proc (list 'resolve-host-ipaddr host)))
 
 ;;;
