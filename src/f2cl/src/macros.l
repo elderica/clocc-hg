@@ -1254,10 +1254,18 @@ causing all pending operations to be flushed"
   (declare (ignore colon-p at-p args))
   (etypecase arg
     (complex
+     #-gcl
      (format stream "(~/f2cl-lib::fortran-format-g/, ~/f2cl-lib::fortran-format-g/)"
-	     (realpart arg) (imagpart arg)))
+	     (realpart arg) (imagpart arg))
+     #+gcl
+     (progn
+       (fortran-format-g stream (realpart arg) nil nil)
+       (fortran-format-g stream (imagpart arg) nil nil)))
     (float
-     (format stream "  ~/f2cl-lib::fortran-format-g/" arg))
+     #-gcl
+     (format stream "  ~/f2cl-lib::fortran-format-g/" arg)
+     #+gcl
+     (fortran-format-g stream arg nil nil))
     (integer
      (format stream "  ~D" arg))
     (string
@@ -1283,15 +1291,32 @@ causing all pending operations to be flushed"
 		    (push (list v) pars))
 		   (cons
 		    (dolist (item v)
-		      (push "~/f2cl-lib::fortran-format/" pars)
-		      (push (list item) pars)))
+		      #-gcl
+		      (progn
+			(push "~/f2cl-lib::fortran-format/" pars)
+			(push (list item) pars))
+		      (progn
+			(push "~A" pars)
+			(push (fortran-format nil item nil nil) pars))))
 		   (array
 		    (dotimes (k (length v))
-		      (push "~/f2cl-lib::fortran-format/" pars)
-		      (push (list (aref v k)) pars)))
+		      #-gcl
+		      (progn
+			(push "~/f2cl-lib::fortran-format/" pars)
+			(push (list (aref v k)) pars))
+		      (progn
+			(push "~A" pars)
+			(push (fortran-format nil (list (aref v k)) nil nil)
+			      pars))))
 		   (t
-		    (push "~/f2cl-lib::fortran-format/" pars)
-		    (push (list v) pars))))
+		    #-gcl
+		    (progn
+		      (push "~/f2cl-lib::fortran-format/" pars)
+		      (push (list v) pars))
+		    #+gcl
+		    (progn
+		      (push "~A" pars)
+		      (push (fortran-format nil (list v) nil nil) pars)))))
 	       ;;(format t "~S~%" (reverse pars))
 	       (nreverse pars))))
     (t
@@ -1578,6 +1603,14 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.102  2008/03/26 13:19:52  rtoy
+;;; Lazily initialize the lun-hash table.  *lun-hash* starts as an empty
+;;; hash-table, and lun->stream will initialize units 5, 6, and t as
+;;; needed.
+;;;
+;;; Based on similar change in maxima to work around an issue with clisp
+;;; where the predefined entries had closed streams.
+;;;
 ;;; Revision 1.101  2008/03/08 12:49:08  rtoy
 ;;; Make :list-directed output be more like Fortran.  There is quite a bit
 ;;; of variation between, say, g77 and Sun Fortran, so we pick something
