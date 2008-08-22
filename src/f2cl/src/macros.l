@@ -1304,6 +1304,7 @@ causing all pending operations to be flushed"
 		      (progn
 			(push "~/f2cl-lib::fortran-format/" pars)
 			(push (list (aref v k)) pars))
+		      #+gcl
 		      (progn
 			(push "~A" pars)
 			(push (fortran-format nil (list (aref v k)) nil nil)
@@ -1603,6 +1604,10 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.103  2008/08/21 20:16:49  rtoy
+;;; Gcl doesn' like ~/ format specifier, so rearrange things so we don't
+;;; use it.  (Should we just do the same for every one?)
+;;;
 ;;; Revision 1.102  2008/03/26 13:19:52  rtoy
 ;;; Lazily initialize the lun-hash table.  *lun-hash* starts as an empty
 ;;; hash-table, and lun->stream will initialize units 5, 6, and t as
