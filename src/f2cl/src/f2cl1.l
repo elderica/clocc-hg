@@ -1116,10 +1116,10 @@ FILENAME                 File containing Fortran code
 	  (*print-pretty* t)
 	  (*print-case* :downcase)
 	  (*print-circle* nil)
-	  ;; Do we need this?  clisp basically ignores all other
-	  ;; settings and tries very, very hard to make sure what's
-	  ;; written is read back in exactly the same way.
-	  #+nil (*print-readably* t)
+	  ;; Clisp basically seems ignores all other settings and
+	  ;; tries very, very hard to make sure what's written is read
+	  ;; back in exactly the same way if *print-readably* is non-NIL.
+	  (*print-readably* nil)
 	  (*read-default-float-format* *float-format*))
       (write x :stream o))))
 ;------------------------------------------------------------------------------
@@ -3167,6 +3167,15 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.206  2008/08/22 21:30:30  rtoy
+;;; o Create function to output the "standard" f2cl header
+;;; o Added :common-block-file option
+;;; o When :common-block-file is non-NIL, the definition for the common
+;;;   block structure and the initializer are written to a new file
+;;;   instead of the main file.
+;;;
+;;;   This might need some work with F2CL-COMPILE.
+;;;
 ;;; Revision 1.205  2008/03/11 21:36:33  rtoy
 ;;; Need to check for reserved names in data implied-do loops.
 ;;;
