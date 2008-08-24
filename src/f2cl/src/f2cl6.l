@@ -151,8 +151,18 @@
     (with-open-file (outport outfile-name
 			     :direction :output
 			     :if-exists :rename-and-delete)
-      (let ((*default-pathname-defaults* (make-pathname :directory
-							(pathname-directory file))))
+      ;; Set *default-pathname-defaults* to be where our file is, in
+      ;; case there are INCLUDE statements.  We (currently?) 
+      ;; arbitrarily assume the include file is in the same directory
+      ;; as the file that wants to include it.
+      (let ((*default-pathname-defaults*
+	     (merge-pathnames
+	      (make-pathname :directory
+			     (pathname-directory file))
+	      ;; Get the current directory for ECL since
+	      ;; *d-p-d* appears to default to #P"",
+	      ;; which isn't helpful for merging.
+	      #+ecl (si:getcwd))))
 	(preprocess-streams inport outport)))))
   
 (defun preprocess-streams (inport outport)
@@ -649,6 +659,10 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.47  2008/08/23 18:14:16  rtoy
+;;; Fixes for ecl, but should work for other Lisps.  The recursive-p arg
+;;; for read-char is not needed, I think.
+;;;
 ;;; Revision 1.46  2008/03/03 17:20:42  rtoy
 ;;; Output a comma after a Hollerith string, to make sure we separate the
 ;;; string from anything that follows.
