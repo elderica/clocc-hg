@@ -1522,21 +1522,25 @@ FILENAME                 File containing Fortran code
          *explicit_vble_decls* 
               (list (list (convert-data-type (variable-value '%type bindings))
                           (list fun-name))))
-   (setq *subprog-arglist* (remove '|,| (variable-value '%arg-list bindings)))
+   (setq *subprog-arglist*
+	 (mapcar #'check-reserved-lisp-names
+		 (remove '|,| (variable-value '%arg-list bindings))))
    (setf *subprog_name* fun-name)
    (return
    (list 'defun 
          fun-name 
-         (remove '|,| (variable-value '%arg-list bindings))))))
+         *subprog-arglist*))))
 
 ; untyped function definition
 (defun parse-fun-definition (bindings)
    (setq *function-flag* t)
-   (setq *subprog-arglist* (remove '|,| (variable-value '%arg-list bindings)))
+   (setq *subprog-arglist*
+	 (mapcar #'check-reserved-lisp-names
+		 (remove '|,| (variable-value '%arg-list bindings))))
    (list 'defun 
          (setf *subprog_name*
 	       (check-reserved-lisp-names (variable-value '%name bindings)))
-         (remove '|,| (variable-value '%arg-list bindings))))
+         *subprog-arglist*))
 
 
 ;; Entry point
@@ -3167,6 +3171,10 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.207  2008/08/24 00:25:03  rtoy
+;;; For clisp, SPECIAL-PRINT needs to bind *PRINT-READABLY* to NIL so the
+;;; output doesn't have the package qualifiers on every symbol.
+;;;
 ;;; Revision 1.206  2008/08/22 21:30:30  rtoy
 ;;; o Create function to output the "standard" f2cl header
 ;;; o Added :common-block-file option
