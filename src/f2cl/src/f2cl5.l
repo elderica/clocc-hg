@@ -78,6 +78,7 @@
 	 nil)
 	((symbolp exprs)
 	 (cond ((or (member exprs '(\, \' + - * / ** // ^ = equal > < >= <= >< |:|
+				    /=
 				    f2cl-// cmplx fchar
 				    fref fref-string f2cl/
 				    flog fsqrt ffloat freal
@@ -3836,6 +3837,20 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.192  2008/03/14 19:59:03  rtoy
+;;; Fix the issue with do loops with the same end statement.
+;;;
+;;; Not 100% sure this is correct and I still don't quite understand how
+;;; all of this works.
+;;;
+;;; odepack/demo7/opkdemo7.f:
+;;; o Revert to older code, where we use the same labels for the do loop.
+;;;   This is a test case for the changes we're making and was how we
+;;;   discovered the problem.
+;;;
+;;; f2cl5.l:
+;;; o Fix the issue with do loops.
+;;;
 ;;; Revision 1.191  2008/03/14 13:11:46  rtoy
 ;;; Use E as the exponent marker for Fortran G format descriptor.
 ;;;
