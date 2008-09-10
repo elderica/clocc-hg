@@ -1236,10 +1236,12 @@ causing all pending operations to be flushed"
   (let* ((marker (typecase arg
 		   (single-float "E")
 		   (double-float "D")))
+	 (a (abs arg))
 	 ;; g77 uses limits 1d-4 and 1d9.  Sun Fortran uses 1 and
 	 ;; 1d15.
-	 (format-string (if (and (>= arg 1d-4)
-				 (< arg 1d9))
+	 (format-string (if (or (zerop a)
+				(and (>= a 1d-4)
+				     (< a 1d9)))
 			    "~F"
 			    (concatenate 'string "~,,2,,,,'"
 					 marker
@@ -1604,6 +1606,9 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.104  2008/08/22 21:27:43  rtoy
+;;; Oops.  Forgot one place to conditionalize on gcl.
+;;;
 ;;; Revision 1.103  2008/08/21 20:16:49  rtoy
 ;;; Gcl doesn' like ~/ format specifier, so rearrange things so we don't
 ;;; use it.  (Should we just do the same for every one?)
