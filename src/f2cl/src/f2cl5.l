@@ -2714,7 +2714,7 @@
   '(abs sin cos tan
     asin acos atan
     sinh cosh tanh
-    exp sign max min 
+    exp max min 
     mod))
 
 ;; Check if the Fortran name would collide with Lisp names like T, PI,
@@ -3848,6 +3848,12 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.195  2008/09/10 17:56:24  rtoy
+;;; Append a $ for external symbols in the f2cl-lib package.  Not strictly
+;;; necessary, but makes the code look nicer.  So if the fortran code used
+;;; the variable flog, we don't see the translation using f2cl-lib:flog,
+;;; but flog$.
+;;;
 ;;; Revision 1.194  2008/09/10 17:42:01  rtoy
 ;;; Fixes for check_new_vbles.
 ;;;
