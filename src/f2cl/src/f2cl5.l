@@ -2735,7 +2735,14 @@
 	  ((or (and found-it
 		    (not (eq access :internal))
 		    (fboundp found-it))
-	       (member x +reserved-lisp-names+))
+	       (member x +reserved-lisp-names+)
+	       (eq :external (nth-value 1 (find-symbol (symbol-name x) :f2cl-lib))))
+	   ;; We want to append "$" for certain cases to prevent collisions.
+	   ;;
+	   ;; 1. External functions in the common-lisp package.
+	   ;;
+	   ;; 2. External symbols in the f2cl-lib package.  (Not
+	   ;;    strictly necessary, but does make the code nicer).
 	   (intern (concatenate 'string (string x) "$")))
 	  (t
 	   x))))
@@ -3841,6 +3848,16 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.194  2008/09/10 17:42:01  rtoy
+;;; Fixes for check_new_vbles.
+;;;
+;;; o flog, fsqrt, ffloat, freal, expt are valid Fortran variable names so
+;;;   we need to allow them.  (Previously, they wouldn't get initialized
+;;;   and cause compilation errors.  These variables are in the f2cl-lib
+;;;   package instead of the current package, which is annoying.)
+;;; o For function calls, we only need to look at the args for new
+;;;   variables; the function itself isn't a new variable.
+;;;
 ;;; Revision 1.193  2008/09/09 18:56:41  rtoy
 ;;; Forgot to include /= in check_new_vbles.  /= can't be a Fortran
 ;;; variable name.
