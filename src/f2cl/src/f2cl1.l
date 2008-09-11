@@ -654,6 +654,9 @@ FILENAME                 File containing Fortran code
       (setsyntax #\})
       (setsyntax #\!)
       ;; reserved characters:
+      ;;
+      ;; Note: Some Fortran compilers (Sun Studio) allow $ as a valid
+      ;; character.
       (setsyntax #\$)
       (setsyntax #\@) 
       (setsyntax #\&) 
@@ -3161,16 +3164,23 @@ loop2
       (write-char #\space stream)
        (pprint-newline :linear stream))))
 
-(set-pprint-dispatch '(cons (member f2cl-lib:fdo)) #'pprint-fdo)
-(set-pprint-dispatch '(cons (member f2cl-lib:with-array-data)) #'pprint-with-array-data)
-(set-pprint-dispatch '(cons (member f2cl-lib:with-multi-array-data))
-		     #'pprint-with-multi-array-data)
+#-gcl
+(progn
+  (set-pprint-dispatch '(cons (member f2cl-lib:fdo)) #'pprint-fdo)
+  (set-pprint-dispatch '(cons (member f2cl-lib:with-array-data))
+		       #'pprint-with-array-data)
+  (set-pprint-dispatch '(cons (member f2cl-lib:with-multi-array-data))
+		       #'pprint-with-multi-array-data))
 
 ;;;-----------------------------------------------------------------------------
 ;;; end of f2cl1.l
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.208  2008/08/25 18:54:08  rtoy
+;;; Was not checking for reserved lisp names in the argument list in
+;;; PARSE-TYPED-FUN-DEFINITION and PARSE-FUN-DEFINITION.
+;;;
 ;;; Revision 1.207  2008/08/24 00:25:03  rtoy
 ;;; For clisp, SPECIAL-PRINT needs to bind *PRINT-READABLY* to NIL so the
 ;;; output doesn't have the package qualifiers on every symbol.
