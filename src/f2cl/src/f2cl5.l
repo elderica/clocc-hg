@@ -2718,26 +2718,25 @@
     mod))
 
 ;; Check if the Fortran name would collide with Lisp names like T, PI,
-;; NIL, FUNCALL, PROG, etc.  If it does, replace it a new name with a
-;; trailing underscore.
-
-#+nil
-(defun check-reserved-lisp-names (x)
-  (if (member x +reserved-lisp-names+)
-      (intern (concatenate 'string (string x) "_"))
-      x))
+;; NIL, FUNCALL, PROG, etc.  If it does, replace it a new name
 
 (defun check-reserved-lisp-names (x)
   (multiple-value-bind (found-it access)
       (find-symbol (string x) :common-lisp)
-    (cond ((member x +allowed-lisp-names+)
+    (cond ((or (member x +allowed-lisp-names+)
+	       (member x '(d1mach i1mach %false% %true%)))
+	   ;; Don't want to mangle allowed-lisp-names or some special
+	   ;; symbols from f2cl or f2cl-lib.
 	   x)
 	  ((or (and found-it
 		    (not (eq access :internal))
 		    (fboundp found-it))
 	       (member x +reserved-lisp-names+)
 	       (eq :external (nth-value 1 (find-symbol (symbol-name x) :f2cl-lib))))
-	   ;; We want to append "$" for certain cases to prevent collisions.
+	   ;; We want to append "$" for certain cases to prevent
+	   ;; collisions.  (Any character can be used.  But we can't
+	   ;; prepend because f2cl wants to look at the first
+	   ;; character to determine the default variable type.)
 	   ;;
 	   ;; 1. External functions in the common-lisp package.
 	   ;;
@@ -3848,6 +3847,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.196  2008/09/10 18:09:43  rtoy
+;;; Don't think sign should be an +allowed-lisp-name+.
+;;;
 ;;; Revision 1.195  2008/09/10 17:56:24  rtoy
 ;;; Append a $ for external symbols in the f2cl-lib package.  Not strictly
 ;;; necessary, but makes the code look nicer.  So if the fortran code used
