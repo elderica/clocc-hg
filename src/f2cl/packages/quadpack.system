@@ -5,6 +5,11 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.10  2008/08/25 16:53:32  rtoy
+;;; o Get rid of the logical pathname translations.
+;;; o Define *QUADPACK-ROOT* to hold the directory containing
+;;;   quadpack.system.
+;;;
 ;;; Revision 1.9  2008/03/12 15:58:06  rtoy
 ;;; Fixup the quadpack-lisp system to generate just the lisp files in the
 ;;; slatec package.
@@ -45,8 +50,10 @@
 ;; Quadpack root directory, basically the directory containing
 ;; quadpack.system.
 (defparameter *quadpack-root*
-  (make-pathname :host (pathname-host *load-pathname*)
-		 :directory (pathname-directory *load-pathname*)))
+  (let ((load-path #-gcl *load-pathname*
+		   #+gcl sys:*load-pathname*))
+    (make-pathname :host (pathname-host load-path)
+		   :directory (pathname-directory load-path))))
 
 
 ;; Defsystem for d1mach and i1mach
@@ -189,6 +196,7 @@
 (mk:defsystem quadpack-test
     :source-pathname (merge-pathnames "quadpack"
 				      *quadpack-root*)
+    :source-extension "lisp"
     :depends-on ("mach-par" "quadpack")
     :components
     ((:file "quadpack-tests")))
