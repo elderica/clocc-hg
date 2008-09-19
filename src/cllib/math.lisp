@@ -1673,11 +1673,18 @@ Returns the integral, the last approximation, and the number of points."
 
 (defun ode1 (f &key (y0 0) (x0 0) (dx 0.1) (x1 1))
   "Solve a first order ODE y'=f(x,y) for y(X0)=Y0 upto X1 with step DX.
+Use RK4 <http://en.wikipedia.org/wiki/Runge-Kutta>.
 Return the list of (x y) pairs."
-  (loop :for x :from x0 :to x1 :by dx
-    :for yprim = (funcall f x0 y0) :then (funcall f x y)
-    :for y = y0 :then (+ y (* dx yprim))
-    :collect (cons x y)))
+  (loop :with dx/2 = (/ dx 2) :with dx/6 = (/ dx/2 3)
+    :for x = x0 :then x+h
+    :for x+h/2 = (+ x dx/2) :for x+h = (+ x dx)
+    :for y = y0 :then (+ y (* dx/6 (+ k1 k4 (* 2 (+ k2 k3)))))
+    :for k1 = (funcall f x y)
+    :for k2 = (funcall f x+h/2 (+ y (* dx/2 k1)))
+    :for k3 = (funcall f x+h/2 (+ y (* dx/2 k2)))
+    :for k4 = (funcall f x+h (+ y (* dx k3)))
+    :collect (cons x y)
+    :when (> x x1) :do (loop-finish)))
 
 (defun add-probabilities (&rest pp)
   "Add probabilities.
