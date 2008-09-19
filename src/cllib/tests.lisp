@@ -96,6 +96,18 @@
       (ts-perm 3)
       (ts-perm 4)
       (ts-perm 5))
+    (flet ((vec-find (vec x)
+             (binary-search 0 (1- (length vec))
+                            (lambda (i) (<= (aref vec i) x))
+                            :fmid #'mid-integer)))
+      (dolist (v '((#(1 2 3 4) 3 (2 3 T NIL))
+                   (#(1 2 3 4 5) 30 (0 4 T T))))
+        (destructuring-bind (vec x vals) v
+          (mesg :test out " * search ~S in ~S~%" x vec)
+          (let ((v (multiple-value-list (vec-find vec x))))
+            (unless (equal vals v)
+              (incf num-err)
+              (warn "binary-search values differ:~% ** ~S~% ** ~S" vals v))))))
     (mesg :test out " ** ~s: ~:d error~:p~2%" 'test-math num-err)
     num-err))
 
