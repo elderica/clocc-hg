@@ -487,7 +487,8 @@ ERR is the stream for information messages or NIL for none."
           (close ,socket))))))
 
 (defcustom *url-user-agent* string
-  (format nil "CLOCC/CLLIB/url.lisp (~a)" (lisp-implementation-type))
+  (format nil "CLOCC/CLLIB/url.lisp (~A ~A)" (lisp-implementation-type)
+          (lisp-implementation-version))
   "*The ID string sent by `url-open-http'.")
 
 (defun url-open-http (sock url)
