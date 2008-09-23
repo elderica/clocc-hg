@@ -493,7 +493,14 @@ ERR is the stream for information messages or NIL for none."
 
 (defun url-open-http (sock url)
   "Open the socket to the HTTP url.
-Sends the request, returns an open socket on success or signals an error."
+Sends the request, returns an open socket on success or signals an error.
+Headers: http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
+User-agent:          #sec14.23
+Host:                #sec14.43
+Proxy-Authorization: #sec14.34
+Accept:              #sec14.1
+Connection:          #sec14.10
+"
   (declare (type socket sock) (type url url))
   (http-proxy)
   (let ((code 0) (status "")
