@@ -235,7 +235,7 @@
                  (incf num-err)))))
       (mesg :test out " ** ~s...~%" 'test-xml)
       (ts *xml-ent-file* 284)
-      (ts (translate-logical-pathname "clocc:etc;cl-ent.xml") 1604))
+      (ts (translate-logical-pathname "clocc:etc;cl-ent.xml") 1641))
     (mesg :test out " ** ~s: ~:d error~:p~2%" 'test-xml num-err)
     num-err))
 
