@@ -33,7 +33,7 @@
 	     ;;;; one two three four five six seven eight nine ten
 	     is-Char is-Integer is-Number
 	     is-Float is-Single-float is-Double-float
-	     is-Fixnum is-Ratio is-sublist is-whitespace
+	     is-Fixnum is-Ratio is-even is-odd is-sublist is-whitespace
 	     is-Stream list->values values->list lastelt len
              string-length string-concat
 	     build-symbol symno* true false keyword-package*
@@ -419,6 +419,9 @@
 	(>= n most-negative-fixnum)))	
 
 (defun is-Ratio (x) (typep x 'ratio))
+
+(subr-synonym is-even evenp)
+(subr-synonym is-odd oddp)
 
 (subr-synonym is-Stream streamp)
 (subr-synonym list->values values-list)
