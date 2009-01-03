@@ -1010,7 +1010,7 @@
 	    (mapcar #'(lambda (x)
 			(let ((vlist (make-vars n-returns)))
 			  (incf count)
-			  `(defun ,(first x) ,@(rest x)
+			  `(defun ,(first x) ,@(butlast (rest x))
 			    (multiple-value-bind ,vlist
 				(,entry ',(first x) ,@(second x))
 			      (values ,@vlist)))))
@@ -3214,7 +3214,9 @@
 	   ivar (first (first ctrl-vars))
 	   e1 (id-expression (cdr (member '= (first ctrl-vars))))
 	   e2 (id-expression (second ctrl-vars))
-	   e3 (if (third ctrl-vars) (third ctrl-vars) 1))
+	   e3 (if (third ctrl-vars)
+		  (id-expression (third ctrl-vars))
+		  1))
      (return
        (if *dlist-flag*
 	   `(do ((,ivar ,e1 (+ ,ivar ,e3))
@@ -3847,6 +3849,11 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.197  2008/09/11 15:03:25  rtoy
+;;; o Need a few more special cases where we don't want to mangle the
+;;;   symbol name.
+;;; o Add some comments on why we append.
+;;;
 ;;; Revision 1.196  2008/09/10 18:09:43  rtoy
 ;;; Don't think sign should be an +allowed-lisp-name+.
 ;;;
