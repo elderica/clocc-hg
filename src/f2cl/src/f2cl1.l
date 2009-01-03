@@ -1714,7 +1714,7 @@ FILENAME                 File containing Fortran code
 		      ,@(cddddr x))
 		    x)))
 	   (mapc #'(lambda (y)
-		     (push `(,(car (convert-data-type y))
+		     (push `(,(car (convert-data-type (car y)))
 			     ,@(list-split '|,|
 					   (remove '- (car (last y)))))
 			   *implicit_vble_decls*))
@@ -3177,6 +3177,12 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.209  2008/09/11 14:59:55  rtoy
+;;; o Add comment that some Fortran compilers allow $ as a valid
+;;;   character.
+;;; o For gcl, skip over set-pprint-dispatch stuff since gcl doesn't seem
+;;;   to have that.
+;;;
 ;;; Revision 1.208  2008/08/25 18:54:08  rtoy
 ;;; Was not checking for reserved lisp names in the argument list in
 ;;; PARSE-TYPED-FUN-DEFINITION and PARSE-FUN-DEFINITION.
