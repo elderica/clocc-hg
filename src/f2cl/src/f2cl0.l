@@ -57,7 +57,7 @@
    #:amin1 #:amod #:anint #:asin #:atan #:atan2
    #:cabs #:cexp #:fchar #:clog #:cmplx #:dcmplx #:conjg #:ccos
    #:csin #:csqrt #:zsqrt #:dabs #:dacos #:dasin
-   #:datan #:datan2 #:dble #:dcos #:dcosh #:dexp #:dim
+   #:datan #:datan2 #:dble #:dcos #:dcosh #:dexp #:dfloat #:dim
    #:dint #:dlog #:dlog10 #:dmax1 #:dmin1 #:dmod
    #:dnint #:dprod #:dsign #:dsin #:dsinh #:dsqrt #:dtan
    #:dtanh #:ffloat #:iabs #:ichar #:idim #:idint
@@ -71,11 +71,11 @@
    ))
 
 (defpackage :fortran-to-lisp
-    (:use :cl)
-  (:documentation "the package holding all symbols need by the fortran to lisp converter")
+  (:use :cl)
+  (:documentation "The package holding all symbols need by the Fortran to Lisp converter")
   (:nicknames :f2cl)
   (:export
-   ;; main routines
+   ;; Main routines
    #:f2cl
    #:f2cl-compile
    #:f2cl-version
@@ -86,6 +86,12 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.21  2008/02/22 22:13:18  rtoy
+;;; o Add function F2CL-VERSION to get version info.
+;;; o Add version string to each of the files so F2CL-VERSION can get the
+;;;   version info.  The version string is basically the date of when the
+;;;   file was last checked in.
+;;;
 ;;; Revision 1.20  2006/12/01 04:23:43  rtoy
 ;;; Minor cleanups
 ;;;

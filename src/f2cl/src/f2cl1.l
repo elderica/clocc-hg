@@ -47,6 +47,7 @@
     sinh dsinh cosh dcosh tanh dtanh
     zsqrt
     cdabs dconjg
+    dfloat
     )
   "A list of all the intrinsic functions in Fortran 77")
 
@@ -3177,6 +3178,13 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.210  2009/01/03 00:48:57  rtoy
+;;; PARSE-IMPLICIT-DECL was not correctly handling
+;;;
+;;; IMPLICIT REAL*8 (A-H, O-Z)
+;;;
+;;; It was incorrectly calling CONVERT-DATA-TYPE.
+;;;
 ;;; Revision 1.209  2008/09/11 14:59:55  rtoy
 ;;; o Add comment that some Fortran compilers allow $ as a valid
 ;;;   character.

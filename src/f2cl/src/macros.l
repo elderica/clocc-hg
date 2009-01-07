@@ -39,7 +39,10 @@
 ;;	constant-list
 ;;----------------------------------------------------------------------------
 
-(eval-when (compile load eval) (proclaim '(special *verbose*)))
+(eval-when
+    #+gcl (compile load eval)
+    #-gcl (:compile-toplevel :load-toplevel :execute)
+    (proclaim '(special *verbose*)))
 ;;----------------------------------------------------------------------------
 #+aclpc (defmacro rexpt (x y) `(realpart (expt ,x ,y)))
 #-aclpc (defmacro rexpt (x y) `(expt ,x ,y))
@@ -63,11 +66,12 @@ is not included")
 ;; If you change this, you may need to change some of the macros
 ;; below, such as INT and AINT!
 
-#+(or cmu scl)
+#+(or cmu scl sbcl)
 (deftype integer4 (&optional (low #x-80000000) (high #x7fffffff))
   `(integer ,low ,high))
-#-(or cmu scl)
-(deftype integer4 (&rest p)
+#-(or cmu scl sbcl)
+(deftype integer4 (&optional low high)
+  (declare (ignore low high))
   'fixnum)
 
 (deftype integer2 ()
@@ -628,7 +632,7 @@ is not included")
 ;; also return the real part of a complex number.  CMPLX takes one or
 ;; two args and creates a complex number.
 
-(declaim (inline freal sngl dble cmplx))
+(declaim (inline freal sngl dble dfloat cmplx))
 (defun freal (x)
   (coerce (realpart x) 'single-float))
 
@@ -636,6 +640,9 @@ is not included")
   (coerce (realpart x) 'single-float))
 
 (defun dble (x)
+  (coerce (realpart x) 'double-float))
+
+(defun dfloat (x)
   (coerce (realpart x) 'double-float))
 
 (defun cmplx (x &optional y)
@@ -1495,27 +1502,20 @@ causing all pending operations to be flushed"
 ;;  D1MACH( 5) = LOG10(B)
 ;;
 
-#+gcl
-(defconstant least-positive-normalized-double-float least-positive-double-float)
-#+gcl
-(defconstant least-positive-normalized-single-float least-positive-single-float)
-
-
 (defun d1mach (i)
   (ecase i
-    (1
-     #-gcl least-positive-normalized-double-float
-     #+gcl least-positive-double-float)
+    (1 least-positive-normalized-double-float)
     (2 most-positive-double-float)
-    (3 double-float-epsilon)
-    (4 (scale-float double-float-epsilon 1))
+    (3 #-(or gcl ecl) double-float-epsilon
+       #+(or gcl ecl) (scale-float (float #X10000000000001 1d0) -105))
+    (4 (scale-float #-(or gcl ecl) double-float-epsilon
+		    #+(or gcl ecl) (scale-float (float #X10000000000001 1d0) -105)
+		    1))
     (5 (log (float (float-radix 1d0) 1d0) 10d0))))
 
 (defun r1mach (i)
   (ecase i
-    (1
-     #-gcl least-positive-normalized-single-float
-     #+gcl least-positive-single-float)
+    (1 least-positive-normalized-single-float)
     (2 most-positive-single-float)
     (3 single-float-epsilon)
     (4 (scale-float single-float-epsilon 1))
@@ -1639,6 +1639,11 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.107  2009/01/07 02:22:00  rtoy
+;;; Need to quit a repeated group if we're out of arguments to print.
+;;; This prevents us from repeatedly print newlines and other strings when
+;;; the repetition is more than the number of arguments we have left.
+;;;
 ;;; Revision 1.106  2008/09/15 15:27:36  rtoy
 ;;; Fix serious bug in aint.  aint(x) for x an integer was returning x-1
 ;;; (for positive x).  It should have returned x.
