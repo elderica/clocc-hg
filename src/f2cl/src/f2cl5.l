@@ -3831,16 +3831,16 @@
 	 (let* ((init (make-common-block-var-init val comm-decls))
 		(new-keys (remove-unused-key-params key-params init))
 		(new-decls (make-key-param-decls new-keys)))
-	   (push `(let* ,new-keys
-		    ,@new-decls
-		    (defparameter ,(intern (concatenate 'string
-							"*"
-							(symbol-name key)
-							(symbol-name '#:-common-block*)))
-		      (,(intern (concatenate 'string
-					     (symbol-name '#:make-)
-					     (symbol-name key)))
-			,@init)))
+	   (push `(defparameter ,(intern (concatenate 'string
+						      "*"
+						      (symbol-name key)
+						      (symbol-name '#:-common-block*)))
+		   (let* ,new-keys
+		     ,@new-decls
+		     (,(intern (concatenate 'string
+					    (symbol-name '#:make-)
+					    (symbol-name key)))
+		       ,@init)))
 		 var-inits)))
      comm-blocks)
     (nreverse var-inits)))
@@ -3849,6 +3849,15 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.198  2009/01/03 00:51:28  rtoy
+;;; o ENTRY-FUNCTIONS was leaving junk in the first part of the function.
+;;;   The parent subprogram name was left as the first statement of the
+;;;   function.  This causes compilation errors since it's usually an
+;;;   undefined variable.
+;;;
+;;; o PARSE-IMPLIED-DO did not call ID-EXPRESSION on the optional step
+;;;   argument for the implied-do loop.
+;;;
 ;;; Revision 1.197  2008/09/11 15:03:25  rtoy
 ;;; o Need a few more special cases where we don't want to mangle the
 ;;;   symbol name.
