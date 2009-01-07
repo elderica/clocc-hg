@@ -326,7 +326,9 @@ is not included")
     ,@(computed-goto-aux tag-lst)))
 
 ;; macro for a lisp equivalent of Fortran assigned GOTOs
-(eval-when (:load-toplevel :compile-toplevel :execute)
+(eval-when
+    #+gcl (compile load eval)
+    #-gcl (:load-toplevel :compile-toplevel :execute)
 (defun make-label (n) 
   (read-from-string (concatenate 'string (symbol-name :label) (princ-to-string n))))
 
@@ -1457,6 +1459,13 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.109  2009/01/07 21:34:41  rtoy
+;;; Clean up junk:
+;;;
+;;; o Remove unused macro REXPT.
+;;; o Remove duplicated function PROCESS-IMPLIED-DO.
+;;; o Remove code that was commented out.
+;;;
 ;;; Revision 1.108  2009/01/07 17:28:19  rtoy
 ;;; f2cl0.l:
 ;;; o Export new dfloat function, an alias for dble.
