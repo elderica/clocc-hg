@@ -1184,11 +1184,15 @@ causing all pending operations to be flushed"
       ((or (null arg-list)
 	   (and (not top)
 		(null formats)))
-       ;;(format t "~&end formats = ~S~%" formats)
+       #+nil
+       (progn
+	 (format t "~&end formats = ~S~%" formats)
+	 (format t "~&end arg-list = ~S~%" arg-list))
        (do ((more formats (rest more)))
 	   ((not (stringp (first more))))
 	 (format stream (first more)))
        arg-list)
+
     (when (null formats)
       ;; We're out of formats but not arguments.  I think Fortran says
       ;; we should start over at the last repeat spec.  So we look
@@ -1223,7 +1227,10 @@ causing all pending operations to be flushed"
 	   (dotimes (k (first formats))
 	     ;;(format t "k = ~A, format = ~S~%" k (second formats))
 	     (setf arg-list
-		   (execute-format nil stream (second formats) arg-list)))
+		   (execute-format nil stream (second formats) arg-list))
+	     ;; Gotta exit if we're out of arguments to print!
+	     (unless arg-list
+	       (return)))
 	   (setf formats (rest formats))
 	   ;; Output a newline after the repeat (I think Fortran says this)
 	   ;;(format stream "~&")
@@ -1231,8 +1238,6 @@ causing all pending operations to be flushed"
 	   )
 	  ((eq (first formats) t)
 	   ;; Repeat "forever" (until we run out of data)
-	   ;;(format t "forever arg = ~S~%" arg-list)
-	   ;;(format t " formats    = ~S~%" (second formats))
 	   (loop while arg-list do
 		(setf arg-list
 		      (execute-format nil stream (second formats) arg-list))
@@ -1634,6 +1639,10 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.106  2008/09/15 15:27:36  rtoy
+;;; Fix serious bug in aint.  aint(x) for x an integer was returning x-1
+;;; (for positive x).  It should have returned x.
+;;;
 ;;; Revision 1.105  2008/09/10 18:53:49  rtoy
 ;;; The case where the arg was negative or zero was mishandled and ended
 ;;; up being printed using ~E.  Should have been ~F.
