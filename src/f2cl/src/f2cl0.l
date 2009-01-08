@@ -36,6 +36,7 @@
    #:%false% #:%true%
    ;; User-settable runtime options
    #:*check-array-bounds*
+   #:*stop-signals-error-p*
    ;; Types
    #:integer4 #:integer2 #:integer1 #:real8 #:real4 #:complex8 #:complex16
    #:array-double-float #:array-single-float #:array-integer4 #:array-strings
@@ -86,6 +87,18 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.22  2009/01/07 17:28:19  rtoy
+;;; f2cl0.l:
+;;; o Export new dfloat function, an alias for dble.
+;;; o Merge some cleanups from Maxima.
+;;;
+;;; f2cl1.l:
+;;; o Add dfloat to list of intrinsic functions.
+;;;
+;;; macros.l:
+;;; o Merge some cleanups and fixes from Maxima.  Mostly for gcl and ecl.
+;;; o Add implementation of dfloat.
+;;;
 ;;; Revision 1.21  2008/02/22 22:13:18  rtoy
 ;;; o Add function F2CL-VERSION to get version info.
 ;;; o Add version string to each of the files so F2CL-VERSION can get the

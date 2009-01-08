@@ -1448,17 +1448,28 @@ causing all pending operations to be flushed"
 	  (declare (ignore frac sign))
 	  (- exp 1)))
     ))
-     
+
+;; F2cl cannot tell if a STOP statement is an error condition or just
+;; the end of the program.  So, by default, we signal a continuable
+;; error.  However, we give the user the option of silently returning
+;; or not.
+(defvar *stop-signals-error-p* nil
+  "When non-NIL, STOP will signal an continuable error.  Otherwise, STOP just returns")
+
 (defun stop (&optional arg)
   (when arg
     (format cl::*error-output* "~A~%" arg))
-  (cerror "Continue anyway" "STOP reached"))
+  (unless *stop-signals-error-p*
+    (cerror "Continue anyway" "STOP reached")))
 
 ;;;-------------------------------------------------------------------------
 ;;; end of macros.l
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.111  2009/01/07 21:50:16  rtoy
+;;; Use the fast rint-* functions for CMUCL with sse2 support.
+;;;
 ;;; Revision 1.110  2009/01/07 21:42:45  rtoy
 ;;; Gcl doesn't recognize :compile-toplevel and friends.  Use old style.
 ;;;
