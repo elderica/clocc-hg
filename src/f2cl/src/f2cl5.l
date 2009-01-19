@@ -3526,7 +3526,7 @@
       (list a (list directive)))))
 
 (defun parse-format-descriptor-D (left right)
-  (let ((k 0) (a nil) w d (e 2))
+  (let ((k 0) (a 1) w d (e 2))
     (declare (special k a w d e *scale-factor*))
     (or (pattern-match-and-bind '((> k) #\P (> a)) left)
 	(pattern-match-and-bind '((> k) #\P) left)
@@ -3849,6 +3849,11 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.199  2009/01/07 19:16:59  rtoy
+;;; Minor change on how common blocks are initialized.  We want to make
+;;; the DEFPARAMETER a top-level form so the compile-time side-effects
+;;; happen.
+;;;
 ;;; Revision 1.198  2009/01/03 00:51:28  rtoy
 ;;; o ENTRY-FUNCTIONS was leaving junk in the first part of the function.
 ;;;   The parent subprogram name was left as the first statement of the
