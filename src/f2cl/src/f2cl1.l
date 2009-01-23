@@ -2320,7 +2320,8 @@ FILENAME                 File containing Fortran code
   (if (rest x)
       (setq *save_vbles*
 	    (append *save_vbles*
-		    (remove '|,| (if (eq (first (cdr x)) '/) (cddddr x) (cdr x)))))
+		    (mapcar #'check-reserved-lisp-names
+			    (remove '|,| (if (eq (first (cdr x)) '/) (cddddr x) (cdr x))))))
       (setq *save_vbles* '%save-all-locals%))
    nil) 
   
@@ -3181,6 +3182,10 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.212  2009/01/08 18:58:49  rtoy
+;;; Need to strip off the CVS Id marker when printing the f2cl versions so
+;;; that if the file is checked in, CVS doesn't mangle that info.
+;;;
 ;;; Revision 1.211  2009/01/07 17:28:19  rtoy
 ;;; f2cl0.l:
 ;;; o Export new dfloat function, an alias for dble.
