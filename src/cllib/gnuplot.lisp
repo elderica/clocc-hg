@@ -1,6 +1,6 @@
 ;;; Gnuplot (http://www.gnuplot.info/) interface
 ;;;
-;;; Copyright (C) 1997-2008 by Sam Steingold
+;;; Copyright (C) 1997-2009 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
@@ -215,7 +215,7 @@ according to the given backend")
   (timestamp +plot-timestamp+ :type (or null plot-timestamp))
   (x-axis (make-plot-axis :name "x") :type plot-axis)
   (y-axis (make-plot-axis :name "y") :type plot-axis)
-  (data-style :lines :type symbol)
+  (data-style :lines :type symbol) ; also: :dots :points :linespoints
   (border t :type boolean)
   (timefmt nil :type (or null string))
   (title "" :type string)
