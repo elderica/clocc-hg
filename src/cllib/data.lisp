@@ -275,7 +275,10 @@
          plot-opts))
 
 ;;;###autoload
-(defun analyse-csv (file &key (first-line-names *csv-first-line-names*)
+(defun analyse-csv (file &key
+                    ((:first-line-names *csv-first-line-names*)
+                     *csv-first-line-names*)
+                    ((:separator *csv-separator*) *csv-separator*)
                     (out *standard-output*) medians junk-allowed
                     ((:value-boundary *value-boundary*) *value-boundary*)
                     ((:columns *columns*) *columns*)
@@ -283,8 +286,7 @@
                     ((:buckets *buckets*) *buckets*))
   "Analyse columns in the CSV file."
   (multiple-value-bind (lines len file-size names)
-      (csv-read-file file :first-line-names first-line-names
-                     :junk-allowed junk-allowed)
+      (csv-read-file file :junk-allowed junk-allowed)
     (declare (ignore file-size))
     (let* ((column-count (length (or names (car lines))))
            (columns (unroll-column-specs *columns* names column-count))
