@@ -1,6 +1,6 @@
 ;;; Data Analysis and Visualization
 ;;;
-;;; Copyright (C) 2006-2008 by Sam Steingold
+;;; Copyright (C) 2006-2009 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
@@ -275,7 +275,7 @@
          plot-opts))
 
 ;;;###autoload
-(defun analyse-csv (file &key (first-line-names :default)
+(defun analyse-csv (file &key (first-line-names *csv-first-line-names*)
                     (out *standard-output*) medians junk-allowed
                     ((:value-boundary *value-boundary*) *value-boundary*)
                     ((:columns *columns*) *columns*)
