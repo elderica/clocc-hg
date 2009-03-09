@@ -1,6 +1,6 @@
 ;;; read/write comma-separated values
 ;;;
-;;; Copyright (C) 2003-2008 by Sam Steingold
+;;; Copyright (C) 2003-2009 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
@@ -157,14 +157,15 @@ Return 3 values:
                                 ,l1))))))))
 
 ;;;###autoload
-(defun csv-read-file (inf &key (first-line-names *csv-first-line-names*)
-                      junk-allowed)
+(defun csv-read-file (inf &key junk-allowed
+                      ((:first-line-names *csv-first-line-names*)
+                       *csv-first-line-names*)
+                      ((:separator *csv-separator*) *csv-separator*))
   "Read comma-separated values into a list of vectors."
   (let (len file-size complete names)
     (values (with-collect (coll)
               (setf (values len file-size complete names)
-                    (with-csv (vec inf :first-line-names first-line-names
-                                       :junk-allowed junk-allowed)
+                    (with-csv (vec inf :junk-allowed junk-allowed)
                       (coll vec))))
             len file-size names)))
 
