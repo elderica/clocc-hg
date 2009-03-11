@@ -1,6 +1,6 @@
 ;;; Pathnames and Filesystems
 ;;;
-;;; Copyright (C) 1999-2004, 2007 by Sam Steingold
+;;; Copyright (C) 1999-2009 by Sam Steingold
 ;;; This is open-source software.
 ;;; GNU Lesser General Public License (LGPL) is applicable:
 ;;; No warranty; you may copy/modify/redistribute under the same
@@ -175,13 +175,14 @@ STYLE can be either :CMU or :ALLEGRO."
 
 (defun logical-host-p (word)
   "Check whether this word has already been defined as a logical host."
+  #+allegro (excl::logical-host-p word)
   #+(or clisp lispworks)
   (gethash (string-upcase word) SYSTEM::*LOGICAL-PATHNAME-TRANSLATIONS*)
   #+cmucl
   (gethash (string-upcase word) LISP::*LOGICAL-HOSTS*)
   #+sbcl
   (gethash (string-upcase word) SB-IMPL::*LOGICAL-HOSTS*)
-  #-(or clisp cmucl lispworks sbcl)
+  #-(or allegro clisp cmucl lispworks sbcl)
   (ignore-errors (logical-pathname-translations word)))
 
 (provide :port-path)
