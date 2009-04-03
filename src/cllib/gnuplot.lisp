@@ -633,10 +633,11 @@ OPTS is passed to `plot-lists-arg'."
 (defun plot-histogram (list &rest opts &key (mean t) (key #'value)
                        (mdl (standard-deviation-mdl list :key key))
                        (nbins (isqrt (mdl-le mdl)))
-                       (min (mdl-mi mdl)) (max (mdl-ma mdl))
-                       (title (princ-to-string mdl)) xlogscale
+                       (min (mdl-mi mdl)) (max (mdl-ma mdl)) title xlogscale
                        (xlabel "x") (ylabel "count") &allow-other-keys)
   "Plot the data in the list as a histogram.
+When :TITLE is a list, it is concatenated as a STRING
+ and the MDL is appended to it.
 When :MEAN is non-NIL (default), show mean and mean+-standard deviation
  with vertical lines."
   (multiple-value-bind (vec width)
@@ -660,7 +661,12 @@ When :MEAN is non-NIL (default), show mean and mean+-standard deviation
                  (let ((hi (+ (mdl-mn mdl) (mdl-sd mdl))))
                    (when (<= hi max)
                      (push (vertical hi 2) arrows)))
-                 arrows)))))
+                 arrows))))
+          (title (etypecase title
+                   (string title) (null (princ-to-string mdl))
+                   (cons (apply #'concatenate 'string
+                                (append title
+                                        (list " " (princ-to-string mdl))))))))
       (with-plot-stream (str :title title :data-style :histeps :arrows arrows
                              :xlabel xlabel :ylabel ylabel
                              (remove-plist opts :key :mean :mdl :min :max
