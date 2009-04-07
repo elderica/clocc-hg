@@ -1026,6 +1026,9 @@ FILENAME                 File containing Fortran code
   (clrhash *common-blocks*)
   (clrhash *f2cl-statement-finfo*)
   (let ((labels (remove nil (mapcar #'find-do prog-list))) ; labels is the do integers
+	;; Fortran defaults to single-float if the number doesn't have
+	;; an exponent marker to say otherwise.
+	(*read-default-float-format* 'single-float)
 	fort-fun *external-function-names*
 	*undeclared_vbles* *declared_vbles* *implicit_vble_decls* *explicit_vble_decls*
 	*save_vbles* *key_params* *subprog_common_vars* 
@@ -3182,6 +3185,14 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.213  2009/01/23 14:28:12  rtoy
+;;; PARSE-SAVE needs to check for reserved lisp names to be consistent
+;;; with other parse routines.
+;;;
+;;; Otherwise, in dlasq3, dmin1 is appears as both dmin1 and dmin1$ and
+;;; that ends up producing an incorrect initialization and declaration for
+;;; dmin1$.
+;;;
 ;;; Revision 1.212  2009/01/08 18:58:49  rtoy
 ;;; Need to strip off the CVS Id marker when printing the f2cl versions so
 ;;; that if the file is checked in, CVS doesn't mangle that info.
