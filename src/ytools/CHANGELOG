@@ -1,5 +1,6 @@
 $Id$
             
+            [- Version 2.1.45 -]
 2009-05-27: repeat.lisp: Instead of gensyming function name, get it
                from blecherous ':fcn-name' entry in the alist analyzed
                for a given (x = ...) repeat var.  (See synchronous
