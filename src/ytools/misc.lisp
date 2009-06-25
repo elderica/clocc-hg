@@ -13,7 +13,7 @@
    (export '(out-to-string dbg-out dbg-out-indent
 	     err-out cons-if-new plev plen
 	     classify shorter list-splice is-list-of boole-eq eqn
-	     val-or-initialize memoize-val)))
+	     val-or-initialize memoize-val string-begins)))
 
 (defmacro out-to-string (&rest outargs)
    `(with-output-to-string (string-stream) (out (:to string-stream) ,@outargs)))

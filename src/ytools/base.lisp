@@ -667,8 +667,8 @@
 		    (read-char srm)
 		    (list 'empty-list thing))
 		   (t
-		    (cerror "!(~s...) has too much stuff before close paren"
-			    thing)))))))
+		    (error "!(~s...) has too much stuff before close paren"
+			   thing)))))))
 
 
 (set-pprint-dispatch
