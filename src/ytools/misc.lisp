@@ -138,7 +138,7 @@
 				         " :store-as argument")))
    `(val-or-initialize ,store-place^ :init ,exp^ :missing-if ,uncached-val^))
 
-(defun string-begins (s1 s2)
-   (let ((p (mismatch s1 s2)))
-      (or (not p)
-	  (= p (string-length s2)))))
+(defun string-begins (s putative-start)
+   (let ((n (mismatch s putative-start)))
+      (or (not n)
+          (= n (string-length putative-start)))))
