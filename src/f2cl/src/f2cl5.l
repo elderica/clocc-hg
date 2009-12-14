@@ -2012,7 +2012,7 @@
 	      (let (array-data-forms)
 		(flet ((find-type (a)
 			 (dolist (x (rest (first formal-arg-decls)))
-			   (when (member a x)
+			   (when (member a (cddr x))
 			     (return-from find-type (second (second x))))
 			   t)))
 		  (dolist (a arrays)
@@ -2057,7 +2057,7 @@
 	   ;;(format t "new-prog-bit = ~A~%" prog-bit)
 
 	   (setf prog-bit (generate-with-array array-args prog-bit)))
-	 ;;(format t "new-prog-bit = ~A~%" prog-bit)
+	   ;;(format t "new-prog-bit = ~A~%" prog-bit)
 		 
 	 ))
 
@@ -3849,6 +3849,10 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.200  2009/01/19 02:38:17  rtoy
+;;; The number of repetitions for the D format descriptor should default
+;;; to 1, not NIL, like we do for E, F, and G.
+;;;
 ;;; Revision 1.199  2009/01/07 19:16:59  rtoy
 ;;; Minor change on how common blocks are initialized.  We want to make
 ;;; the DEFPARAMETER a top-level form so the compile-time side-effects
