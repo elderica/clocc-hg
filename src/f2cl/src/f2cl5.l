@@ -176,7 +176,7 @@
 			      ((get-implicit-type vble))
 			      ((default-int-p vble)
 			       'integer4)
-			      (t 'single-float)))
+			      (t (maybe-promote-type 'single-float))))
 		       ((and (listp v-type)
 			     (eq (first v-type) 'character))
 			;; Hmm, a Fortran character string.  Make it a Lisp string
@@ -190,7 +190,7 @@
 				  ((default-int-p vble)
 				   'integer4)
 				  (t
-				   'single-float))
+				   (maybe-promote-type 'single-float)))
 			    v-type))))
 	       ;;(format t  "type-clause = ~S~%" type-clauses)
 	       )))
@@ -201,7 +201,7 @@
 	       ((default-int-p vble)
 		'integer4)
 	       (t
-		'single-float)))))
+		(maybe-promote-type 'single-float))))))
 
 ;; A simple implementation of Fortran contagion.
 ;;
@@ -2346,7 +2346,7 @@
 		  (remove-*data-init*-var vble_name))
 		(if (default-int-p vble) 
 		    `(,vble_name ,(or init-val 0))
-		    `(,vble_name ,(or init-val 0f0))))))))))
+		    `(,vble_name ,(or init-val (if *promote-to-double* 0d0 0f0)))))))))))
 
 
 (defun remove-*data-init*-var (vble)
@@ -2523,7 +2523,7 @@
 		     `(,parameterp ,parameterp))))
 	(if (default-int-p vble)
 	    `(declare (type (integer ,@limit) ,vble_name))
-	    `(declare (type (single-float ,@limit) ,vble_name)))))))))
+	    `(declare (type (,(maybe-promote-type 'single-float) ,@limit) ,vble_name)))))))))
 
 (defun make-char-decl (decl type)
   (flet ((decl-bounds (bounds)
@@ -2639,7 +2639,7 @@
              ((default-int-p decl)
 	      'integer4)
              (t
-	      'single-float)))))
+	      (maybe-promote-type 'single-float))))))
 
 (defun default-int-p (vble)
    (and (string>= (string vble) (symbol-name :i))
@@ -3852,6 +3852,36 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.202  2010/02/23 00:59:12  rtoy
+;;; Support the Fortran capability of passing an array of one type
+;;; to a routine expecting a different type.  Currently only supports REAL
+;;; and COMPLEX arrays (and their double precison versions).
+;;;
+;;; NOTES:
+;;; o Update
+;;;
+;;; f2cl0.l:
+;;; o Export new symbols f2cl-copy-seq and make-compatible-seq.
+;;;
+;;; f2cl1.l:
+;;; o New variable *copy-array-parameter* for keeping track of the option
+;;;   for f2cl and f2cl-compile.
+;;; o Update f2cl and f2cl-compile to recognize :copy-array-parameter.
+;;; o Modify massage-arglist and generate-call-to-routine to handle the
+;;;   new :copy-array-parameter capability.
+;;;
+;;; f2cl5.l:
+;;; o Fix issue where quoted elements were modified.  They shouldn't be.
+;;; o Fix issue where (array simple-float (*)) would get erroneously
+;;;   converted to (array simple-float (f2cl-lib:int-mul)).  We want to
+;;;   leave bare * alone.
+;;;
+;;; macros.l:
+;;; o New macro f2cl-copy-seq to generate code to copy a sequence
+;;;   appropriately.
+;;; o New function to create a compatible array to support
+;;;   :copy-array-parameter.
+;;;
 ;;; Revision 1.201  2009/12/14 22:36:46  rtoy
 ;;; GENERATE-WITH-ARRAY in INSERT-DECLARATIONS was figuring out the type
 ;;; of strings incorrectly.
