@@ -32,6 +32,8 @@
    #:int-add #:int-sub #:int-mul
    ;; Utilities
    #:array-slice #:array-initialize
+   #:f2cl-copy-seq
+   #:make-compatible-seq
    ;; Intrinsic functions
    #:abs #:acos #:aimag #:dimag #:aint #:alog #:alog10 #:amax0 #:amax1
    #:amin1 #:amod #:anint #:asin #:atan #:atan2
@@ -66,6 +68,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.24  2009/01/08 15:54:01  rtoy
+;;; Remove junk comments.
+;;;
 ;;; Revision 1.23  2009/01/08 12:57:19  rtoy
 ;;; f2cl0.l:
 ;;; o Export *STOP-SIGNALS-ERROR-P*

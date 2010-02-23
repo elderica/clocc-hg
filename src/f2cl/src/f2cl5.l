@@ -520,6 +520,9 @@
 	((eq (first p) 'declare)
 	 ;; Skip over declarations
 	 p)
+	((eq (first p) 'quote)
+	 ;; Skip over quoted objects
+	 p)
         ((eq (first p) 'fdo)
          ;; FDO handled specially
          (destructuring-bind (fdo (var1 init step-form)
@@ -562,7 +565,8 @@
 	((eq (first p) 'truncate)
 	 ;; Hmm, make sure truncate returns a integer4
 	 `(the integer4 ,p))
-	((member (first p) '(+ - *))
+	((and (member (first p) '(+ - *))
+	      (rest p))
 	 ;; Basic arithmetic operations.  Division has already been
 	 ;; handled by converting / to f2cl/ which is optimized
 	 ;; somewhere else.
@@ -579,7 +583,6 @@
 						(- . int-sub)
 						(* . int-mul))))
 			(first p))))
-	   ;;(format t "fun = ~A~%" fun)
 	   `(,fun ,@(mapcar #'optimize-integer-arithmetic (rest p)))))
 	((listp (first p))
 	 `(,(mapcar #'optimize-integer-arithmetic
@@ -3849,6 +3852,10 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.201  2009/12/14 22:36:46  rtoy
+;;; GENERATE-WITH-ARRAY in INSERT-DECLARATIONS was figuring out the type
+;;; of strings incorrectly.
+;;;
 ;;; Revision 1.200  2009/01/19 02:38:17  rtoy
 ;;; The number of repetitions for the D format descriptor should default
 ;;; to 1, not NIL, like we do for E, F, and G.

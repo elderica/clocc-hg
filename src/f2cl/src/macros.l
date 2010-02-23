@@ -1462,11 +1462,76 @@ causing all pending operations to be flushed"
   (unless *stop-signals-error-p*
     (cerror "Continue anyway" "STOP reached")))
 
+(defmacro f2cl-copy-seq (dst src dst-type src-type)
+  (flet ((copy-error ()
+	   (error "F2CL cannot copy arrays of element type ~A to ~A~%"
+		  src-type dst-type)))
+    (cond ((subtypep dst-type 'float)
+	   ;; Copy to float array
+	   (cond ((subtypep src-type 'float)
+		  `(replace ,dst ,src))
+		 ((subtypep src-type 'complex)
+		  ;; Copy complex to float by putting each real and
+		  ;; imaginary part into the float array, in order.
+		  (let ((idx (gensym "IDX-"))
+			(el (gensym "EL-")))
+		    `(loop for ,idx of-type fixnum from 0 by 2 below (length ,dst)
+			for ,el of-type ,src-type across ,src
+			do
+			(progn
+			  (setf (aref ,dst ,idx) (realpart ,el))
+			  (setf (aref ,dst (1+ ,idx)) (imagpart ,el))))))
+		 (t
+		  (copy-error))))
+	  ((subtypep dst-type 'complex)
+	   ;; Copy to complex array
+	   (cond ((subtypep src-type 'float)
+		  (let ((idx (gensym "IDX-"))
+			(dst-idx (gensym "DST-IDX-")))
+		    `(loop for ,idx of-type fixnum from 0 by 2 below (length ,src)
+			for ,dst-idx of-type fixnum from 0 below (length ,dst)
+			do
+			(setf (aref ,dst ,dst-idx) (complex (aref ,src ,idx)
+							    (aref ,src (1+ ,idx)))))))
+		 ((subtypep src-type 'complex)
+		  `(replace ,dst ,src))
+		 (t
+		  (copy-error))))
+	  (t
+	   (copy-error)))))
+
+(defun make-compatible-seq (type array)
+  (let ((element-type (second type))
+	(array-type (array-element-type array))
+	(len (length array)))
+    (cond ((subtypep element-type 'float)
+	   (cond ((subtypep array-type 'complex)
+		  (make-array (* 2 len) :element-type element-type))
+		 (t
+		  (make-array len :element-type element-type))))
+	  ((subtypep element-type 'complex)
+	   (cond ((subtypep array-type 'complex)
+		  (make-array len :element-type element-type))
+		 (t
+		  (make-array (ceiling len 2) :element-type element-type))))
+	  (t
+	   (error "Don't know how to make an array with element-type ~A~%" element-type)))))
+
+
 ;;;-------------------------------------------------------------------------
 ;;; end of macros.l
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.112  2009/01/08 12:57:19  rtoy
+;;; f2cl0.l:
+;;; o Export *STOP-SIGNALS-ERROR-P*
+;;;
+;;; macros.l:
+;;; o Add *STOP-SIGNALS-ERROR-P* to allow user to control whether STOP
+;;;   signals a continuable error or not.  Default is to signal the
+;;;   error.
+;;;
 ;;; Revision 1.111  2009/01/07 21:50:16  rtoy
 ;;; Use the fast rint-* functions for CMUCL with sse2 support.
 ;;;
