@@ -2518,11 +2518,11 @@
 	    `(declare (type ,type ,vble_name)))))
      ;; otherwise use default declaration
      (t
-      ;;(format t "default decl~%")
       (let ((limit (when parameterp
 		     `(,parameterp ,parameterp))))
+	;;(format t "default decl ~A, limit = ~A~%" vble limit)
 	(if (default-int-p vble)
-	    `(declare (type (integer ,@limit) ,vble_name))
+	    `(declare (type (integer4 ,@limit) ,vble_name))
 	    `(declare (type (,(maybe-promote-type 'single-float) ,@limit) ,vble_name)))))))))
 
 (defun make-char-decl (decl type)
@@ -3852,6 +3852,21 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.203  2010/02/23 03:37:24  rtoy
+;;; Add :PROMOTE-TO-DOUBLE option to promote all single precision
+;;; variables and constants to double precision.
+;;;
+;;; NOTES:
+;;; o Update
+;;;
+;;; f2cl1.l:
+;;; o Add :PROMOTE-TO-DOUBLE keyword to F2CL and F2CL-COMPILE.
+;;; o Add MAYBE-PROMOTE-TYPE to promote the specified type if specified.
+;;;
+;;; f2cl5.l:
+;;; o Update declarations and initializers to promote the declaration and
+;;;   initial value if needed.
+;;;
 ;;; Revision 1.202  2010/02/23 00:59:12  rtoy
 ;;; Support the Fortran capability of passing an array of one type
 ;;; to a routine expecting a different type.  Currently only supports REAL
