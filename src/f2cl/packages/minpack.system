@@ -3,6 +3,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.14  2008/02/28 20:01:06  rtoy
+;;; Oops. tst-hybrd has its own defsystem.
+;;;
 ;;; Revision 1.13  2008/02/25 17:11:43  rtoy
 ;;; Updates to make hybrd test work.  The Lisp translation works.
 ;;;
@@ -88,7 +91,8 @@
     :source-pathname "minpack:"
     :components
     ((:file "minpack"
-		      :language :lisp)
+	    :source-extension "lisp"
+	    :language :lisp)
      (:module "minpack"
 	      :source-pathname ""
 	      :source-extension "f"
@@ -134,6 +138,7 @@
     :components
     ((:module "main"
 	      :source-pathname ""
+	      :source-extension "lisp"
 	      :package :minpack
 	      :components
 	      ((:file "run-minpack-tests")))
@@ -161,6 +166,7 @@
     :components
     ((:module "main"
 	      :source-pathname ""
+	      :source-extension "lisp"
 	      :package :minpack
 	      :components
 	      ((:file "run-minpack-tests")))
