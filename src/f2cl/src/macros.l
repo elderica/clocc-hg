@@ -1500,20 +1500,19 @@ causing all pending operations to be flushed"
 	  (t
 	   (copy-error)))))
 
-(defun make-compatible-seq (type array)
+(defmacro make-compatible-seq (type array array-type)
   (let ((element-type (second type))
-	(array-type (array-element-type array))
-	(len (length array)))
+	(array-type (second array-type)))
     (cond ((subtypep element-type 'float)
 	   (cond ((subtypep array-type 'complex)
-		  (make-array (* 2 len) :element-type element-type))
+		  `(make-array (* 2 (length ,array)) :element-type ',element-type))
 		 (t
-		  (make-array len :element-type element-type))))
+		  `(make-array (length ,array) :element-type ',element-type))))
 	  ((subtypep element-type 'complex)
 	   (cond ((subtypep array-type 'complex)
-		  (make-array len :element-type element-type))
+		  `(make-array (length ,array) :element-type ',element-type))
 		 (t
-		  (make-array (ceiling len 2) :element-type element-type))))
+		  `(make-array (ceiling (length ,array) 2) :element-type ',element-type))))
 	  (t
 	   (error "Don't know how to make an array with element-type ~A~%" element-type)))))
 
@@ -1523,6 +1522,36 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.113  2010/02/23 00:59:12  rtoy
+;;; Support the Fortran capability of passing an array of one type
+;;; to a routine expecting a different type.  Currently only supports REAL
+;;; and COMPLEX arrays (and their double precison versions).
+;;;
+;;; NOTES:
+;;; o Update
+;;;
+;;; f2cl0.l:
+;;; o Export new symbols f2cl-copy-seq and make-compatible-seq.
+;;;
+;;; f2cl1.l:
+;;; o New variable *copy-array-parameter* for keeping track of the option
+;;;   for f2cl and f2cl-compile.
+;;; o Update f2cl and f2cl-compile to recognize :copy-array-parameter.
+;;; o Modify massage-arglist and generate-call-to-routine to handle the
+;;;   new :copy-array-parameter capability.
+;;;
+;;; f2cl5.l:
+;;; o Fix issue where quoted elements were modified.  They shouldn't be.
+;;; o Fix issue where (array simple-float (*)) would get erroneously
+;;;   converted to (array simple-float (f2cl-lib:int-mul)).  We want to
+;;;   leave bare * alone.
+;;;
+;;; macros.l:
+;;; o New macro f2cl-copy-seq to generate code to copy a sequence
+;;;   appropriately.
+;;; o New function to create a compatible array to support
+;;;   :copy-array-parameter.
+;;;
 ;;; Revision 1.112  2009/01/08 12:57:19  rtoy
 ;;; f2cl0.l:
 ;;; o Export *STOP-SIGNALS-ERROR-P*

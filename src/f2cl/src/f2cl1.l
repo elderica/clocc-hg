@@ -2224,8 +2224,9 @@ correctly"
 								  ,(second actual-type)
 								  ,(second declared-type))
 			                  into copy-from
-			     and collect `(,copy (f2cl-lib:make-compatible-seq ',declared-type
-									       ,arg))
+			     and collect `(,copy (f2cl-lib:make-compatible-seq ,declared-type
+									       ,arg
+									       ,actual-type))
 			                  into init-copy
 			  finally (return (values copy-to copy-from init-copy)))
 		   (setf init-copy (remove-duplicates init-copy :key #'car))
@@ -3044,7 +3045,7 @@ Senac syntax:... | op '| ...|)))
 	((and (listp (car x)) (eq (caar x) 'real))
 	 (append (list (maybe-promote-type 'single-float)) (cdr x)))
 	((and (listp (car x)) (eq (caar x) 'integer))
-	 (append '(fixnum) (cdr x)))
+	 (append '(integer4) (cdr x)))
 	((eq (car x) 'double) 
 	 (append '(double-float) (cdr x)))
 	((eq (car x) 'logical) 
@@ -3064,7 +3065,7 @@ Senac syntax:... | op '| ...|)))
 	  ((equalp subseq3 '(complex * 16))
 	   (append '(complex16) (subsequence x 3)))
 	  ((equalp subseq3 '(integer * 4))
-	   (append '(integer) (subsequence x 3)))
+	   (append '(integer4) (subsequence x 3)))
 	  ((equalp subseq3 '(integer * 2))
 	   (append '(integer2) (subsequence x 3)))
 	  ((equalp subseq3 '(integer * 1))
@@ -3312,6 +3313,21 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.217  2010/02/23 03:37:24  rtoy
+;;; Add :PROMOTE-TO-DOUBLE option to promote all single precision
+;;; variables and constants to double precision.
+;;;
+;;; NOTES:
+;;; o Update
+;;;
+;;; f2cl1.l:
+;;; o Add :PROMOTE-TO-DOUBLE keyword to F2CL and F2CL-COMPILE.
+;;; o Add MAYBE-PROMOTE-TYPE to promote the specified type if specified.
+;;;
+;;; f2cl5.l:
+;;; o Update declarations and initializers to promote the declaration and
+;;;   initial value if needed.
+;;;
 ;;; Revision 1.216  2010/02/23 00:59:12  rtoy
 ;;; Support the Fortran capability of passing an array of one type
 ;;; to a routine expecting a different type.  Currently only supports REAL
