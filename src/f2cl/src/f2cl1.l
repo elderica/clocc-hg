@@ -1158,6 +1158,9 @@ correctly"
      ))
 
 ;=============================================================================
+(defparameter *f2cl-pprint-dispatch*
+  (copy-pprint-dispatch))
+
 (defun special-print (x o)
   (with-standard-io-syntax
     (let ((*package* (find-package :f2cl))
@@ -1170,7 +1173,8 @@ correctly"
 	  (*print-readably* nil)
 	  ;; Write out the code using the desired floating-point
 	  ;; format.
-	  (*read-default-float-format* *float-format*))
+	  (*read-default-float-format* *float-format*)
+	  (*print-pprint-dispatch* *f2cl-pprint-dispatch*))
       (write x :stream o))))
 ;------------------------------------------------------------------------------
 (defun princ-reset (x &optional (y ""))
@@ -3313,17 +3317,22 @@ loop2
 
 #-gcl
 (progn
-  (set-pprint-dispatch '(cons (member f2cl-lib:fdo)) #'pprint-fdo)
+  (set-pprint-dispatch '(cons (member f2cl-lib:fdo)) #'pprint-fdo 0 *f2cl-pprint-dispatch*)
   (set-pprint-dispatch '(cons (member f2cl-lib:with-array-data))
-		       #'pprint-with-array-data)
+		       #'pprint-with-array-data 0 *f2cl-pprint-dispatch*)
   (set-pprint-dispatch '(cons (member f2cl-lib:with-multi-array-data))
-		       #'pprint-with-multi-array-data))
+		       #'pprint-with-multi-array-data 0 *f2cl-pprint-dispatch*))
 
 ;;;-----------------------------------------------------------------------------
 ;;; end of f2cl1.l
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.220  2010/05/26 03:22:59  rtoy
+;;; When relax-array-decls is true, don't print out warnings about
+;;; mismatched argument types for arrays.  This was previously causing
+;;; many warnings about arrays when they weren't a problem.
+;;;
 ;;; Revision 1.219  2010/05/26 02:40:27  rtoy
 ;;; o Take care if finfo is NIL (meaning no function info) when checking
 ;;;   the types of the actual arguments and the declared types.  This was
