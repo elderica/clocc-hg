@@ -2043,6 +2043,16 @@ correctly"
     ;;(format t "new arglist = ~A~%" new-arglist)
     new-arglist))
 
+(defun relax-array-decl (decls)
+  (flet ((relax-1 (decl)
+	   (cond ((and *relaxed-array-decls* (subtypep decl 'array))
+		  (destructuring-bind (a n l)
+		      decl
+		    `(,a ,n ,(mapcar (constantly '*) l))))
+		 (t
+		  decl))))
+    (mapcar #'relax-1 decls)))
+
 ;; Subroutines and functions can modify the values of input
 ;; parameters.  We handle this in Lisp by returning the input
 ;; parameters to the caller as multiple values.  This function
@@ -2172,7 +2182,7 @@ correctly"
 	  (loop for count from 0
 	        for arg in arglist
 	        for actual-type in actual-arg-types
-	        for declared-type in (and finfo (f2cl-finfo-arg-types finfo))
+	        for declared-type in (and finfo (relax-array-decl (f2cl-finfo-arg-types finfo)))
 	        do (cond ((or (typep arg 'string)
 			      (typep arg 'number))
 			  (push nil copy-name))
@@ -3314,6 +3324,14 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.219  2010/05/26 02:40:27  rtoy
+;;; o Take care if finfo is NIL (meaning no function info) when checking
+;;;   the types of the actual arguments and the declared types.  This was
+;;;   causing a compile error.
+;;; o Fix bug when massaging the arglist.  We were doing only if finfo was
+;;;   known, but if not, then we ended up deleting the function call.
+;;;   Don't delete the function call to the unknown function!
+;;;
 ;;; Revision 1.218  2010/05/17 01:42:13  rtoy
 ;;; src/f2cl1.l:
 ;;; o Need to know the actual type when making a compatible sequence.
