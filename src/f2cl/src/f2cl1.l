@@ -2172,7 +2172,7 @@ correctly"
 	  (loop for count from 0
 	        for arg in arglist
 	        for actual-type in actual-arg-types
-	        for declared-type in (f2cl-finfo-arg-types finfo)
+	        for declared-type in (and finfo (f2cl-finfo-arg-types finfo))
 	        do (cond ((or (typep arg 'string)
 			      (typep arg 'number))
 			  (push nil copy-name))
@@ -2199,15 +2199,16 @@ correctly"
                                              Argument type: ~A~%"
 					count (car routine-name) declared-type actual-type))))))
 	  (setf copy-name (nreverse copy-name))
-	  (when (and *use-function-info* finfo)
-	    (let ((new-args (massage-arglist arglist finfo copy-name)))
-	      (setf body (if setters
-			     `((multiple-value-bind ,(if return (append '(ret-val) vnames) vnames)
-				   (,@routine-name ,@new-args)
-				 (declare (ignore ,@ignored-vars))
-				 ,@setters
-				 ,@(if return (list 'ret-val))))
-			     `((,@routine-name ,@new-args))))))
+	  (let ((new-args (if (and *use-function-info* finfo)
+			      (massage-arglist arglist finfo copy-name)
+			      arglist)))
+	    (setf body (if setters
+			   `((multiple-value-bind ,(if return (append '(ret-val) vnames) vnames)
+				 (,@routine-name ,@new-args)
+			       (declare (ignore ,@ignored-vars))
+			       ,@setters
+			       ,@(if return (list 'ret-val))))
+			   `((,@routine-name ,@new-args)))))
 	  (cond ((some #'identity copy-name)
 		 ;; Some args don't match and we want to copy the item
 		 (multiple-value-bind (copy-to copy-from init-copy)
@@ -3313,6 +3314,17 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.218  2010/05/17 01:42:13  rtoy
+;;; src/f2cl1.l:
+;;; o Need to know the actual type when making a compatible sequence.
+;;; o Convert plain integer type to integer4 types, which is what Fortran
+;;;   would do.  We don't want general Lisp integer type.
+;;;
+;;; src/macros.l:
+;;; o Change MAKE-COMPATIBLE-SEQ to be a macro.
+;;; o Need to know the actual array type to create the correct type of
+;;;   sequence.
+;;;
 ;;; Revision 1.217  2010/02/23 03:37:24  rtoy
 ;;; Add :PROMOTE-TO-DOUBLE option to promote all single precision
 ;;; variables and constants to double precision.
