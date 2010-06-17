@@ -697,7 +697,7 @@
                                 (match-cond else-stuff
                                    (out-stuff
                                     (values (cdr else-stuff) (cdr out-stuff)))
-                                   (:? (:else (dbg-save ?@s) ?@e)
+                                   (:? (?,else-flag (dbg-save ?@s) ?@e)
                                       (values `((dbg-save ,@s))
                                               e))
                                    (t (values !() (cdr else-stuff)))))

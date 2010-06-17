@@ -1,5 +1,11 @@
 $Id$
             
+            [- Version 2.1.49 -]
+2010-06-17: debug.lisp, debug-new.lisp: One small change from the
+              latter incorporated into the former (in 'check',
+              substituted ?,else-flag for :else in match-cond); then
+              debug-new.lisp deleted.
+
 2010-02-08: debug.lisp: Improved 'test' macro by allowing keywords to
               clarify what the body means.  Also exports check-count*
               from ytools package.
