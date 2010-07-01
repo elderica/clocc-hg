@@ -166,7 +166,7 @@ This is equivalent to (mod (binomial nn kk) 2) but faster."
 (defun ruler (n)
   "The exponent of the largest power of 2 which divides the given number.
 See <http://mathworld.wolfram.com/RulerFunction.html>.
-See also <http://www.podval.org/~sds/notes.html#ruler-function>
+See also <http://sds.podval.org/notes.html#ruler-function>
 for the explanation of the (logand n (- n)) part.
 This is ffs-1 (ffs=find first set bit):
 CLISP: (ffi:def-call-out ffs (:name \"ffs\") (:arguments (i ffi:int))
