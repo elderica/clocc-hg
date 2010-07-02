@@ -1,6 +1,6 @@
 ;;; Regression Testing
 ;;;
-;;; Copyright (C) 1999-2008 by Sam Steingold
+;;; Copyright (C) 1999-2008, 2010 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
@@ -397,9 +397,31 @@
     (mesg :test out " ** lift-quality=~S~%" q)
     (unless (= 0.5 q) (incf num-err))))
 
+(deftest test-bayes ()
+  (labels ((digits (num digits)
+             (loop :for i :below digits
+               :collect (cons i (ldb (byte 1 i) num))))
+           (make-division-model (divisor max)
+             ;; for numbers 0..(max-1) predict the remainder
+             ;; mod divisor from binary digits
+             (loop :with b =
+               (nb-model-make
+                'test (coerce (loop :for i :below divisor :collect i) 'vector))
+               :with nd = (1- (integer-length (1- max)))
+               :for n :below max :do
+               (nb-add-observation b (mod n divisor) (digits n nd))
+               :finally (return b))))
+    (let* ((m2 (make-division-model 2 16))
+           (max 32) (nd (1- (integer-length (1- max)))))
+      (loop :for n :below max :for d = (digits n nd)
+        :for lo = (nb-predict-classes m2 d) :do
+        (mesg :test out " ** bayes(~:D)=~S~%" n (logodds-to-prob lo))
+        (unless (= (best-class lo) (mod n 2))
+          (incf num-err))))))
+
 (defun test-all (&key (out *standard-output*)
                  (what '(string math date rpm url elisp xml munkres cvs base64
-                         iter matrix list lift))
+                         iter matrix list lift bayes))
                  (disable-network-dependent-tests t))
   (mesg :test out "~& *** ~s: regression testing...~%" 'test-all)
   (let* ((num-test 0)
