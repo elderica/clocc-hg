@@ -34,7 +34,7 @@
 (defmethod print-object ((model nb-model) (out stream))
   (if *print-readably* (call-next-method)
       (print-unreadable-object (model out :type t)
-        (format out "~S observations:~:D classes:~S ~features:~:D"
+        (format out "~S observation~:P:~:D classes:~S features:~:D"
                 (nb-model-name model) (nb-model-count model)
                 (nb-model-class-names model)
                 (hash-table-count (nb-model-features model))))))
