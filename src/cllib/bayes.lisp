@@ -16,6 +16,9 @@
 
 (in-package :cllib)
 
+(export '(nb-model nb-model-make nb-add-observation nb-model-prune
+          nb-predict-classes))
+
 (defstruct nb-model
   (name (port:required-argument)) ; any ID
   (count 0 :type real)       ; sample count; real to accommodate weights
@@ -55,6 +58,8 @@
 
 (defun nb-add-observation (model class features &key (weight 1))
   "Add an observation with the given features of the given class."
+  (assert (plusp weight) (weight) "~S: weight ~S must be positive"
+          'nb-add-observation weight)
   (let* ((ci (nb-class-index model class))
          (cc (nb-model-class-counts model)) (nc (length cc)))
     (incf (nb-model-count model) weight)
@@ -78,21 +83,31 @@
     (when out (format t "Pruned ~S (removed ~:D feature~:P)~%" model removed))
     removed))
 
+(defun logodds (this total)
+  (and (< 0 this total)
+       (- (log this) (log (- total this)))))
+
 (defun nb-predict-classes (model features)
-  "Return the vector of probabilities for classes."
-  (let ((lcount (nb-model-count model))
+  "Return the vector of logodds for classes.
+I.e., P(class) = 1/(1+exp(-logodds))."
+  (let ((count (nb-model-count model))
         (nc (length (nb-model-class-names model)))
         (ft (nb-model-features model)))
+    (when (zerop count)
+      (error "~S(~S): no observations yet" 'nb-predict-classes model))
     (reduce (lambda (vec feature)
               (let ((fc (gethash feature ft)))
                 (when fc
                   (let ((tot (reduce #'+ fc)))
+                    ;; tot>0 is guaranteed by the assert in nb-add-observation
                     (loop :for i :below nc
-                      :for c :across fc :and v :across vec
-                      :do (* v ))))
+                      :for c :across fc
+                      :for lo = (logodds c tot)
+                      :when lo :do (incf (aref vec i) lo))))
                 vec))
             features
-            :initial-value (map 'vector (lambda (n) (/ n count))
+            :initial-value (map 'vector ; compute "b = ln b1 - ln b0"
+                                (lambda (n) (logodds n count))
                                 (nb-model-class-counts model)))))
 
 (provide :bayes)
