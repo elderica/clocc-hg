@@ -17,7 +17,7 @@
 (in-package :cllib)
 
 (export '(nb-model nb-model-make nb-add-observation nb-model-prune
-          nb-predict-classes))
+          nb-predict-classes logodds-to-prob best-class))
 
 (defstruct nb-model
   (name (port:required-argument)) ; any ID
@@ -84,8 +84,25 @@
     removed))
 
 (defun logodds (this total)
-  (and (< 0 this total)
-       (- (log this) (log (- total this)))))
+  ;; should be using ieee infinites and nans...
+  (cond ((zerop this) '-infinity)
+        ((= total this) '+infinity)
+        (t (- (log this) (log (- total this))))))
+
+(defgeneric logodds-to-prob (lo)
+  (:method ((lo sequence))
+    (map (type-of lo) #'logodds-to-prob lo))
+  (:method ((lo (eql '-infinity))) 0)
+  (:method ((lo (eql '+infinity))) 1)
+  (:method ((lo (eql 'nan))) 'nan)
+  (:method ((lo number)) (/ (1+ (exp (- lo))))))
+
+(defun logodds+ (lo0 lo1)
+  (case lo0
+    ((nan) 'nan)
+    ((+infinity) (case lo1 ((nan -infinity) 'nan) (t '+infinity)))
+    ((-infinity) (case lo1 ((nan +infinity) 'nan) (t '-infinity)))
+    (t (etypecase lo1 (symbol lo1) (number (+ lo0 lo1))))))
 
 (defun nb-predict-classes (model features)
   "Return the vector of logodds for classes.
@@ -93,22 +110,35 @@ I.e., P(class) = 1/(1+exp(-logodds))."
   (let ((count (nb-model-count model))
         (nc (length (nb-model-class-names model)))
         (ft (nb-model-features model)))
-    (when (zerop count)
+    (unless (plusp count)
       (error "~S(~S): no observations yet" 'nb-predict-classes model))
     (reduce (lambda (vec feature)
               (let ((fc (gethash feature ft)))
                 (when fc
                   (let ((tot (reduce #'+ fc)))
                     ;; tot>0 is guaranteed by the assert in nb-add-observation
-                    (loop :for i :below nc
-                      :for c :across fc
-                      :for lo = (logodds c tot)
-                      :when lo :do (incf (aref vec i) lo))))
+                    (loop :for i :below nc :for c :across fc
+                      :do (setf (aref vec i)
+                                (logodds+ (aref vec i) (logodds c tot))))))
                 vec))
             features
             :initial-value (map 'vector ; compute "b = ln b1 - ln b0"
                                 (lambda (n) (logodds n count))
                                 (nb-model-class-counts model)))))
+
+(defun best-class (logodds)
+  "Return the best class index or NIL if all logodds is -INFINITY or NAN
+or T if multiple best classes."
+  (loop :with ret = nil :with best = nil
+    :for lo :across logodds :for index :upfrom 0 :do
+    (case lo
+      ((-infinity nan))
+      ((+infinity) (if (eq best '+infinity) (return T)
+                       (setq best '+infinity ret index)))
+      (t (unless (eq best '+infinity)
+           (when (= best lo) (return T))
+           (when (< best lo) (setq best lo ret index)))))
+    :finally (return (values ret best))))
 
 (provide :bayes)
 ;;; file bayes.lisp ends here
