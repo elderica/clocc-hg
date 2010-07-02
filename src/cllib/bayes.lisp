@@ -25,7 +25,7 @@
 
 (defun nb-model-check (model)
   (let ((cc (nb-model-class-counts model)))
-    (assert (= (length (nb-model-class-names model) cc)))
+    (assert (= (length (nb-model-class-names model)) (length cc)))
     (assert (= (nb-model-count model) (reduce #'+ cc)))))
 
 (defmethod print-object ((model nb-model) (out stream))
@@ -65,7 +65,7 @@
                            (make-array nc :initial-element 0)))))
         (incf (aref vec ci) weight)))))
 
-(defun nb-model-prune (model threshold &key ((out *standard-output*)))
+(defun nb-model-prune (model threshold &key (out *standard-output*))
   "Remove features observed fewer than THRESHOLD times."
   (let ((features (nb-model-features model)) (removed 0))
     (when out (format t "~&Pruning ~S to ~:D~%" model threshold))
