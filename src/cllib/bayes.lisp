@@ -13,6 +13,8 @@
 
 (eval-when (compile load eval)
   (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
+  ;; `mesg'
+  (require :cllib-log (translate-logical-pathname "cllib:log"))
   ;; `hash-table->alist', `print-counts'
   (require :cllib-miscprint (translate-logical-pathname "cllib:miscprint"))
   ;; `mutual-information-N', `to-percent', `sample'
@@ -124,14 +126,14 @@
                                  feature-quality)))
   "Remove features observed fewer than THRESHOLD times."
   (let ((features (nb-model-features model)) (removed 0))
-    (when out (format t "~&Pruning ~S by ~A to ~:D~%" model name threshold))
+    (cllib:mesg :bayes out "~&Pruning ~S by ~A to ~:D~%" model name threshold)
     (maphash (lambda (feature counts)
                (when (> threshold (funcall feature-quality counts))
                  (when out (format out "Removing ~S ~S~%" feature counts))
                  (incf removed)
                  (remhash feature features)))
              features)
-    (when out (format t "Pruned ~S (removed ~:D feature~:P)~%" model removed))
+    (cllib:mesg :bayes out "Pruned ~S (removed ~:D feature~:P)~%" model removed)
     removed))
 
 (defun logodds (this total)
@@ -206,12 +208,13 @@ KEY should return a cons (CLASS . FEATURES)."
                           (cons (car c-f) detected)))
               observations))
       (when (plusp failed)
-        (format out "~&~S(~S): failed on ~:D observation~:P (~,2F%)~%"
-                'nb-evaluate model failed
-                (cllib:to-percent (/ failed (length observations)))))
-      (format out "~&~S(~S, ~:D observation~:P): I(C,D)=~6F  H(C,D)=~6F  H(C)=~6F  H(D)=~6F  Proficiency=~6F~%"
-              model (length observations) mi h correct detected
-              (/ mi correct))
+        (cllib:mesg :bayes out
+                    "~&~S(~S): failed on ~:D observation~:P (~,2F%)~%"
+                    'nb-evaluate model failed
+                    (cllib:to-percent (/ failed (length observations)))))
+      (cllib:mesg :bayes out "~&~S(~S, ~:D observation~:P): I(C,D)=~6F  H(C,D)=~6F  H(C)=~6F  H(D)=~6F  Proficiency=~6F~%"
+                  model (length observations) mi h correct detected
+                  (/ mi correct))
       (/ mi correct))))
 
 (defun train-test (observations &key (key #'identity) (out *standard-output*)
@@ -232,7 +235,7 @@ build a model on TRAIN, evaluate on TEST."
          (model (nb-model-make model-name (map 'vector #'car classes)
                                :feature-test feature-test))
          (train ()) (test ()))
-    (when out
+    (when (and out (cllib:print-log-p :bayes))
       (format out "~&~S: ~:D observation~:P:~%"
               'train-test (length observations))
       (cllib:print-counts
@@ -257,16 +260,15 @@ build a model on TRAIN, evaluate on TEST."
             (cllib:sample features-list train-n :complement t)
           (setq train (nconc (mapcar cons-class tr) train)
                 test (nconc (mapcar cons-class te) test)))))
-    (when out
-      (format out "~S: ~:D train samples, ~:D test samples~%"
-              'train-test (length train) (length test)))
+    (cllib:mesg :bayes out "~S: ~:D train samples, ~:D test samples~%"
+                'train-test (length train) (length test))
     ;; train the model
     (dolist (o train) (nb-add-observation model (car o) (cdr o)))
     ;; prune the mode
     (dolist (p prune)
       (nb-model-prune model (first p) (second p) :out out
                       :name (third p)))
-    (when out (format out "~S: trained ~S~%" 'train-test model))
+    (cllib:mesg :bayes out "~S: trained ~S~%" 'train-test model)
     ;; evaluate model
     (values model (nb-evaluate model test :out out))))
 
