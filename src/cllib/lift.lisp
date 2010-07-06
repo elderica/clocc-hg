@@ -1,6 +1,6 @@
 ;;; Lift (ROC) curve analysis
 ;;;
-;;; Copyright (C) 2004-2009 by Sam Steingold
+;;; Copyright (C) 2004-2010 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
@@ -62,11 +62,11 @@
               title true-bad total (s/ true-bad total 1d-2)
               (* 1d2 data-reduction) (* 1d2 recall) (* 1d2 precision) lift))
     (when (and (< 0 true-bad total) (< 0 predicted-bad total))
-      (setq dependency (cllib:dependency hits true-bad predicted-bad total)
-            proficiency (cllib:proficiency hits true-bad predicted-bad total))
+      (setq dependency (cllib:dependency-2 hits true-bad predicted-bad total)
+            proficiency (cllib:proficiency-2 hits true-bad predicted-bad total))
       (when out
         (format out "  correlation: ~5F  dependency: ~5F  proficiency: ~5F~%"
-                (cllib:correlation hits true-bad predicted-bad total)
+                (cllib:correlation-2 hits true-bad predicted-bad total)
                 dependency proficiency)))
     (make-detector-statistics
      :recall recall :precision precision :lift lift

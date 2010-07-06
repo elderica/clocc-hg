@@ -39,7 +39,7 @@
    standard-deviation-relative standard-deviation-mdl min+max
    entropy-sequence entropy-distribution kullback-leibler
    mutual-information-N mutual-information-continuous
-   information mutual-information-2 dependency proficiency correlation
+   information mutual-information-2 dependency-2 proficiency-2 correlation-2
    mdl make-mdl +bad-mdl+ mdl-mn mdl-sd mdl-le mdl-mi mdl-ma mdl-mi$ mdl-ma$
    mdl-normalize mdl-denormalize mdl-normalize-function
    normalizer-table normalize-function-list
@@ -1554,16 +1554,17 @@ p1=p(x=1), p2=p(y=1), p12=p(x=1 & y=1)"
         N)
      (log N 2)))
 
-(defun dependency (p12 p1 p2 &optional (N 1))
+(defun dependency-2 (p12 p1 p2 &optional (N 1))
   "Mutual information normalized by total entropy"
   (let ((mi (mutual-information-2 p12 p1 p2 N)))
     (/ mi (- (+ (information p1 N) (information p2 N)) mi))))
 
-(defun proficiency (p12 p1 p2 &optional (N 1))
+(defun proficiency-2 (p12 p1 p2 &optional (N 1))
   "Information-theoretic predictive power of the first relative to the second"
   (/ (mutual-information-2 p12 p1 p2 N) (information p1 N)))
 
-(defun correlation (p12 p1 p2 &optional (N 1) &aux (q1 (- N p1)) (q2 (- N p2)))
+(defun correlation-2 (p12 p1 p2 &optional (N 1)
+                      &aux (q1 (- N p1)) (q2 (- N p2)))
   "Correlation of two binary distributions"
   (check-probabilities p12 p1 p2 N 'correlation)
   (/ (+ (* p12 q1 q2)                          ; x=1 y=1
