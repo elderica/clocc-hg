@@ -13,14 +13,16 @@
 
 (eval-when (compile load eval)
   (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
-  ;; `mutual-information-N', `to-percent'
+  ;; `hash-table->alist', `print-counts'
+  (require :cllib-miscprint (translate-logical-pathname "cllib:miscprint"))
+  ;; `mutual-information-N', `to-percent', `sample'
   (require :cllib-math (translate-logical-pathname "cllib:math")))
 
 (in-package :cllib)
 
 (export '(nb-model nb-model-make nb-add-observation nb-model-prune
-          feature-power feature-weight
-          nb-predict-classes logodds-to-prob best-class nb-evaluate))
+          *prune-methods* feature-power feature-weight
+          nb-predict-classes logodds-to-prob best-class nb-evaluate train-test))
 
 (defstruct nb-model
   (name (port:required-argument)) ; any ID
@@ -110,11 +112,19 @@
      (- (log (length counts) 2) ; max possible entropy
         (entropy-distribution counts)))) ; actual entropy
 
+(defcustom *prune-methods* 'list
+  `((,#'feature-weight 1 "weight")
+    (,#'feature-power 1 "power"))
+  "*The methods of pruning models.")
+
 (defun nb-model-prune (model feature-quality threshold
-                       &key (out *standard-output*))
+                       &key (out *standard-output*)
+                       (name (or (nth-value 2 (function-lambda-expression
+                                               feature-quality))
+                                 feature-quality)))
   "Remove features observed fewer than THRESHOLD times."
   (let ((features (nb-model-features model)) (removed 0))
-    (when out (format t "~&Pruning ~S to ~:D~%" model threshold))
+    (when out (format t "~&Pruning ~S by ~A to ~:D~%" model name threshold))
     (maphash (lambda (feature counts)
                (when (> threshold (funcall feature-quality counts))
                  (when out (format out "Removing ~S ~S~%" feature counts))
@@ -203,6 +213,62 @@ KEY should return a cons (CLASS . FEATURES)."
               model (length observations) mi h correct detected
               (/ mi correct))
       (/ mi correct))))
+
+(defun train-test (observations &key (key #'identity) (out *standard-output*)
+                   (model-name (port:required-argument)) (train-rate 0.7)
+                   (prune *prune-methods*)
+                   (feature-test 'equal) (class-test 'eql) (min-box-size 5))
+  "Build a model and test it.
+Split OBSERVATIONS at TRAIN-RATE into TRAIN and TEST sets,
+build a model on TRAIN, evaluate on TEST."
+  (let* ((classes
+          (cdr (cllib:hash-table->alist
+                (let ((ht (make-hash-table :test class-test)))
+                  (map nil (lambda (o)
+                             (let ((c-f (funcall key o)))
+                               (push (cdr c-f) (gethash (car c-f) ht))))
+                       observations)
+                  ht))))
+         (model (nb-model-make model-name (map 'vector #'car classes)
+                               :feature-test feature-test))
+         (train ()) (test ()))
+    (when out
+      (format out "~&~S: ~:D observation~:P:~%"
+              'train-test (length observations))
+      (cllib:print-counts
+       (mapcar (lambda (c-f) (cons (car c-f) (length (cdr c-f)))) classes)
+       :out out))
+    ;; sample observations for each class separately,
+    ;; so that the `train-rate' is maintained for each class
+    (dolist (c-f classes)
+      (let* ((features-list (cdr c-f))
+             (cons-class (lambda (o) (cons (car c-f) o)))
+             (count (length features-list))
+             (train-n (round (* train-rate count))))
+        (when (< train-n min-box-size)
+          (cerror "ignore and proceed"
+                  "Too few train samples (~:D < ~:D) for class ~S"
+                  train-n min-box-size (car c-f)))
+        (when (< (- count train-n) min-box-size)
+          (cerror "ignore and proceed"
+                  "Too few test samples (~:D < ~:D) for class ~S"
+                  (- count train-n) min-box-size (car c-f)))
+        (multiple-value-bind (tr te)
+            (cllib:sample features-list train-n :complement t)
+          (setq train (nconc (mapcar cons-class tr) train)
+                test (nconc (mapcar cons-class te) test)))))
+    (when out
+      (format out "~S: ~:D train samples, ~:D test samples~%"
+              'train-test (length train) (length test)))
+    ;; train the model
+    (dolist (o train) (nb-add-observation model (car o) (cdr o)))
+    ;; prune the mode
+    (dolist (p prune)
+      (nb-model-prune model (first p) (second p) :out out
+                      :name (third p)))
+    (when out (format out "~S: trained ~S~%" 'train-test model))
+    ;; evaluate model
+    (values model (nb-evaluate model test :out out))))
 
 (provide :bayes)
 ;;; file bayes.lisp ends here
