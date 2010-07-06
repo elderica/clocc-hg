@@ -49,6 +49,37 @@
                                            :initial-element 0)
                  :features (make-hash-table :test feature-test)))
 
+(defun feature-counts (model feature)
+  "Return the vector of counts for the given feature."
+  (let ((f (nb-model-features model)))
+    (or (gethash feature f)
+        (setf (gethash feature f)
+              (make-array (length (nb-model-class-names model))
+                          :initial-element 0)))))
+
+(defun nb-model-merge (model1 model2 new-name)
+  (let ((cnames (nb-model-class-names model1)) ret
+        (f1 (nb-model-features model1)) (f2 (nb-model-features model2)))
+    ;; make sure the models are compatible (i.e., predict the same classes)
+    (assert (equalp cnames (nb-model-class-names model2)))
+    (assert (eq (hash-table-test f1) (hash-table-test f2)))
+    (setq ret (nb-model-make new-name (copy-seq (nb-model-class-names model1))
+                             :feature-test (hash-table-test f1)))
+    (setf (nb-model-count ret)
+          (+ (nb-model-count model1) (nb-model-count model2)))
+    ;; merge class counts
+    (loop :with cc = (nb-model-class-counts ret) :for i :upfrom 0
+      :for c1 :across (nb-model-class-counts model1)
+      :for c2 :across (nb-model-class-counts model2)
+      :do (setf (aref cc i) (+ c1 c2)))
+    ;; merge feature counts
+    (dolist (f (list f1 f2) ret)
+      (maphash (lambda (feature counts)
+                 (loop :with vec = (feature-counts ret feature)
+                   :for c :across counts :and i :upfrom 0
+                   :do (incf (aref vec i) c)))
+               f))))
+
 (defun nb-class-index (model class)
   "Convert symbolic or numeric class id to in index in CLASS-COUNTS et al."
   (etypecase class
@@ -63,15 +94,11 @@
   "Add an observation with the given features of the given class."
   (assert (plusp weight) (weight) "~S: weight ~S must be positive"
           'nb-add-observation weight)
-  (let* ((ci (nb-class-index model class))
-         (cc (nb-model-class-counts model)) (nc (length cc)))
+  (let ((ci (nb-class-index model class)))
     (incf (nb-model-count model) weight)
-    (incf (aref cc ci) weight)
+    (incf (aref (nb-model-class-counts model) ci) weight)
     (dolist (feature features)
-      (let ((vec (or (gethash feature (nb-model-features model))
-                     (setf (gethash feature (nb-model-features model))
-                           (make-array nc :initial-element 0)))))
-        (incf (aref vec ci) weight)))))
+      (incf (aref (feature-counts model feature) ci) weight))))
 
 (defun feature-weight (counts)
   "The number of times the feature appears in the training sample."
