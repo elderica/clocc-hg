@@ -1,6 +1,6 @@
 ;;; Math utilities (Arithmetical / Statistical functions)
 ;;;
-;;; Copyright (C) 1997-2009 by Sam Steingold
+;;; Copyright (C) 1997-2010 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
@@ -428,7 +428,7 @@ The order in which the permutations are listed is either
       (:swap (with-permutations-swap (vv vec) (coll (copy-seq vv)))))))
 
 (defun subsets (set)
-  "return a list of all subsets of the given set (represented as a list)"
+  "Return a list of all subsets of the given set (represented as a list)"
   (let ((first (first set)) (rest (rest set)))
     (if rest
         (let ((others (subsets rest)))
@@ -1471,7 +1471,7 @@ When the distribution is not discrete, entropy is not available."
 (defun mdl-normalize (value mdl)   (/ (- value (mdl-mn mdl)) (mdl-sd mdl)))
 (defun mdl-denormalize (value mdl) (+ (* value (mdl-sd mdl)) (mdl-mn mdl)))
 (defun mdl-normalize-function (function mdl)
-  "return a normalized version of FUNCTION"
+  "Return a normalized version of FUNCTION"
   (lambda (x) (mdl-normalize (funcall function x) mdl)))
 
 ;; when the mdl argument is a constant object, access slots
@@ -1524,18 +1524,18 @@ where `X/N' means normalized with (GETHASH X MDL-HT)"
 ;;;
 
 (defun check-probabilities (p12 p1 p2 N caller)
-  "check that the arguments are valid probabilities"
+  "Check that the arguments are valid probabilities"
   (assert (and (>= N p12 0) (>= N p1 0) (>= N p2 0)
                (>= p1 p12) (>= p2 p12) (>= p12 (- (+ p1 p2) N)))
           (p12 p1 p2)
           "~s: invalid probabilities: ~s ~s ~s" caller p12 p1 p2))
 
 (defsubst info-component (p12 p1 p2)
-  "one component of information computation"
+  "One component of information computation"
   (if (zerop p12) 0 (* p12 (log (/ p12 p1 p2) 2))))
 
 (defun information (p &optional (N 1) &aux (q (- N p)))
-  "information of distribution P(0)=p/N, P(1)=1-p/N"
+  "Information of distribution P(0)=p/N, P(1)=1-p/N"
   ;; == (mutual-information-2 p p p)
   (+ (/ (+ (info-component q q q)
            (info-component p p p))
@@ -1560,11 +1560,11 @@ p1=p(x=1), p2=p(y=1), p12=p(x=1 & y=1)"
     (/ mi (- (+ (information p1 N) (information p2 N)) mi))))
 
 (defun proficiency (p12 p1 p2 &optional (N 1))
-  "information-theoretic predictive power of the first relative to the second"
+  "Information-theoretic predictive power of the first relative to the second"
   (/ (mutual-information-2 p12 p1 p2 N) (information p1 N)))
 
 (defun correlation (p12 p1 p2 &optional (N 1) &aux (q1 (- N p1)) (q2 (- N p2)))
-  "correlation of two binary distributions"
+  "Correlation of two binary distributions"
   (check-probabilities p12 p1 p2 N 'correlation)
   (/ (+ (* p12 q1 q2)                          ; x=1 y=1
         (* (- p1 p12) q1 (- p2))               ; x=0 y=1
@@ -1573,7 +1573,7 @@ p1=p(x=1), p2=p(y=1), p12=p(x=1 & y=1)"
      (sqrt (* p1 q1 p2 q2)) N))
 
 (defun 1st-moment (p12 p1 p2)
-  "covariance of two binary distributions"
+  "Covariance of two binary distributions"
   (/ p12 (sqrt (* p1 p2))))
 
 ;;;
@@ -1891,7 +1891,7 @@ The accessor keys XKEY and YKEY default to CAR and CDR respectively."
 ;;;
 
 (defstruct plf
-  "piecewise linear function"
+  "Piecewise linear function"
   (extend-left :error)  ; out of range behavior: :linear/:constant/:error
   (extend-right :error) ; separate for right and left
   x y)                          ; x & y vectors
@@ -1921,7 +1921,7 @@ The accessor keys XKEY and YKEY default to CAR and CDR respectively."
                            'plf-val par plf)))))))
 
 (defun monotonic-p (vec &key (key #'value))
-  "return a symbol - <,>,<=,>= or NIL which describes argument's monotonicity"
+  "Return a symbol - <,>,<=,>= or NIL which describes argument's monotonicity"
   (loop :with <? = t :and =? = nil :and >? = t ; init strict monotonic
     :for pos :from 1 :to (1- (length vec))
     :for next = (funcall key (aref vec pos))
@@ -1951,7 +1951,7 @@ The accessor keys XKEY and YKEY default to CAR and CDR respectively."
     :sum (* (- x-next x-prev) (+ y-next y-prev) 1/2)))
 
 (defun remove-elements (pos-list vec)
-  "remove the elements at these positions from the vector"
+  "Remove the elements at these positions from the vector"
   (let* ((vec-size (length vec))
          (ret (make-array (- vec-size (length pos-list)))))
     (loop :with ret-pos = 0 :with rem = (pop pos-list)
@@ -1984,7 +1984,7 @@ The accessor keys XKEY and YKEY default to CAR and CDR respectively."
 (defcustom *increasify-step* (real 0 (1/2)) 3d-1
   "*The parameter which determines how aggressive INCREASIFY is.")
 (defun increasify (vec &key (step *increasify-step*))
-  "make the vector increasing, preserving the sum of elements"
+  "Make the vector increasing, preserving the sum of elements"
   (loop :with keep-going = t :while keep-going :do
     (setq keep-going nil)
     (loop :for pos :from 1 :to (1- (length vec))
