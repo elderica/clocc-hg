@@ -144,7 +144,9 @@ Usage: (print-counts (count-all seq ...))"
                              (cdr pair)
                              (cons cdr (format nil "~:D" cdr)))
                        pair))
-                   (sort (cdr (hash-table->alist count-ht))
+                   (sort (etypecase count-ht
+                           (hash-table (cdr (hash-table->alist count-ht)))
+                           (sequence count-ht))
                          #'> :key (if key-numeric-p #'car #'cdr)))
       :with total = (reduce #'+ alist :key #'cadr) :with cumul = 0
       :with cwidth = (or cwidth
