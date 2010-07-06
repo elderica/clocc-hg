@@ -12,13 +12,15 @@
 ;;; $Source$
 
 (eval-when (compile load eval)
-  (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base")))
+  (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
+  ;; `mutual-information-N', `to-percent'
+  (require :cllib-math (translate-logical-pathname "cllib:math")))
 
 (in-package :cllib)
 
 (export '(nb-model nb-model-make nb-add-observation nb-model-prune
           feature-power feature-weight
-          nb-predict-classes logodds-to-prob best-class))
+          nb-predict-classes logodds-to-prob best-class nb-evaluate))
 
 (defstruct nb-model
   (name (port:required-argument)) ; any ID
@@ -151,6 +153,29 @@ or T if multiple best classes."
            (when (= best lo) (return T))
            (when (< best lo) (setq best lo ret index)))))
     :finally (return (values ret best))))
+
+(defun nb-evaluate (model observations &key (key #'identity)
+                    (out *standard-output*))
+  "Return the proficiency of the model on the observations.
+KEY should return a cons (CLASS . FEATURES)."
+  (let ((failed 0))
+    (multiple-value-bind (mi h correct detected)
+        (cllib:mutual-information-N
+         (map 'vector (lambda (o)
+                        (let* ((c-f (funcall key o))
+                               (detected (best-class (nb-predict-classes
+                                                      model (cdr c-f)))))
+                          (when (symbolp detected) (incf failed))
+                          (cons (car c-f) detected)))
+              observations))
+      (when (plusp failed)
+        (format out "~&~S(~S): failed on ~:D observation~:P (~,2F%)~%"
+                'nb-evaluate model failed
+                (cllib:to-percent (/ failed (length observations)))))
+      (format out "~&~S(~S, ~:D observation~:P): I(C,D)=~6F  H(C,D)=~6F  H(C)=~6F  H(D)=~6F  Proficiency=~6F~%"
+              model (length observations) mi h correct detected
+              (/ mi correct))
+      (/ mi correct))))
 
 (provide :bayes)
 ;;; file bayes.lisp ends here
