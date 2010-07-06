@@ -65,7 +65,7 @@
      (:file "matrix" :depends-on ("base" "withtype"))
      (:file "miscprint" :depends-on ("base" "simple"))
      (:file "munkres" :depends-on ("base"))
-     (:file "bayes" :depends-on ("base"))
+     (:file "bayes" :depends-on ("base" "miscprint" "math"))
      (:file "ocaml" :depends-on ("base"))
      #+clisp (:file "octave" :depends-on ("base"))
      (:file "prompt" :depends-on ("base"))
