@@ -1,6 +1,6 @@
 ;;; logging and progress reporting
 ;;;
-;;; Copyright (C) 1997-2008 by Sam Steingold
+;;; Copyright (C) 1997-2010 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
@@ -19,7 +19,7 @@
 (in-package :cllib)
 
 (export '(get-int-time elapsed time-diff with-timing eta progress
-          *print-log* mesg list-format fmt%))
+          *print-log* mesg print-log-p list-format fmt%))
 
 ;;;
 ;;;
@@ -67,7 +67,7 @@ If FMT is non-NIL, return the corresponding string too."
 ;;;
 
 (defcustom *print-log* simple-vector
-  '#(:log :logv :date :plot :head :res :opt :err :test :xml)
+  '#(:log :logv :date :plot :head :res :opt :err :test :xml :bayes)
   "The list of message types which are being printed.")
 
 (defun print-log-p (type)
