@@ -17,6 +17,7 @@
 (in-package :cllib)
 
 (export '(nb-model nb-model-make nb-add-observation nb-model-prune
+          feature-power feature-weight
           nb-predict-classes logodds-to-prob best-class))
 
 (defstruct nb-model
@@ -70,7 +71,18 @@
                            (make-array nc :initial-element 0)))))
         (incf (aref vec ci) weight)))))
 
-(defun nb-model-prune (model threshold &key (out *standard-output*))
+(defun feature-weight (counts)
+  "The number of times the feature appears in the training sample."
+  (reduce #'+ counts))
+
+(defun feature-power (counts)
+  "An indicator of the preditive power of the feature."
+  (* (feature-weight counts)
+     (- (log (length counts) 2) ; max possible entropy
+        (entropy-distribution counts)))) ; actual entropy
+
+(defun nb-model-prune (model feature-quality threshold
+                       &key (out *standard-output*))
   "Remove features observed fewer than THRESHOLD times."
   (let ((features (nb-model-features model)) (removed 0))
     (when out (format t "~&Pruning ~S to ~:D~%" model threshold))
