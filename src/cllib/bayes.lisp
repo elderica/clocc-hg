@@ -76,7 +76,7 @@
   (reduce #'+ counts))
 
 (defun feature-power (counts)
-  "An indicator of the preditive power of the feature."
+  "An indicator of the predictive power of the feature."
   (* (feature-weight counts)
      (- (log (length counts) 2) ; max possible entropy
         (entropy-distribution counts)))) ; actual entropy
@@ -96,7 +96,7 @@
     removed))
 
 (defun logodds (this total)
-  ;; should be using ieee infinites and nans...
+  ;; should be using ieee infinities and nans...
   (cond ((zerop this) '-infinity)
         ((= total this) '+infinity)
         (t (- (log this) (log (- total this))))))
