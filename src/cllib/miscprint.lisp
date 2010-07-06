@@ -135,8 +135,7 @@ The inverse is `hash-table->alist'."
 If KEY-NUMERIC-P is non-NIL, sort by KEY instead.
 Usage: (print-counts (count-all seq ...))"
   (when out
-    (loop :with commify = (lambda (x) (format nil "~:D" x))
-      :with alist =
+    (loop :with alist =
       (port:map-in (lambda (pair)
                      (let ((car (car pair)) (cdr (cdr pair)))
                        (setf (car pair)
