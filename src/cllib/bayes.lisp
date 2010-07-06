@@ -87,7 +87,7 @@
   (let ((features (nb-model-features model)) (removed 0))
     (when out (format t "~&Pruning ~S to ~:D~%" model threshold))
     (maphash (lambda (feature counts)
-               (when (> threshold (reduce #'+ counts))
+               (when (> threshold (funcall feature-quality counts))
                  (when out (format out "Removing ~S ~S~%" feature counts))
                  (incf removed)
                  (remhash feature features)))
