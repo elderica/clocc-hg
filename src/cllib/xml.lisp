@@ -36,6 +36,7 @@
    xml-obj xml-obj-p xmlo-args xmlo-name xmlo-data do-xmlo-data
    xmlo-name-check xmlo-nm xmlo-tag
    xml-name xml-name-p xmln-ln xmln-ns xmln=
+   xml-mapcan xml-find-name xml-find-id
    xml-namespace xml-namespace-p xmlns-uri xmlns-pre xmlns-nht))
 
 ;;;
@@ -1003,6 +1004,29 @@ just kill whitespace strings."
           (let ((*xml-print-xml* t)) (write obj :stream str))
           (mesg :xml out "done [~:d bytes total]" (stream-length str)))
         (terpri str)))))
+
+(defun xml-mapcan (f obj)
+  "Apply F to OBJ and all children and nconc the results."
+  (typecase obj
+    (list (mapcan (lambda (x) (xml-mapcan f x)) obj))
+    (xml-tag
+     (let ((res (funcall f obj)))
+       (when (xml-obj-p obj)
+         (dolist (sub (xmlo-data obj))
+           (setq res (nconc (xml-mapcan f sub) res))))
+       res))))
+
+(defun xml-find-name (name &optional (namespace +xml-namespace-none+))
+  (gethash name (xmlns-nht namespace)))
+
+(defun xml-find-id (obj id &key (name (xml-find-name "id")))
+  (unless name
+    (error "~S(~S,~S): ~S is a required argument" 'xmlns-nht obj id :name))
+  (xml-mapcan (lambda (obj)
+                (and (xml-tag-p obj)
+                     (let ((i (assoc name (xmlt-args obj))))
+                       (and i (string= id (second i)) (list obj)))))
+              obj))
 
 (provide :cllib-xml)
 ;;; file xml.lisp ends here
