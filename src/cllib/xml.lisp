@@ -1,6 +1,6 @@
 ;;; XML parsing
 ;;;
-;;; Copyright (C) 2000-2005, 2007-2008 by Sam Steingold
+;;; Copyright (C) 2000-2005, 2007-2008, 2010 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
@@ -808,7 +808,7 @@ The first character to be read is #\T."
     ((#\& #\%)
      (let* ((ent (xml-read-text stream #\;))
             (str (if (and (char= #\& char) (char= #\# (char ent 0)))
-                     (let ((code (parse-integer ent :start 1)))
+                     (let ((code (parse-integer ent :start 2 :radix 16)))
                        (if (< code char-code-limit)
                            (string (code-char code))
                            (concatenate 'string "&" ent ";")))
