@@ -236,8 +236,8 @@ build a model on TRAIN, evaluate on TEST."
                                :feature-test feature-test))
          (train ()) (test ()))
     (when (and out (cllib:print-log-p :bayes))
-      (format out "~&~S: ~:D observation~:P:~%"
-              'train-test (length observations))
+      (format out "~&~S(~S): ~:D observation~:P:~%"
+              'train-test model-name (length observations))
       (cllib:print-counts
        (mapcar (lambda (c-f) (cons (car c-f) (length (cdr c-f)))) classes)
        :out out))
@@ -260,8 +260,8 @@ build a model on TRAIN, evaluate on TEST."
             (cllib:sample features-list train-n :complement t)
           (setq train (nconc (mapcar cons-class tr) train)
                 test (nconc (mapcar cons-class te) test)))))
-    (cllib:mesg :bayes out "~S: ~:D train samples, ~:D test samples~%"
-                'train-test (length train) (length test))
+    (cllib:mesg :bayes out "~S(~S): ~:D train samples, ~:D test samples~%"
+                'train-test model-name (length train) (length test))
     ;; train the model
     (dolist (o train) (nb-add-observation model (car o) (cdr o)))
     ;; prune the mode
