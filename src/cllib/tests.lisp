@@ -417,7 +417,13 @@
         :for lo = (nb-predict-classes m2 d) :do
         (mesg :test out " ** bayes(~:D)=~S~%" n (logodds-to-prob lo))
         (unless (= (best-class lo) (mod n 2))
-          (incf num-err)))))
+          (incf num-err))))
+    (multiple-value-bind (model proficiency)
+        (train-test (loop :for i :from 32 :to 63 :collect
+                      (cons (evenp i) (digits i 5)))
+                    :model-name "evenp-5")
+      (unless (= 2 (hash-table-count (nb-model-features model))) (incf num-err))
+      (unless (= 1 proficiency) (incf num-err))))
   (flet ((check-logodds+ (a b c)
            (let ((res (logodds+ a b)))
              (mesg :test out " ** logodds+(~S ~S)=~S~:[ (should be ~S)~;~]~%"
