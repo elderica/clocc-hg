@@ -206,15 +206,16 @@ KEY should return a cons (CLASS . FEATURES)."
                                                       model (cdr c-f)))))
                           (when (symbolp detected) (incf failed))
                           (cons (car c-f) detected)))
-              observations))
+              observations)
+         :key #'identity)
       (when (plusp failed)
         (cllib:mesg :bayes out
                     "~&~S(~S): failed on ~:D observation~:P (~,2F%)~%"
                     'nb-evaluate model failed
                     (cllib:to-percent (/ failed (length observations)))))
       (cllib:mesg :bayes out "~&~S(~S, ~:D observation~:P): I(C,D)=~6F  H(C,D)=~6F  H(C)=~6F  H(D)=~6F  Proficiency=~6F~%"
-                  model (length observations) mi h correct detected
-                  (/ mi correct))
+                  'nb-evaluate model (length observations)
+                  mi h correct detected (/ mi correct))
       (/ mi correct))))
 
 (defun train-test (observations &key (key #'identity) (out *standard-output*)
