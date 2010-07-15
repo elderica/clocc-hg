@@ -27,7 +27,7 @@
 (in-package :cllib)
 
 (export '(nb-model nb-model-make nb-add-observation nb-model-prune
-          *nb-describe-feature-count*
+          *nb-describe-feature-count* *nb-describe-feature-grouper*
           *prune-methods* feature-power feature-weight
           nb-predict-classes logodds-to-prob best-class nb-evaluate train-test))
 
@@ -116,8 +116,24 @@
      (- (log (length counts) 2) ; max possible entropy
         (cllib:entropy-distribution counts)))) ; actual entropy
 
+(defun feature-groups (model &key (key #'value) (test #'eql))
+  "Return the list of feature groups, their counts and powers."
+  (let ((fg (make-hash-table :test test)))
+    (maphash (lambda (feature counts)
+               (let ((g (funcall key feature)))
+                 (let ((cp (gethash g fg)))
+                   (cond (cp
+                          (cllib:array-lin-comb 1 (car cp) 1 counts (car cp))
+                          (incf (cadr cp) (feature-power counts)))
+                         (t (setf (gethash g fg)
+                                  (list counts (feature-power counts))))))))
+             (nb-model-features model))
+    (sort (cdr (cllib:hash-table->alist fg)) #'> :key #'third)))
+
 (defcustom *nb-describe-feature-count* 'integer 10
   "*The number of top and bottom features to print in DESCRIBE.")
+(defcustom *nb-describe-feature-grouper* '(or symbol function) nil
+  "*The default :KEY argument for FEATURE-GROUPS in DESCRIBE.")
 (defmethod describe-object ((model nb-model) (out stream))
   (format out "a Naive Bayesian model.~%Features and their powers:~%")
   (let* ((fht (nb-model-features model)) (fn (hash-table-count fht))
@@ -136,7 +152,12 @@
                      #'> :key #'cdr)))
           (dolist (l features)
             (format out "feature=~A counts=~A power=~G~%"
-                    (caar l) (cdar l) (cdr l)))))))
+                    (caar l) (cdar l) (cdr l))))))
+  (when *nb-describe-feature-grouper*
+    (format out "Feature groups and their powers:~%")
+    (dolist (l (feature-groups model :key *nb-describe-feature-grouper*))
+      (format out "group=~A counts=~A power=~G~%"
+              (first l) (second l) (third l)))))
 
 (defcustom *prune-methods* 'list
   `((,#'feature-weight 1 "weight")
