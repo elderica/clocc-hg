@@ -15,7 +15,7 @@
   (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `mesg'
   (require :cllib-log (translate-logical-pathname "cllib:log"))
-  ;; `hash-table->alist', `print-counts'
+  ;; `hash-table->alist', `print-counts', `copy-hash-table'
   (require :cllib-miscprint (translate-logical-pathname "cllib:miscprint"))
   ;; `top-bottom-ui'
   (require :cllib-sorted (translate-logical-pathname "cllib:sorted"))
@@ -29,7 +29,8 @@
 (export '(nb-model nb-model-make nb-add-observation nb-model-prune
           *nb-describe-feature-count* *nb-describe-feature-grouper*
           *prune-methods* feature-power feature-weight
-          nb-predict-classes logodds-to-prob best-class nb-evaluate train-test))
+          nb-predict-classes logodds-to-prob best-class nb-evaluate
+          nb-boost train-test))
 
 (defstruct nb-model
   (name (port:required-argument)) ; any ID
@@ -42,6 +43,14 @@
   (let ((cc (nb-model-class-counts model)))
     (assert (= (length (nb-model-class-names model)) (length cc)))
     (assert (= (nb-model-count model) (reduce #'+ cc)))))
+
+(defun nb-model-copy (model)
+  "Deep copy of fields modifiable during model building."
+  (let ((ret (copy-nb-model model)))
+    (setf (nb-model-class-counts ret) (copy-seq (nb-model-class-counts model))
+          (nb-model-features ret)
+          (cllib:copy-hash-table (nb-model-features model)))
+    ret))
 
 (defmethod print-object ((model nb-model) (out stream))
   (if *print-readably* (call-next-method)
@@ -263,13 +272,55 @@ KEY should return a cons (CLASS . FEATURES)."
                   mi h correct detected (/ mi correct))
       (/ mi correct))))
 
+(defun nb-boost-once (model observations &key (key #'identity))
+  "Add misclassified OBSERVATIONS to MODEL.
+KEY should return a cons (CLASS . FEATURES)."
+  (let ((misclassified ())
+        (classes (nb-model-class-names model)))
+    (map nil (lambda (o)
+               (let* ((c-f (funcall key o))
+                      (bc (best-class (nb-predict-classes model (cdr c-f)))))
+                 (unless (and (integerp bc)
+                              (eql (aref classes bc) (car c-f)))
+                   (push c-f misclassified))))
+         observations)
+    (dolist (mi misclassified (length misclassified))
+      (nb-add-observation model (car mi) (cdr mi)))))
+
+(defun nb-boost (model train test &key (key #'identity) (repeat t)
+                 (out *standard-output*))
+  "Perform several rounds of boosting by TRAIN and testing on TEST.
+Return the best model so far and its proficiency (on TEST).
+If REPEAT is T, boost while there is an improvement,
+ if an integer, do this many rounds and to pick the best."
+  (do* ((best (nb-model-copy model)) (round 1 (1+ round))
+        (misclassified -1) (best-round 0)
+        (proficiency (nb-evaluate model train :key key :out out))
+        (last 1))
+       ((or (zerop misclassified)
+            (if (realp repeat)
+                (< repeat round) ; fixed number of rounds
+                (<= last proficiency))) ; while improving
+        (values best proficiency))
+    (cllib:mesg :bayes out "~&~S(~S) [[[round ~:D proficiency=~G~%"
+                'nb-boost model round proficiency)
+    (setq misclassified (nb-boost-once model train :key key)
+          last (nb-evaluate model test :key key :out out))
+    (cllib:mesg :bayes out
+                "~&~S(~S) ]]]round ~:D misclassified:~:D proficiency=~G~%"
+                'nb-boost model round misclassified last)
+    (when (< proficiency last)
+      (setq proficiency last
+            best-round round
+            best (nb-model-copy model)))))
+
 (defun train-test (observations &key (key #'identity) (out *standard-output*)
                    (model-name (port:required-argument)) (train-rate 0.7)
-                   (prune *prune-methods*)
+                   (prune *prune-methods*) (boost t)
                    (feature-test 'equal) (class-test 'eql) (min-box-size 5))
   "Build a model and test it.
 Split OBSERVATIONS at TRAIN-RATE into TRAIN and TEST sets,
-build a model on TRAIN, evaluate on TEST."
+ build a model on TRAIN, evaluate on TEST."
   (let* ((classes
           (cdr (cllib:hash-table->alist
                 (let ((ht (make-hash-table :test class-test)))
@@ -315,8 +366,10 @@ build a model on TRAIN, evaluate on TEST."
       (nb-model-prune model (first p) (second p) :out out
                       :name (third p)))
     (cllib:mesg :bayes out "~S: trained ~S~%" 'train-test model)
-    ;; evaluate model
-    (values model (nb-evaluate model test :out out))))
+    ;; boosting
+    (if boost
+        (nb-boost model train test :key key :out out :repeat boost)
+        (values model (nb-evaluate model test :out out)))))
 
 (provide :bayes)
 ;;; file bayes.lisp ends here
