@@ -19,6 +19,8 @@
   (require :cllib-miscprint (translate-logical-pathname "cllib:miscprint"))
   ;; `top-bottom-ui'
   (require :cllib-sorted (translate-logical-pathname "cllib:sorted"))
+  ;; `array-lin-comb'
+  (require :cllib-matrix (translate-logical-pathname "cllib:matrix"))
   ;; `mutual-information-N', `to-percent', `sample', `entropy-distribution'
   (require :cllib-math (translate-logical-pathname "cllib:math")))
 
@@ -75,16 +77,13 @@
     (setf (nb-model-count ret)
           (+ (nb-model-count model1) (nb-model-count model2)))
     ;; merge class counts
-    (loop :with cc = (nb-model-class-counts ret) :for i :upfrom 0
-      :for c1 :across (nb-model-class-counts model1)
-      :for c2 :across (nb-model-class-counts model2)
-      :do (setf (aref cc i) (+ c1 c2)))
+    (cllib:array-lin-comb 1 (nb-model-class-counts model1)
+                          1 (nb-model-class-counts model2)
+                          (nb-model-class-counts ret))
     ;; merge feature counts
     (dolist (f (list f1 f2) ret)
-      (maphash (lambda (feature counts)
-                 (loop :with vec = (feature-counts ret feature)
-                   :for c :across counts :and i :upfrom 0
-                   :do (incf (aref vec i) c)))
+      (maphash (lambda (feature counts &aux (fc (feature-counts ret feature)))
+                 (cllib:array-lin-comb 1 fc 1 counts fc))
                f))))
 
 (defun nb-class-index (model class)
