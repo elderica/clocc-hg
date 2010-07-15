@@ -16,7 +16,7 @@
 
 (export
  '(hash-table-keys hash-table->alist alist->hash-table make-ht-readtable pophash
-   print-counts
+   copy-hash-table print-counts
    print-all-ascii print-all-packages plist->alist alist->plist plist= alist=))
 
 ;;;
@@ -126,6 +126,11 @@ The inverse is `hash-table->alist'."
   (multiple-value-bind (value present-p) (gethash object ht)
     (when present-p (remhash object ht))
     (values value present-p)))
+
+(defun copy-hash-table (ht)
+  (let ((ret (make-hash-table :test (hash-table-test ht))))
+    (maphash (lambda (k v) (setf (gethash k ret) v)) ht)
+    ret))
 
 (defun print-counts (count-ht &key (out *standard-output*) (key-numeric-p nil)
                      (format
