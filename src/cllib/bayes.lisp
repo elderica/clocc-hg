@@ -320,7 +320,9 @@ If REPEAT is T, boost while there is an improvement,
                    (feature-test 'equal) (class-test 'eql) (min-box-size 5))
   "Build a model and test it.
 Split OBSERVATIONS at TRAIN-RATE into TRAIN and TEST sets,
- build a model on TRAIN, evaluate on TEST."
+ build a model on TRAIN, evaluate on TEST.
+NB: if BOOST is non-NIL, the final model is selected based on TEST,
+    so it must be evaluated on a separate data set."
   (let* ((classes
           (cdr (cllib:hash-table->alist
                 (let ((ht (make-hash-table :test class-test)))
