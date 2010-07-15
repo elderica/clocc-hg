@@ -17,12 +17,15 @@
   (require :cllib-log (translate-logical-pathname "cllib:log"))
   ;; `hash-table->alist', `print-counts'
   (require :cllib-miscprint (translate-logical-pathname "cllib:miscprint"))
-  ;; `mutual-information-N', `to-percent', `sample'
+  ;; `top-bottom-ui'
+  (require :cllib-sorted (translate-logical-pathname "cllib:sorted"))
+  ;; `mutual-information-N', `to-percent', `sample', `entropy-distribution'
   (require :cllib-math (translate-logical-pathname "cllib:math")))
 
 (in-package :cllib)
 
 (export '(nb-model nb-model-make nb-add-observation nb-model-prune
+          *nb-describe-feature-count*
           *prune-methods* feature-power feature-weight
           nb-predict-classes logodds-to-prob best-class nb-evaluate train-test))
 
@@ -112,7 +115,29 @@
   "An indicator of the predictive power of the feature."
   (* (feature-weight counts)
      (- (log (length counts) 2) ; max possible entropy
-        (entropy-distribution counts)))) ; actual entropy
+        (cllib:entropy-distribution counts)))) ; actual entropy
+
+(defcustom *nb-describe-feature-count* 'integer 10
+  "*The number of top and bottom features to print in DESCRIBE.")
+(defmethod describe-object ((model nb-model) (out stream))
+  (format out "a Naive Bayesian model.~%Features and their powers:~%")
+  (let* ((fht (nb-model-features model)) (fn (hash-table-count fht))
+         (features (cdr (cllib:hash-table->alist fht))))
+    (if (> fn (* *nb-describe-feature-count* 2))
+        (cllib:top-bottom-ui
+         features *nb-describe-feature-count* *nb-describe-feature-count* nil
+         :key (lambda (feature.counts) (feature-power (cdr feature.counts)))
+         :out out :label #'identity)
+        (let ((features
+               (sort (mapcar
+                      (lambda (feature.counts)
+                        (cons feature.counts
+                              (feature-power (cdr feature.counts))))
+                      features)
+                     #'> :key #'cdr)))
+          (dolist (l features)
+            (format out "feature=~A counts=~A power=~G~%"
+                    (caar l) (cdar l) (cdr l)))))))
 
 (defcustom *prune-methods* 'list
   `((,#'feature-weight 1 "weight")
