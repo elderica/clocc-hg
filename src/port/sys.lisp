@@ -1,6 +1,6 @@
 ;;; Environment & System access
 ;;;
-;;; Copyright (C) 1999-2008 by Sam Steingold
+;;; Copyright (C) 1999-2008, 2010 by Sam Steingold
 ;;; This is open-source software.
 ;;; GNU Lesser General Public License (LGPL) is applicable:
 ;;; No warranty; you may copy/modify/redistribute under the same
@@ -55,18 +55,18 @@
 
 (defun (setf getenv) (val var)
   "Set an environment variable."
-  #+allegro (setf (sys::getenv (string var)) (string val))
-  #+clisp (setf (ext:getenv (string var)) (string val))
+  #+allegro (setf (sys::getenv (string var)) (and val (string val)))
+  #+clisp (setf (ext:getenv (string var)) (and val (string val)))
   #+(or cmu scl)
   (let ((cell (assoc (string var) ext:*environment-list* :test #'equalp
                      :key #'string)))
     (if cell
-        (setf (cdr cell) (string val))
-        (push (cons (intern (string var) "KEYWORD") (string val))
+        (setf (cdr cell) (and val (string val)))
+        (push (cons (intern (string var) "KEYWORD") (and val (string val)))
               ext:*environment-list*)))
-  #+gcl (si:setenv (string var) (string val))
-  #+lispworks (setf (lw:environment-variable (string var)) (string val))
-  #+lucid (setf (lcl:environment-variable (string var)) (string val))
+  #+gcl (si:setenv (string var) (and val (string val)))
+  #+lispworks (setf (lw:environment-variable (string var)) (and val (string val)))
+  #+lucid (setf (lcl:environment-variable (string var)) (and val (string val)))
   #-(or allegro clisp cmu gcl lispworks lucid scl)
   (error 'not-implemented :proc (list '(setf getenv) var)))
 
