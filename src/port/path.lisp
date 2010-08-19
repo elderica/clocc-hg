@@ -64,10 +64,7 @@ but there is a TYPE slot, move TYPE into NAME."
                                      new-dir)
                   :name nil :type nil :version nil :defaults path)))
     #+allegro (excl::probe-directory path)
-    #+clisp (values
-             (ignore-errors
-               (#+lisp=cl ext:probe-directory #-lisp=cl lisp:probe-directory
-                          path)))
+    #+clisp (values (ignore-errors (ext:probe-directory path)))
     #+cmu (eq :directory (unix:unix-file-kind (namestring path)))
     #+lispworks (lw:file-directory-p path)
     #+sbcl (eq :directory (sb-unix:unix-file-kind (namestring path)))
@@ -77,7 +74,7 @@ but there is a TYPE slot, move TYPE into NAME."
 (defun default-directory ()
   "The default directory."
   #+allegro (excl:current-directory)
-  #+clisp (#+lisp=cl ext:default-directory #-lisp=cl lisp:default-directory)
+  #+clisp (ext:default-directory)
   #+cmu (ext:default-directory)
   #+cormanlisp (ccl:get-current-directory)
   #+lispworks (hcl:get-working-directory)
@@ -86,7 +83,7 @@ but there is a TYPE slot, move TYPE into NAME."
 
 (defun chdir (dir)
   #+allegro (excl:chdir dir)
-  #+clisp (#+lisp=cl ext:cd #-lisp=cl lisp:cd dir)
+  #+clisp (ext:cd dir)
   #+cmu (setf (ext:default-directory) dir)
   #+cormanlisp (ccl:set-current-directory dir)
   #+gcl (si:chdir dir)
