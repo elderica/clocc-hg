@@ -1,6 +1,6 @@
 ;;; Pathnames and Filesystems
 ;;;
-;;; Copyright (C) 1999-2009 by Sam Steingold
+;;; Copyright (C) 1999-2010 by Sam Steingold
 ;;; This is open-source software.
 ;;; GNU Lesser General Public License (LGPL) is applicable:
 ;;; No warranty; you may copy/modify/redistribute under the same
@@ -99,7 +99,7 @@ but there is a TYPE slot, move TYPE into NAME."
 
 (defun mkdir (dir)
   #+allegro (excl:make-directory dir)
-  #+clisp (#+lisp=cl ext:make-dir #-lisp=cl lisp:make-dir dir)
+  #+clisp (ext:make-directory dir)
   #+cmu (unix:unix-mkdir (directory-namestring dir) #o777)
   #+lispworks (system:make-directory dir)
   #+sbcl (sb-unix:unix-mkdir (directory-namestring dir) #o777)
@@ -108,7 +108,7 @@ but there is a TYPE slot, move TYPE into NAME."
 
 (defun rmdir (dir)
   #+allegro (excl:delete-directory dir)
-  #+clisp (#+lisp=cl ext:delete-dir #-lisp=cl lisp:delete-dir dir)
+  #+clisp (ext:delete-directory dir)
   #+cmu (unix:unix-rmdir dir)
   #+lispworks
   ;; `lw:delete-directory' is present in LWW 4.1.20 but not on LWL 4.1.0
