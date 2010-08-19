@@ -1,6 +1,6 @@
 ;;; Gray streams
 ;;;
-;;; Copyright (C) 1999-2003, 2007 by Sam Steingold
+;;; Copyright (C) 1999-2003, 2007, 2010 by Sam Steingold
 ;;; This is open-source software.
 ;;; GNU Lesser General Public License (LGPL) is applicable:
 ;;; No warranty; you may copy/modify/redistribute under the same
@@ -25,8 +25,7 @@
 	(load "library:subsystems/gray-streams-library"))))
 
 (in-package #+allegro :excl
-            #+(and clisp      lisp=cl)  :ext
-            #+(and clisp (not lisp=cl)) :lisp
+            #+clisp :ext
             #+(or cmu scl) :ext
             #+lispworks :stream
             #+openmcl :ccl

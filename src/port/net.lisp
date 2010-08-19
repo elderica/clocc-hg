@@ -1,6 +1,6 @@
 ;;; Network Access
 ;;;
-;;; Copyright (C) 1999-2008 by Sam Steingold
+;;; Copyright (C) 1999-2008, 2010 by Sam Steingold
 ;;; This is open-source software.
 ;;; GNU Lesser General Public License (LGPL) is applicable:
 ;;; No warranty; you may copy/modify/redistribute under the same
@@ -220,9 +220,8 @@
             :element-type (if bin '(unsigned-byte 8) 'character))
     #+allegro (socket:make-socket :remote-host host :remote-port port
                                   :format (if bin :binary :text))
-    #+clisp (#+lisp=cl ext:socket-connect #-lisp=cl lisp:socket-connect
-                       port host :element-type
-                       (if bin '(unsigned-byte 8) 'character))
+    #+clisp (ext:socket-connect port host :element-type
+                                (if bin '(unsigned-byte 8) 'character))
     #+(or cmu scl)
     (make-instance 'stream:socket-simple-stream :direction :io
                    :remote-host host :remote-port port)
@@ -290,12 +289,8 @@
                     (socket:ipaddr-to-dotted (socket:local-host sock))
                     (socket:local-port sock))
   #+clisp (flet ((ip (ho) (subseq ho 0 (position #\Space ho :test #'char=))))
-            (multiple-value-bind (ho1 po1)
-                (#+lisp=cl  ext:socket-stream-peer
-                 #-lisp=cl lisp:socket-stream-peer sock)
-              (multiple-value-bind (ho2 po2)
-                  (#+lisp=cl  ext:socket-stream-local
-                   #-lisp=cl lisp:socket-stream-local sock)
+            (multiple-value-bind (ho1 po1) (ext:socket-stream-peer sock)
+              (multiple-value-bind (ho2 po2) (ext:socket-stream-local sock)
                 (values (ip ho1) po1
                         (ip ho2) po2))))
   #+(or cmu scl)
@@ -358,8 +353,7 @@
 (deftype socket-server ()
   #+abcl 'ext:javaobject
   #+allegro 'acl-socket::socket-stream-internet-passive
-  #+(and clisp      lisp=cl)   'ext:socket-server
-  #+(and clisp (not lisp=cl)) 'lisp:socket-server
+  #+clisp 'ext:socket-server
   #+(or cmu scl) 'integer
   #+gcl 'si:socket-stream
   #+mcl 'ccl::listener-socket
@@ -375,7 +369,7 @@
   #+abcl (ext:make-server-socket port)
   #+allegro (socket:make-socket :connect :passive :local-port
                                 (when (integerp port) port))
-  #+clisp (#+lisp=cl ext:socket-server #-lisp=cl lisp:socket-server port)
+  #+clisp (ext:socket-server port)
   #+(or cmu scl) (ext:create-inet-listener (or port 0))
   #+gcl (si:make-socket-pair port) ; FIXME
   #+lispworks (let ((mbox (mp:make-mailbox :size 1)))
@@ -443,11 +437,9 @@ Returns a socket stream or NIL."
                 (socket:set-socket-format sock fmt)
                 sock))
   #+clisp (multiple-value-bind (sec usec) (floor (or wait 0))
-            (when (#+lisp=cl ext:socket-wait #-lisp=cl lisp:socket-wait
-                             serv (and wait sec) (round usec 1d-6))
-              (#+lisp=cl ext:socket-accept #-lisp=cl lisp:socket-accept
-                         serv :element-type
-                         (if bin '(unsigned-byte 8) 'character))))
+            (when (ext:socket-wait serv (and wait sec) (round usec 1d-6))
+              (ext:socket-accept serv :element-type
+                                 (if bin '(unsigned-byte 8) 'character))))
   #+(or cmu scl)
   (when (sys:wait-until-fd-usable serv :input wait)
     (sys:make-fd-stream (ext:accept-tcp-connection serv)
@@ -490,8 +482,7 @@ Returns a socket stream or NIL."
   (declare (type socket-server server))
   #+abcl (ext:server-socket-close server)
   #+allegro (close server)
-  #+clisp (#+lisp=cl  ext:socket-server-close
-           #-lisp=cl lisp:socket-server-close server)
+  #+clisp (ext:socket-server-close server)
   #+(or cmu scl) (unix:unix-close server)
   #+gcl (close server)
   #+lispworks (mp:process-kill (socket-server-proc server))
@@ -508,10 +499,8 @@ Returns a socket stream or NIL."
   (declare (type socket-server server))
   #+allegro (values (socket:ipaddr-to-dotted (socket:local-host server))
                     (socket:local-port server))
-  #+(and clisp      lisp=cl)  (values  (ext:socket-server-host server)
-                                       (ext:socket-server-port server))
-  #+(and clisp (not lisp=cl)) (values (lisp:socket-server-host server)
-                                      (lisp:socket-server-port server))
+  #+clisp (values (ext:socket-server-host server)
+                  (ext:socket-server-port server))
   #+(or cmu scl)
   (values (ipaddr-to-dotted (car (ext:host-entry-addr-list
                                   (ext:lookup-host-entry "localhost"))))
@@ -544,8 +533,7 @@ Returns a socket stream or NIL."
   "Sleep until there is input on the STREAM, or for TIMEOUT seconds,
 whichever comes first. If there was a timeout, return NIL."
   #+clisp (multiple-value-bind (sec usec) (floor (or timeout 0))
-            (#+lisp=cl ext:socket-status #-lisp=cl lisp:socket-status
-                       stream (and timeout sec) (round usec 1d-6)))
+            (ext:socket-status stream (and timeout sec) (round usec 1d-6)))
   #+(or cmu scl)
   (#+mp mp:process-wait-until-fd-usable #-mp sys:wait-until-fd-usable
         (system:fd-stream-fd stream) :input timeout)

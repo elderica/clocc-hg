@@ -73,7 +73,7 @@
 (defun finalize (obj func)
   "When OBJ is GCed, FUNC is called on it."
   #+allegro (excl:schedule-finalization obj func)
-  #+clisp (#+lisp=cl ext:finalize #-lisp=cl lisp:finalize obj func)
+  #+clisp (ext:finalize obj func)
   #+(or cmu scl) (ext:finalize obj func)
   #+cormanlisp (cl::register-finalization obj func)
   #+sbcl (sb-ext:finalize obj func)
@@ -369,8 +369,7 @@ Long Floats:~25t~3d bits exponent, ~3d bits significand (mantissa)~%"
             (exdi most-positive-long-float)
             (float-digits most-positive-long-float)))
   #+clisp (format out "[CLISP] long-float-digits:~44t~3d~%"
-                  #+lisp=cl (ext:long-float-digits)
-                  #-lisp=cl (lisp:long-float-digits))
+                  (ext:long-float-digits))
   (dolist (sy '(array-total-size-limit array-rank-limit array-dimension-limit
                 lambda-parameters-limit call-arguments-limit
                 multiple-values-limit char-code-limit))

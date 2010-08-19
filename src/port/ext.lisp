@@ -1,6 +1,6 @@
 ;;; Basic extensions: conditions, compositions &c
 ;;;
-;;; Copyright (C) 1999-2008 by Sam Steingold
+;;; Copyright (C) 1999-2008, 2010 by Sam Steingold
 ;;; This is open-source software.
 ;;; GNU Lesser General Public License (LGPL) is applicable:
 ;;; No warranty; you may copy/modify/redistribute under the same
@@ -105,7 +105,7 @@ Inspired by Paul Graham, <On Lisp>, p. 145."
   "Invoke the garbage collector."
   #+abcl (ext:gc)
   #+allegro (excl:gc)
-  #+clisp (#+lisp=cl ext:gc #-lisp=cl lisp:gc)
+  #+clisp (ext:gc)
   #+cmu (ext:gc)
   #+cormanlisp (cl::gc)
   #+gcl (si::gbc)
@@ -118,7 +118,7 @@ Inspired by Paul Graham, <On Lisp>, p. 145."
 (defun quit (&optional code)
   #+abcl (ext:quit code)
   #+allegro (excl:exit code)
-  #+clisp (#+lisp=cl ext:quit #-lisp=cl lisp:quit code)
+  #+clisp (ext:quit code)
   #+cmu (ext:quit code)
   #+cormanlisp (win32:exitprocess code)
   #+gcl (lisp:bye code)
