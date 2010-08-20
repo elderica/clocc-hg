@@ -139,9 +139,9 @@
              (nb-model-features model))
     (sort (cdr (cllib:hash-table->alist fg)) #'> :key #'third)))
 
-(defcustom *nb-describe-feature-count* 'integer 10
+(defcustom *nb-describe-feature-count* integer 10
   "*The number of top and bottom features to print in DESCRIBE.")
-(defcustom *nb-describe-feature-grouper* '(or symbol function) nil
+(defcustom *nb-describe-feature-grouper* (or symbol function) nil
   "*The default :KEY argument for FEATURE-GROUPS in DESCRIBE.")
 (defmethod describe-object ((model nb-model) (out stream))
   (format out "a Naive Bayesian model.~%Features and their powers:~%")
@@ -168,7 +168,7 @@
       (format out "group=~A counts=~A power=~G~%"
               (first l) (second l) (third l)))))
 
-(defcustom *prune-methods* 'list
+(defcustom *prune-methods* list
   `((,#'feature-weight 1 "weight")
     (,#'feature-power 1 "power"))
   "*The methods of pruning models.")
@@ -373,5 +373,5 @@ NB: if BOOST is non-NIL, the final model is selected based on TEST,
         (nb-boost model train test :key key :out out :repeat boost)
         (values model (nb-evaluate model test :out out)))))
 
-(provide :bayes)
+(provide :cllib-bayes)
 ;;; file bayes.lisp ends here
