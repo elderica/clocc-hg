@@ -92,15 +92,6 @@
            (mk:system-source-size :cllib :new-source-and-dependents)
            (setq tbc (mk:files-in-system :cllib :new-source-and-dependents
                                          :source)))
-    :finally-do
-    (when tbc
-      (in-package :cllib)
-      (when (member "tests" tbc :test #'string= :key #'pathname-name)
-        (funcall (intern "TEST-ALL" :cllib) :what
-                 (mapcar #'pathname-name tbc)))
-      (let ((auto (translate-logical-pathname "clocc:src;cllib;auto.lisp")))
-        (funcall (intern "AUTOLOAD-GENERATE" :cllib)
-                 (mk:files-in-system :cllib) auto)
-        (compile-file auto))))
+    :finally-do (funcall (intern "POST-COMPILE" :cllib) tbc))
 
 )                               ; tbc

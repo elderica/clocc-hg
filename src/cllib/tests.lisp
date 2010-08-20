@@ -9,6 +9,8 @@
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
+  ;; `autoload-generate'
+  (require :cllib-autoload (translate-logical-pathname "cllib:autoload"))
   ;; `mesg'
   (require :cllib-log (translate-logical-pathname "cllib:log"))
   ;; `with-collect'
@@ -26,6 +28,7 @@
   (require :cllib-iter (translate-logical-pathname "cllib:iter"))
   (require :cllib-munkres (translate-logical-pathname "cllib:munkres"))
   (require :cllib-lift (translate-logical-pathname "cllib:lift"))
+  (require :cllib-bayes (translate-logical-pathname "cllib:bayes"))
   (require :cllib-cvs (translate-logical-pathname "cllib:cvs")))
 
 (in-package :cllib)
@@ -481,6 +484,35 @@
                                            (funcall sy :out out))))))))
     (mesg :test out " *** ~s: ~:d error~:p in ~:d test~:p~2%"
           'test-all num-err num-test)))
+
+(defun post-compile-hook (all-files compiled-files)
+  "Test recompiled files and regenerate autoloads."
+  (when (member "tests" compiled-files :test #'string= :key #'pathname-name)
+    (test-all :what (mapcar #'pathname-name compiled-files)))
+  (let ((auto (translate-logical-pathname "clocc:src;cllib;auto.lisp")))
+    (autoload-generate all-files auto)
+    (compile-file auto)))
+
+#+asdf
+(defun post-compile (op)
+  "Call `post-compile-hook'. The argument is the return value of ASDF:OERATE."
+  (let ((sys (asdf:find-system :cllib)) all compiled)
+    (with-hash-table-iterator (iter (asdf::operation-visited-nodes op))
+      (loop (multiple-value-bind (re kk vv) (iter)
+              (unless re (return))
+              (destructuring-bind (o . c) kk
+                (when (and (not (typep c 'asdf:module))
+                         (eq sys (asdf:component-system c)))
+                  (let ((path (asdf:component-pathname c)))
+                    (push path all)
+                    (when (and (cdr vv) (eq o 'asdf:compile-op))
+                      (push path compiled))))))))
+    (when compiled
+      (post-compile-hook (delete-duplicates all :test #'equalp) compiled))))
+
+#+mk-defsystem
+(defun post-compile (tbc)
+  (when tbc (post-compile-hook (mk:files-in-system :cllib) tbc)))
 
 (provide :cllib-tests)
 ;;; file tests.lisp ends here
