@@ -4,6 +4,10 @@
 ;;;;  Class of Random number generators
 ;;;;
 ;;;;  $Log$
+;;;;  Revision 1.17  2007/09/21 17:04:34  sds
+;;;;  avoid non-top-level declaim
+;;;;  (+beta-algo-go+): use defconst
+;;;;
 ;;;;  Revision 1.16  2007/09/21 16:49:38  sds
 ;;;;  (eval-when): use ANSI CL (keyword) situations
 ;;;;
@@ -116,6 +120,15 @@
 ;;;;  Initial revision
 ;;;;
 
+;; Do we really need to get cllib-base and cllib-withtype just to get
+;; dfloat defined, which is basically a short-cut for (float x 1d0)?
+;;
+;; And I (rtoy) think most of the uses of dfloat below are not needed,
+;; except for (dfloat pi) since pi is a long-float and the code
+;; expects a double-float.  The other uses of dfloat should be needed
+;; because the compiler should automatically convert the rationals to
+;; a double-float anyway.  (Perhaps this is an issue with clisp's
+;; contagion implementation?)
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `dfloat', `with-type'
@@ -148,11 +161,6 @@
 ;; (eval-when (:compile-toplevel)
 ;;   (declaim (optimize (speed 3))))
 
-#+(and cmu negative-zero-is-not-zero)
-(deftype non-negative-float (type &optional hi)
-  `(or (,type ,(coerce 0 type) ,(or hi *))))
-
-#-(and cmu negative-zero-is-not-zero)
 (deftype non-negative-float (type &optional hi)
   `(or (member ,(coerce 0 type))
        (,type (,(coerce 0 type)) ,(or hi *))))
@@ -707,6 +715,20 @@ mean of 1:
 ;;; On this platform, Margaglia's Ziggurat method is far and away the
 ;;; fastest.
 ;;;
+;;; Results from CMUCL 2010-10 (roughly) on a Mac Mini with a 2.0 GHz
+;;; Core 2 Duo using sse2:
+;;;
+;;; Method 	real	user	sys	cons
+;;;
+;;; Log		1.23	0.71	0.09	80000040
+;;; Algo S	1.57	0.73	0.09	80000072
+;;; SA		4.93	0.70	0.11	80000072
+;;; EA		0.8	0.70	0.09	80000040
+;;; EA-2	0.81	0.71	0.08	80000032
+;;; Ratio	1.56	1.44	0.09	80000072
+;;; Zigg	0.5	0.41	0.09	80000064
+;;;
+;;;
 ;;; For CMUCL 18c+ (with sparc-v9 changes) running on a 300 MHz Ultra 30:
 ;;; (cllib::time-expo 5000000)
 ;;;
@@ -1072,6 +1094,17 @@ of zero and a variance of 1.
 ;;; Based on these results, Marsalia's Ziggurat method is far and away
 ;;; the fastest.
 ;;;
+;;; Some timing results for CMUCL 2010-10 (roughly) on a Mac Mini with
+;;; a 2.0 GHz Core 2 Duo, using sse2:
+;;;
+;;; Method 	real	user	sys	cons
+;;;
+;;; Polar	0.34	0.25	0.06	56000080
+;;; NA		0.48	0.22	0.04	40000080
+;;; Box/Trig	0.41	0.27	0.04	40000072
+;;; Ratio	0.26	0.22	0.02	16000064
+;;; Zigg	0.14	0.08	0.02	16000064
+;;;
 ;;; Some timing results for CMUCL 18c+ (sparc-v9) on a 300 MHz Ultra
 ;;; 30:
 ;;;
@@ -1105,7 +1138,8 @@ of zero and a variance of 1.
 ;;;
 ;;; 10000 numbers generated.  Time is elapsed real time in seconds,
 ;;; Second number is bytes consed.  (For the Ultra-30, 50000 numbers
-;;; were generated.)
+;;; were generated.  For the Core2D (Core 2 Duo, 2.0 GHz), 1,000,000
+;;; numbers were generated.)
 ;;;
 ;;; Order = 1.1
 ;;; CPU	          Squeeze  GN         Algo. A           Algo GO
@@ -1115,6 +1149,8 @@ of zero and a variance of 1.
 ;;;               335k     11493k     160k
 ;;; U-30 (300)    0.05      2.9       0.13
 ;;;               334k     12401k     160k
+;;; Core2D-2.0    0.42     0.97       1.08
+;;;               50.8M    66.7M      99.1M
 ;;;
 ;;; Order = 10
 ;;; CPU	          Squeeze  GN         Algo. A  Direct
@@ -1124,6 +1160,8 @@ of zero and a variance of 1.
 ;;;               321k     4890k      160k
 ;;; U-30 (300)    0.28      5.00      0.30     0.31       0.26
 ;;;               2411k    21700k     800k     1600k      1874k
+;;; Core2D-2.0    0.42     0.94       5.38
+;;;               48.2M    36.8M      73.7M
 ;;;
 ;;; Order = 100
 ;;; CPU	          Squeeze  GN         Algo. A
@@ -1133,6 +1171,8 @@ of zero and a variance of 1.
 ;;;               321k     4102k      160k
 ;;; U-30 (300)    0.28      0.28      0.31     2.54       0.22
 ;;;               2400k    1674k      800k     1600k      1663k
+;;; Core2D-2.0    0.38     0.56       2.2                 0.36
+;;;               48.0M    33.5M      72.8M               33.3M
 ;;;
 ;;; Order = 1000
 ;;; CPU	          Squeeze  GN         Algo. A
@@ -1142,6 +1182,8 @@ of zero and a variance of 1.
 ;;;               321k     3878k      160k
 ;;; U-30 (300)    0.23      0.33      0.32                0.22
 ;;;               1600k    1627k      800k                1626k
+;;; Core2D-2.0    0.38     0.54       1.58                0.33
+;;;               48.0M    33.5M      72.8M               32.6M
 ;;;
 ;;; Order = 10000
 ;;; CPU	          Squeeze  GN         Algo. A
@@ -1151,6 +1193,8 @@ of zero and a variance of 1.
 ;;;               321k     3800k      160k
 ;;; U-30 (300)    0.24      0.26      0.33                0.25
 ;;;               1600k    1612k      800k                1619k
+;;; Core2D-2.0    0.38     0.51       0.93                0.33
+;;;               48.0M    32.2M      72.7M               32.4M
 ;;;
 
 #+(or)
