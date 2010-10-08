@@ -1768,13 +1768,19 @@ correctly"
 	 )
 	(t
 	 (let ((decls 
-		(if (eq (third x) '*)
-		    ;; Handle IMPLICIT <type> * <length> by rewriting x with
-		    ;; the appropriate type.
-		    `(,(first x) 
-		      (,(second x) ,(third x) ,(fourth x))
-		      ,@(cddddr x))
-		    x)))
+		(cond ((eq (third x) '*)
+		       ;; Handle IMPLICIT <type> * <length> by rewriting x with
+		       ;; the appropriate type.
+		       `(,(first x) 
+			  (,(second x) ,(third x) ,(fourth x))
+			  ,@(cddddr x)))
+		      ((eq (third x) 'precision)
+		       ;; Handle IMPLICIT DOUBLE PRECISION
+		       `(,(first x)
+			  (real * 8)
+			  ,@(cdddr x)))
+		      (t
+		       x))))
 	   (mapc #'(lambda (y)
 		     (push `(,(car (convert-data-type (car y)))
 			     ,@(list-split '|,|
@@ -3328,6 +3334,12 @@ loop2
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.221  2010/05/26 19:25:52  rtoy
+;;; Define our own pprint-dispatch table and initialize it with our
+;;; special pprint functions.  Use it in SPECIAL-PRINT so that the output
+;;; is printed the way we want.   This is particularly important for fdo
+;;; to keep it from pushing things way off to the right.
+;;;
 ;;; Revision 1.220  2010/05/26 03:22:59  rtoy
 ;;; When relax-array-decls is true, don't print out warnings about
 ;;; mismatched argument types for arrays.  This was previously causing
