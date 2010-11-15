@@ -17,7 +17,7 @@
     :author ("Sam Steingold <sds@gnu.org>")
     :licence "LGPL"
     :description "a library of useful utilities"
-    :depends-on (:port :metering)
+    :depends-on (:port :metering :cl-html-parse)
     :components
     ((:file "animals" :depends-on
             ("base" "string" "miscprint" "fileio" "closio" "symb"))

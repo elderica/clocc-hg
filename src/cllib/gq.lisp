@@ -2,7 +2,7 @@
 ;;; get stock/mutual fund quotes from the Internet
 ;;; via the WWW using HTTP/1.0, save into a file, plot.
 ;;;
-;;; Copyright (C) 1997-2004, 2007-2008 by Sam Steingold
+;;; Copyright (C) 1997-2004, 2007-2008, 2010 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
@@ -24,7 +24,7 @@
 
 (in-package :cllib)
 
-(export '(update-quotes *hist-data-file*))
+(export '(update-quotes *hist-data-file* holdings))
 
 ;;;
 ;;;
@@ -697,6 +697,124 @@ If DEBUG is non-nil, do not bind `*print-log*' and `*gq-error-stream*'."
             (unless plotp (setq plot :plot)))
           (when log (close out) (format t "Wrote log to ~s~%" log))))))
   (when plot (plot-portfolio *holdings* *history* plot)))
+
+;;;
+
+(defun find-html-element (tree predicate)
+  "Find a sub-TREE satisfying the PREDICATE."
+  (cond ((funcall predicate tree) tree)
+        ((consp tree)
+         (or (find-html-element (car tree) predicate)
+             (find-html-element (cdr tree) predicate)))))
+(defun find-html-elements (tree predicate &optional result)
+  "Find all sub-TREEs satisfying the PREDICATE."
+  (when (funcall predicate tree)
+    (push tree result))
+  (when (consp tree)
+    (setq result (find-html-elements (car tree) predicate result)
+          result (find-html-elements (cdr tree) predicate result)))
+  result)
+(eval-when (:compile-toplevel :load-toplevel :execute)
+(defun html-match-form (pattern object)
+  "Build the form testing whether OBJECT matches the PATTERN."
+  (etypecase pattern
+    (keyword `(eq ,pattern ,object))
+    (symbol (or (eq pattern '*) (null pattern)
+                (error "invalid pattern: ~S" pattern)))
+    (string `(equal ,pattern ,object))
+    (vector (append (coerce pattern 'list) (list object)))
+    (cons `(and (consp ,object)
+                ,(html-match-form (car pattern) `(car ,object))
+                ,(html-match-form (cdr pattern) `(cdr ,object)))))))
+(defmacro html-match (pattern)
+  "Create a predicate for `find-html-element' for PATTERN."
+  (let ((html (gensym "HTML-MATCH-")))
+    `(lambda (,html) ,(html-match-form pattern `,html))))
+
+(defstruct composition
+  (cash 0s0 :type float)
+  (stocks 0s0 :type float)
+  (bonds 0s0 :type float)
+  (other 0s0 :type float))
+(defconst +bad-composition+ composition (make-composition)
+  "*The convenient constant for init.")
+(defun get-composition (list)
+  (let (cash stocks bonds other)
+    (dolist (el list)
+      (let ((label (second (second el)))
+            (content (second (third el))))
+        (cond ((string= label "Cash:")
+               (if cash (error "repeated cash in ~S" list)
+                   (setq cash (read-from-string content))))
+              ((string= label "Stocks:")
+               (if stocks (error "repeated stocks in ~S" list)
+                   (setq stocks (read-from-string content))))
+              ((string= label "Bonds:")
+               (if bonds (error "repeated bonds in ~S" list)
+                   (setq bonds (read-from-string content))))
+              ((string= label "Other:")
+               (if other (error "repeated other in ~S" list)
+                   (setq other (read-from-string content)))))))
+    (make-composition
+     :cash (or cash (error "no cash in ~S" list))
+     :stocks (or stocks (error "no stocks in ~S" list))
+     :bonds (or bonds (error "no bonds in ~S" list))
+     :other (or other (error "no other in ~S" list)))))
+
+(defstruct holding
+  (name "" :type string)
+  (symbol "" :type string)
+  (assets% 0s0 :type float))
+(defstruct holdings
+  (timestamp +bad-date+ :type date)
+  (composition +bad-composition+ :type composition)
+  (top% 0s0 :type float)            ; top10 as % of total
+  (top10 nil :type list))           ; of holdings
+
+(defun holdings-url (symbol)
+  (format nil "http://finance.yahoo.com/q/hl?s=~A+Holdings" symbol))
+
+(defun holdings (&key symbol)
+  (let* ((html (with-open-url (sock (holdings-url symbol))
+                 ;; (asdf:oos 'asdf:load-op :cl-html-parse)
+                 (net.html.parser:parse-html sock)))
+         (timestamp
+          (or (find-html-element
+               html (html-match
+                     (:TD (:BIG (:B "Holdings")) *
+                          ((:FONT *) #(cllib:string-beg-with #1="as of ")))))
+              (error "no timestamp in ~S" html)))
+         (element
+          (or (find-html-element
+               html (html-match
+                     (:TD
+                      ((:TABLE)
+                       (:TR ((:TH)
+                             (* "Overall Portfolio Composition (%)")))))))
+              (error "no composition in ~S" html)))
+         (composition
+          (get-composition
+           (find-html-elements
+            element (html-match
+                     (:TR ((:TD :CLASS "yfnc_datamodlabel1")))))))
+         (holdings
+          (find-html-element
+           element (html-match
+                    (((:TABLE) (:TR (* #(cllib:string-beg-with
+                                         #2="Top 10 Holdings ("))))))))
+         (top% (second (second (second (first holdings))))))
+    (make-holdings
+     :timestamp (cllib:date (subseq (second (fourth timestamp))
+                                    #.(length #1#)))
+     :composition composition
+     :top% (read-from-string top% t nil :start #3=#.(length #2#)
+                             :end (position #\% top% :start #3#))
+     :top10 (mapcar (lambda (h)
+                      (make-holding
+                       :name (second (second h))
+                       :symbol (second (second (third h)))
+                       :assets% (read-from-string (second (fourth h)))))
+                    (cddr (second (second (second (second holdings)))))))))
 
 (provide :cllib-gq)
 ;;; }}} gq.lisp ends here
