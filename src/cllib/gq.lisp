@@ -24,7 +24,7 @@
 
 (in-package :cllib)
 
-(export '(update-quotes *hist-data-file* holdings))
+(export '(update-quotes *hist-data-file* holdings holders))
 
 ;;;
 ;;;
@@ -699,7 +699,10 @@ If DEBUG is non-nil, do not bind `*print-log*' and `*gq-error-stream*'."
   (when plot (plot-portfolio *holdings* *history* plot)))
 
 ;;;
+;;; }}}{{{ Holdings & Holders
+;;;
 
+;; find data in NET.HTML.PARSER:PARSE-HTML results
 (defun find-html-element (tree predicate)
   "Find a sub-TREE satisfying the PREDICATE."
   (cond ((funcall predicate tree) tree)
@@ -731,6 +734,30 @@ If DEBUG is non-nil, do not bind `*print-log*' and `*gq-error-stream*'."
   (let ((html (gensym "HTML-MATCH-")))
     `(lambda (,html) ,(html-match-form pattern `,html))))
 
+(defmacro deftable (name constructor fields)
+  `(defun ,name (list)
+     (let (,@(mapcar #'car fields))
+       (dolist (el list)
+         (let ((label (second (second el)))
+               (content (second (third el))))
+           (cond ,@(mapcar (lambda (field)
+                             (let ((name (first field)))
+                               `((string= label ,(second field))
+                                 (if ,name
+                                     (error "repeated ~S in ~S" ',name list)
+                                     (setq ,name
+                                           (,(or (third field)
+                                                 'read-from-string)
+                                             content))))))
+                           fields))))
+       (,constructor
+        ,@(mapcan (lambda (field)
+                    (let ((name (car field)))
+                      `(,(intern (symbol-name name) cllib:+kwd+)
+                         (or ,name (error "no ~S in ~S" ',name list)))))
+                  fields)))))
+
+;; * HOLDINGS
 (defstruct composition
   (cash 0s0 :type float)
   (stocks 0s0 :type float)
@@ -738,28 +765,11 @@ If DEBUG is non-nil, do not bind `*print-log*' and `*gq-error-stream*'."
   (other 0s0 :type float))
 (defconst +bad-composition+ composition (make-composition)
   "*The convenient constant for init.")
-(defun get-composition (list)
-  (let (cash stocks bonds other)
-    (dolist (el list)
-      (let ((label (second (second el)))
-            (content (second (third el))))
-        (cond ((string= label "Cash:")
-               (if cash (error "repeated cash in ~S" list)
-                   (setq cash (read-from-string content))))
-              ((string= label "Stocks:")
-               (if stocks (error "repeated stocks in ~S" list)
-                   (setq stocks (read-from-string content))))
-              ((string= label "Bonds:")
-               (if bonds (error "repeated bonds in ~S" list)
-                   (setq bonds (read-from-string content))))
-              ((string= label "Other:")
-               (if other (error "repeated other in ~S" list)
-                   (setq other (read-from-string content)))))))
-    (make-composition
-     :cash (or cash (error "no cash in ~S" list))
-     :stocks (or stocks (error "no stocks in ~S" list))
-     :bonds (or bonds (error "no bonds in ~S" list))
-     :other (or other (error "no other in ~S" list)))))
+(deftable composition make-composition
+  ((cash "Cash:")
+   (stocks "Stocks:")
+   (bonds "Bonds:")
+   (other "Other:")))
 
 (defstruct holding
   (name "" :type string)
@@ -769,12 +779,13 @@ If DEBUG is non-nil, do not bind `*print-log*' and `*gq-error-stream*'."
   (timestamp +bad-date+ :type date)
   (composition +bad-composition+ :type composition)
   (top% 0s0 :type float)            ; top10 as % of total
-  (top10 nil :type list))           ; of holdings
+  (top10 () :type list))           ; of holdings
 
 (defun holdings-url (symbol)
   (format nil "http://finance.yahoo.com/q/hl?s=~A+Holdings" symbol))
 
 (defun holdings (&key symbol)
+  "Get holdings for a (institutional/mutual fund) symbol from Yahoo."
   (let* ((html (with-open-url (sock (holdings-url symbol))
                  ;; (asdf:oos 'asdf:load-op :cl-html-parse)
                  (net.html.parser:parse-html sock)))
@@ -793,7 +804,7 @@ If DEBUG is non-nil, do not bind `*print-log*' and `*gq-error-stream*'."
                              (* "Overall Portfolio Composition (%)")))))))
               (error "no composition in ~S" html)))
          (composition
-          (get-composition
+          (composition
            (find-html-elements
             element (html-match
                      (:TR ((:TD :CLASS "yfnc_datamodlabel1")))))))
@@ -815,6 +826,89 @@ If DEBUG is non-nil, do not bind `*print-log*' and `*gq-error-stream*'."
                        :symbol (second (second (third h)))
                        :assets% (read-from-string (second (fourth h)))))
                     (cddr (second (second (second (second holdings)))))))))
+
+;; * HOLDERS
+
+(defun percent-of-string (string)
+  (read-from-string string t nil :end (position #\% string)))
+(defun comma-int-of-string (string)
+  (parse-integer (remove #\, string)))
+(defun dollar-of-string (string)
+  (parse-integer (delete #\, (subseq string (1+ (position #\$ string))))))
+(defstruct breakdown
+  (insider&5%-shares% 0s0 :type float)
+  (inst&mutf-shares% 0s0 :type float)
+  (inst&mutf-float% 0s0 :type float)
+  (institutional-count 0 :type integer))
+(defconst +bad-breakdown+ breakdown (make-breakdown)
+  "*The convenient constant for init.")
+(deftable breakdown make-breakdown
+  ((insider&5%-shares% "% of Shares Held by All Insider and 5% Owners:"
+                       percent-of-string)
+   (inst&mutf-shares%
+    "% of Shares Held by Institutional &amp; Mutual Fund Owners:"
+    percent-of-string)
+   (inst&mutf-float%
+    "% of Float Held by Institutional &amp; Mutual Fund Owners:"
+    percent-of-string)
+   (institutional-count "Number of Institutions Holding Shares:")))
+
+(defstruct holder
+  (name "" :type string)
+  (shares 0 :type integer)
+  (percent 0s0 :type float)
+  (value 0 :type integer)
+  (timestamp +bad-date+ :type date))
+
+(defstruct holders
+  (breakdown +bad-breakdown+ :type breakdown)
+  (direct () :type list)
+  (institutional () :type list))
+
+(defun holders-url (symbol)
+  (format nil "http://finance.yahoo.com/q/mh?s=~A+Major+Holders" symbol))
+
+(defun holders (&key symbol)
+  "Get holders for a (stock) symbol from Yahoo."
+  (let* ((html (cllib:with-open-url (sock (holders-url symbol))
+                 ;; (asdf:oos 'asdf:load-op :cl-html-parse)
+                 (net.html.parser:parse-html sock)))
+         (element
+          (or (find-html-element
+               html (html-match
+                     (((:TABLE) (:TR ((:TH *) "Breakdown"))))))
+              (error "no breakdown in ~S" html)))
+         (breakdown
+          (breakdown
+           (find-html-elements
+            element (html-match
+                     (:TR ((:TD :CLASS "yfnc_datamodlabel1")))))))
+         (direct
+          (or (find-html-element
+               element (html-match (((:TABLE) (:TR ((:TH) "Major Direct Holders (Forms 3 & 4)"))))))
+              (error "no direct holders in ~S" element)))
+         (institutional
+          (or (find-html-element
+               html (html-match (((:TABLE) (:TR ((:TH) "Top Institutional Holders"))))))
+              (error "no institutional holders in ~S" html))))
+    (make-holders
+     :breakdown breakdown
+     :direct
+     (mapcar (lambda (h)
+               (make-holder
+                :name (second (second (second h)))
+                :shares (comma-int-of-string (second (third h)))
+                :timestamp (cllib:date (second (fourth h)))))
+             (cddr (second (second (second (second direct))))))
+     :institutional
+     (mapcar (lambda (h)
+               (make-holder
+                :name (second (second h))
+                :shares (comma-int-of-string (second (third h)))
+                :percent (read-from-string (second (fourth h)))
+                :value (dollar-of-string (second (fifth h)))
+                :timestamp (cllib:date (second (sixth h)))))
+             (cddr (second (second (second (second institutional)))))))))
 
 (provide :cllib-gq)
 ;;; }}} gq.lisp ends here
