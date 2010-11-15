@@ -1,6 +1,6 @@
 ;;; String Utilities
 ;;;
-;;; Copyright (C) 1997-2008 by Sam Steingold
+;;; Copyright (C) 1997-2008, 2010 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
@@ -35,8 +35,7 @@ See <http://www.merriampark.com/ld.htm>
     (setq diag 0)
     (loop :for i :from 0 :below l1 :do (setf (aref cache-vec i) (1+ i)))
     (loop :for j :from 0 :below l2 :and c2 :across s2 :do
-      (loop :for i :from 0 :below l1 :and c1 :across s1
-        :for old = (aref cache-vec i) :do
+      (loop :for i :from 0 :below l1 :and c1 :across s1 :do
         (shiftf diag (aref cache-vec i)
                 (min (if (funcall test c1 c2) diag (1+ diag))
                      (1+ (aref cache-vec i))
