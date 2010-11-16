@@ -791,23 +791,16 @@ If DEBUG is non-nil, do not bind `*print-log*' and `*gq-error-stream*'."
                  (net.html.parser:parse-html sock)))
          (timestamp
           (or (find-html-element
-               html (html-match
-                     (:TD (:BIG (:B "Holdings")) *
-                          ((:FONT *) #(cllib:string-beg-with #1="as of ")))))
+               html (html-match (:TD (:BIG (:B "Holdings")) * ((:FONT *) #(cllib:string-beg-with #1="as of ")))))
               (error "no timestamp in ~S" html)))
          (element
           (or (find-html-element
-               html (html-match
-                     (:TD
-                      ((:TABLE)
-                       (:TR ((:TH)
-                             (* "Overall Portfolio Composition (%)")))))))
+               html (html-match (:TD ((:TABLE) (:TR ((:TH) (* "Overall Portfolio Composition (%)")))))))
               (error "no composition in ~S" html)))
          (composition
           (composition
            (find-html-elements
-            element (html-match
-                     (:TR ((:TD :CLASS "yfnc_datamodlabel1")))))))
+            element (html-match (:TR ((:TD :CLASS "yfnc_datamodlabel1")))))))
          (holdings
           (find-html-element
            element (html-match
@@ -835,6 +828,7 @@ If DEBUG is non-nil, do not bind `*print-log*' and `*gq-error-stream*'."
   (parse-integer (remove #\, string)))
 (defun dollar-of-string (string)
   (parse-integer (delete #\, (subseq string (1+ (position #\$ string))))))
+
 (defstruct breakdown
   (insider&5%-shares% 0s0 :type float)
   (inst&mutf-shares% 0s0 :type float)
@@ -875,14 +869,12 @@ If DEBUG is non-nil, do not bind `*print-log*' and `*gq-error-stream*'."
                  (net.html.parser:parse-html sock)))
          (element
           (or (find-html-element
-               html (html-match
-                     (((:TABLE) (:TR ((:TH *) "Breakdown"))))))
+               html (html-match (((:TABLE) (:TR ((:TH *) "Breakdown"))))))
               (error "no breakdown in ~S" html)))
          (breakdown
           (breakdown
            (find-html-elements
-            element (html-match
-                     (:TR ((:TD :CLASS "yfnc_datamodlabel1")))))))
+            element (html-match (:TR ((:TD :CLASS "yfnc_datamodlabel1")))))))
          (direct
           (or (find-html-element
                element (html-match (((:TABLE) (:TR ((:TH) "Major Direct Holders (Forms 3 & 4)"))))))
