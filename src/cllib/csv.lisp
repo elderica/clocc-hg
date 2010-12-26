@@ -43,7 +43,9 @@
 
 (defun csv-trim (whitespace string)
   "Trim the string argument from the whitespace."
-  (let ((clean (string-trim whitespace string)))
+  (let* ((clean (string-trim whitespace string)) (len1 (1- (length clean))))
+    (when (and (plusp len1) (char= #\" (char clean 0) (char clean len1)))
+      (setq clean (subseq clean 1 len1)))
     (if (zerop (length clean)) nil clean)))
 
 (defun csv-parse-string (string &key
