@@ -24,7 +24,10 @@
   "The separator in the CSV file, normally the comma.")
 
 (defcustom *csv-first-line-names* (or t nil :default) :default
-  "The separator in the CSV file, normally the comma.")
+  "How to treat the first line in WITH-CSV et el.
+If this is T (or :DEFAULT and the first line starts with a +COMMENTS+
+ character), treat the first line as the vector of column names.
+Otherwise, the first line is nothing special.")
 
 (defun csv-print-vector (vec &optional (out *standard-output*))
   "Print a vector as a comma-separated line."
