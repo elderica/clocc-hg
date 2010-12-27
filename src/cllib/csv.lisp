@@ -17,7 +17,7 @@
 (in-package :cllib)
 
 (export '(csv-print-vector csv-parse-string csv-read-file with-csv csv-names
-          class-csv-header class-csv-print *csv-first-line-names*
+          class-csv-header class-csv-print *csv-first-line-names* *csv-junk*
           *csv-separator* *csv-whitespace* *csv-progress* *csv-progress-1*))
 
 (defcustom *csv-separator* character #\,
@@ -43,6 +43,13 @@ Otherwise, the first line is nothing special.")
   "*How often the progress report should be made")
 (defcustom *csv-progress-1* integer 10
   "*How often the secondary progress report should be made")
+
+(defcustom *csv-junk* (or symbol integer) :ERROR
+  "How to treat lines of wrong length.
+When the :JUNK argument is :ERROR, signal an error.
+When it is :WARNING, issue a warning and drop the line.
+When it is a number, issue at most this many warnings.
+When it is :KEEP, keep the line as is.")
 
 (defun csv-trim (whitespace string)
   "Trim the string argument from the whitespace."
@@ -84,13 +91,12 @@ Otherwise, the first line is nothing special.")
            fn pos (length vec) cols vec)))
 
 (defmacro with-csv ((vec file &key (progress '*csv-progress*)
-                         (first-line-names '*csv-first-line-names*) junk-allowed
+                         (first-line-names '*csv-first-line-names*)
+                         (junk '*csv-junk*)
                          (progress-1 '*csv-progress-1*) limit
                          (out '*standard-output*) columns)
                     &body body)
   "Open FILE and set VEC to successive vectors in it.
-When JUNK-ALLOWED is non-NIL, lines of wrong length do not generate errors
-  but warnings, and if it is an integer, at most this many warnings.
 Return 3 values:
   number of records (lines) read,
   number of bytes in the file,
@@ -102,7 +108,7 @@ Return 3 values:
                    :progress-1 ,progress-1)
        (let* ((,fn ,file) ,fsize ,l1
               (,fln ,first-line-names) (,cols ,columns)
-              (,ja ,junk-allowed) (,drop 0)
+              (,ja ,junk) (,drop 0)
               ,@(when limit `((,lim ,limit))))
          (with-open-file (,in ,fn :direction :input)
            (format ,out "~&Reading `~a' [~:d bytes]..."
@@ -132,18 +138,21 @@ Return 3 values:
                      (find (char ,ln 0) +comments+) ; comment line
                      (progn (setq ,vec (csv-parse-string ,ln)) (incf ,len)
                             (if ,cols
-                                (if ,ja
-                                    (handler-case (csv-check-vec-len
-                                                   ,vec ,cols ,fn ,len)
-                                      (error (c)
-                                        (unless (eql ,ja 0)
-                                          (warn (princ-to-string c)))
-                                        (when (and (integerp ,ja) (plusp ,ja))
-                                          (decf ,ja)
-                                          (when (zerop ,ja)
-                                            (warn "Suppress further warnings")))
-                                        t))
-                                    (csv-check-vec-len ,vec ,cols ,fn ,len))
+                                (case ,ja
+                                  (:keep nil)
+                                  (:error
+                                   (csv-check-vec-len ,vec ,cols ,fn ,len))
+                                  (t
+                                   (handler-case (csv-check-vec-len
+                                                  ,vec ,cols ,fn ,len)
+                                     (error (c)
+                                       (unless (eql ,ja 0)
+                                         (warn (princ-to-string c)))
+                                       (when (and (integerp ,ja) (plusp ,ja))
+                                         (decf ,ja)
+                                         (when (zerop ,ja)
+                                           (warn "Further warnings omitted")))
+                                       t))))
                                 (and (setq ,cols (length ,vec)) nil))))
              :do (incf ,drop)
              :else :do ,@body
@@ -162,7 +171,7 @@ Return 3 values:
                                 ,l1))))))))
 
 ;;;###autoload
-(defun csv-read-file (inf &key junk-allowed
+(defun csv-read-file (inf &key ((:junk *csv-junk*) *csv-junk*)
                       ((:first-line-names *csv-first-line-names*)
                        *csv-first-line-names*)
                       ((:separator *csv-separator*) *csv-separator*))
@@ -171,8 +180,7 @@ Return 3 values:
     (declare (ignorable complete))
     (values (with-collect (coll)
               (setf (values len file-size complete names)
-                    (with-csv (vec inf :junk-allowed junk-allowed)
-                      (coll vec))))
+                    (with-csv (vec inf) (coll vec))))
             len file-size names)))
 
 ;;; defstruct i/o

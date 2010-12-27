@@ -279,14 +279,14 @@
                     ((:first-line-names *csv-first-line-names*)
                      *csv-first-line-names*)
                     ((:separator *csv-separator*) *csv-separator*)
-                    (out *standard-output*) medians junk-allowed
+                    (out *standard-output*) medians
+                    ((:junk *csv-junk*) *csv-junk*)
                     ((:value-boundary *value-boundary*) *value-boundary*)
                     ((:columns *columns*) *columns*)
                     ((:levels *levels*) *levels*)
                     ((:buckets *buckets*) *buckets*))
   "Analyse columns in the CSV file."
-  (multiple-value-bind (lines len file-size names)
-      (csv-read-file file :junk-allowed junk-allowed)
+  (multiple-value-bind (lines len file-size names) (csv-read-file file)
     (declare (ignore file-size))
     (let* ((column-count (length (or names (car lines))))
            (columns (unroll-column-specs *columns* names column-count))
