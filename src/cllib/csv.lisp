@@ -18,6 +18,7 @@
 
 (export '(csv-print-vector csv-parse-string csv-read-file with-csv csv-names
           class-csv-header class-csv-print *csv-first-line-names* *csv-junk*
+          defcsv csv-read csv-write
           *csv-separator* *csv-whitespace* *csv-progress* *csv-progress-1*))
 
 (defcustom *csv-separator* character #\,
@@ -191,6 +192,98 @@ Return 3 values:
 (defun class-csv-print (obj &key (out *standard-output*))
   (format out "~{~A~^,~}~%" (mapcar (lambda (slot) (slot-value obj slot))
                                     (port:class-slot-list obj))))
+
+
+;;; generic CSV i/o
+(defstruct csv-i/o
+  (name (port:required-argument) :type symbol)
+  (header (port:required-argument) :type vector)
+  (reader (port:required-argument) :type function)
+  (writer (port:required-argument) :type function)
+  (package *package* :type 'package))
+(defvar *csv-i/o* (make-hash-table :test 'eq) "type -> csv-i/o")
+(defun csv-i/o (type)
+  (or (gethash type *csv-i/o*)
+      (error "unknown CSV i/o ~S" type)))
+(defun csv-read (type file)
+  (let ((csv-i/o (csv-i/o type)))
+    (multiple-value-bind (data len file-size names)
+        (csv-read-file file :first-line-names t :junk :keep)
+      (declare (ignore len file-size))
+      (unless (equalp names (csv-i/o-header csv-i/o))
+        (cerror "ignore and procede" "~S(~S): bad header ~S (expected ~S)"
+                'csv-read type names (csv-i/o-header csv-i/o)))
+      (mapcar (csv-i/o-reader csv-i/o) data))))
+(defun csv-write (type file data)
+  (let* ((csv-i/o (csv-i/o type)) (writer (csv-i/o-writer csv-i/o)))
+    (with-open-file (out file :direction :output)
+      (write-char (char +comments+ 0) out)
+      (loop :for name :across (csv-i/o-header csv-i/o) :and i :upfrom 0
+        :do (unless (zerop i) (write-char *csv-separator* out))
+        (write-string name out))
+      (terpri out)
+      (dolist (item data)
+        (funcall writer out item)
+        (terpri out)))))
+
+;;; struct definition for CSV i/o
+(defun type-parser (slot-type)
+  (ecase slot-type
+    (symbol (lambda (s) (intern (nstring-upcase (nsubstitute #\- #\Space s)))))
+    (string #'identity)
+    (integer #'parse-integer)
+    (float #'read-from-string)
+    (float% (lambda (s) (/ (read-from-string (nsubstitute #\Space #\% s))
+                           100)))))
+(defun type-default (slot-type)
+  (ecase slot-type
+    (symbol nil)
+    (string "")
+    (integer 0)
+    ((float float%) 0s0)))
+(defun type-type (slot-type)
+  (case slot-type
+    (float% 'float)
+    (t slot-type)))
+;; MAKE-READER & MAKE-WRITER are separate macros to avoid calling MOP functions
+;; at read time when DEFSTRUCT has not been called yet.
+(defmacro make-reader (vec slots type package)
+  `(let ((len (length ,vec)) (*package* ,(find-package package)))
+     (,(port:structure-keyword-constructor `,type)
+      ,@(loop :for pos :upfrom 0
+          :for dslot :in (port:class-direct-slots (find-class `,type))
+          :for slotd :in slots
+          :for slot-type = (third slotd)
+          :for parser = (or (fourth slotd) (type-parser slot-type))
+          :nconc `(,(car (port:slot-definition-initargs dslot))
+                    (let ((s (and (< ,pos len) (aref vec ,pos))))
+                      (if s (funcall ,parser s)
+                          ,(type-default slot-type))))))))
+(defmacro make-writer (out obj type)
+  `(progn
+     ,@(loop :for pos :upfrom 0
+         :for slot :in (port:class-direct-slots (find-class type))
+         :nconc `(,@(when (plusp pos) `((write-char *csv-separator* ,out)))
+                    (write (,(car (port:slot-definition-readers slot)) ,obj)
+                           :stream ,out :escape nil)))))
+(defmacro defcsv (type (&key (package (symbol-package type))) slots)
+  `(progn
+     (eval-when (:compile-toplevel :load-toplevel :execute)
+       (defstruct ,type
+         ,@(mapcar (lambda (slot)
+                     (destructuring-bind (string symbol slot-type &rest opts)
+                         slot
+                       (declare (ignore string opts))
+                       `(,symbol (port:required-argument)
+                                 :type ,(type-type slot-type))))
+                   slots)))
+     (setf (gethash ',type *csv-i/o*)
+           (make-csv-i/o
+            :name ',type
+            :header ,(coerce (mapcar #'car slots) 'vector)
+            :reader (lambda (vec) (make-reader vec ,slots ,type ,package))
+            :writer (lambda (out obj) (make-writer out obj ,type))
+            :package ,package))))
 
 (provide :cllib-csv)
 ;;; file csv.lisp ends here
