@@ -9,8 +9,11 @@
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
+  (require :port-mop (translate-logical-pathname "clocc:src;port;mop"))
   ;; `with-collect'
   (require :cllib-simple (translate-logical-pathname "cllib:simple"))
+  ;; `symbol-prepend'
+  (require :cllib-symb (translate-logical-pathname "cllib:symb"))
   ;; `with-timing', `log'
   (require :cllib-log (translate-logical-pathname "cllib:log")))
 

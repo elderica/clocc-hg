@@ -33,7 +33,7 @@
      (:file "clhs" :depends-on
             ("base" "withtype" "string" "fileio" "log" "html"))
      (:file "closio" :depends-on ("base"))
-     (:file "csv" :depends-on ("base" "simple" "log"))
+     (:file "csv" :depends-on ("base" "simple" "symb" "log"))
      (:file "cvs" :depends-on ("base" "string" "fileio" "date" "miscprint"))
      (:file "data" :depends-on
             ("base" "csv" "math" "gnuplot" "miscprint" "lift"))
