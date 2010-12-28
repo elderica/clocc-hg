@@ -1,6 +1,6 @@
 ;;; Symbols & Keywords
 ;;;
-;;; Copyright (C) 1997-2005, 2007-2008 by Sam Steingold
+;;; Copyright (C) 1997-2005, 2007-2008, 2010 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
@@ -12,7 +12,7 @@
 
 (in-package :cllib)
 
-(export '(symbol-concat symbol-append re-intern symbol-copy
+(export '(symbol-concat symbol-append symbol-prepend re-intern symbol-copy
           +kwd+ kwd keyword-concat read-key keyword= kill-symbol reset-package))
 
 ;;(defmacro symbol-concat (&rest args)
@@ -27,6 +27,12 @@
   "Append ARGS to SYMBOL and INTERN the result in SYMBOL's package."
   (intern (apply #'concatenate 'string (symbol-name symbol)
                  (mapcar #'string args))
+          (symbol-package symbol)))
+
+(defun symbol-prepend (symbol &rest args)
+  "Prepend ARGS to SYMBOL and INTERN the result in SYMBOL's package."
+  (intern (apply #'concatenate 'string
+                 (nconc (mapcar #'string args) (list (symbol-name symbol))))
           (symbol-package symbol)))
 
 (defun re-intern (symbol)
