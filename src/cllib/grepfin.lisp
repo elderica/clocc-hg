@@ -9,12 +9,15 @@
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
+  (require :cllib-miscprint (translate-logical-pathname "cllib:miscprint"))
   (require :cllib-csv (translate-logical-pathname "cllib:csv")))
 
 (in-package :cllib)
 
 (export '(*data-dir* *fund-dir* *stock-file* *funds-db*
-          query-funds query-stocks))
+          ensure-data query-funds query-stocks))
+
+;;; * data
 
 (defcustom *data-dir* pathname (merge-pathnames "data/" (user-homedir-pathname))
   "The location of all financial data.")
@@ -24,7 +27,7 @@
 (defpackage "FIN" (:use))
 
 ;; export from http://www.mffais.com/
-(defcsv fund (:package "FIN")
+(defcsv holding (:package "FIN")
   (("Fullname" fullname string)
    ("Symbol" symbol symbol)
    ("Country" country symbol)
@@ -44,14 +47,14 @@
    ("Result Of Changed Shares Only" result-of-changed-shares-only float)
    ("Lifetime Buy Total" lifetime-buy-total float)
    ("Lifetime Buy Avg. Price" lifetime-buy-avg-price float)
-   ("Lifetime Sell Total " lifetime-sell-total float)
+   ("Lifetime Sell Total" lifetime-sell-total float)
    ("Lifetime Sell Avg. Price" lifetime-sell-avg-price float)
    ("Lifetime Avg. Return Pct" lifetime-avg-return-% float)))
 
 (defvar *funds* (make-hash-table :test 'equalp))
 
 (defun read-fund (file)
-  (setf (gethash (pathname-name file) *funds*) (csv-read 'fund file)))
+  (setf (gethash (pathname-name file) *funds*) (csv-read 'holding file)))
 (defun read-funds (&key (dir *fund-dir*))
   (mapc #'read-fund (directory (merge-pathnames "**/*.csv" dir))))
 (defvar *funds-db* (merge-pathnames "funds.sexp" *data-dir*))
@@ -66,7 +69,7 @@
          (latest (loop :for ff :in fund-files :maximize
                    #+clisp (apply #'encode-universal-time (third ff))
                    #-clisp (file-write-date ff)))
-         (db-fwd (file-write-date *funds-db*)))
+         (db-fwd (or (ignore-errors (file-write-date *funds-db*)) 0)))
     (cond ((> latest db-fwd)
            (format t "~&Latest fund file(~A) is newer than the fund DB file(~A), rebuilding...~%"
                    (dttm->string latest :format :short)
@@ -100,6 +103,40 @@
   (dolist (stock (setq *stocks* (csv-read 'stock file)))
     (setf (symbol-value (stock-ticker stock)) stock)))
 
+(defun ensure-data ()
+  (read-stocks)
+  (ensure-funds)
+  ;; make sure that we know all stocks mentioned in funds and they match
+  (let ((unknown (make-hash-table :test 'eq)))
+    (maphash (lambda (file holdings)
+               (dolist (holding holdings)
+                 (unless (boundp (holding-symbol holding))
+                   (push file (gethash (holding-symbol holding) unknown)))))
+             *funds*)
+    (format t "~&~:D unknown stock~:P and ~:D known stock~:P in ~:D fund~:P~%"
+            (hash-table-count unknown) (length *stocks*)
+            (hash-table-count *funds*)))
+  ;; report counts of some symbols
+  (format t "~& ## stock counts:~%")
+  (dolist (slot '(sector industry country))
+    (format t "~& == ~A" slot)
+    (let ((ht (make-hash-table :test 'eq)))
+      (dolist (stock *stocks*)
+        (incf (gethash (slot-value stock slot) ht 0)))
+      (print-counts ht)))
+  (format t "~& ## fund counts:~%")
+  (dolist (slot '(activity industry country))
+    (format t "~& == ~A" slot)
+    (let ((ht (make-hash-table :test 'eq)))
+      (maphash (lambda (file holdings)
+                 (declare (ignore file))
+                 (dolist (holding holdings)
+                   (incf (gethash (slot-value holding slot) ht 0))))
+               *funds*)
+      (print-counts ht))))
+
+;;; * queries
+
 (defun show-readers (type)
   (dolist (dslot (port:class-direct-slots (find-class type)))
     (let ((f (car (port:slot-definition-readers dslot))))
@@ -111,8 +148,9 @@
 The atomic queries are:~%")
     (show-readers 'stock)
     (format t "~&The atomic queries can be combined, e.g.:~%~S~%"
-            '(AND (< 10 (STOCK-P/E STOCK)) (EQ (STOCK-COUNTRY STOCK)
-                                            'FIN::USA))))
+            '(AND (< 10 (STOCK-P/E STOCK))
+              (EQ (STOCK-COUNTRY STOCK) 'FIN::USA)
+              (STOCK-P/E STOCK))))
   (:method ((query function))
     (dolist (stock *stocks*)
       (let ((res (funcall query stock)))
