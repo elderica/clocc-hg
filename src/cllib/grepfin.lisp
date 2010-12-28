@@ -51,6 +51,15 @@
    ("Lifetime Sell Avg. Price" lifetime-sell-avg-price float)
    ("Lifetime Avg. Return Pct" lifetime-avg-return-% float)))
 
+;; extra accessors (don't forget to show them in query-funds@:help!)
+(defun holdings-total-value (holdings)
+  "The total value of holdings (sum of TODAY-VALUE's.)"
+  (reduce #'+ holdings :key #'holding-today-value))
+(defun holding-stock (holding)
+  "Return the STOCK object corresponding to the HOLDING or NIL if not known."
+  (let ((symbol (holding-symbol holding)))
+    (and (boundp symbol) (symbol-value symbol))))
+
 (defvar *funds* (make-hash-table :test 'equalp))
 
 (defun read-fund (file)
@@ -138,38 +147,75 @@
 ;;; * queries
 
 (defun show-readers (type)
+  "Print the list of slot accessors for a TYPE defined with DEFCSV."
   (dolist (dslot (port:class-direct-slots (find-class type)))
     (let ((f (car (port:slot-definition-readers dslot))))
       (format t "~& ~20A   ~A~%" f (documentation f t)))))
+(defun show-extras (extras)
+  "Print the list of extra accessor functions."
+  (dolist (f extras)
+    (format t "~& ~A~%  ~A~%" f (documentation f 'function))))
 
 (defgeneric query-stocks (query)
   (:method ((query (eql :help)))
-    (format t "~&Print stocks which satisfy a certain condition.
-The atomic queries are:~%")
+    (format t "~&Print stocks which satisfy a certain condition
+on the variable ~S of type ~S.
+The atomic queries are:~%" 'STOCK 'STOCK)
     (show-readers 'stock)
-    (format t "~&The atomic queries can be combined, e.g.:~%~S~%"
+    (format t "~&The atomic queries can be combined, e.g.:~%~S
+to list all ~A stocks with p/e>10."
             '(AND (< 10 (STOCK-P/E STOCK))
               (EQ (STOCK-COUNTRY STOCK) 'FIN::USA)
-              (STOCK-P/E STOCK))))
+              (STOCK-P/E STOCK))
+            'FIN::USA))
   (:method ((query function))
     (dolist (stock *stocks*)
       (let ((res (funcall query stock)))
         (when res
-          (format t "~7A: ~S~%" (stock-ticker stock) res)))))
+          (format t "~7A: ~A~%" (stock-ticker stock) res)))))
   (:method ((query cons))
     (query-stocks (compile nil `(lambda (stock) ,query))))
   (:method ((query pathname)) (query-stocks (read-from-file query)))
   (:method ((query string)) (query-stocks (read-from-file query))))
 
 (defgeneric query-funds (query)
+  (:method ((query (eql :help)))
+    (format t "~&Print funds which satisfy a certain condition
+on the variable ~S of type ~S.
+The atomic queries are:~%" 'HOLDINGS '(LIST HOLDING))
+    (show-readers 'holding)
+    (format t "~&Extra functions:~%")
+    (show-extras '(holdings-total-value holding-stock))
+    (format t "~&The atomic queries can be combined, e.g.:~%~S
+to list all the funds who invest more that 5%
+in a stock with market cap less than 100M;
+or~%~S~%to list all the funds who hold more than 10% of a known stock.
+\(STOCK-MARKET-CAP is in millions of dollars,
+ while HOLDING-TODAY-VALUE is in dollars).~%"
+            '(LET ((THRESHOLD (/ (HOLDINGS-TOTAL-VALUE HOLDINGS) 20)))
+              (MAPCAR #'HOLDING-SYMBOL
+               (REMOVE-IF-NOT
+                (LAMBDA (HOLDING)
+                  (AND (> (HOLDING-TODAY-VALUE HOLDING) THRESHOLD)
+                       (LET ((STOCK (HOLDING-STOCK HOLDING)))
+                         (AND STOCK (< (STOCK-MARKET-CAP STOCK) 100)))))
+                HOLDINGS)))
+            '(MAPCAR #'HOLDING-SYMBOL
+              (REMOVE-IF-NOT
+               (LAMBDA (HOLDING)
+                 (LET ((STOCK (HOLDING-STOCK HOLDING)))
+                   (AND STOCK
+                        (< (* 1d6 (STOCK-MARKET-CAP STOCK))
+                           (* 1d1 (HOLDING-TODAY-VALUE HOLDING))))))
+               HOLDINGS))))
   (:method ((query function))
-    (maphash (lambda (file fund)
-               (let ((res (funcall query fund)))
+    (maphash (lambda (file holdings)
+               (let ((res (funcall query holdings)))
                  (when res
-                   (format t "~A: ~S~%" file res))))
+                   (format t "~A: ~A~%" file res))))
              *funds*))
   (:method ((query cons))
-    (query-funds (compile nil `(lambda (fund) ,query))))
+    (query-funds (compile nil `(lambda (holdings) ,query))))
   (:method ((query pathname)) (query-funds (read-from-file query)))
   (:method ((query string)) (query-funds (read-from-file query))))
 
