@@ -57,25 +57,27 @@ When it is :KEEP, keep the line as is.")
 
 (defun csv-trim (whitespace string)
   "Trim the string argument from the whitespace."
-  (let* ((clean (string-trim whitespace string)) (len1 (1- (length clean))))
-    (when (and (plusp len1) (char= #\" (char clean 0) (char clean len1)))
-      (setq clean (subseq clean 1 len1)))
+  (let ((clean (string-trim whitespace string)))
     (if (zerop (length clean)) nil clean)))
 
 (defun csv-parse-string (string &key
                          ((:separator *csv-separator*) *csv-separator*)
                          ((:whitespace *csv-whitespace*) *csv-whitespace*))
   "Parse a string, returning a vector of strings."
-  (loop :with num = (count *csv-separator* string :test #'char=)
-    :with res = (make-array (1+ num))
-    :for ii :from 0 :to num
-    :for beg = 0 :then (1+ end)
-    :for end = (or (position *csv-separator* string :test #'char= :start beg)
-                   (length string))
-    :do (setf (aref res ii)
-              (when (> end beg) ; otherwise NIL = missing
-                (csv-trim *csv-whitespace* (subseq string beg end))))
-    :finally (return res)))
+  (loop :with res :and current :and len = (length string) :and end
+    :for beg = 0 :then (1+ end) :while (< beg len) :do
+    (if (char= #\" (char string beg))
+        (multiple-value-bind (w e)
+            (read-from-string string t nil :start beg)
+          (setq current (and (plusp (length w)) w)
+                end e))
+        (let ((e (or (position *csv-separator* string :test #'char= :start beg)
+                     len)))
+          (setq current (and (> e beg) ; otherwise NIL = missing
+                             (subseq string beg e))
+                end e)))
+    (push (and current (csv-trim *csv-whitespace* current)) res)
+    :finally (return (coerce (nreverse res) 'vector))))
 
 (defconst +comments+ string "#;" "Characters that start comments.")
 (defun uncomment-line (line)
