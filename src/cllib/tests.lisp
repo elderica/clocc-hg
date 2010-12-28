@@ -29,6 +29,7 @@
   (require :cllib-munkres (translate-logical-pathname "cllib:munkres"))
   (require :cllib-lift (translate-logical-pathname "cllib:lift"))
   (require :cllib-bayes (translate-logical-pathname "cllib:bayes"))
+  (require :cllib-csv (translate-logical-pathname "cllib:csv"))
   (require :cllib-cvs (translate-logical-pathname "cllib:cvs")))
 
 (in-package :cllib)
@@ -465,9 +466,20 @@
     (check-logodds+ 2 -1 1)
     (check-logodds+ 2 2 4)))
 
+(deftest test-csv ()
+  (flet ((check-csv (s v)
+           (let ((v1 (csv-parse-string s)))
+             (mesg :test out " ** csv(~S)=~S~:[ (should be ~S)~;~]~%"
+                   s v1 (equalp v v1) v)
+             (unless (equalp v v1) (incf num-err)))))
+    (check-csv "foo,bar,zot,quux" #("foo" "bar" "zot" "quux"))
+    (check-csv "foo,\"bar,zot\",quux" #("foo" "bar,zot" "quux"))
+    (check-csv "foo,\"bar\\\",zot\",quux" #("foo" "bar\",zot" "quux"))
+    (check-csv "foo,,\"\",quux" #("foo" NIL NIL "quux"))))
+
 (defun test-all (&key (out *standard-output*)
                  (what '(string math date rpm url elisp xml munkres cvs base64
-                         iter matrix list lift bayes))
+                         iter matrix list lift bayes csv))
                  (disable-network-dependent-tests t))
   (mesg :test out "~& *** ~s: regression testing...~%" 'test-all)
   (let* ((num-test 0)
