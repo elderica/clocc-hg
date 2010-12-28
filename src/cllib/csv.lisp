@@ -245,6 +245,11 @@ Return 3 values:
   (case slot-type
     (float% 'float)
     (t slot-type)))
+(defun set-slots-documentation (slots type)
+  (mapc (lambda (slotd dslot)
+          (setf (documentation (car (port:slot-definition-readers dslot)) t)
+                (car slotd)))
+        slots (port:class-direct-slots (find-class type))))
 ;; MAKE-READER & MAKE-WRITER are separate macros to avoid calling MOP functions
 ;; at read time when DEFSTRUCT has not been called yet.
 (defmacro make-reader (vec slots type package)
@@ -266,7 +271,9 @@ Return 3 values:
          :nconc `(,@(when (plusp pos) `((write-char *csv-separator* ,out)))
                     (write (,(car (port:slot-definition-readers slot)) ,obj)
                            :stream ,out :escape nil)))))
-(defmacro defcsv (type (&key (package (symbol-package type))) slots)
+(defmacro defcsv (type (&key (package (symbol-package type))) slots
+                  &aux (reader (symbol-prepend type '#:csv-reader-))
+                  (writer (symbol-prepend type '#:csv-writer-)))
   `(progn
      (eval-when (:compile-toplevel :load-toplevel :execute)
        (defstruct ,type
@@ -277,12 +284,14 @@ Return 3 values:
                        `(,symbol (port:required-argument)
                                  :type ,(type-type slot-type))))
                    slots)))
+     (set-slots-documentation ',slots ',type)
+     (defun ,reader (vec) (make-reader vec ,slots ,type ,package))
+     (defun ,writer (out obj) (make-writer out obj ,type))
      (setf (gethash ',type *csv-i/o*)
            (make-csv-i/o
             :name ',type
             :header ,(coerce (mapcar #'car slots) 'vector)
-            :reader (lambda (vec) (make-reader vec ,slots ,type ,package))
-            :writer (lambda (out obj) (make-writer out obj ,type))
+            :reader #',reader :writer #',writer
             :package ,package))))
 
 (provide :cllib-csv)
