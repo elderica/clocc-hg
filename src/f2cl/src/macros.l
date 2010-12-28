@@ -775,9 +775,9 @@ is not included")
 (defun fsqrt (x)
   (typecase x
     (single-float
-     (sqrt (the (single-float 0f0) x)))
+     (sqrt (the (or (single-float (0f0)) (member 0f0)) x)))
     (double-float
-     (sqrt (the (double-float 0d0) x)))
+     (sqrt (the (or (double-float (0d0)) (member 0d0)) x)))
     (t
      (sqrt x))))
 
@@ -1522,6 +1522,17 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.114  2010/05/17 01:42:14  rtoy
+;;; src/f2cl1.l:
+;;; o Need to know the actual type when making a compatible sequence.
+;;; o Convert plain integer type to integer4 types, which is what Fortran
+;;;   would do.  We don't want general Lisp integer type.
+;;;
+;;; src/macros.l:
+;;; o Change MAKE-COMPATIBLE-SEQ to be a macro.
+;;; o Need to know the actual array type to create the correct type of
+;;;   sequence.
+;;;
 ;;; Revision 1.113  2010/02/23 00:59:12  rtoy
 ;;; Support the Fortran capability of passing an array of one type
 ;;; to a routine expecting a different type.  Currently only supports REAL
