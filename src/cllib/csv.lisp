@@ -21,7 +21,7 @@
 
 (export '(csv-print-vector csv-parse-string csv-read-file with-csv csv-names
           class-csv-header class-csv-print *csv-first-line-names* *csv-junk*
-          defcsv csv-read csv-write
+          defcsv csv-read csv-write float%
           *csv-separator* *csv-whitespace* *csv-progress* *csv-progress-1*))
 
 (defcustom *csv-separator* character #\,
