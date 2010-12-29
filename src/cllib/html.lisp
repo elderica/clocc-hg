@@ -1,6 +1,6 @@
 ;;; HTML parsing - very rudimentary
 ;;;
-;;; Copyright (C) 1997-2002, 2007-2008 by Sam Steingold
+;;; Copyright (C) 1997-2002, 2007-2008, 2010 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
@@ -18,7 +18,7 @@
 (in-package :cllib)
 
 (export
- '(*html-readtable* html-translate-specials
+ '(*html-readtable* html-translate-specials make-text-stream
    text-stream *ts-kill* read-next next-token next-number dump-url-tokens
    xml-read-from-url))
 
