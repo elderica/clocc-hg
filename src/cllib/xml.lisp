@@ -34,6 +34,7 @@
    xml-xhtml-tidy xml-purge-data xmlize-string with-tag
    with-xml-input with-xml-file xml-read-from-file read-standalone-char
    xml-obj xml-obj-p xmlo-args xmlo-name xmlo-data do-xmlo-data
+   xml-comment xml-comment-data
    xmlo-name-check xmlo-nm xmlo-tag
    xml-name xml-name-p xmln-ln xmln-ns xmln=
    xml-mapcan xml-find-name xml-find-id
