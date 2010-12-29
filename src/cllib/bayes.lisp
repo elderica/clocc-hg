@@ -301,7 +301,7 @@ If REPEAT is T, boost while there is an improvement,
             (if (realp repeat)
                 (< repeat round) ; fixed number of rounds
                 (<= last proficiency))) ; while improving
-        (values best proficiency))
+        (values best proficiency best-round))
     (cllib:mesg :bayes out "~&~S(~S) [[[round ~:D proficiency=~G~%"
                 'nb-boost model round proficiency)
     (setq misclassified (nb-boost-once model train :key key)
