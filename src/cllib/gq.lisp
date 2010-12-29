@@ -778,12 +778,14 @@ If DEBUG is non-nil, do not bind `*print-log*' and `*gq-error-stream*'."
 (defstruct holdings
   (timestamp +bad-date+ :type date)
   (composition +bad-composition+ :type composition)
-  (top% 0s0 :type float)            ; top10 as % of total
-  (top10 () :type list))           ; of holdings
+  (top% 0s0 :type float)        ; top10 as % of total
+  (top10 () :type list))        ; of holdings
 
 (defun holdings-url (symbol)
   (format nil "http://finance.yahoo.com/q/hl?s=~A+Holdings" symbol))
 
+;; when using MK-DEFSYSTEM, ASDF-based NET.HTML.PARSER is not available
+#-mk-defsystem
 (defun holdings (&key symbol)
   "Get holdings for a (institutional/mutual fund) symbol from Yahoo."
   (let* ((html (with-open-url (sock (holdings-url symbol))
@@ -862,6 +864,7 @@ If DEBUG is non-nil, do not bind `*print-log*' and `*gq-error-stream*'."
 (defun holders-url (symbol)
   (format nil "http://finance.yahoo.com/q/mh?s=~A+Major+Holders" symbol))
 
+#-mk-defsystem
 (defun holders (&key symbol)
   "Get holders for a (stock) symbol from Yahoo."
   (let* ((html (cllib:with-open-url (sock (holders-url symbol))
