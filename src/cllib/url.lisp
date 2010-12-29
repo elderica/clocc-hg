@@ -1,6 +1,6 @@
 ;;; url - handle url's and parse HTTP
 ;;;
-;;; Copyright (C) 1998-2009 by Sam Steingold
+;;; Copyright (C) 1998-2010 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
@@ -38,13 +38,14 @@
 
 (in-package :cllib)
 
-(export '(url make-url url-p url-ask url-eta protocol-rfc
+(export '(url make-url url-p copy-url url-ask url-eta protocol-rfc
           url-prot url-user url-pass url-host url-port url-path
           url-get-host url-get-port url-string-p url-path-parse
           url-path-dir url-path-file url-path-args
           open-socket-retry open-url with-open-url
           ftp-list url-send-mail url-get-news url-time *http-proxy* http-proxy
-          browse-url *browsers* *browser* *url-output* *url-error*
+          browse-url *browsers* *browser*
+          *url-output* *url-error* *url-max-retry*
           *nntp-server* *url-replies* *url-errors* *url-user-agent*
           dump-url url-get whois finger flush-http))
 
