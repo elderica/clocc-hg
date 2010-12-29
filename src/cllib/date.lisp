@@ -1,6 +1,6 @@
 ;;; Date-related structures
 ;;;
-;;; Copyright (C) 1997-2008 by Sam Steingold
+;;; Copyright (C) 1997-2008, 2010 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
@@ -25,7 +25,7 @@
 (export '(string->dttm dttm->string date-formatter +day-sec+ print-date-month
           date date2time date2num date2days time2date days2date mk-date
           date-da date-mo date-ye unix-date infer-timezone infer-month
-          span->string string->span
+          date-p fix-date +bad-date+ span->string string->span
           days-week-day date-week-day black-days working-day-p
           days-to-next-working-day next-working-day previous-working-day
           days-since days-since-f *y2k-cut* make-date-readtable
