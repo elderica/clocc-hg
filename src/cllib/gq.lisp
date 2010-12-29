@@ -22,9 +22,11 @@
   ;; `plot-dated-lists'
   (require :cllib-gnuplot (translate-logical-pathname "cllib:gnuplot")))
 
-(in-package :cllib)
-
-(export '(update-quotes *hist-data-file* holdings holders))
+(defpackage #:getquote
+  (:nicknames #:gq)
+  (:use #:cl #:port #:cllib)
+  (:export #:update-quotes #:*hist-data-file* #:holdings #:holders))
+(in-package #:gq)
 
 ;;;
 ;;;
