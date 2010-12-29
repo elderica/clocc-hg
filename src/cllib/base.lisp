@@ -1,6 +1,6 @@
 ;;; Basis functionality, required everywhere
 ;;;
-;;; Copyright (C) 1997-2004, 2007-2008 by Sam Steingold
+;;; Copyright (C) 1997-2004, 2007-2008, 2010 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
@@ -16,7 +16,7 @@
   (:nicknames #:org.cons.clocc/sds/cllib)
   #+cmu (:shadowing-import-from #:port port:defstruct)
   (:export #:value #:code #:*datadir* #:*mail-host-address*
-           #:*user-mail-address*))
+           #:*user-mail-address* #:mk-path))
 
 (in-package :cllib)
 
