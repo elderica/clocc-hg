@@ -40,7 +40,7 @@ cllib-net.exe:	$(addsuffix .$(FASLEXT),$(NET))
 	$(CLISP) -norc $(patsubst %,-i %,$^) \
 		-x '(saveinitmem "$@" :executable t :norc t)'
 
-cllib.exe:	$(addsuffix .$(FASLEXT),$(IMAGE_EXTRA) $(SOURCES))
+cllib.exe:	$(addsuffix .$(FASLEXT),$(IMAGE_EXTRA) $(filter-out tests,$(SOURCES)))
 	$(CLISP) -norc $(patsubst %,-i %,$^) \
 		-x '(saveinitmem "$@" :executable t :norc t)'
 
