@@ -279,6 +279,13 @@ Return 3 values:
 (defmacro defcsv (type (&key (package (symbol-package type))) slots
                   &aux (reader (symbol-prepend type '#:csv-reader-))
                   (writer (symbol-prepend type '#:csv-writer-)))
+  "Define a structure type and the concomitant CSV i/o.
+TYPE if the structure type to be defined.
+PACKAGE is the package where the symbols are placed.
+SLOTS is a list of
+  (CSV-name-string slot-name-symbol slot-type &optional parser)
+SLOT-TYPE can be STRING, SYMBOL, INTEGER, FLOAT, FLOAT%.
+PARSER is a function to be used instead of the type-appropriate default."
   `(progn
      (eval-when (:compile-toplevel :load-toplevel :execute)
        (defstruct ,type
