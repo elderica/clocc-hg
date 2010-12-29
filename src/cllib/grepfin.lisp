@@ -158,9 +158,9 @@
 
 (defgeneric query-stocks (query)
   (:method ((query (eql :help)))
-    (format t "~&Print stocks which satisfy a certain condition
+    (format t "~&~S prints stocks which satisfy a certain condition
 on the variable ~S of type ~S.
-The atomic queries are:~%" 'STOCK 'STOCK)
+The atomic queries are:~%" 'query-stocks 'STOCK 'STOCK)
     (show-readers 'stock)
     (format t "~&The atomic queries can be combined, e.g.:~%~S
 to list all ~A stocks with p/e>10."
@@ -180,9 +180,9 @@ to list all ~A stocks with p/e>10."
 
 (defgeneric query-funds (query)
   (:method ((query (eql :help)))
-    (format t "~&Print funds which satisfy a certain condition
+    (format t "~&~S prints funds which satisfy a certain condition
 on the variable ~S of type ~S.
-The atomic queries are:~%" 'HOLDINGS '(LIST HOLDING))
+The atomic queries are:~%" 'query-funds 'HOLDINGS '(LIST HOLDING))
     (show-readers 'holding)
     (format t "~&Extra functions:~%")
     (show-extras '(holdings-total-value holding-stock))
@@ -218,6 +218,13 @@ or~%~S~%to list all the funds who hold more than 10% of a known stock.
     (query-funds (compile nil `(lambda (holdings) ,query))))
   (:method ((query pathname)) (query-funds (read-from-file query)))
   (:method ((query string)) (query-funds (read-from-file query))))
+
+(defun grepfin-init ()
+  (ensure-data)
+  (format t "~%~40~~%")
+  (query-stocks :help)
+  (format t "~%~40~~%")
+  (query-funds :help))
 
 (provide :grepfin)
 ;;; file grepfin.lisp ends here
