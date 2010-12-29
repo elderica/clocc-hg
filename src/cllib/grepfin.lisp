@@ -166,7 +166,7 @@ on the variable ~S of type ~S.
 The atomic queries are:~%" 'query-stocks 'STOCK 'STOCK)
     (show-readers 'stock)
     (format t "~&The atomic queries can be combined, e.g.:~%~S
-to list all ~A stocks with p/e>10."
+to list all ~A stocks with p/e>10.~%"
             '(AND (< 10 (STOCK-P/E STOCK))
               (EQ (STOCK-COUNTRY STOCK) 'FIN::USA)
               (STOCK-P/E STOCK))
