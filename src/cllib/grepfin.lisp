@@ -12,10 +12,13 @@
   (require :cllib-miscprint (translate-logical-pathname "cllib:miscprint"))
   (require :cllib-csv (translate-logical-pathname "cllib:csv")))
 
-(in-package :cllib)
+(defpackage #:grepfin
+  (:nicknames #:gf)
+  (:use #:cl #:port #:cllib)
+  (:export #:*data-dir* #:*fund-dir* #:*stock-file* #:*funds-db*
+           #:ensure-data #:query-funds #:query-stocks #:init))
 
-(export '(*data-dir* *fund-dir* *stock-file* *funds-db*
-          ensure-data query-funds query-stocks))
+(in-package #:grepfin)
 
 ;;; * data
 
@@ -219,7 +222,7 @@ or~%~S~%to list all the funds who hold more than 10% of a known stock.
   (:method ((query pathname)) (query-funds (read-from-file query)))
   (:method ((query string)) (query-funds (read-from-file query))))
 
-(defun grepfin-init ()
+(defun init ()
   (ensure-data)
   (format t "~%~40~~%")
   (query-stocks :help)
