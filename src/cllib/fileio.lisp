@@ -1,6 +1,6 @@
 ;;; Read from/Write to files
 ;;;
-;;; Copyright (C) 1997-2009 by Sam Steingold
+;;; Copyright (C) 1997-2010 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
@@ -131,12 +131,14 @@ This function finds such a header among the first 1024 bytes
 
 (declaim (ftype (function (list stream &optional function) (values fixnum))
                 write-list-to-stream))
-(defun write-list-to-stream (lst stream &optional (print-function #'prin1))
+(defun write-list-to-stream (lst stream &optional (print-function #'prin1)
+                             print-header)
   "Write the list into the stream, printing the elements one per line.
 PRINT-FUNCTION should take (at least) 2 arguments: a record and a stream.
 PRIN1 is the default. Returns the length of the list."
   (declare (list lst) (stream stream)
            (type (function (t stream) t) print-function))
+  (when print-header (funcall print-header stream))
   (do ((ll lst (cdr ll)) (len 0 (1+ len))) ((null ll) len)
     (declare (type index-t len))
     (funcall print-function (car ll) stream)
@@ -145,7 +147,8 @@ PRIN1 is the default. Returns the length of the list."
 (declaim (ftype (function (list t &optional function)
                           (values fixnum file-size-t))
                 write-list-to-file))
-(defun write-list-to-file (lst fout &optional (print-function #'prin1))
+(defun write-list-to-file (lst fout &optional (print-function #'prin1)
+                           print-header)
   "Write the list into the file, printing the elements one per line.
 Calls `write-list-to-stream', which see.
 Returns the number of records and the file size."
@@ -153,8 +156,8 @@ Returns the number of records and the file size."
   (with-timing ()
     (format t "~&Writing `~a'..." fout) (force-output)
     (with-open-file (stout fout :direction :output :if-exists :supersede)
-      (let ((len (write-list-to-stream lst stout print-function))
-            (size (file-length stout)))
+      (let* ((len (write-list-to-stream lst stout print-function print-header))
+             (size (file-length stout)))
         (declare (fixnum len) (type file-size-t size))
         (format t "done [~:d record~:p] [~:d byte~:p]" len size)
         (values len size)))))
