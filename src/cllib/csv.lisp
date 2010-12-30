@@ -211,6 +211,7 @@ Return 3 values:
   (or (gethash type *csv-i/o*)
       (error "unknown CSV i/o ~S" type)))
 (defun csv-read (type file)
+  "Read a csv FILE with records of the given TYPE (defined with DEFCSV)."
   (let ((csv-i/o (csv-i/o type)))
     (multiple-value-bind (data len file-size names)
         (csv-read-file file :first-line-names t :junk :keep)
@@ -220,6 +221,7 @@ Return 3 values:
                 'csv-read type names (csv-i/o-header csv-i/o)))
       (mapcar (csv-i/o-reader csv-i/o) data))))
 (defun csv-write (type file data)
+  "Write a csv FILE records DATA of the given TYPE (defined with DEFCSV)."
   (let* ((csv-i/o (csv-i/o type)) (writer (csv-i/o-writer csv-i/o)))
     (with-open-file (out file :direction :output)
       (write-char (char +comments+ 0) out)
