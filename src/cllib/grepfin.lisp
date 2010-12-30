@@ -59,9 +59,29 @@
   "The total value of holdings (sum of TODAY-VALUE's.)"
   (reduce #'+ holdings :key #'holding-today-value))
 (defun holding-stock (holding)
-  "Return the STOCK object corresponding to the HOLDING or NIL if not known."
+  "The STOCK object corresponding to the HOLDING or NIL if not known."
   (let ((symbol (holding-symbol holding)))
     (and (boundp symbol) (symbol-value symbol))))
+(defun holding-%-of-fund (holding total)
+  "The HOLDING's today value as percentage of the total fund holdings."
+  (/ (holding-today-value holding) 1d-2 total))
+(defun holding-%-of-stock (holding)
+  "The HOLDING's today value as percentage of the stock's market cap."
+  (let ((stock (holding-stock holding)))
+    (and stock                ; today-value is in $; market-cap is in M$
+         (/ (holding-today-value holding) 1d6 (stock-market-cap stock)))))
+(defun holding-market-cap (holding)
+  "The HOLDING's STOCK's market cap or NIL for unknown stocks."
+  (let ((stock (holding-stock holding)))
+    (and stock (stock-market-cap stock))))
+
+;; for comparing (possibly NIL) return values of HOLDING-%-OF-STOCK et al
+(defun <* (&rest args)
+  (and (every #'numberp args)
+       (apply #'< args)))
+(defun >* (&rest args)
+  (and (every #'numberp args)
+       (apply #'> args)))
 
 (defvar *funds* (make-hash-table :test 'equalp))
 
@@ -159,8 +179,8 @@
   (dolist (f extras)
     (format t "~& ~A~%  ~A~%" f (documentation f 'function))))
 
-(defgeneric query-stocks (query)
-  (:method ((query (eql :help)))
+(defgeneric query-stocks (query &key csv)
+  (:method ((query (eql :help)) &key)
     (format t "~&~S prints stocks which satisfy a certain condition
 on the variable ~S of type ~S.
 The atomic queries are:~%" 'query-stocks 'STOCK 'STOCK)
@@ -171,56 +191,68 @@ to list all ~A stocks with p/e>10.~%"
               (EQ (STOCK-COUNTRY STOCK) 'FIN::USA)
               (STOCK-P/E STOCK))
             'FIN::USA))
-  (:method ((query function))
-    (dolist (stock *stocks*)
-      (let ((res (funcall query stock)))
-        (when res
-          (format t "~7A: ~A~%" (stock-ticker stock) res)))))
-  (:method ((query cons))
-    (query-stocks (compile nil `(lambda (stock) ,query))))
-  (:method ((query pathname)) (query-stocks (read-from-file query)))
-  (:method ((query string)) (query-stocks (read-from-file query))))
+  (:method ((query function) &key csv)
+    (let ((ret ()))
+      (dolist (stock *stocks*)
+        (let ((res (funcall query stock)))
+          (when res
+            (push stock ret)
+            (format t "~7A: ~A~%" (stock-ticker stock) res))))
+      (when (and csv ret) (csv-write 'stock csv ret))))
+  (:method ((query cons) &key csv)
+    (query-stocks (compile nil `(lambda (stock) ,query)) :csv csv))
+  (:method ((query pathname) &key csv)
+    (query-stocks (read-from-file query) :csv csv))
+  (:method ((query string) &key csv)
+    (query-stocks (read-from-file query) :csv csv)))
 
-(defgeneric query-funds (query)
-  (:method ((query (eql :help)))
+(defgeneric query-funds (query &key csv)
+  (:method ((query (eql :help)) &key)
     (format t "~&~S prints funds which satisfy a certain condition
 on the variable ~S of type ~S.
 The atomic queries are:~%" 'query-funds 'HOLDINGS '(LIST HOLDING))
     (show-readers 'holding)
     (format t "~&Extra functions:~%")
-    (show-extras '(holdings-total-value holding-stock))
+    (show-extras '(holdings-total-value holding-stock holding-%-of-fund
+                   holding-%-of-stock))
     (format t "~&The atomic queries can be combined, e.g.:~%~S
 to list all the funds who invest more that 5%
 in a stock with market cap less than 100M;
-or~%~S~%to list all the funds who hold more than 10% of a known stock.
-\(STOCK-MARKET-CAP is in millions of dollars,
- while HOLDING-TODAY-VALUE is in dollars).~%"
-            '(LET ((THRESHOLD (/ (HOLDINGS-TOTAL-VALUE HOLDINGS) 20)))
-              (MAPCAR #'HOLDING-SYMBOL
-               (REMOVE-IF-NOT
-                (LAMBDA (HOLDING)
-                  (AND (> (HOLDING-TODAY-VALUE HOLDING) THRESHOLD)
-                       (LET ((STOCK (HOLDING-STOCK HOLDING)))
-                         (AND STOCK (< (STOCK-MARKET-CAP STOCK) 100)))))
-                HOLDINGS)))
-            '(MAPCAR #'HOLDING-SYMBOL
+or~%~S~%to list all the funds who hold more than 10% of a known stock;
+or~%~S~%to combine the above queries.~%"
+            '(LET ((TOTAL (HOLDINGS-TOTAL-VALUE HOLDINGS)))
               (REMOVE-IF-NOT
                (LAMBDA (HOLDING)
-                 (LET ((STOCK (HOLDING-STOCK HOLDING)))
-                   (AND STOCK
-                        (< (* 1d6 (STOCK-MARKET-CAP STOCK))
-                           (* 1d1 (HOLDING-TODAY-VALUE HOLDING))))))
-               HOLDINGS))))
-  (:method ((query function))
-    (maphash (lambda (file holdings)
-               (let ((res (funcall query holdings)))
-                 (when res
-                   (format t "~A: ~A~%" file res))))
-             *funds*))
-  (:method ((query cons))
-    (query-funds (compile nil `(lambda (holdings) ,query))))
-  (:method ((query pathname)) (query-funds (read-from-file query)))
-  (:method ((query string)) (query-funds (read-from-file query))))
+                 (AND (> (HOLDING-%-OF-FUND HOLDING TOTAL) 5)
+                      (<* (HOLDING-MARKET-CAP HOLDING) 100)))
+               HOLDINGS))
+            '(REMOVE-IF-NOT
+              (LAMBDA (HOLDING) (>* (HOLDING-%-OF-STOCK HOLDING) 10))
+              HOLDINGS)
+            '(LET ((TOTAL (HOLDINGS-TOTAL-VALUE HOLDINGS)))
+              (REMOVE-IF-NOT
+               (LAMBDA (HOLDING)
+                  (AND (> (HOLDING-%-OF-FUND HOLDING TOTAL) 3)
+                       (>* (HOLDING-%-OF-STOCK HOLDING) 5)
+                       (<* (HOLDING-MARKET-CAP HOLDING) 100)
+                       (< 30 E(HOLDING-SHARES-CHANGE-% HOLDING))))
+               holdings))))
+  (:method ((query function) &key)
+    (let ((ret ()))
+      (maphash (lambda (file holdings)
+                 (let ((res (funcall query holdings)))
+                   (when res
+                     (dolist (h res)
+                       (push (list file h (holding-stock h)) ret))
+                     (format t "~A: ~A~%" file
+                             (mapcar #'holding-symbol res)))))
+               *funds*)))
+  (:method ((query cons) &key csv)
+    (query-funds (compile nil `(lambda (holdings) ,query)) :csv csv))
+  (:method ((query pathname) &key csv)
+    (query-funds (read-from-file query) :csv csv))
+  (:method ((query string) &key csv)
+    (query-funds (read-from-file query) :csv csv)))
 
 (defun init ()
   (ensure-data)
