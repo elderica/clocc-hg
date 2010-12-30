@@ -222,16 +222,15 @@ Return 3 values:
       (mapcar (csv-i/o-reader csv-i/o) data))))
 (defun csv-write (type file data)
   "Write a csv FILE records DATA of the given TYPE (defined with DEFCSV)."
-  (let* ((csv-i/o (csv-i/o type)) (writer (csv-i/o-writer csv-i/o)))
-    (with-open-file (out file :direction :output)
-      (write-char (char +comments+ 0) out)
-      (loop :for name :across (csv-i/o-header csv-i/o) :and i :upfrom 0
-        :do (unless (zerop i) (write-char *csv-separator* out))
-        (write-string name out))
-      (terpri out)
-      (dolist (item data)
-        (funcall writer out item)
-        (terpri out)))))
+  (let ((csv-i/o (csv-i/o type)))
+    (write-list-to-file
+     data file (csv-i/o-writer csv-i/o)
+     (lambda (out)
+       (write-char (char +comments+ 0) out)
+       (loop :for name :across (csv-i/o-header csv-i/o) :and i :upfrom 0
+         :do (unless (zerop i) (write-char *csv-separator* out))
+         (write-string name out))
+       (terpri out)))))
 
 ;;; struct definition for CSV i/o
 (defun type-parser (slot-type)
@@ -300,7 +299,7 @@ PARSER is a function to be used instead of the type-appropriate default."
                    slots)))
      (set-slots-documentation ',slots ',type)
      (defun ,reader (vec) (make-reader vec ,slots ,type ,package))
-     (defun ,writer (out obj) (make-writer out obj ,type))
+     (defun ,writer (obj out) (make-writer out obj ,type))
      (setf (gethash ',type *csv-i/o*)
            (make-csv-i/o
             :name ',type
