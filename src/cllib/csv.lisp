@@ -21,7 +21,8 @@
 
 (export '(csv-print-vector csv-parse-string csv-read-file with-csv csv-names
           class-csv-header class-csv-print *csv-first-line-names* *csv-junk*
-          defcsv csv-read csv-write float%
+          new-csv defcsv csv-read csv-write float% csv-i/o csv-i/o-name
+          csv-i/o-header csv-i/o-reader csv-i/o-writer csv-i/o-package
           *csv-separator* *csv-whitespace* *csv-progress* *csv-progress-1*))
 
 (defcustom *csv-separator* character #\,
@@ -207,6 +208,11 @@ Return 3 values:
   (writer (port:required-argument) :type function)
   (package *package* :type 'package))
 (defvar *csv-i/o* (make-hash-table :test 'eq) "type -> csv-i/o")
+(defun new-csv (&rest args &key name &allow-other-keys)
+  (let ((old (gethash name *csv-i/o*)))
+    (when old
+      (warn "Redefining CSV i/o for type ~S" name))
+    (setf (gethash name *csv-i/o*) (apply #'make-csv-i/o args))))
 (defun csv-i/o (type)
   (or (gethash type *csv-i/o*)
       (error "unknown CSV i/o ~S" type)))
@@ -270,7 +276,7 @@ Return 3 values:
                     (let ((s (and (< ,pos len) (aref vec ,pos))))
                       (if s (funcall ,parser s)
                           ,(type-default slot-type))))))))
-(defmacro make-writer (out obj type)
+(defmacro make-writer (obj out type)
   `(progn
      ,@(loop :for pos :upfrom 0
          :for slot :in (port:class-direct-slots (find-class type))
@@ -299,13 +305,12 @@ PARSER is a function to be used instead of the type-appropriate default."
                    slots)))
      (set-slots-documentation ',slots ',type)
      (defun ,reader (vec) (make-reader vec ,slots ,type ,package))
-     (defun ,writer (obj out) (make-writer out obj ,type))
-     (setf (gethash ',type *csv-i/o*)
-           (make-csv-i/o
-            :name ',type
-            :header ,(coerce (mapcar #'car slots) 'vector)
-            :reader #',reader :writer #',writer
-            :package ,package))))
+     (defun ,writer (obj out) (make-writer obj out ,type))
+     (new-csv
+      :name ',type
+      :header ,(coerce (mapcar #'car slots) 'vector)
+      :reader #',reader :writer #',writer
+      :package ,package)))
 
 (provide :cllib-csv)
 ;;; file csv.lisp ends here
