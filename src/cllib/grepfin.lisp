@@ -180,7 +180,7 @@
     (format t "~& ~A~%  ~A~%" f (documentation f 'function))))
 
 (defgeneric query-stocks (query &key csv)
-  (:method ((query (eql :help)) &key)
+  (:method ((query (eql :help)) &key &allow-other-keys)
     (format t "~&~S prints stocks which satisfy a certain condition
 on the variable ~S of type ~S.
 The atomic queries are:~%" 'query-stocks 'STOCK 'STOCK)
@@ -206,8 +206,37 @@ to list all ~A stocks with p/e>10.~%"
   (:method ((query string) &key csv)
     (query-stocks (read-from-file query) :csv csv)))
 
+(let* ((holding (csv-i/o 'holding)) (holding-h (csv-i/o-header holding))
+       (stock (csv-i/o 'stock)) (stock-h (csv-i/o-header stock))
+       (h-len (1+ (length holding-h)))
+       (h-reader (csv-i/o-reader holding)) (s-reader (csv-i/o-reader stock))
+       (h-writer (csv-i/o-writer holding)) (s-writer (csv-i/o-writer stock)))
+  (new-csv
+   :name 'file+holding+stock
+   :header (concatenate 'vector #("fund") holding-h stock-h)
+   :reader (lambda (vec)
+             (let ((len (length vec)))
+               (cond ((= 0 len) nil)
+                     ((= 1 len) (list (aref vec 0) nil nil))
+                     ((>= h-len len)
+                      (list (aref vec 0)
+                            (funcall h-reader (subseq vec 1))
+                            nil))
+                     (t (list (aref vec 0)
+                              (funcall h-reader (subseq vec 1 h-len))
+                              (funcall s-reader (subseq vec h-len)))))))
+   :writer (lambda (list out)
+             (destructuring-bind (file holding stock) list
+               (write-string file out)
+               (write-char *csv-separator* out)
+               (funcall h-writer holding out)
+               (when stock
+                 (write-char *csv-separator* out)
+                 (funcall s-writer stock out))))
+   :package "FIN"))
+
 (defgeneric query-funds (query &key csv)
-  (:method ((query (eql :help)) &key)
+  (:method ((query (eql :help)) &key &allow-other-keys)
     (format t "~&~S prints funds which satisfy a certain condition
 on the variable ~S of type ~S.
 The atomic queries are:~%" 'query-funds 'HOLDINGS '(LIST HOLDING))
@@ -235,9 +264,9 @@ or~%~S~%to combine the above queries.~%"
                   (AND (> (HOLDING-%-OF-FUND HOLDING TOTAL) 3)
                        (>* (HOLDING-%-OF-STOCK HOLDING) 5)
                        (<* (HOLDING-MARKET-CAP HOLDING) 100)
-                       (< 30 E(HOLDING-SHARES-CHANGE-% HOLDING))))
+                       (< 30 (HOLDING-SHARES-CHANGE-% HOLDING))))
                holdings))))
-  (:method ((query function) &key)
+  (:method ((query function) &key csv)
     (let ((ret ()))
       (maphash (lambda (file holdings)
                  (let ((res (funcall query holdings)))
@@ -246,7 +275,9 @@ or~%~S~%to combine the above queries.~%"
                        (push (list file h (holding-stock h)) ret))
                      (format t "~A: ~A~%" file
                              (mapcar #'holding-symbol res)))))
-               *funds*)))
+               *funds*)
+      (when (and csv ret)
+        (csv-write 'file+holding+stock csv ret))))
   (:method ((query cons) &key csv)
     (query-funds (compile nil `(lambda (holdings) ,query)) :csv csv))
   (:method ((query pathname) &key csv)
