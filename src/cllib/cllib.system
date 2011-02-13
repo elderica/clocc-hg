@@ -63,7 +63,7 @@
      (:file "log" :depends-on ("base" "withtype" "tilsla" "simple"))
      (:file "math" :depends-on
             ("base" "simple" "withtype" "fileio" "log" "list"))
-     (:file "matrix" :depends-on ("base" "withtype"))
+     (:file "matrix" :depends-on ("base" "withtype" "iter" "math"))
      (:file "miscprint" :depends-on ("base" "simple"))
      (:file "munkres" :depends-on ("base"))
      (:file "bayes" :depends-on
