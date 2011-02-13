@@ -1,7 +1,7 @@
 ;;; run a function, answering questions in a pre-defined way,
 ;;; possibly under monitor.
 ;;;
-;;; Copyright (C) 1997-2002, 2007-2008 by Sam Steingold
+;;; Copyright (C) 1997-2002, 2007-2008, 2011 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
@@ -10,8 +10,8 @@
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
-  (require :monitor (translate-logical-pathname
-                     "clocc:src;tools;metering;metering")))
+  (require "monitor" (translate-logical-pathname
+                      "clocc:src;tools;metering;metering")))
 
 (in-package :cllib)
 
