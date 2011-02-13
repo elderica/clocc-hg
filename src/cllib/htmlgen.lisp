@@ -1,6 +1,6 @@
 ;;; HTML generation
 ;;;
-;;; Copyright (C) 2000-2004, 2007-2008 by Sam Steingold
+;;; Copyright (C) 2000-2004, 2007-2008, 2011 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
@@ -17,13 +17,15 @@
 (in-package :cllib)
 
 (export '(html-stream-out with-html-output with-http-output with-tag
+          with-html-tag
           *with-html-output-doctype* http-error directory-index))
 
 ;;;
 ;;; preparation
 ;;;
 
-(defcustom *html-chars* list '((#\< . "&lt;") (#\> . "&gt;") (#\& . "&amp;"))
+(defcustom *html-chars* list
+  '((#\< . "&lt;") (#\> . "&gt;") (#\& . "&amp;") (#\Newline . "<br>"))
   "The characters which must be replaced before putting a string into HTML.")
 
 (defclass html-stream-out (fundamental-character-output-stream)
@@ -48,6 +50,11 @@
 ;;; HTML generation
 ;;;
 
+(defmacro with-html-tag ((raw tag &rest options) &body forms)
+  `(progn (format ,raw "<~a~@{ ~a=\"~a\"~}>" ,tag ,@options)
+          ,@forms
+          (format ,raw "</~a>" ,tag)))
+
 (defvar *with-html-output-doctype*
   '("html" "PUBLIC" "\"-//W3C//DTD XHTML 1.0 Strict//EN\""
     "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\""))
@@ -66,11 +73,11 @@ Both print a tag but the second one does not do a `terpri' afterwards."
     `(let ((,raw ,stream)
            (,mailto (concatenate 'string "mailto:" *user-mail-address*)))
       (macrolet ((with-tag ((tag &rest options) &body forms)
-                   `(progn (format ,',raw "<~a~@{ ~a=\"~a\"~}>" ,tag ,@options)
-                     ,@forms (format ,',raw "</~a>~%" ,tag)))
+                   `(progn
+                      (with-html-tag (,',raw ,tag ,@options) ,@forms)
+                      (terpri ,',raw)))
                  (with-tagl ((tag &rest options) &body forms)
-                   `(progn (format ,',raw "<~a~@{ ~a=\"~a\"~}>" ,tag ,@options)
-                     ,@forms (format ,',raw "</~a>" ,tag))))
+                   `(with-html-tag (,',raw ,tag ,@options) ,@forms)))
         (with-open-stream (,var (make-instance 'html-stream-out :stream ,raw))
           (format ,raw "<!DOCTYPE~{ ~a~}>~%" ,doctype)
           ;; print the comment
