@@ -1,6 +1,6 @@
 ;;; Grep Financial Data
 ;;;
-;;; Copyright (C) 2010 by Sam Steingold
+;;; Copyright (C) 2010-2011 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 ;;;
@@ -9,14 +9,26 @@
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
+  ;; `open-socket-server'
+  (require :port-net (translate-logical-pathname "port:net"))
+  ;; `quit'
+  (require :port-ext (translate-logical-pathname "port:ext"))
+  ;; `string-beg-with'
+  (require :cllib-string (translate-logical-pathname "cllib:string"))
+  ;; `print-counts'
   (require :cllib-miscprint (translate-logical-pathname "cllib:miscprint"))
+  ;; `flush-http'
+  (require :cllib-url (translate-logical-pathname "cllib:url"))
+  ;; `with-html-tag'
+  (require :cllib-htmlgen (translate-logical-pathname "cllib:htmlgen"))
+  ;; `csv-i/o'
   (require :cllib-csv (translate-logical-pathname "cllib:csv")))
 
 (defpackage #:grepfin
   (:nicknames #:gf)
   (:use #:cl #:port #:cllib)
   (:export #:*data-dir* #:*fund-dir* #:*stock-file* #:*funds-db*
-           #:ensure-data #:query-funds #:query-stocks #:init))
+           #:ensure-data #:query-funds #:query-stocks #:init #:server))
 
 (in-package #:grepfin)
 
@@ -58,30 +70,33 @@
 (defun holdings-total-value (holdings)
   "The total value of holdings (sum of TODAY-VALUE's.)"
   (reduce #'+ holdings :key #'holding-today-value))
+(defvar *holding-total-value*)  ; the total value of the current holding
 (defun holding-stock (holding)
   "The STOCK object corresponding to the HOLDING or NIL if not known."
   (let ((symbol (holding-symbol holding)))
     (and (boundp symbol) (symbol-value symbol))))
-(defun holding-%-of-fund (holding total)
+(defun holding-%-of-fund (holding)
   "The HOLDING's today value as percentage of the total fund holdings."
-  (/ (holding-today-value holding) 1d-2 total))
+  (/ (holding-today-value holding) 1d-2 *holding-total-value*))
 (defun holding-%-of-stock (holding)
   "The HOLDING's today value as percentage of the stock's market cap."
   (let ((stock (holding-stock holding)))
     (and stock                ; today-value is in $; market-cap is in M$
-         (/ (holding-today-value holding) 1d6 (stock-market-cap stock)))))
+         (/ (holding-today-value holding) 1d4 (stock-market-cap stock)))))
 (defun holding-market-cap (holding)
   "The HOLDING's STOCK's market cap or NIL for unknown stocks."
   (let ((stock (holding-stock holding)))
     (and stock (stock-market-cap stock))))
 
 ;; for comparing (possibly NIL) return values of HOLDING-%-OF-STOCK et al
-(defun <* (&rest args)
-  (and (every #'numberp args)
-       (apply #'< args)))
-(defun >* (&rest args)
-  (and (every #'numberp args)
-       (apply #'> args)))
+(defmacro defstar (f)
+  `(defun ,(symbol-concat f '*) (&rest args)
+     (and (every #'realp args)
+          (apply #',f args))))
+(defstar <)
+(defstar <=)
+(defstar >)
+(defstar >=)
 
 (defvar *funds* (make-hash-table :test 'equalp))
 
@@ -135,9 +150,11 @@
   (dolist (stock (setq *stocks* (csv-read 'stock file)))
     (setf (symbol-value (stock-ticker stock)) stock)))
 
-(defun ensure-data ()
-  (read-stocks)
-  (ensure-funds)
+(defun ensure-data (&optional force)
+  (when (or force (null *stocks*))
+    (read-stocks))
+  (when (or force (zerop (hash-table-count *funds*)))
+    (ensure-funds))
   ;; make sure that we know all stocks mentioned in funds and they match
   (let ((unknown (make-hash-table :test 'eq)))
     (maphash (lambda (file holdings)
@@ -249,19 +266,19 @@ to list all the funds who invest more that 5%
 in a stock with market cap less than 100M;
 or~%~S~%to list all the funds who hold more than 10% of a known stock;
 or~%~S~%to combine the above queries.~%"
-            '(LET ((TOTAL (HOLDINGS-TOTAL-VALUE HOLDINGS)))
+            '(LET ((*HOLDING-TOTAL-VALUE* (HOLDINGS-TOTAL-VALUE HOLDINGS)))
               (REMOVE-IF-NOT
                (LAMBDA (HOLDING)
-                 (AND (> (HOLDING-%-OF-FUND HOLDING TOTAL) 5)
+                 (AND (> (HOLDING-%-OF-FUND HOLDING) 5)
                       (<* (HOLDING-MARKET-CAP HOLDING) 100)))
                HOLDINGS))
             '(REMOVE-IF-NOT
               (LAMBDA (HOLDING) (>* (HOLDING-%-OF-STOCK HOLDING) 10))
               HOLDINGS)
-            '(LET ((TOTAL (HOLDINGS-TOTAL-VALUE HOLDINGS)))
+            '(LET ((*HOLDING-TOTAL-VALUE* (HOLDINGS-TOTAL-VALUE HOLDINGS)))
               (REMOVE-IF-NOT
                (LAMBDA (HOLDING)
-                  (AND (> (HOLDING-%-OF-FUND HOLDING TOTAL) 3)
+                  (AND (> (HOLDING-%-OF-FUND HOLDING) 3)
                        (>* (HOLDING-%-OF-STOCK HOLDING) 5)
                        (<* (HOLDING-MARKET-CAP HOLDING) 100)
                        (< 30 (HOLDING-SHARES-CHANGE-% HOLDING))))
@@ -291,6 +308,152 @@ or~%~S~%to combine the above queries.~%"
   (query-stocks :help)
   (format t "~%~40~~%")
   (query-funds :help))
+
+(defun parse-request (request)
+  "Find GET and split it into a list.
+Errors here are our bugs."
+  (let ((get (find-if (lambda (line) (string-beg-with #1="GET /" line))
+                      request)))
+    (if get
+        (split-string get "&" :start #2=#.(length #1#)
+                      :end (position #\Space get :start #2#))
+        (values nil request))))
+
+(defun report-error (sock text &aux
+                     (port (nth-value 4 (port:socket-host/port sock))))
+  "Report usage on an http socket in html."
+  (with-html-output (html sock)
+    (with-tag (:h1) (format html "Error"))
+    (with-tag (:h2) (format html "Bad request"))
+    (etypecase text
+      (string (with-tag (:p) (write-string text html)))
+      (cons (dolist (s text) (with-tag (:p) (write-string s html)))))
+    (with-tag (:h2) (format html "Usage"))
+    (with-tag (:p)
+      (format html "A request consists of conditions separated with ampersands.
+E.g.,")
+      (with-tag (:pre)
+        (format html "http://localhost:~D/&csv=/tmp/stocks.csv&stock-country=usa&stock-p/e<10" port))
+      (format html " or ")
+      (with-tag (:pre)
+        (format html "http://localhost:~D/&csv=/tmp/funds.csv&holding-%-of-fund>1&holding-%-of-stock>2&holding-market-cap<300" port)))))
+
+(defmacro bad (sock fmt &rest args)
+  "Report user error to http output as html."
+  `(progn
+     (report-error ,sock (format nil ,fmt ,@args))
+     (return)))
+
+(defun make-query (realm queries)
+  (let ((body
+         `(AND ,@(mapcar
+                  (lambda (query)
+                    (destructuring-bind (cmp func arg) query
+                      (typecase arg
+                        (real `(,cmp (,func ,realm) ,arg))
+                        (cons `(let ((v (,func ,realm)))
+                                 (or ,@(mapcar (lambda (a) `(eql ',a v)) arg))))
+                        (t (return-from make-query arg)))))
+                  queries))))
+    (ecase realm
+      (HOLDING
+       `(LAMBDA (HOLDINGS)
+          (LET ((*HOLDING-TOTAL-VALUE* (HOLDINGS-TOTAL-VALUE HOLDINGS)))
+            (REMOVE-IF-NOT
+             (LAMBDA (HOLDING)
+               ,body)
+             HOLDINGS))))
+      (STOCK
+       `(LAMBDA (STOCK) ,body)))))
+
+(defun run-request (list sock)
+  "Run the given parsed HTTP request.
+Errors here mean user errors; they are printed to SOCK
+which is assumed to go to the http client."
+  (let (csv queries realm)
+    (dolist (cmd list
+             (let ((*standard-output* sock))
+               (funcall (case realm
+                          (holding #'query-funds)
+                          (stock #'query-stocks)
+                          (t (bad sock "bad realm ~S" realm)))
+                        (let ((queryf (make-query realm queries)))
+                          (when (atom queryf)
+                            (bad sock "bad RHS ~S" queryf))
+                          (compile nil queryf))
+                        :csv csv)))
+      (let ((pos (or (position-if (lambda (c) (or (char= c #\=) (char= c #\<)
+                                                  (char= c #\>)))
+                                  cmd)
+                     (bad sock "bad query ~S" cmd)))
+            (len (length cmd)))
+        #1=(when (= pos (1- len))
+             (bad sock "nothing to compare with in ~S" cmd))
+        (let* ((1st (subseq cmd 0 pos)) (sep (char cmd pos))
+               (sep= (char= #\= (char cmd (1+ pos)))) arg
+               (cmp (ecase sep
+                      (#\=
+                       '=)
+                      (#\> (cond (sep=
+                                  (incf pos)
+                                  #1#
+                                  '>=*)
+                                 (t '>*)))
+                      (#\< (cond (sep=
+                                  (incf pos)
+                                  #1#
+                                  '<=*)
+                                 (t '<*))))))
+          (cond ((string-equal 1st "csv")
+                 (unless (eq cmp '=)
+                   (bad sock "csv file can only be assigned with [=], not with [~S]" cmp))
+                 (setq csv (subseq cmd (1+ pos))))
+                (t
+                 (ecase cmp
+                   (=
+                    (setq arg
+                          (port:string-tokens
+                           (nsubstitute #\Space #\, cmd :start pos)
+                           :start (1+ pos) :package #.(find-package '#:fin))))
+                   ((>* >=* <* <=*)
+                    (setq arg (read-from-string cmd t t :start (1+ pos)))))
+                 (multiple-value-bind (func status)
+                     (find-symbol (nstring-upcase 1st)
+                                  #2=#.(find-package '#:grepfin))
+                   (unless (eq status :internal)
+                     (bad sock "invalid function ~S" 1st))
+                   (unless (string-equal 1st "csv")
+                     (let* ((r1 (subseq 1st 0 (or (position #\- 1st)
+                                                  (bad sock "no dash in ~S" 1st))))
+                            (r (or (find-symbol r1 #2#)
+                                   (bad sock
+                                        "bad realm ~S (should be HOLDING or STOCK)"
+                                        r1))))
+                       (cond ((null realm) (setq realm r))
+                             ((not (eq realm r))
+                              (bad sock "inconsistent realms: ~S & ~S" r realm)))))
+                   (push (list cmp func arg) queries)))))))))
+
+(defun server (&optional port)
+  "Listen on the given port and execute queries."
+  (let ((serv (port:open-socket-server port)))
+    (format t "~&Listening for connections on port ~S~%"
+            (nth-value 1 (port:socket-server-host/port serv)))
+    (unwind-protect
+         (loop (with-open-stream (sock (port:socket-accept serv))
+                 (format t "~&Connection: ~S~%"
+                         (multiple-value-list (port:socket-host/port sock)))
+                 (multiple-value-bind (parsed raw)
+                     (parse-request (flush-http sock))
+                   (format t "~&Raw: ~S~%Parsed: ~S~%" raw parsed)
+                   (cond ((equalp raw '("quit")) (return))
+                         ((equalp raw '("status"))
+                          (format sock "~:D stock~:P, ~:D fund~:P~%"
+                                  (length *stocks*) (hash-table-count *funds*)))
+                         (parsed
+                          (format t "~%Result: ~S~%" (run-request parsed sock)))
+                         (t (report-error sock raw))))))
+      (port:socket-server-close serv))))
 
 (provide :grepfin)
 ;;; file grepfin.lisp ends here

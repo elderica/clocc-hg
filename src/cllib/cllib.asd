@@ -47,7 +47,8 @@
      (:file "getopt" :depends-on ("base" "symb"))
      (:file "gnuplot" :depends-on ("base" "date" "datedl" "math" "stat"))
      (:file "gq" :depends-on ("base" "withtype" "html" "url" "gnuplot"))
-     (:file "grepfin" :depends-on ("base" "miscprint" "csv"))
+     (:file "grepfin" :depends-on
+            ("base" "miscprint" "csv" "string" "htmlgen" "url"))
      (:file "h2lisp" :depends-on ("base" "withtype" "html"))
      (:file "html" :depends-on ("base" "xml" "url"))
      (:file "htmlgen" :depends-on ("base"))
