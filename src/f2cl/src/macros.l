@@ -1459,7 +1459,7 @@ causing all pending operations to be flushed"
 (defun stop (&optional arg)
   (when arg
     (format cl::*error-output* "~A~%" arg))
-  (unless *stop-signals-error-p*
+  (when *stop-signals-error-p*
     (cerror "Continue anyway" "STOP reached")))
 
 (defmacro f2cl-copy-seq (dst src dst-type src-type)
@@ -1522,6 +1522,10 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.115  2010/12/28 00:06:52  rtoy
+;;; Assert the type of the arg to fsqrt to be non-negative, excluding
+;;; negative zero.
+;;;
 ;;; Revision 1.114  2010/05/17 01:42:14  rtoy
 ;;; src/f2cl1.l:
 ;;; o Need to know the actual type when making a compatible sequence.
