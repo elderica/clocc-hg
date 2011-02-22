@@ -3,6 +3,9 @@
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.6  2008/02/25 19:27:38  rtoy
+;;; Fix typo in description of integral for tst1.
+;;;
 ;;; Revision 1.5  2006/04/28 01:35:12  rtoy
 ;;; In TST17 for DQAWC, the absolute error criterion was too small.  It
 ;;; must be strictly positive.  This test runs as expected.
@@ -23,6 +26,8 @@
 ;;;
 
 ;;(declaim (optimize (speed 3)))
+
+(in-package #:quadpack)
 
 (declaim (inline square))
 
