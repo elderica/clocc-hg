@@ -993,7 +993,7 @@ causing all pending operations to be flushed"
 	   (open file :direction :io :if-exists :supersede
 		 :if-does-not-exist :create))
 	  ((string-equal s "old")
-	   (open file :direction :io :if-does-not-exist nil))
+	   (open file :direction :io :if-does-not-exist nil :if-exists :overwrite))
 	  ((string-equal s "new")
 	   (open file :direction :io :if-exists nil))
 	  (t
@@ -1522,6 +1522,10 @@ causing all pending operations to be flushed"
 ;;;
 ;;; $Id$
 ;;; $Log$
+;;; Revision 1.116  2011/02/20 20:51:04  rtoy
+;;; Oops.  STOP should signal an error if *STOP-SIGNALS-ERROR-P* is
+;;; non-NIL.
+;;;
 ;;; Revision 1.115  2010/12/28 00:06:52  rtoy
 ;;; Assert the type of the arg to fsqrt to be non-negative, excluding
 ;;; negative zero.
