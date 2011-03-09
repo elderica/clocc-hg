@@ -1,6 +1,4 @@
 ## makefile for screamer
-# $Id$
-# $Source$
 
 TOP := $(shell cd ../..; pwd)
 LISPEXT := lisp

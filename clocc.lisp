@@ -7,9 +7,6 @@
 ;;; conditions with the source code.
 ;;; See <URL:http://www.gnu.org/copyleft/lesser.html>
 ;;; for details and the precise copyright document.
-;;;
-;;; $Id$
-;;; $Source$
 
 (in-package :cl-user)
 

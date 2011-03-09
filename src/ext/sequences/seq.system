@@ -1,9 +1,6 @@
 ;;; -*- Lisp -*-
 ;;;
 ;;; SEQ - extensible sequences
-;;;
-;;; $Id$
-;;; $Source$
 
 (mk:defsystem seq
     :source-pathname (translate-logical-pathname "clocc:src;ext;sequences;")

@@ -1,8 +1,5 @@
 # CLLIB Makefile
 # LISPTYPE should be set before using this file
-#
-# $Id$
-# $Source$
 
 TOP := $(shell cd ../..; pwd)
 LISPEXT := lisp

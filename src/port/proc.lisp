@@ -8,9 +8,6 @@
 ;;; See <URL:http://www.gnu.org/copyleft/lesser.html>
 ;;; for details and the precise copyright document.
 ;;;
-;;; $Id$
-;;; $Source$
-;;;
 ;;; This is based on the code donated by Cycorp, Inc. to the public domain.
 ;;;
 ;;; More-or-less portable Lisp-machine style multithreading.  Under

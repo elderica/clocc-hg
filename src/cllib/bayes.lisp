@@ -7,9 +7,6 @@
 ;;; Copyright (C) 2010 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2)
 ;;; See http://www.gnu.org/copyleft/gpl.html
-;;;
-;;; $Id$
-;;; $Source$
 
 (eval-when (compile load eval)
   (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))

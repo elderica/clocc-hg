@@ -2,9 +2,6 @@
 ;;;
 ;;; CLLIB - a library of useful utilities
 ;;;
-;;; $Id$
-;;; $Source$
-;;;
 ;;; when adding a file to CLLIB, one has to modify the following:
 ;;; 1. cllib.system (defsystem)
 ;;; 2. Makefile ($(SOURCES))
