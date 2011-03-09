@@ -1,0 +1,32 @@
+# these files will be ignored throughout the CLOCC Mercurial repository
+
+syntax: glob
+
+# lisp compiled files
+*.abcl
+*.axpf
+*.data
+*.fas
+*.fasl
+*.fsl
+*.hpf
+*.lib
+*.o
+*.sgif
+*.sparcf
+*.ufsl
+*.x86f
+
+# lisp memory images
+*.mem
+*.core
+*.dxl
+*.exe
+
+# misc generated files
+*.err
+*.log
+
+# misc binaries
+*.zip
+*.gz

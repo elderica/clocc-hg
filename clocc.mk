@@ -9,9 +9,6 @@
 # SOURCES    - the list of source files to be compiled
 # SYSTEM     - the system name for defsystem (usually the dir name)
 # TOP        - the path to the top-level CLOCC directory
-#
-# $Id$
-# $Source$
 
 ifndef CLOCC_MK
 
@@ -43,7 +40,7 @@ default: force
 	@echo " * you must specify a target, such as..."
 	@echo " + system - run mk:compile-file on SYSTEM ($(SYSTEM))"
 	@echo " + all - compile all files in SOURCES ($(SOURCES)) one by one (this will work only if the files are independent)"
-	@echo " + ChangeLog - create the ChangeLog file using rcs2log"
+	@echo " + ChangeLog - create the ChangeLog file using 'hg log'"
 	@echo " + $(SYSTEM).list - the list of all functons and variables defined by this system"
 	@echo " + $(SYSTEM)-image$(DUMPEXT) - the memory image with everything ($(SOURCES))"
 	@echo " + TAGS - Emacs tags"
@@ -68,7 +65,7 @@ $(SYSTEM)-image$(DUMPEXT): $(LISPFILES)
 	$(RUNLISP) $(patsubst %,-i %,$(filter-out $<,$^)) -c $<
 
 ChangeLog: $(LISPFILES)
-	rcs2log $^ > $@
+	if hg log --style changelog $^ > $@
 
 TAGS:	 $(LISPFILES)
 	etags $^
