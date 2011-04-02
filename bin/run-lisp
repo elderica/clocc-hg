@@ -6,8 +6,6 @@
 #   License: LGPL (See file GNU-LGPL for details)
 # -----------------------------------------------------------------------------
 #  (c) copyright 1999 by Gilbert Baumann, Sam Steingold, Bruno Haible
-# $Id$
-# $Source$
 
 # Prior to invocation the LISPTYPE environment variable must been set to
 # one of these:

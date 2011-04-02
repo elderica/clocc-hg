@@ -1,6 +1,3 @@
-;;;; $Id$
-;;;; $Source$
-;;;;
 ;;;;  Class of Random number generators
 ;;;;
 ;;;;  $Log$

@@ -1,9 +1,6 @@
 ;;; -*- Lisp -*-
 ;;;
 ;;; Cross-implementation Portability System
-;;;
-;;; $Id$
-;;; $Source$
 
 (mk:defsystem port
     :source-pathname (translate-logical-pathname "clocc:src;port;")

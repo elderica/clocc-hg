@@ -1,5 +1,3 @@
-# $Id$
-# $Source$
 
 TOP := $(shell pwd)
 LISPEXT := lisp
@@ -26,27 +24,24 @@ clocc-top.$(FASLEXT): $(TOP_DEP)
 endif
 
 recursive-clean: force
-	for x in `find . -type d ! -name CVS`; do \
+	for x in `find . -name .hg -prune -o -type d`; do \
 		if [ -r $${x}/Makefile ]; then $(MAKE) -C $${x} clean; \
 		else TOP=$(TOP) $(MAKE) -C $${x} -f $(TOP)/clocc.mk clean; \
 		fi ; \
 	done
 
-cvs.log: force
-	cvs log > $@ 2>/dev/null
+hg.log: force
+	hg log > $@ 2>/dev/null
 
 clocc.diff: force
-	(cvs diff > $@ && $(RM) $@) || true
+	(clocc diff > $@ && $(RM) $@) || true
 
 clocc.diff.gz: clocc.diff
 	gzip -9vf $^
 
-cvs-stat: cvs.log
-	@fgrep "author:" cvs.log | sed 's/^.*author: \([^;]*\);.*$$/\1/' | \
-		sort | uniq -c | sort | sed 's/^/    /';
-	@fgrep "author:" cvs.log | wc -l;
-	$(RUNLISP) -i clocc -i src/cllib/base -i src/cllib/cvs \
-		-x '(funcall (intern "CVS-STAT-LOG" :cllib) "cvs.log")'
+hg-stat: force
+	@hg log --template '{author}\n' | sort | uniq -c | sort -n
+	@hg log --template '\n' | wc -l
 
 fix-perms: force
 	find . -name \*.lisp -a -perm /+x -print0 | xargs -0 chmod -v a-x
@@ -56,5 +51,5 @@ TARFILES=INSTALL Makefile README bin clocc.lisp clocc.mk etc src
 $(tarname).tgz: force
 	$(RM) $(tarname); $(LN) -s . $(tarname)
 	tar -zvhcf $@ $(addprefix $(tarname)/,$(TARFILES)) \
-		$(addprefix --exclude=,$(FASLFILES) $(JUNK) CVS .cvsignore)
+		$(addprefix --exclude=,$(FASLFILES) $(JUNK) .hg .hgignore)
 	$(RM) $(tarname)
