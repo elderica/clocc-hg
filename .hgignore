@@ -435,3 +435,9 @@ src/f2cl/packages/*.PRO
 ^src/f2cl/packages/quadpack/Fortran/dqage\.lisp$
 ^src/f2cl/packages/quadpack/Fortran/dqag\.lisp$
 ^src/f2cl/packages/quadpack/Fortran/dgtsl\.lisp$
+^src/f2cl/packages/colnew/.*\.lisp$
+^src/f2cl/packages/colnew/.*\.o$
+^src/f2cl/packages/colnew/libcolnew\.a$
+^src/f2cl/packages/colnew/problem-1/prob1$
+^src/f2cl/packages/colnew/problem-2/prob2$
+^src/f2cl/packages/colnew/problem-3/prob3$
