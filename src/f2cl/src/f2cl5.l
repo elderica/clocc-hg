@@ -2009,6 +2009,14 @@
 			   `(,fref-name ,(array-data-name var)
 			                ,@stuff ,(array-offset-name var))
 			   p)))
+		    ((eq (first p) 'array-slice)
+		     (destructuring-bind (array-slice-name var &rest stuff)
+			 p
+		       (if (member var array-args)
+			   `(,array-slice-name ,(array-data-name var)
+					       ,@stuff
+					       ,(array-offset-name var))
+			   p)))
 		    (t
 		     `(,(first p) ,@(mapcar #'grovel-frefs (rest p))))))
 	    (generate-with-array (arrays body)
