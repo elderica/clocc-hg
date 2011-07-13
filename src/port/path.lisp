@@ -1,6 +1,6 @@
 ;;; Pathnames and Filesystems
 ;;;
-;;; Copyright (C) 1999-2010 by Sam Steingold
+;;; Copyright (C) 1999-2011 by Sam Steingold
 ;;; This is open-source software.
 ;;; GNU Lesser General Public License (LGPL) is applicable:
 ;;; No warranty; you may copy/modify/redistribute under the same
@@ -41,6 +41,12 @@ but there is a TYPE slot, move TYPE into NAME."
 ;;; filesystem access
 ;;;
 
+(defun probe-directory-generic (path)
+  (let ((probe (probe-file path)))
+    (and probe
+         (null (un-unspecific (pathname-name probe)))
+         (null (un-unspecific (pathname-type probe))))))
+
 (defun probe-directory (filename)
   "Check whether the file name names an existing directory."
   ;; based on
@@ -57,16 +63,23 @@ but there is a TYPE slot, move TYPE into NAME."
                 (t nil))))
     (when new-dir
       (setq path (make-pathname
-                  :directory (append (un-unspecific (pathname-directory path))
-                                     new-dir)
+                  :directory
+                  (append (or (un-unspecific (pathname-directory path))
+                              '(:relative))
+                          new-dir)
                   :name nil :type nil :version nil :defaults path)))
     #+allegro (excl::probe-directory path)
     #+clisp (values (ignore-errors (ext:probe-directory path)))
     #+cmu (eq :directory (unix:unix-file-kind (namestring path)))
     #+lispworks (lw:file-directory-p path)
-    #+sbcl (eq :directory (sb-unix:unix-file-kind (namestring path)))
+    #+sbcl
+    (let ((s (or (find-symbol "UNIX-FILE-KIND" "SB-UNIX")
+                 (find-symbol "NATIVE-FILE-KIND" "SB-IMPL"))))
+      (if s
+          (eq :directory (funcall s (namestring path)))
+          (probe-directory-generic path)))
     #-(or allegro clisp cmu lispworks sbcl)
-    (probe-file path)))
+    (probe-directory-generic path)))
 
 (defun default-directory ()
   "The default directory."
