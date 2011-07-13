@@ -1590,7 +1590,7 @@ order ORDER.
 	  (- (gen-gamma-variate-small-order r)
 	     (log x))))))
 
-(eval-when (:compile-toplevel :execute)
+(eval-when (:compile-toplevel :execute :load-toplevel)
   (defconst +beta-algo-go+
     (double-float 0.009572265238289d0 0.009572265238289d0)
     0.009572265238289d0
