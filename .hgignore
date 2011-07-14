@@ -27,6 +27,8 @@ syntax: glob
 *.err
 *.log
 *.list
+TAGS
+tags
 
 # misc binaries
 *.zip
