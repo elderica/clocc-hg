@@ -29,6 +29,8 @@ ZIPEXTRA += $(TOP)/clocc.mk $(TOP)/clocc.lisp
 RM  = /bin/rm -f
 LN  = /bin/ln
 ZIP = zip -9uD
+ETAGS = etags
+CTAGS = ctags
 
 ifneq ($(DO_DUMP),)
 CLOCC_TOP =  -I $(TOP)/clocc-top
@@ -67,8 +69,11 @@ $(SYSTEM)-image$(DUMPEXT): $(LISPFILES)
 ChangeLog: $(LISPFILES)
 	if hg log --style changelog $^ > $@
 
-TAGS:	 $(LISPFILES)
-	etags $^
+TAGS:	$(LISPFILES)
+	$(ETAGS) $^
+
+tags:	$(LISPFILES)
+	$(CTAGS) $^
 
 $(SYSTEM).list: TAGS
 	sed -e 's?^/.*/??' -e 's/ *.*/ ...)/' -e 's/,[0-9]*$$//' TAGS > $@
