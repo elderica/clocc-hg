@@ -21,16 +21,14 @@ DUMPEXT := $(shell $(RUNLISP) -dumpext)
 DO_DUMP := $(filter $(LISPTYPE),$(CLOCC_DUMP))
 FASLFILES = *.fas *.lib *.axpf *.x86f *.hpf *.sgif *.sparcf *.fasl \
 	*.o *.data *.ufsl *.abcl
-JUNK = core *.core *.mem *.dxl *.list *~ *.log
+JUNK = core *.core *.mem *.dxl *~ *.log
 LISPFILES = $(addsuffix .$(LISPEXT),$(SOURCES))
-DOCFILES += ChangeLog $(SYSTEM).list
+DOCFILES += ChangeLog
 MAKEFILES = Makefile $(SYSTEM).system
 ZIPEXTRA += $(TOP)/clocc.mk $(TOP)/clocc.lisp
 RM  = /bin/rm -f
 LN  = /bin/ln
 ZIP = zip -9uD
-ETAGS = etags
-CTAGS = ctags
 
 ifneq ($(DO_DUMP),)
 CLOCC_TOP =  -I $(TOP)/clocc-top
@@ -43,9 +41,7 @@ default: force
 	@echo " + system - run mk:compile-file on SYSTEM ($(SYSTEM))"
 	@echo " + all - compile all files in SOURCES ($(SOURCES)) one by one (this will work only if the files are independent)"
 	@echo " + ChangeLog - create the ChangeLog file using 'hg log'"
-	@echo " + $(SYSTEM).list - the list of all functons and variables defined by this system"
 	@echo " + $(SYSTEM)-image$(DUMPEXT) - the memory image with everything ($(SOURCES))"
-	@echo " + TAGS - Emacs tags"
 	@echo " + $(SYSTEM).zip - the archive of SOURCES, DOCFILES ($(DOCFILES)), MAKEFILES ($(MAKEFILES)) and ZIPEXTRA ($(ZIPEXTRA))"
 
 system: $(SYSTEM).system
@@ -69,15 +65,6 @@ $(SYSTEM)-image$(DUMPEXT): $(LISPFILES)
 ChangeLog: $(LISPFILES)
 	hg log --style changelog $^ > $@
 
-TAGS:	$(LISPFILES)
-	$(ETAGS) $^
-
-tags:	$(LISPFILES)
-	$(CTAGS) $^
-
-$(SYSTEM).list: TAGS
-	sed -e 's?^/.*/??' -e 's/ *.*/ ...)/' -e 's/,[0-9]*$$//' TAGS > $@
-
 $(SYSTEM).zip: $(DOCFILES) $(LISPFILES) $(MAKEFILES)
 	@$(RM) $(SYSTEM);
 	@$(LN) -s . $(SYSTEM);
@@ -90,7 +77,7 @@ $(SYSTEM).zip: $(DOCFILES) $(LISPFILES) $(MAKEFILES)
 	@$(RM) $(SYSTEM) extra $(notdir $(ZIPEXTRA)) $(notdir $(ZIPEXTRALINK));
 
 clean-all: force
-	$(RM) $(FASLFILES) TAGS $(JUNK)
+	$(RM) $(FASLFILES) $(JUNK)
 
 clean:
 	$(RM) *.$(FASLEXT) core

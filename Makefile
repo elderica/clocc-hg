@@ -23,6 +23,11 @@ clocc-top.$(FASLEXT): $(TOP_DEP)
 
 endif
 
+# should be exuberant ctags
+CTAGS = ctags
+TAGS : force
+	$(CTAGS) -e -R .
+
 recursive-clean: force
 	for x in `find . -name .hg -prune -o -type d`; do \
 		if [ -r $${x}/Makefile ]; then $(MAKE) -C $${x} clean; \
