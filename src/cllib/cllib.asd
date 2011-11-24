@@ -3,18 +3,20 @@
 ;;; CLLIB - a library of useful utilities
 ;;;
 ;;; when adding a file to CLLIB, one has to modify the following:
-;;; 1. cllib.system (defsystem)
+;;; 1. cllib.system & cllib.asd (defsystem)
 ;;; 2. Makefile ($(SOURCES))
 ;;; 3. cllib.html (file list)
 
-(push (translate-logical-pathname "clocc:src;port;") asdf:*central-registry*)
-(push (translate-logical-pathname "clocc:src;tools;metering;") asdf:*central-registry*)
+(pushnew (translate-logical-pathname "clocc:src;port;")
+         asdf:*central-registry* :test #'equalp)
+(pushnew (translate-logical-pathname "clocc:src;tools;metering;")
+         asdf:*central-registry* :test #'equalp)
 
 (asdf:defsystem :cllib
     :author ("Sam Steingold <sds@gnu.org>")
     :licence "LGPL"
     :description "a library of useful utilities"
-    :depends-on (:port :metering :cl-html-parse)
+    :depends-on (:port #-sbcl :metering :cl-html-parse)
     :components
     ((:file "animals" :depends-on
             ("base" "string" "miscprint" "fileio" "closio" "symb"))

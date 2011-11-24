@@ -7,8 +7,9 @@
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
-  (require "monitor" (translate-logical-pathname
-                      "clocc:src;tools;metering;metering")))
+  #-sbcl (require "monitor" (translate-logical-pathname
+                             "clocc:src;tools;metering;metering"))
+  #+sbcl (require :sb-sprof))
 
 (in-package :cllib)
 
@@ -27,7 +28,10 @@ ARGS is passed to FUNC.
                   (make-string-input-stream
                    (format nil "~{~:[n~;y~]~%~}" answers))
                   *standard-output*))
-           (if monitorp (mon:monitor-form (apply func args))
+           (if monitorp (#-sbcl mon:monitor-form
+                         #+sbcl sb-sprof:with-profiling
+                         #+sbcl (:max-samples 1000 :report :flat :loop nil)
+                         (apply func args))
                (apply func args)))
       (setq *query-io* ost)))
   (values))

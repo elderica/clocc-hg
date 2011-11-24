@@ -3,7 +3,7 @@
 ;;; CLLIB - a library of useful utilities
 ;;;
 ;;; when adding a file to CLLIB, one has to modify the following:
-;;; 1. cllib.system (defsystem)
+;;; 1. cllib.system & cllib.asd (defsystem)
 ;;; 2. Makefile ($(SOURCES))
 ;;; 3. cllib.html (file list)
 
@@ -17,7 +17,7 @@
     :source-pathname (translate-logical-pathname "clocc:src;cllib;")
     ;; :package :cllib
     :source-extension "lisp"
-    :depends-on (port metering)
+    :depends-on (port #-sbcl metering)
     :components
     ((:file "animals" :depends-on
             ("base" "string" "miscprint" "fileio" "closio" "symb"))
