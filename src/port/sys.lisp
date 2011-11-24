@@ -1,6 +1,6 @@
 ;;; Environment & System access
 ;;;
-;;; Copyright (C) 1999-2008, 2010 by Sam Steingold
+;;; Copyright (C) 1999-2008, 2010, 2011 by Sam Steingold
 ;;; This is open-source software.
 ;;; GNU Lesser General Public License (LGPL) is applicable:
 ;;; No warranty; you may copy/modify/redistribute under the same
@@ -143,7 +143,7 @@ BEWARE!"
           (get fn 'si:debug))
   #+lispworks (lw:function-lambda-list fn)
   #+lucid (lcl:arglist fn)
-  #+sbcl (sb-introspect:function-arglist fn)
+  #+sbcl (sb-introspect:function-lambda-list fn)
   #-(or allegro clisp cmu cormanlisp gcl lispworks lucid sbcl scl)
   (error 'not-implemented :proc (list 'arglist fn)))
 
