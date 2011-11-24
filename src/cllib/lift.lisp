@@ -348,8 +348,9 @@ Buckets may overlap and not cover the whole range."
   (cllib:plot-lists-arg
    (mapcar (lambda (li)
              (cons (format nil "~A Lq=~5f%" (first li) ; title of this lift
-                           (* 100 (lift-quality (rest li) :score score
-                                                :true-value true-value)))
+                           (* 100 (lq-lift-quality
+                                   (lift-quality (rest li) :score score
+                                                 :true-value true-value))))
                    (loop :with target-level = 0 :for pos ::upfrom 0
                      :for l :in (rest li)
                      :when (funcall true-value l) :do (incf target-level)
