@@ -1,6 +1,6 @@
 ;;; read/write comma-separated values
 ;;;
-;;; Copyright (C) 2003-2010 by Sam Steingold
+;;; Copyright (C) 2003-2011 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
@@ -25,7 +25,7 @@
 (defcustom *csv-separator* character #\,
   "The separator in the CSV file, normally the comma.")
 
-(defcustom *csv-first-line-names* (or t nil :default) :default
+(defcustom *csv-first-line-names* (member t null :default) :default
   "How to treat the first line in WITH-CSV et el.
 If this is T (or :DEFAULT and the first line starts with a +COMMENTS+
  character), treat the first line as the vector of column names.
@@ -203,7 +203,7 @@ Return 3 values:
   (header (port:required-argument) :type vector)
   (reader (port:required-argument) :type function)
   (writer (port:required-argument) :type function)
-  (package *package* :type 'package))
+  (package *package* :type package))
 (defvar *csv-i/o* (make-hash-table :test 'eq) "type -> csv-i/o")
 (defun new-csv (&rest args &key name &allow-other-keys)
   (let ((old (gethash name *csv-i/o*)))
