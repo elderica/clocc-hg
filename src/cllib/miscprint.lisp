@@ -1,6 +1,6 @@
 ;;; print misc special opjects
 ;;;
-;;; Copyright (C) 1997-2010 by Sam Steingold
+;;; Copyright (C) 1997-2011 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
@@ -175,7 +175,7 @@ Usage: (print-counts (count-all seq ...))"
 ;;; method for hash-tables.  it does work with Allegro though.
 ;;; since CLISP externalizes hash-tables on its own, only CMUCL is a problem.
 (unlock-package :common-lisp)
-(defmethod print-object ((ht hash-table) (out stream))
+(defmethod print-object ((ht hash-table) out)
   (if *print-readably*
       (format out "#h~s" (hash-table->alist ht))
       (call-next-method)))

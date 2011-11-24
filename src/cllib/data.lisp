@@ -1,6 +1,6 @@
 ;;; Data Analysis and Visualization
 ;;;
-;;; Copyright (C) 2006-2009 by Sam Steingold
+;;; Copyright (C) 2006-2009, 2011 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
@@ -149,7 +149,7 @@
   (buckets nil :type list)      ; of buckets
   (median nil :type (or null real))
   (levels nil :type list))      ; of (level value)
-(defmethod print-object ((sc stat-column) (out stream))
+(defmethod print-object ((sc stat-column) out)
   (if *print-readably* (call-next-method)
       (print-unreadable-object (sc out :type t)
         (format out "~W ~:D~@[ ~W~]" (sc-name sc) (sc-pos sc)
@@ -224,7 +224,7 @@
 (defun write-table (tab out)
   (format out "~W ~:Dx~:D" (table-path tab) (table-lines$ tab)
           (length (table-names tab))))
-(defmethod print-object ((tab table) (out stream))
+(defmethod print-object ((tab table) out)
   (if *print-readably* (call-next-method)
       (print-unreadable-object (tab out :type t) (write-table tab out))))
 (defvar *tables* nil "The list of currently loaded tables")

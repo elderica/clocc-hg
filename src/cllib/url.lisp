@@ -1,6 +1,6 @@
 ;;; url - handle url's and parse HTTP
 ;;;
-;;; Copyright (C) 1998-2010 by Sam Steingold
+;;; Copyright (C) 1998-2011 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
@@ -194,7 +194,7 @@ guess from the protocol; save the guessed value."
       (and (alpha-char-p (char string 0))
            (char= #\: (char string 1)))))
 
-(defmethod print-object ((url url) (out stream))
+(defmethod print-object ((url url) out)
   "Print the URL in the standard form."
   (when *print-readably* (return-from print-object (call-next-method)))
   (when *print-escape* (write-string "\"" out))
@@ -831,7 +831,7 @@ The local file is located in directory LOC and has the same name
   (lines 0 :type index-t)       ; size in lines
   (xref nil :type list))        ; list of cross-references
 
-(defmethod print-object ((art article) (out stream))
+(defmethod print-object ((art article) out)
   (if *print-readably* (call-next-method)
       (format out "~:[~;\"~]~d~c~a~c~a~c~a~c~a~c~d~c~d~cXref:~{ ~a~}~:[~;\"~]"
               *print-escape* (article-numb art) #\Tab (article-subj art) #\Tab

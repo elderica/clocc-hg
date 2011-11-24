@@ -1,6 +1,6 @@
 ;;; Lift (ROC) curve analysis
 ;;;
-;;; Copyright (C) 2004-2010 by Sam Steingold
+;;; Copyright (C) 2004-2011 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
@@ -33,7 +33,7 @@
 ;;; detector statistics
 (defstruct (detector-statistics (:conc-name ds-))
   recall precision lift data-reduction dependency proficiency)
-(defmethod print-object ((ds detector-statistics) (out stream))
+(defmethod print-object ((ds detector-statistics) out)
   (if (or *print-readably* *print-escape*) (call-next-method)
       (format out "[~5F% ~5F% ~5F% ~5F%]"
               (* 1d2 (ds-recall ds)) (* 1d2 (ds-data-reduction ds))
@@ -79,7 +79,7 @@
 
 (defstruct bucket (size 0) (true 0) beg (begf #'<=) end (endf #'<=))
 
-(defmethod print-object ((b bucket) (out stream))
+(defmethod print-object ((b bucket) out)
   (if (or *print-readably* *print-escape*) (call-next-method)
       (format out "~:[(~;[~]~F;~F~:[)~;]~]~[~:; ~:*~:D~]~[~:; (~:*~:D)~]"
               (eq #'<= (bucket-begf b)) (bucket-beg b) (bucket-end b)

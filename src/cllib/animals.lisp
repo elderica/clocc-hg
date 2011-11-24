@@ -1,6 +1,6 @@
 ;;; Guess an Animal - CL implementation.
 ;;;
-;;; Copyright (C) 1997-2001, 2007-2008 by Sam Steingold
+;;; Copyright (C) 1997-2001, 2007-2008, 2011 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
@@ -151,7 +151,7 @@ Returnes a fresh string."
   (:documentation "The information node."))
 )
 
-(defmethod print-object ((nd node) (out stream))
+(defmethod print-object ((nd node) out)
   (if *print-readably* (call-next-method)
       (format out "[~s: ~s~@[ y:~s~]~@[ n:~s~]]" (node-name nd) (node-info nd)
               (if (slot-boundp nd 'yes) (node-yes nd))

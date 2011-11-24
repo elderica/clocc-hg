@@ -1,6 +1,6 @@
 ;;; XML parsing
 ;;;
-;;; Copyright (C) 2000-2005, 2007-2008, 2010 by Sam Steingold
+;;; Copyright (C) 2000-2005, 2007-2008, 2010, 2011 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
@@ -162,7 +162,7 @@ If this is `:readably', print for the Lisp reader
 ;;               (error "~s is set to ~s, but ~s is ~s"
 ;;                      '*xml-print-xml* :readably '*print-circle* nil))
 
-(defmethod print-object ((xm xml-misc) (out stream))
+(defmethod print-object ((xm xml-misc) out)
   (cond ((xml-print-readably-p) (call-next-method))
         (*xml-print-xml*
          (format out "<!~a" (symbol-name (xml-misc-type xm)))
@@ -282,20 +282,20 @@ If such a name already exists, re-use it."
   (let ((ns (xmln-ns xmln)))
     (unless (eq ns +xml-namespace-none+) (xmlns-pre ns))))
 
-(defmethod print-object ((cmt xml-comment) (out stream))
+(defmethod print-object ((cmt xml-comment) out)
   (cond ((xml-print-readably-p) (call-next-method))
         (*xml-print-xml*
          (format out "~&<!-- ~a -->~%" (xml-comment-data cmt)))
         ((print-unreadable-object (cmt out :type t :identity t)
            (format out "~:d char~:p" (length (xml-comment-data cmt)))))))
 
-(defmethod print-object ((ns xml-namespace) (out stream))
+(defmethod print-object ((ns xml-namespace) out)
   (if (xml-print-readably-p) (call-next-method)
       (print-unreadable-object (ns out :type t :identity t)
         (format out "~s ~s ~:d" (xmlns-uri ns) (xmlns-pre ns)
                 (hash-table-count (xmlns-nht ns))))))
 
-(defmethod print-object ((xmln xml-name) (out stream))
+(defmethod print-object ((xmln xml-name) out)
   (cond ((xml-print-readably-p) (call-next-method))
         (*xml-print-xml*
          (format out "~@[~a:~]~a" (xmln-prefix xmln) (xmln-ln xmln)))
@@ -309,7 +309,7 @@ If such a name already exists, re-use it."
   (name (required-argument) :type (or string cons xml-name))
   (args nil :type list))        ; alist of arg/value
 
-(defmethod print-object ((xmlt xml-tag) (out stream))
+(defmethod print-object ((xmlt xml-tag) out)
   (cond ((xml-print-readably-p) (call-next-method))
         (*xml-print-xml*
          (format out "~a~:{ ~a=~s~}" (xmlt-name xmlt) (xmlt-args xmlt)))
@@ -333,7 +333,7 @@ If such a name already exists, re-use it."
   "Get the value of the named arg in the XML tag."
   (cadr (assoc name (xmlo-args tag) :test #'xmln=)))
 
-(defmethod print-object ((xml xml-decl) (out stream))
+(defmethod print-object ((xml xml-decl) out)
   (cond ((xml-print-readably-p) (call-next-method))
         (*xml-print-xml* (princ "<?" out) (call-next-method) (princ "?>" out))
         ((print-unreadable-object (xml out :type t :identity t)
@@ -419,7 +419,7 @@ The third value is the number of sub-elements"
      (string= name "title") (string= name "section") (string= name "chapter")
      (string= name "row") (string= name "entry"))))
 
-(defmethod print-object ((xml xml-obj) (out stream))
+(defmethod print-object ((xml xml-obj) out)
   (cond ((xml-print-readably-p) (call-next-method))
         (*xml-print-xml*
          (princ "<" out) (call-next-method)

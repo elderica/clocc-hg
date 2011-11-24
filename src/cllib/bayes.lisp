@@ -4,7 +4,7 @@
 ;;;	UCSD, Technical Report CS97-557, 1997
 ;;; http://www-cse.ucsd.edu/users/elkan/papers/bnb.ps
 ;;;
-;;; Copyright (C) 2010 by Sam Steingold
+;;; Copyright (C) 2010-2011 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
@@ -49,7 +49,7 @@
           (cllib:copy-hash-table (nb-model-features model)))
     ret))
 
-(defmethod print-object ((model nb-model) (out stream))
+(defmethod print-object ((model nb-model) out)
   (if *print-readably* (call-next-method)
       (print-unreadable-object (model out :type t)
         (format out "~S observation~:P:~:D classes:~S features:~:D"

@@ -2,7 +2,7 @@
 ;;; get stock/mutual fund quotes from the Internet
 ;;; via the WWW using HTTP/1.0, save into a file, plot.
 ;;;
-;;; Copyright (C) 1997-2004, 2007-2008, 2010 by Sam Steingold
+;;; Copyright (C) 1997-2004, 2007-2008, 2010, 2011 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
@@ -65,7 +65,7 @@
       (when (zerop (dd-pre dd)) (setf (dd-pre dd) (- nav chg))))
     dd))
 
-(defmethod print-object ((dd daily-data) (out stream))
+(defmethod print-object ((dd daily-data) out)
   (if *print-readably* (call-next-method)
       (format out "price:~15t~7,2f~35tbid:~45t~7,2f
 previous:~15t~7,2f~35task:~45t~7,2f
@@ -425,7 +425,7 @@ Suitable for `read-list-from-stream'."
                       :name (read stream))
             (read stream nil +eof+))))
 
-(defmethod print-object ((pfl pfl) (out stream))
+(defmethod print-object ((pfl pfl) out)
   (if *print-readably* (call-next-method)
       (format out "~:@(~a~) ~8,3f ~7,2f ~a" (pfl-tick pfl) (pfl-nums pfl)
               (pfl-bprc pfl) (pfl-name pfl))))
@@ -454,7 +454,7 @@ Suitable for `read-list-from-stream'."
         (values hist vl))
     (push vl rr)))
 
-(defmethod print-object ((hist hist) (out stream))
+(defmethod print-object ((hist hist) out)
   (if *print-readably* (call-next-method)
       (format out "~a ~15,5f~{ ~7,2f~}" (hist-date hist)
               (hist-totl hist) (hist-navs hist))))

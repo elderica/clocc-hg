@@ -1438,7 +1438,7 @@ When the distribution is not discrete, entropy is not available."
 (defconst +bad-mdl+ mdl (make-mdl) "The convenient constant for init.")
 (defmethod value ((mdl mdl)) (mdl-mn mdl))
 
-(defmethod print-object ((mdl mdl) (out stream))
+(defmethod print-object ((mdl mdl) out)
   (if *print-readably* (call-next-method)
       (let* ((en (mdl-en mdl))
              (fo (if en (formatter "~:D") (formatter "~6F")))
@@ -1770,7 +1770,7 @@ Returns the probability of at least one event happening."
 
 (defconst +bad-line+ line (make-line) "*The convenient constant for init.")
 
-(defmethod print-object ((ln line) (out stream))
+(defmethod print-object ((ln line) out)
   (if *print-readably* (call-next-method)
       (format out "{~6f ~6f}" (line-sl ln) (line-co ln))))
 

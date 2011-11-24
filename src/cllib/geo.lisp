@@ -1,6 +1,6 @@
 ;;; geo - geographical data processing
 ;;;
-;;; Copyright (C) 1998-2004, 2007-2008 by Sam Steingold
+;;; Copyright (C) 1998-2004, 2007-2008, 2011 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
@@ -74,7 +74,7 @@ type \"48:51:00N 2:20:00E\". Return 2 values - latitude and longitude."
   (crd #C(0d0 0d0) :type (complex double-float)) ; coordinates
   (zip nil :type list))		; list of zip codes.
 
-(defmethod print-object ((gd geo-data) (out stream))
+(defmethod print-object ((gd geo-data) out)
   "Print the geo-data."
   (when *print-readably* (return-from print-object (call-next-method)))
   (format out "Place: ~a~%Population: ~12:d;~30tLocation: "
@@ -185,7 +185,7 @@ and return a list of geo-data."
   (rlgn nil :type (or null simple-string)) ; religions
   )
 
-(defmethod print-object ((ntn country) (out stream))
+(defmethod print-object ((ntn country) out)
   (when *print-readably* (return-from print-object (call-next-method)))
   (format out "~a~@[ (~a)~] [~a ~a] [ISO: ~a ~a ~d]~@[ part of ~a~]
 Location: "

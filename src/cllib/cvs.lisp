@@ -3,7 +3,7 @@
 ;;; http://www.sourcegear.com/CVS
 ;;;
 ;;; Copyright (C) 1996 by Bruno Haible
-;;; Copyright (C) 1998-2004, 2007-2008 by Sam Steingold
+;;; Copyright (C) 1998-2004, 2007-2008, 2011 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
@@ -204,7 +204,7 @@ Suitable for `read-list-from-stream'."
 (defun author-lines (au)
   (reduce #'+ (author-revs au) :key #'rev-lines))
 
-(defmethod print-object ((au author) (out stream))
+(defmethod print-object ((au author) out)
   (if *print-readably* (call-next-method)
       (format out "[~a: owns: ~:d mods: ~:d revs: ~:d lines: ~:d]"
               (author-name au) (length (author-owns au))

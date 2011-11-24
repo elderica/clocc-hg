@@ -1,6 +1,6 @@
 ;;; Date-related structures
 ;;;
-;;; Copyright (C) 1997-2008, 2010 by Sam Steingold
+;;; Copyright (C) 1997-2008, 2010, 2011 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
@@ -93,7 +93,7 @@
   (dd nil :type (or null days-t))) ; days since the epoch (1900-1-1 == 0)
 (deftype date-f-t () '(function (t) date))
 
-(defmethod print-object ((dt date) (out stream))
+(defmethod print-object ((dt date) out)
   (cond (*print-readably* (call-next-method))
         (*print-escape*
          (write-string "#D" out)

@@ -5,7 +5,7 @@
 ;;;  http://www.cis.ohio-state.edu/htbin/rfc/rfc2426.html
 ;;;  http://www.imc.org/pdi
 ;;;
-;;; Copyright (C) 1999-2004, 2007-2008 by Sam Steingold
+;;; Copyright (C) 1999-2004, 2007-2008, 2011 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
@@ -298,7 +298,7 @@ See constants `+card-output-bbdb+', `+card-output-vcard+',
    (slot-val adrs 'zip) (slot-val adrs 'country)))
 
 (defmacro define-print-method (cs)
-  `(defmethod print-object ((cc ,cs) (out stream))
+  `(defmethod print-object ((cc ,cs) out)
     (cond ((or *print-readably* (null *card-output-type*)) (call-next-method))
           ((card-output-p *card-output-type*)
            (funcall (,(symbol-concat 'card-output- cs) *card-output-type*)

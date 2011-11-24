@@ -1,6 +1,6 @@
 ;;; Dated Lists - extracted from date.lisp
 ;;;
-;;; Copyright (C) 1997-2004, 2007-2008 by Sam Steingold
+;;; Copyright (C) 1997-2004, 2007-2008, 2011 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
@@ -162,7 +162,7 @@ so that -1 corresponds to the last record."
   (declare (type dated-list dl))
   (funcall (dl-date dl) (car (last (car (last (dated-list-fl dl)))))))
 
-(defmethod print-object ((dl dated-list) (out stream))
+(defmethod print-object ((dl dated-list) out)
   (if *print-readably* (call-next-method)
       (let* ((fl (dated-list-fl dl)) (dd (dl-date dl))
              (lr (car (last (cdar (last fl))))) (fr (cadar fl))
@@ -601,7 +601,7 @@ Must not assume that the list is properly ordered!"
   (declare (type change ch1 ch2))
   (eq (change-type ch1) (change-type ch2)))
 
-(defmethod print-object ((chg change) (out stream))
+(defmethod print-object ((chg change) out)
   (if *print-readably* (call-next-method)
       (format out "~a [~7,3f <- ~8,3f -> ~7,3f]" (change-date chg)
               (change-chb chg) (change-val chg) (change-chf chg))))
@@ -646,7 +646,7 @@ ch[bf], and dl-extrema will not be idempotent."
 Sets ll, date, val, and passes the rest directly to `make-dated-list'."
   (apply #'mk-dl (list (cons :all dl)) :date 'diff-date :val 'diff-di args))
 
-(defmethod print-object ((df diff) (out stream))
+(defmethod print-object ((df diff) out)
   (if *print-readably* (call-next-method)
       (format out "~a ~15,6f ~15,6f" (diff-date df)
               (diff-di df) (diff-ra df))))

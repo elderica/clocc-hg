@@ -1,6 +1,6 @@
 ;;; RPM updates
 ;;;
-;;; Copyright (C) 1998-2004, 2007-2008 by Sam Steingold
+;;; Copyright (C) 1998-2004, 2007-2008, 2011 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
@@ -32,7 +32,7 @@
   "Sum the sizes of the RPMs in the list."
   (reduce #'+ rpms :key (safe-fun1 rpm-size rpm-p 0)))
 
-(defmethod print-object ((dld download-data) (out stream))
+(defmethod print-object ((dld download-data) out)
   (when *print-readably* (return-from print-object (call-next-method)))
   (write (dld-url dld) :stream out)
   (cond ((dld-err dld) (format out "~% - ~a" (dld-err dld)))
@@ -112,7 +112,7 @@ If nil, retry ad infinitum, otherwise a positive fixnum.")
 
 (defconst +bad-rpm+ rpm (make-rpm) "*The convenient constant for init.")
 
-(defmethod print-object ((rpm rpm) (out stream))
+(defmethod print-object ((rpm rpm) out)
   (if *print-readably* (call-next-method)
       (format out "~:[~;\"~]~a-~a-~a.~a~:[~;\"~]" *print-escape*
               (rpm-name rpm) (rpm-vers rpm) (rpm-rels rpm) (rpm-arch rpm)

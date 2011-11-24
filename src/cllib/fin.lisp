@@ -1,6 +1,6 @@
 ;;; Financial functions
 ;;;
-;;; Copyright (C) 1997-2002, 2007-2008 by Sam Steingold
+;;; Copyright (C) 1997-2002, 2007-2008, 2011 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
@@ -199,7 +199,7 @@ and Capital/Income ratio K-Y-0 to the Golden Rate steady state."
   (pos 1 :type real)
   (price (port:required-argument) :type real))
 
-(defmethod print-object ((o option) (s stream))
+(defmethod print-object ((o option) s)
   (if *print-readably* (call-next-method)
       (format s "~A/~A-~A*~A" (option-type o) (option-strike o)
               (option-pos o) (option-price o))))
