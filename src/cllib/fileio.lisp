@@ -1,6 +1,6 @@
 ;;; Read from/Write to files
 ;;;
-;;; Copyright (C) 1997-2010 by Sam Steingold
+;;; Copyright (C) 1997-2011 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
@@ -126,10 +126,11 @@ This function finds such a header among the first 1024 bytes
 ;;; }}}{{{ Read/Write list
 ;;;
 
-(declaim (ftype (function (list stream &optional function) (values fixnum))
+(declaim (ftype (function (list stream &optional function function)
+                          (values fixnum))
                 write-list-to-stream))
 (defun write-list-to-stream (lst stream &optional (print-function #'prin1)
-                             print-header)
+                                          print-header)
   "Write the list into the stream, printing the elements one per line.
 PRINT-FUNCTION should take (at least) 2 arguments: a record and a stream.
 PRIN1 is the default. Returns the length of the list."
@@ -141,7 +142,7 @@ PRIN1 is the default. Returns the length of the list."
     (funcall print-function (car ll) stream)
     (terpri stream)))
 
-(declaim (ftype (function (list t &optional function)
+(declaim (ftype (function (list t &optional function function)
                           (values fixnum file-size-t))
                 write-list-to-file))
 (defun write-list-to-file (lst fout &optional (print-function #'prin1)
