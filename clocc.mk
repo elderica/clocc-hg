@@ -67,7 +67,7 @@ $(SYSTEM)-image$(DUMPEXT): $(LISPFILES)
 	$(RUNLISP) $(patsubst %,-i %,$(filter-out $<,$^)) -c $<
 
 ChangeLog: $(LISPFILES)
-	if hg log --style changelog $^ > $@
+	hg log --style changelog $^ > $@
 
 TAGS:	$(LISPFILES)
 	$(ETAGS) $^
