@@ -1,6 +1,6 @@
 ;;; bugfixes
 ;;;
-;;; Copyright (C) 1997-2008, 2010 by Sam Steingold.
+;;; Copyright (C) 1997-2008, 2010, 2011 by Sam Steingold.
 ;;; This is open-source software.
 ;;; GNU Lesser General Public License (LGPL) is applicable:
 ;;; No warranty; you may copy/modify/redistribute under the same
@@ -78,7 +78,7 @@
 
 #+cmu (setq ext:*gc-verbose* nil)
 
-(eval-when (compile eval)
+(eval-when (:compile-toplevel :execute)
   (let (x y)
     (handler-case
         (progn

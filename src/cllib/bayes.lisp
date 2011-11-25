@@ -8,7 +8,7 @@
 ;;; This is Free Software, covered by the GNU GPL (v2)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
-(eval-when (compile load eval)
+(eval-when (:compile-toplevel :load-toplevel :execute)
   (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `mesg'
   (require :cllib-log (translate-logical-pathname "cllib:log"))
