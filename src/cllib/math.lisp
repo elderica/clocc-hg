@@ -1,6 +1,6 @@
 ;;; Math utilities (Arithmetical / Statistical functions)
 ;;;
-;;; Copyright (C) 1997-2011 by Sam Steingold
+;;; Copyright (C) 1997-2012 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
@@ -39,7 +39,7 @@
    information mutual-information-2 dependency-2 proficiency-2 correlation-2
    mdl make-mdl +bad-mdl+ mdl-mn mdl-sd mdl-le mdl-mi mdl-ma mdl-mi$ mdl-ma$
    mdl-normalize mdl-denormalize mdl-normalize-function
-   normalizer-table normalize-function-list
+   normalizer-table normalize-function-list two-sample-t-test
    kurtosis-skewness kurtosis-skewness-weighted
    covariance covariance1 cov volatility
    safe-fun safe-fun1 safe-/ s/ d/
@@ -1465,19 +1465,6 @@ When the distribution is not discrete, entropy is not available."
   "Return a normalized version of FUNCTION"
   (lambda (x) (mdl-normalize (funcall function x) mdl)))
 
-(defun two-sample-t-test (mdl1 mdl2)
-  "Test that the means are the same.
-Return the critical value and the number of degrees of freedom.
-<http://www.itl.nist.gov/div898/handbook/eda/section3/eda353.htm>."
-  (let* ((le1 (mdl-le mdl1)) (var/n-1 (/ (sqr (mdl-sd mdl1)) le1))
-         (le2 (mdl-le mdl2)) (var/n-2 (/ (sqr (mdl-sd mdl2)) le2))
-         (var/n (+ var/n-1 var/n-2)))
-    (values (/ (- (mdl-mn mdl1) (mdl-mn mdl2))
-               (sqrt var/n))
-            (/ (sqr var/n)
-               (+ (/ (sqr var/n-1) (1- le1))
-                  (/ (sqr var/n-2) (1- le2)))))))
-
 ;; when the mdl argument is a constant object, access slots
 ;; note that this is _NOT_ safe in general and compilers must _NOT_ do this
 ;; automatically: the constant argument's slots might be modified elsewhere
@@ -1522,6 +1509,19 @@ where `X/N' means normalized with (GETHASH X MDL-HT)"
                                                        'normalize-function-list
                                                        f mdl-ht))))
                   fl))))
+
+(defun two-sample-t-test (mdl1 mdl2)
+  "Test that the means are the same.
+Return the critical value and the number of degrees of freedom.
+<http://www.itl.nist.gov/div898/handbook/eda/section3/eda353.htm>."
+  (let* ((le1 (mdl-le mdl1)) (var/n-1 (/ (sqr (mdl-sd mdl1)) le1))
+         (le2 (mdl-le mdl2)) (var/n-2 (/ (sqr (mdl-sd mdl2)) le2))
+         (var/n (+ var/n-1 var/n-2)))
+    (values (/ (- (mdl-mn mdl1) (mdl-mn mdl2))
+               (sqrt var/n))
+            (/ (sqr var/n)
+               (+ (/ (sqr var/n-1) (1- le1))
+                  (/ (sqr var/n-2) (1- le2)))))))
 
 ;;;
 ;;; information-theoretic and statistical measures of prediction performance
