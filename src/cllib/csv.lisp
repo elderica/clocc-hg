@@ -280,6 +280,7 @@ Return 3 values:
          :nconc `(,@(when (plusp pos) `((write-char *csv-separator* ,out)))
                     (write (,(car (port:slot-definition-readers slot)) ,obj)
                            :stream ,out :escape nil)))))
+#-:no-defstruct-mop             ; does not work with sbcl
 (defmacro defcsv (type (&key (package (symbol-package type))) slots
                   &aux (reader (symbol-prepend type '#:csv-reader-))
                   (writer (symbol-prepend type '#:csv-writer-)))

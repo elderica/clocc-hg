@@ -46,6 +46,7 @@
      (:file "getopt" :depends-on ("base" "symb"))
      (:file "gnuplot" :depends-on ("base" "date" "datedl" "math" "stat"))
      (:file "gq" :depends-on ("base" "withtype" "html" "url" "gnuplot"))
+     #-:no-defstruct-mop
      (:file "grepfin" :depends-on
             ("base" "miscprint" "csv" "string" "htmlgen" "url"))
      (:file "h2lisp" :depends-on ("base" "withtype" "html"))

@@ -105,6 +105,12 @@
   (import cl-user::mop-symbols :port)
   (export cl-user::mop-symbols :port))
 
+(eval-when (:compile-toplevel :execute)
+  (defstruct s a)
+  (unless (slot-definition-initargs (car (class-direct-slots (find-class 's))))
+    (pushnew :no-defstruct-mop *features*)
+    '(pushnew :no-defstruct-mop *features*)))
+
 (provide :port-mop)
 
 ;;; file mop.lisp ends here
