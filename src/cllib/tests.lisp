@@ -1,6 +1,6 @@
 ;;; Regression Testing
 ;;;
-;;; Copyright (C) 1999-2008, 2010 by Sam Steingold
+;;; Copyright (C) 1999-2008, 2010, 2013 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
@@ -370,6 +370,15 @@
       (incf num-err))))
 
 (deftest test-list ()
+  (let* ((l (loop for i from 0 to 20 collect i)) (l1 (copy-seq l)))
+    (mesg :test out "~S~%" 'test-batch-map)
+    (let ((r (batch-map l 5 #'length)) (a '(5 5 5 5 1)))
+      (unless (equal r a)
+        (mesg :test out " ** ~S: ERROR : ~S != ~S~%" 'test-batch-map r a)
+        (incf num-err))
+      (unless (equal l l1)
+        (mesg :test out " ** ~S: ERROR : ~S != ~S~%" 'test-batch-map l l1)
+        (incf num-err))))
   (flet ((test-jumps (list func ret)
            (mesg :test out "~S: ~S -> ~S~%" 'test-jumps list ret)
            (let ((z (jumps list :pred func)))

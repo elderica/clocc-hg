@@ -1,6 +1,6 @@
 ;;; Additional List Operations
 ;;;
-;;; Copyright (C) 1997-2002, 2006-2008 by Sam Steingold
+;;; Copyright (C) 1997-2002, 2006-2008, 2013 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
@@ -144,6 +144,24 @@ Also, do NOT try to return a cons from NEWL.  You'd be surprised!"
               (lambda (ll)
                 (cons (if cnt? (incf ii) (funcall split-key (car ll)))
                       (apply func ll args)))))))
+
+(defun batch-map (list batch-size function)
+  "Call FUNCTION on sublists of LIST of size BATCH-SIZE.
+Temporarily modifies LIST to avoid unnecessary consing.
+Returns the list of return values of FUNCTION."
+  ;; http://stackoverflow.com/questions/17198677/process-n-items-from-a-list-at-a-time-in-lisp
+  ;; this is the optimized version of
+  ;; (loop for tail on list by (lambda (l) (nthcdr batch-size l))
+  ;;     collect (funcall function (subseq tail 0 (min (length tail) batch-size))))
+  (do ((tail list (cdr end)) end ret (bs1 (1- batch-size)))
+      ((endp tail) (nreverse ret))
+    (setq end (nthcdr bs1 tail))
+    (if (consp end)
+        (let ((next (cdr end)))
+          (setf (cdr end) nil)
+          (unwind-protect (push (funcall function tail) ret)
+            (setf (cdr end) next)))
+        (push (funcall function tail) ret))))
 
 (provide :cllib-list)
 ;;; list.lisp ends here
