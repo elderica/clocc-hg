@@ -1,6 +1,6 @@
 ;;; Math utilities (Arithmetical / Statistical functions)
 ;;;
-;;; Copyright (C) 1997-2012 by Sam Steingold
+;;; Copyright (C) 1997-2012, 2014 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
@@ -1569,13 +1569,17 @@ p1=p(x=1), p2=p(y=1), p12=p(x=1 & y=1)"
 
 (defun correlation-2 (p12 p1 p2 &optional (N 1)
                       &aux (q1 (- N p1)) (q2 (- N p2)))
-  "Correlation of two binary distributions"
+  "Correlation of two binary distributions
+https://en.wikipedia.org/wiki/Matthews_correlation_coefficient"
   (check-probabilities p12 p1 p2 N 'correlation)
-  (/ (+ (* p12 q1 q2)                          ; x=1 y=1
-        (* (- p1 p12) q1 (- p2))               ; x=0 y=1
-        (* (- p2 p12) (- p1) q2)               ; x=1 y=0
-        (* (- (+ N p12) p1 p2) (- p1) (- p2))) ; x=0 y=0
-     (sqrt (* p1 q1 p2 q2)) N))
+  ;; (/ (+ (* p12 q1 q2)                          ; x=1 y=1
+  ;;       (* (- p1 p12) q1 (- p2))               ; x=0 y=1
+  ;;       (* (- p2 p12) (- p1) q2)               ; x=1 y=0
+  ;;       (* (- (+ N p12) p1 p2) (- p1) (- p2))) ; x=0 y=0
+  ;;    (sqrt (* p1 q1 p2 q2)) N)
+  (/ (- (* p12 (- (+ N p12) p1 p2)) ; TP * TN
+        (*  (- p1 p12) (- p2 p12))) ; FP * FN
+     (sqrt (* p1 q1 p2 q2))))
 
 (defun 1st-moment (p12 p1 p2)
   "Covariance of two binary distributions"
