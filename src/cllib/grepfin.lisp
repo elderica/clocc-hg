@@ -1,6 +1,6 @@
 ;;; Grep Financial Data
 ;;;
-;;; Copyright (C) 2010-2011 by Sam Steingold
+;;; Copyright (C) 2010-2011, 2013 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
@@ -10,6 +10,8 @@
   (require :port-net (translate-logical-pathname "port:net"))
   ;; `quit'
   (require :port-ext (translate-logical-pathname "port:ext"))
+  ;; `:no-defstruct-mop'
+  (require :port-mop (translate-logical-pathname "port:mop"))
   ;; `string-beg-with'
   (require :cllib-string (translate-logical-pathname "cllib:string"))
   ;; `print-counts'
@@ -20,6 +22,10 @@
   (require :cllib-htmlgen (translate-logical-pathname "cllib:htmlgen"))
   ;; `csv-i/o'
   (require :cllib-csv (translate-logical-pathname "cllib:csv")))
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  #+:no-defstruct-mop
+  (error "defstruct mop is not supported"))
 
 (defpackage #:grepfin
   (:nicknames #:gf)
