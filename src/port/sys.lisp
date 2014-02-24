@@ -1,6 +1,6 @@
 ;;; Environment & System access
 ;;;
-;;; Copyright (C) 1999-2008, 2010, 2011 by Sam Steingold
+;;; Copyright (C) 1999-2008, 2010, 2011, 2013 by Sam Steingold
 ;;; This is open-source software.
 ;;; GNU Lesser General Public License (LGPL) is applicable:
 ;;; No warranty; you may copy/modify/redistribute under the same
@@ -64,7 +64,7 @@
   #+gcl (si:setenv (string var) (and val (string val)))
   #+lispworks (setf (lw:environment-variable (string var)) (and val (string val)))
   #+lucid (setf (lcl:environment-variable (string var)) (and val (string val)))
-  #+sbcl (sb-posix:setenv (string var) (and val (string val)) 1)
+  #+(and sbcl sb-posix) (sb-posix:setenv (string var) (and val (string val)) 1)
   #-(or allegro clisp cmu gcl lispworks lucid sbcl scl)
   (error 'not-implemented :proc (list '(setf getenv) var)))
 
