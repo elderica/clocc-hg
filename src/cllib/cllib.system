@@ -12,6 +12,7 @@
 (mk:add-registry-location (translate-logical-pathname "clocc:src;port;"))
 (mk:add-registry-location
  (translate-logical-pathname "clocc:src;tools;metering;"))
+(require :port-mop (translate-logical-pathname "clocc:src;port;mop")) ; for no-defstruct-mop
 
 (mk:defsystem cllib
     :source-pathname (translate-logical-pathname "clocc:src;cllib;")
