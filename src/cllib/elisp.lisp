@@ -1,6 +1,6 @@
 ;;; Load Emacs-Lisp files into Common Lisp
 ;;;
-;;; Copyright (C) 1999-2004, 2007-2008 by Sam Steingold
+;;; Copyright (C) 1999-2004, 2007-2008, 2014 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
@@ -19,7 +19,7 @@
   (:nicknames "ELISP" "EL") (:use "CL" "CLLIB" "PORT")
   #+cmu (:shadowing-import-from #:port port:defstruct)
   (:shadow let let* if member delete load require provide ignore format /
-           defcustom defconst autoload))
+           defcustom defconst autoload defun))
 
 (defconst +elisp-pack+ package (find-package :el)
   "The Emacs-Lisp package.")
@@ -43,6 +43,24 @@
 (defmacro el::while (cc &body forms)
   "Emacs-Lisp `while'."
   `(do () ((not ,cc)) ,@forms))
+
+(defun lalist-vars (lalist-elt)
+  "Extract the variables from the lambda-list element."
+  (cond ((consp lalist-elt)
+         (let ((var (first lalist-elt))
+               (predicate (third lalist-elt)))
+           (when (consp var)
+             (setq var (second var)))
+           (if predicate
+               (list var predicate)
+               (list var))))
+        ((member lalist-elt lambda-list-keywords :test #'eq)
+         ())
+        (t (list lalist-elt))))
+
+(defmacro el::defun (name args &body body)
+  "Emacs-Lisp version of `defun' (all arguments special)."
+  `(defun ,name ,args (declare (special ,@(mapcan #'lalist-vars args))) ,@body))
 
 ;;;
 ;;; Read Emacs-Lisp objects
