@@ -1,6 +1,6 @@
 ;;; read/write comma-separated values
 ;;;
-;;; Copyright (C) 2003-2011 by Sam Steingold
+;;; Copyright (C) 2003-2011, 2013 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
@@ -308,7 +308,7 @@ PARSER is a function to be used instead of the type-appropriate default."
       :name ',type
       :header ,(coerce (mapcar #'car slots) 'vector)
       :reader #',reader :writer #',writer
-      :package ,package)))
+      :package (find-package ,package))))
 
 (provide :cllib-csv)
 ;;; file csv.lisp ends here
