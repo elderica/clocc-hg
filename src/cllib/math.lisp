@@ -1,6 +1,6 @@
 ;;; Math utilities (Arithmetical / Statistical functions)
 ;;;
-;;; Copyright (C) 1997-2012, 2014 by Sam Steingold
+;;; Copyright (C) 1997-2012, 2014, 2015 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
@@ -31,7 +31,7 @@
    dot poly1 poly norm-functions norm normalize rel-dist
    erf erfc erfcx cndf cndf-tail
    log-gamma beta incomplete-gamma *max-iterations*
-   mean mean-cx mean-weighted mean-geometric mean-geometric-weighted mean-some
+   mean mean-weighted mean-geometric mean-geometric-weighted mean-some
    standard-deviation standard-deviation-cx standard-deviation-weighted
    standard-deviation-relative standard-deviation-mdl min+max
    entropy-sequence entropy-distribution kullback-leibler
