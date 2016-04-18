@@ -1,6 +1,5 @@
 ;;; Read Ocaml Sexp
-;;; http://www.ocaml.info/home/ocaml_sources.html#toc8
-;;; http://www.janestcapital.com/ocaml/index.html
+;;; https://github.com/janestreet/sexplib
 ;;;
 ;;; Copyright (C) 2006-2008 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
