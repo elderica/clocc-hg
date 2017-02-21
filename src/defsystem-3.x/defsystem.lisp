@@ -4978,32 +4978,6 @@ output to *trace-output*.  Returns the shell's exit code."
 	  (t nil))))
 
 
-;;; compiled-file-p --
-;;; See CLOCC/PORT/sys.lisp:compiled-file-p
-
-(eval-when (:load-toplevel :execute :compile-toplevel)
-  (when (find-package "PORT")
-    (import (find-symbol "COMPILED-FILE-P" "PORT"))))
-
-(unless (fboundp 'compiled-file-p)
-  (defun compiled-file-p (file-name)
-    "Return T if the FILE-NAME is a filename designator for a valid compiled.
-Signal an error when it is not a filename designator.
-Return NIL when the file does not exist, or is not readable,
-or does not contain valid compiled code."
-    #+clisp
-    (with-open-file (in file-name :direction :input :if-does-not-exist nil)
-      (handler-bind ((error (lambda (c) (declare (ignore c))
-				    (return-from compiled-file-p nil))))
-	(and in (char= #\( (peek-char nil in nil #\a))
-	     (let ((form (read in nil nil)))
-	       (and (consp form)
-		    (eq (car form) 'SYSTEM::VERSION)
-		    (null (eval form)))))))
-    #-clisp (declare (ignorable file-name))
-    #-clisp t))
-
-
 (defun needs-compilation (component force)
   ;; If there is no binary, or it is older than the source
   ;; file, then the component needs to be compiled.
@@ -5023,7 +4997,7 @@ or does not contain valid compiled code."
       (< (file-write-date binary-pname)
          (file-write-date source-pname))
       ;; invalid binary
-      (not (compiled-file-p binary-pname))))))
+      #+clisp (not (ext:compiled-file-p binary-pname))))))
 
 
 (defun needs-loading (component &optional (check-source t) (check-binary t))
