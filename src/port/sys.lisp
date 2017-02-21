@@ -1,6 +1,6 @@
 ;;; Environment & System access
 ;;;
-;;; Copyright (C) 1999-2008, 2010, 2011, 2013 by Sam Steingold
+;;; Copyright (C) 1999-2008, 2010, 2011, 2013, 2017 by Sam Steingold
 ;;; This is open-source software.
 ;;; GNU Lesser General Public License (LGPL) is applicable:
 ;;; No warranty; you may copy/modify/redistribute under the same
@@ -83,15 +83,8 @@
 Signal an error when it is not a filename designator.
 Return NIL when the file does not exist, or is not readable,
 or does not contain valid compiled code."
-  #+clisp
-  (with-open-file (in file-name :direction :input :if-does-not-exist nil)
-    (handler-bind ((error (lambda (c) (declare (ignore c))
-                                  (return-from compiled-file-p nil))))
-      (and in (char= #\( (peek-char nil in nil #\a))
-           (let ((form (read in nil nil)))
-             (and (consp form)
-                  (eq (car form) 'SYSTEM::VERSION)
-                  (null (eval form)))))))
+  #+clisp (ext:compiled-file-p file-name)
+  #-clisp (declare (ignore file-name))
   #-clisp t)
 
 ;;;
