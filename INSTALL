@@ -35,21 +35,19 @@ It is entirely up to you what path to take.
 * Lisp-only
 
 ;; * compile base files
-(in-package :cl-user)
-(setq *clocc-root* "c:/gnu/clocc/") ; or whatever ...
-(compile-file (concatenate 'string *clocc-root* "clocc"))
-(load *)
-(compile-file (translate-logical-pathname "clocc:src;defsystem;defsystem"))
+(compile-file "c:/gnu/clocc/clocc") ; or whatever ...
 (load *)
 
+;; * load the defsystem facility
+;; most lisps come with "asdf"; if this fails, get it yourself from
+;; https://common-lisp.net/project/asdf/
+(require "asdf")
+
 ;; * compile some systems
-(dolist (l '("clocc:src;port;" "clocc:src;cllib;" "clocc:src;ext;queues;"
-             "clocc:src;port;configuration;" "clocc:src;port;environment;"
-             "clocc:src;ext;union-find;" "clocc:src;tools;metering;"
-             "clocc:src;f2cl;" "clocc:src;f2cl;packages;"))
-  (mk:add-registry-location (translate-logical-pathname l)))
-(mk:oos "cllib" :compile)
-(mk:oos "f2cl" :compile)
+;; https://common-lisp.net/project/asdf/asdf/Configuring-ASDF-to-find-your-systems.html
+(asdf:compile-system "port")
+(asdf:compile-system "cllib")
+(asdf:compile-system "f2cl")
 ...
 
 ========================================================================
@@ -59,11 +57,12 @@ You should either dump your own images or edit init files:
 
 ;; * add to your init file:
 ;;   ~/.clisprc for CLISP,
+;;   ~/.sbclrc for SBCL,
 ;;   ~/.cmucl-init.lisp for CMUCL or
 ;;   ~/.clinit.cl for Allegro
-(setq *clocc-root* "c:/gnu/clocc/") ; or whatever ...
-(load (concatenate 'string *clocc-root* "clocc"))
-(load (translate-logical-pathname "clocc:src;cllib;base")) ; or whatever ...
+(load "c:/gnu/clocc/clocc") ; or whatever ...
+(asdf:load-system "port")
+(asdf:load-system "cllib")
 ...
 
 
