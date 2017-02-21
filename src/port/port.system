@@ -9,6 +9,7 @@
     ((:file "ext")
      (:file "gray" :depends-on ("ext"))
      (:file "mop" :depends-on ("ext"))
+     (:file "mop-defstruct" :depends-on ("mop"))
      (:file "net" :depends-on ("ext" "sys"))
      (:file "path" :depends-on ("ext"))
      (:file "proc" :depends-on ("ext"))

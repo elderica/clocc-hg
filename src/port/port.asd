@@ -1,6 +1,6 @@
 ;;; Cross-implementation Portability System
 ;;;
-;;; Copyright (C) 2010 by Sam Steingold
+;;; Copyright (C) 2010, 2017 by Sam Steingold
 ;;; This is Free Software, covered by the GNU LGPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
@@ -13,6 +13,7 @@
     ((:file "ext")
      (:file "gray" :depends-on ("ext"))
      (:file "mop" :depends-on ("ext"))
+     (:file "mop-defstruct" :depends-on ("mop"))
      (:file "net" :depends-on ("ext" "sys"))
      (:file "path" :depends-on ("ext"))
      (:file "proc" :depends-on ("ext"))

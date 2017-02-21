@@ -1,6 +1,6 @@
 ;;;; Meta-Object Protocol
 ;;;
-;;; Copyright (C) 2006-2007, 2013 by Sam Steingold
+;;; Copyright (C) 2006-2007, 2013, 2017 by Sam Steingold
 ;;; This is open-source software.
 ;;; GNU Lesser General Public License (LGPL) is applicable:
 ;;; No warranty; you may copy/modify/redistribute under the same
@@ -16,7 +16,7 @@
   (require :port-ext (translate-logical-pathname "clocc:src;port;ext")))
 
 (in-package
-  #+(and allegro (version>= 6)) :clos
+  #+(and allegro (version>= 6)) :aclmop
   #+(and clisp mop) :clos
   #+cmu :pcl
   #+lucid :clos
@@ -104,14 +104,6 @@
          ADD-DEPENDENT REMOVE-DEPENDENT UPDATE-DEPENDENT)))
   (import cl-user::mop-symbols :port)
   (export cl-user::mop-symbols :port))
-
-(in-package :common-lisp-user)
-
-(eval-when (:compile-toplevel :execute)
-  (defstruct s a)
-  (unless (slot-definition-initargs (car (class-direct-slots (find-class 's))))
-    (pushnew :no-defstruct-mop *features*)
-    '(pushnew :no-defstruct-mop *features*)))
 
 (provide :port-mop)
 
