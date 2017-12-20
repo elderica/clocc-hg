@@ -368,8 +368,8 @@ from line will be in the message delivered to each user.
    (multiple-value-bind
     (second minute hour day month year)
     (get-decoded-time)
-    (format stream "~@?" "~d/~d/~d ~2,'0d:~2,'0d:~2,'0d"
-	    month day year hour minute second)))
+    (format stream "~4,'0d-~2,'0d-~2,'0d-~2,'0d:~2,'0d:~2,'0d"
+	    year month day hour minute second)))
 
 (defvar *log* nil) ;; log file [***]
 ;; If you want to log the inputs, set *log* to the name of a log file
@@ -475,13 +475,34 @@ from line will be in the message delivered to each user.
 (defmethod sss:reader ((c smtp-connection) string start)
   ;; Everything of interest ends in crlf
   (if (boundp 'data)
-      ;; too inefficient to do the whole loop for every line of data
-      (if (and (>= (length string) (+ start 3))
-	       (search clrf-dot-crlf string :start1 2
-		       :start2 start :end2 (+ start 3)))
-	  (values "" (+ start 3)) ;; leave off the final dot line
-	(let ((pos (search clrf-dot-crlf string :start2 start)))
-	  (when pos (values (subseq string start (+ pos 2)) (+ pos 5)))))
+      ;; 2017-12-16 every time we got new input we scanned ALL of the input!
+      ;; now instead remember that we already scanned the first n chars,
+      ;; so now start at position n-4
+      ;; (in case we just got the end of the crlf-dot-crlf)
+      (let ((pos (search clrf-dot-crlf string :start2 (+ start dataread))))
+        (when (and (> (length string) (+ start 6))
+                   (equal (subseq string start (+ start 6)) "XXXXXX"))
+          ;; I think some security device is replacing content with X's
+          ;; we're not going to recognize the end if the . is changed to X
+          (send-string-crlf+ c "599 I reject email starting XXXXXX.")
+          (logform "error 599 I reject email starting XXXXXX.")
+          (sss::disconnect-connection c)
+          (return-from sss:reader))
+        (when (and (null pos)(> nreads 0)(= 0 (mod nreads 10)))
+          (logform
+           (format nil
+                   "reader still looking for end of message after ~a reads, ~
+             strlen ~a start ~a ~s ... ~s "
+                   nreads (length string) start
+                   (subseq string start (min (length string) (+ start 6)))
+                   (subseq string (max start (- (length string) 6))))))
+        (sss::bind 'dataread (max 0 (- (length string) start 4)))
+        (sss::bind 'nreads (+ 1 nreads))
+        (when pos
+          (logform
+           (format nil
+            "reader found message content of length ~a" (- (+ pos 2) start)))
+          (values (subseq string start (+ pos 2)) (+ pos 5))))
     (let ((pos (search crlf string :start2 start)))
       (when pos (values (subseq string start (+ pos 2)) (+ pos 2))))))
 
@@ -517,9 +538,9 @@ from line will be in the message delivered to each user.
   ;; string is a line of input ending with crlf
   ;; The most common case (the one we should optimize) is in the middle of data
   (if (boundp 'data) (moredata c string)
-      (macrolet ((cmd (cmd)
-		   `(and (>= (length string) 4)
-			 (string-equal ,cmd string :end2 4))))
+    (macrolet ((cmd (cmd)
+		 `(and (>= (length string) 4)
+		   (string-equal ,cmd string :end2 4))))
       (cond ((cmd "HELO") (helo c string))
 	    ((cmd "EHLO") (ehlo c string))
 	    ((cmd "MAIL") (mail c string))
@@ -1067,6 +1088,8 @@ has been an helo/ehlo since they were last set
     (logform "error 503 - data: need to start with helo/ehlo then mail")
     (return-from data nil))
   (send-string-crlf+ c "354 Start mail input; end with <CRLF>.<CRLF>")
+  (sss:bind 'dataread 0) ;; 2017-12-18 added for reader
+  (sss:bind 'nreads 0)
   (sss:bind 'data nil))
 
 (defun moredata (c string)
@@ -1265,7 +1288,7 @@ the mail for that user, e.g. put this in /root/smtp/feedback/.smtp.deliver
 				 *default-deliver*)
 			       shared-file (string-trim "<>" reverse-path)
 			       user *tmp-err-file*)))
-		(unless (= 0 result)
+		(unless (member result '(0 nil) :test 'equal) ; (= 0 result)
 		  (setf err
 			(cons (format nil "error delivering to ~A" fp)
 			      ;; just in case the error file is empty

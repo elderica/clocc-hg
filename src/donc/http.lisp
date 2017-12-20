@@ -100,8 +100,8 @@ first saw code to act as a web server.
    (multiple-value-bind
     (second minute hour day month year)
     (get-decoded-time)
-    (format stream "~@?" "~d/~d/~d ~2,'0d:~2,'0d:~2,'0d"
-	    month day year hour minute second)))
+    (format stream "~@?" "~4,'0d-~2,'0d-~2,'0d-~2,'0d:~2,'0d:~2,'0d"
+	    year month day hour minute second)))
 
 (defvar *log* nil) ;; log file [***]
 ;; If you want to log the inputs, set *log* to the name of a log file
