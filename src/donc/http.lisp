@@ -390,7 +390,7 @@ At this point the method is executed and then, finally, we're done.
     (if (listp *server-root*)
 	(cdr (assoc (connection-local-port c) *server-root* :test '=))
       *server-root*))
-  (setf file (merge-pathnames (pathname (subseq (uri c) 1)) root))
+  (setf file (merge-pathnames (pathname (subseq (html-to-ascii (uri c)) 1)) root))
   (when
       (let ((probe (ignore-errors (probe-file file)))) ;; err on #P"/root/www/"
 	(or (not probe)
