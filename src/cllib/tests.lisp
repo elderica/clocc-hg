@@ -1,6 +1,6 @@
 ;;; Regression Testing
 ;;;
-;;; Copyright (C) 1999-2008, 2010, 2013 by Sam Steingold
+;;; Copyright (C) 1999-2008, 2010, 2013, 2019 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
@@ -39,44 +39,41 @@
   `(defun ,name (&key (out *standard-output*) ,@extra-keys)
      (mesg :test out " ** ~s...~%" ',name)
      (let ((num-err 0))
-       ,@body
-       (mesg :test out " ** ~s: ~:d error~:p~2%" ',name num-err)
-       num-err)))
+       (flet ((check (fun args expected &key (cmp #'eql))
+                (mesg :test out " * (~S~{ ~S~} -> ~S~%" fun args expected)
+                (let ((actual (apply fun args)))
+                  (unless (funcall cmp actual expected)
+                    (incf num-err)
+                    (warn " ### (~S~{ ~S~}) FAILED:~% ->~10T~S~% /=~10T~S~%"
+                          fun args actual expected)))))
+         (declare (ignorable (function check)))
+         ,@body
+         (mesg :test out "~& ** ~s: ~:d error~:p~2%" ',name num-err)
+         num-err))))
 
 (deftest test-string ()
-  (flet ((check (fun seq from to keys cmp res r1)
-           (mesg :test out " * ~s ~s ~s ~s~{ ~s~} -> ~s~%"
-                 fun seq from to keys res)
-           (unless (funcall cmp res r1)
-             (incf num-err)
-             (warn " ### ~S FAILED: ~s ~s ~s~{ ~s~}~% ->~10t~s~% /=~10t~s~%"
-                   fun seq from to keys r1 res))))
-    (flet ((ts (res seq from to &rest keys)
-             (check 'substitute-subseq seq from to keys #'string= res
-                    (apply #'substitute-subseq seq from to keys))))
-      (ts "ab123efghcda" "abcdefghcda" "cd" "123" :start 1 :end 6)
-      (ts "ab123efgh123a" "abcdefghcda" "cd" "123" :start 1)
-      (ts "ab123efghcda" "abcdefghcda" "cd" "123" :end 6)
-      (ts "ab123efgh123a" "abcdefghcda" "cd" "123")
-      (ts "abcdefghcda" "abcdefghcda" "cd" "123" :start 5 :end 6))
-    (flet ((ts (res seq from to)
-             (check 'remove-subseq seq from to () #'equalp res
-                    (remove-subseq seq from to))))
-      (ts '(1 2 3 7 8 9) '(1 2 3 4 5 6 7 8 9) 3 6)
-      (ts #(1 2 3 7 8 9) #(1 2 3 4 5 6 7 8 9) 3 6)
-      (ts (mk-arr '(unsigned-byte 8) '(1 2 3 7 8 9))
-          (mk-arr '(unsigned-byte 8) '(1 2 3 4 5 6 7 8 9)) 3 6))
-    (let ((s '(1 2 3 0 4 5 6 0 7 8 9)))
-      (flet ((ts (res &key (start 0) end)
-               (check 'split-seq s start end () #'equalp res
-                      (split-seq s #'zerop :start start :end end))))
-        (ts '((1 2 3) (4 5 6) (7 8 9)))
-        (ts '((1 2 3) (4 5 6)) :end 7))
-      (dotimes (end (length s))
-        (dotimes (start end)
-          (check 'split-seq s start end () #'equalp
-                 (split-seq s #'zerop :start start :end end)
-                 (split-seq (subseq s start end) #'zerop)))))))
+  (flet ((ts (res seq from to &rest keys)
+           (check 'substitute-subseq (list* seq from to keys) res :cmp #'string=)))
+    (ts "ab123efghcda" "abcdefghcda" "cd" "123" :start 1 :end 6)
+    (ts "ab123efgh123a" "abcdefghcda" "cd" "123" :start 1)
+    (ts "ab123efghcda" "abcdefghcda" "cd" "123" :end 6)
+    (ts "ab123efgh123a" "abcdefghcda" "cd" "123")
+    (ts "abcdefghcda" "abcdefghcda" "cd" "123" :start 5 :end 6))
+  (flet ((ts (res seq from to)
+           (check 'remove-subseq (list seq from to) res :cmp #'equalp)))
+    (ts '(1 2 3 7 8 9) '(1 2 3 4 5 6 7 8 9) 3 6)
+    (ts #(1 2 3 7 8 9) #(1 2 3 4 5 6 7 8 9) 3 6)
+    (ts (mk-arr '(unsigned-byte 8) '(1 2 3 7 8 9))
+        (mk-arr '(unsigned-byte 8) '(1 2 3 4 5 6 7 8 9)) 3 6))
+  (let ((s '(1 2 3 0 4 5 6 0 7 8 9)))
+    (flet ((ts (res &key (start 0) end)
+             (check 'split-seq (list s #'zerop :start start :end end) res :cmp #'equalp)))
+      (ts '((1 2 3) (4 5 6) (7 8 9)))
+      (ts '((1 2 3) (4 5 6)) :end 7))
+    (dotimes (end (length s))
+      (dotimes (start end)
+        (check 'split-seq (list s #'zerop :start start :end end)
+               (split-seq (subseq s start end) #'zerop) :cmp #'equalp)))))
 
 (deftest test-math ()
   (labels ((perm= (li1 la1 li2 la2)
@@ -100,6 +97,10 @@
     (ts-perm 3)
     (ts-perm 4)
     (ts-perm 5))
+  (check 'divisors '(96) '(2 2 2 2 2 3) :cmp #'equal)
+  (check 'primep '(111) nil)
+  (check 'divisors '(613) '(613) :cmp #'equal)
+  (check 'primep '(613) t)
   (flet ((vec-find (vec x)
            (binary-search 0 (1- (length vec))
                           (lambda (i) (<= (aref vec i) x))
@@ -213,14 +214,14 @@
                  (if (= num len)
                      (mesg :test out " * correct length: ~:d~%" len)
                      (mesg :test out
-                           " #~d# wrong length: ~:d (should be ~:d)~%"
+                           " ERROR(~D): wrong length: ~:D (should be ~:D)~%"
                            (incf num-err) len num)))
              (error (err)
                (warn " ### ERROR: ~a~%" err)
                (incf num-err)))))
     (mesg :test out " ** ~s...~%" 'test-xml)
     (ts *xml-ent-file* 284)
-    (ts (translate-logical-pathname "clocc:etc;cl-ent.xml") 1641)))
+    (ts (translate-logical-pathname "clocc:etc;cl-ent.xml") 1640)))
 
 (deftest test-cvs ()
   (flet ((ts (path)
@@ -233,9 +234,9 @@
     (ts (namestring (translate-logical-pathname "clocc:")))))
 
 (deftest test-matrix-inverse ((num-test 10) (dim 10) (max 10))
-  (loop :repeat num-test :with det :with i1 = (make-array (list dim dim))
-    :for err = 0
-    :for mx = (random-matrix dim dim max) :for m1 = (array-copy mx) :do
+  (loop :with det :with i1 = (make-array (list dim dim))
+    :for err = 0 :for mx = (random-matrix dim dim max) :for m1 = (array-copy mx)
+    :repeat num-test :do
     (handler-case (setq det (matrix-inverse m1))
       (division-by-zero (c)
         (mesg :test out " ** degenerate matrix~%~S~%"
@@ -341,7 +342,7 @@
     (test #(99 108 105 115 112 32 115 116 114 105 110 103 115)
           "Y2xpc3Agc3RyaW5ncw==")
     (mesg :test out "~S (random)" 'test-base64)
-    (loop :with str :repeat 1000 :for vec = (make-array (random 300))
+    (loop :with str :for vec = (make-array (random 300)) :repeat 1000
       :do (mesg :test out ".")
       (loop :for i :from 0 :below (length vec)
         :do (setf (aref vec i) (random 256)))
@@ -484,24 +485,27 @@
     (check-csv "foo,,\"\",quux" #("foo" NIL NIL "quux"))))
 
 (defun test-all (&key (out *standard-output*)
-                 (what '(string math date rpm url elisp xml munkres cvs base64
-                         iter matrix list lift bayes csv))
-                 (disable-network-dependent-tests t))
+                   (what '(string math date rpm url elisp xml munkres cvs base64
+                           iter matrix list lift bayes csv))
+                   (enable-network-dependent-tests nil))
   (mesg :test out "~& *** ~s: regression testing...~%" 'test-all)
-  (let* ((num-test 0)
-         (num-err (reduce #'+ what :key
-                          (lambda (w)
-                            (let ((sy (intern (concatenate 'string "TEST-"
-                                                           (string-upcase w))
-                                              "CLLIB")))
-                              (if (or (not (fboundp sy))
-                                      (and disable-network-dependent-tests
-                                           (member
-                                            sy *network-dependent-tests*)))
-                                  0 (progn (incf num-test)
-                                           (funcall sy :out out))))))))
-    (mesg :test out " *** ~s: ~:d error~:p in ~:d test~:p~2%"
-          'test-all num-err num-test)))
+  (let ((results (mapcan
+                  (lambda (w)
+                    (let ((sy (intern (concatenate 'string "TEST-"
+                                                   (string-upcase w))
+                                      "CLLIB")))
+                      (when (and (fboundp sy)
+                                 (or enable-network-dependent-tests
+                                     (not (member sy *network-dependent-tests*))))
+                        `((,sy . ,(funcall sy :out out))))))
+                  what)))
+    (mesg :test out " *** ~S: ~:D error~:P in ~:D test~:P~@[~{~A~}~]~2%"
+          'test-all (reduce #'+ results :key #'cdr) (length results)
+          (mapcan (lambda (r)
+                    (and (plusp (cdr r))
+                         (list (format nil "~%~30@S: ~:D" (car r) (cdr r)))))
+                  results))
+    results))
 
 (defun post-compile-hook (all-files compiled-files)
   "Test recompiled files and regenerate autoloads."
