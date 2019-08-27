@@ -2,7 +2,7 @@
 ;;; get stock/mutual fund quotes from the Internet
 ;;; via the WWW using HTTP/1.0, save into a file, plot.
 ;;;
-;;; Copyright (C) 1997-2004, 2007-2008, 2010, 2011 by Sam Steingold
+;;; Copyright (C) 1997-2004, 2007-2008, 2010, 2011, 2019 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
@@ -123,7 +123,7 @@ This is just a debugging function, to be called interactively."
     (t (prin1-to-string obj))))
 
 (defun gq-next (stream &optional (nn 1))
-  (loop :repeat nn :for cur = (gq-dat (read stream)) :finally (return cur)))
+  (loop :for cur = (gq-dat (read stream)) :repeat nn :finally (return cur)))
 
 (defun gq-skip (stream string)
   (loop (when (string-equal (gq-next stream) string) (return))))
@@ -143,7 +143,7 @@ This is just a debugging function, to be called interactively."
                      (when (and (some #'digit-char-p tok) (every #'nump tok))
                        (return (with-standard-io-syntax
                                  (dfloat (read-from-string tok)))))))))
-    (loop :repeat nn :for cur = (next stream) :finally (return cur))))
+    (loop :for cur = (next stream) :repeat nn :finally (return cur))))
 
 (defun date-mo/da/ye (xx)
   "Parse the date in the MM/DD/YYYY format"
@@ -783,8 +783,7 @@ If DEBUG is non-nil, do not bind `*print-log*' and `*gq-error-stream*'."
 (defun holdings-url (symbol)
   (format nil "http://finance.yahoo.com/q/hl?s=~A+Holdings" symbol))
 
-;; when using MK-DEFSYSTEM, ASDF-based NET.HTML.PARSER is not available
-#-mk-defsystem
+#+net.html.parser
 (defun holdings (&key symbol)
   "Get holdings for a (institutional/mutual fund) symbol from Yahoo."
   (let* ((html (with-open-url (sock (holdings-url symbol))
@@ -863,7 +862,7 @@ If DEBUG is non-nil, do not bind `*print-log*' and `*gq-error-stream*'."
 (defun holders-url (symbol)
   (format nil "http://finance.yahoo.com/q/mh?s=~A+Major+Holders" symbol))
 
-#-mk-defsystem
+#+net.html.parser
 (defun holders (&key symbol)
   "Get holders for a (stock) symbol from Yahoo."
   (let* ((html (cllib:with-open-url (sock (holders-url symbol))

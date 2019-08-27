@@ -1,6 +1,6 @@
 ;;; Dated Lists - extracted from date.lisp
 ;;;
-;;; Copyright (C) 1997-2004, 2007-2008, 2011 by Sam Steingold
+;;; Copyright (C) 1997-2004, 2007-2008, 2011, 2019 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
@@ -322,8 +322,9 @@ whether there was a rollover."
                 (date-in-dated-list dt dl))
           dl)
     (integer
-     (loop :repeat dt :with dd :of-type function = (dl-date dl) :and roll
+     (loop :with dd :of-type function = (dl-date dl) :and roll
            :with rd :of-type date = (rollover (dated-list-cl dl) dd)
+           :repeat dt
            :if (and (cdr (dated-list-cp dl))
                     (date<= (funcall dd (cadr (dated-list-cp dl))) rd))
            :do (pop (dated-list-cp dl))
