@@ -1,6 +1,6 @@
 ;;; Math utilities (Arithmetical / Statistical functions)
 ;;;
-;;; Copyright (C) 1997-2012, 2014, 2015 by Sam Steingold
+;;; Copyright (C) 1997-2012, 2014, 2015, 2019 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
@@ -222,7 +222,7 @@ The optional second argument specifies the list of primes."
 (defsubst primep (nn &optional (primes-list (primes-to (1+ (isqrt nn)))))
   "Check whether the number is prime."
   (declare (integer nn) (list primes-list))
-  (has-divisors nn primes-list (isqrt nn)))
+  (not (has-divisors nn primes-list (isqrt nn))))
 
 (defun make-primes-list (&optional (limit most-positive-fixnum))
   "Initialize `*primes*' and write `*primes-file*'."
