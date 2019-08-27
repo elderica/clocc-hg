@@ -2,15 +2,14 @@
 ;;;
 ;;; Convert *.c to CLISP's ffi
 ;;;
-;;; Copyright (C) 1999-2001, 2007-2008 by Sam Steingold
+;;; Copyright (C) 1999-2001, 2007-2008, 2011, 2019 by Sam Steingold
 ;;; This is Free Software, covered by the GNU GPL (v2+)
 ;;; See http://www.gnu.org/copyleft/gpl.html
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (require :cllib-base (translate-logical-pathname "clocc:src;cllib;base"))
   ;; `text-stream'
-  ;; (require :cllib-html (translate-logical-pathname "cllib:html"))
-  )
+  (require :cllib-html (translate-logical-pathname "cllib:html")))
 
 (in-package :cllib)
 
@@ -22,8 +21,6 @@
 
 (defstruct c-dim "C dimension." dim)
 (defstruct c-cmt "C comment." data)
-
-(defun read-standalone-char (stream char) (declare (ignore stream)) char)
 
 (defun read-c-object (stream char)
   (declare (stream stream) (character char))
