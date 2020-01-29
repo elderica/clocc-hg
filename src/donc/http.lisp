@@ -99,8 +99,8 @@ first saw code to act as a web server.
 (defun print-current-time (&optional (stream *standard-output*))
    (multiple-value-bind
     (second minute hour day month year)
-    (get-decoded-time)
-    (format stream "~@?" "~4,'0d-~2,'0d-~2,'0d-~2,'0d:~2,'0d:~2,'0d"
+    (decode-universal-time (get-universal-time) 0)
+    (format stream "~d-~2,'0d-~2,'0dT~2,'0d:~2,'0d:~2,'0dZ"
 	    year month day hour minute second)))
 
 (defvar *log* nil) ;; log file [***]
